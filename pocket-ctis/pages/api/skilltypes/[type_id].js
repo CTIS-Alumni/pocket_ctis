@@ -6,9 +6,12 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const skill_type_query = "SELECT * FROM skilltype WHERE id = ?";
-                const skill_type_info = await doquery({query: skill_type_query,values: [type_id]});
-                res.status(200).json({skill_type_info});
+                const query = "SELECT * FROM skilltype WHERE id = ?";
+                const data = await doquery({query: query,values: [type_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
@@ -16,18 +19,24 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const {type_name} = req.body.skilltype;
-                const put_skill_type_query = "UPDATE skilltype SET type_name = ? WHERE id = ?";
-                const data = await doquery({query: put_skill_type_query,values: [type_name, type_id]});
-                res.status(200).json({data});
+                const query = "UPDATE skilltype SET type_name = ? WHERE id = ?";
+                const data = await doquery({query: query,values: [type_name, type_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
             break;
         case "DELETE":
             try{
-                const delete_skill_type_query = "DELETE FROM skilltype WHERE id = ?"
-                const data = await doquery({query: delete_skill_type_query,values: [type_id]});
-                res.status(200).json({data});
+                const query = "DELETE FROM skilltype WHERE id = ?"
+                const data = await doquery({query: query,values: [type_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }

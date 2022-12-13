@@ -6,13 +6,16 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
         try{
-            const education_query = "SELECT e.id, ei.inst_name, d.degree_name, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current " +
+            const query = "SELECT e.id, ei.inst_name, d.degree_name, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current " +
                 "FROM educationrecord e JOIN educationinstitute ei ON (e.edu_inst_id = ei.id) " +
                 "JOIN degreetype d ON (e.degree_type_id = d.id) " +
                 "WHERE e.user_id = 1 order by e.start_date desc";
 
-            const education_info = await doquery({query: education_query, values: [user_id]});
-            res.status(200).json({education_info});
+            const data = await doquery({query: query, values: [user_id]});
+            if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
         }catch(error){
             res.status(500).json({error: error.message});
         }
@@ -20,9 +23,12 @@ export default async function handler(req, res){
         case "POST":
             try{
                 const {edu_inst_id, degree_type_id, name_of_program, start_date, end_date, visibility, is_current} = req.body.educationrecord;
-                const post_educationrecord_query = "INSERT INTO educationrecord(user_id, edu_inst_id, degree_type_id, name_of_program, start_date, end_date, visibility, is_current) values (?,?, ?, ?, ?, ?, ?, ?)";
-                const data = await doquery({query: post_educationrecord_query, values: [user_id,edu_inst_id, degree_type_id, name_of_program, start_date, end_date, visibility, is_current]});
-                res.status(200).json({data});
+                const query = "INSERT INTO educationrecord(user_id, edu_inst_id, degree_type_id, name_of_program, start_date, end_date, visibility, is_current) values (?,?, ?, ?, ?, ?, ?, ?)";
+                const data = await doquery({query: query, values: [user_id,edu_inst_id, degree_type_id, name_of_program, start_date, end_date, visibility, is_current]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }

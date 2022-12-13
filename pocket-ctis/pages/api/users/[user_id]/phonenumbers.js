@@ -6,9 +6,12 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const phone_query = "SELECT id, phone_number, visibility FROM userphone WHERE user_id = ?";
-                const phone_info = await doquery({query: phone_query, values: [user_id]});
-                res.status(200).json({phone_info});
+                const query = "SELECT id, phone_number, visibility FROM userphone WHERE user_id = ?";
+                const data = await doquery({query: query, values: [user_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             } catch(error){
                 res.status(500).json({error: error.message});
             }
@@ -16,9 +19,12 @@ export default async function handler(req, res){
         case "POST":
             try {
                 const {phone_number,visibility} = req.body.phone;
-                const post_phone_query = "INSERT INTO userphone(user_id,phone_number, visibility) values (?,?,?)";
-                const data = await doquery({query: post_phone_query, values: [user_id,phone_number,visibility]});
-                res.status(200).json({data});
+                const query = "INSERT INTO userphone(user_id,phone_number, visibility) values (?,?,?)";
+                const data = await doquery({query: query, values: [user_id,phone_number,visibility]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             } catch(error){
                 res.status(500).json({error: error.message});
             }

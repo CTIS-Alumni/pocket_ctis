@@ -7,8 +7,8 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const {degree_name} = req.body.degreetype;
-                const put_degree_query = "UPDATE degreetype SET degree_name = ? WHERE id = ?"
-                const data = await doquery({query: put_degree_query,values: [degree_name,type_id]});
+                const query = "UPDATE degreetype SET degree_name = ? WHERE id = ?"
+                const data = await doquery({query: query,values: [degree_name,type_id]});
                 res.status(200).json({message: data });
             }catch(error){
                 res.status(500).json({error: error.message});
@@ -16,8 +16,8 @@ export default async function handler(req, res){
             break;
         case "DELETE":
             try{
-                const delete_degree_query = "DELETE FROM degreetypes WHERE id = ?"
-                const data = await doquery({query: delete_degree_query,values: [degree_id]});
+                const query = "DELETE FROM degreetypes WHERE id = ?"
+                const data = await doquery({query: query,values: [degree_id]});
                 res.status(200).json({message: data});
             }catch(error){
                 res.status(500).json({error: error.message});

@@ -6,9 +6,12 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const user_social_query = "SELECT id, social_media_id, link, visibility FROM usersocialmedia WHERE id = ?";
-                const social_info = await doquery({query: user_social_query, values: [user_social_id]});
-                res.status(200).json({social_info});
+                const query = "SELECT id, social_media_id, link, visibility FROM usersocialmedia WHERE id = ?";
+                const data = await doquery({query: query, values: [user_social_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
@@ -16,18 +19,24 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const {social_media_id, link, visibility} = req.body.usersocialmedia;
-                const put_user_social_query = "UPDATE usersocialmedia SET social_media_id = ?, link = ?, visibility = ? WHERE id = ?";
-                const data = await doquery({query: put_user_social_query,values: [social_media_id, link, visibility, user_social_id]});
-                res.status(200).json({data});
+                const query = "UPDATE usersocialmedia SET social_media_id = ?, link = ?, visibility = ? WHERE id = ?";
+                const data = await doquery({query: query,values: [social_media_id, link, visibility, user_social_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
             break;
         case "DELETE":
             try{
-                const delete_user_social_query = "DELETE FROM usersocialmedia WHERE id = ?"
-                const data = await doquery({query: delete_user_social_query,values: [user_social_id]});
-                res.status(200).json({data});
+                const query = "DELETE FROM usersocialmedia WHERE id = ?"
+                const data = await doquery({query: query,values: [user_social_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }break;

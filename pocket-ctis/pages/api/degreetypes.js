@@ -5,9 +5,12 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const get_degrees_query = "SELECT * FROM degreetype order by degree_name asc";  //for dropboxes
-                const data = await doquery({query: get_degrees_query});
-                res.status(200).json({data});
+                const query = "SELECT * FROM degreetype order by degree_name asc";  //for dropboxes
+                const data = await doquery({query: query});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
@@ -15,9 +18,12 @@ export default async function handler(req, res){
         case "POST":
             try{
                 const {degree_name} = req.body;
-                const post_degree_query = "INSERT INTO degreetype(degree_name) values (?)";
-                const data = await doquery({query: post_degree_query, values: [degree_name]});
-                res.status(200).json({data});
+                const query = "INSERT INTO degreetype(degree_name) values (?)";
+                const data = await doquery({query: query, values: [degree_name]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }

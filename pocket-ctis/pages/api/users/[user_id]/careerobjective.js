@@ -6,9 +6,12 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const career_obj_query = "SELECT id, career_objective, visibility FROM usercareerobjective WHERE user_id = ?";
-                const career_obj_info = await doquery({query: career_obj_query, values: [user_id]});
-                res.status(200).json({career_obj_info});
+                const query = "SELECT id, career_objective, visibility FROM usercareerobjective WHERE user_id = ?";
+                const data = await doquery({query: query, values: [user_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
@@ -16,9 +19,12 @@ export default async function handler(req, res){
         case "POST":
             try{
                 const {career_objective, visibility} = req.body.careerobjective;
-                const post_career_obj_query = "INSERT INTO usercareerobjective(user_id, career_objective, visibility) values (?, ?, ?)";
-                const data = await doquery({query: post_career_obj_query, values: [user_id, career_objective, visibility]});
-                res.status(200).json({data});
+                const query = "INSERT INTO usercareerobjective(user_id, career_objective, visibility) values (?, ?, ?)";
+                const data = await doquery({query: query, values: [user_id, career_objective, visibility]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
@@ -26,18 +32,24 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const {career_objective, visibility} = req.body.careerobjective;
-                const put_career_obj_query = "UPDATE usercareerobjective SET career_objective = ?, visibility = ? WHERE user_id = ?";
-                const data = await doquery({query: put_career_obj_query,values: [career_objective, visibility, user_id]});
-                res.status(200).json({data});
+                const query = "UPDATE usercareerobjective SET career_objective = ?, visibility = ? WHERE user_id = ?";
+                const data = await doquery({query: query,values: [career_objective, visibility, user_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
             break;
         case "DELETE":
             try{
-                const delete_career_obj_query = "DELETE FROM usercareerobjective WHERE user_id = ?"
-                const data = await doquery({query: delete_career_obj_query,values: [user_id]});
-                res.status(200).json({data});
+                const query = "DELETE FROM usercareerobjective WHERE user_id = ?"
+                const data = await doquery({query: query,values: [user_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }break;

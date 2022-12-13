@@ -7,7 +7,10 @@ export default async function handler(req, res){
             try{
                 const query = "SELECT * FROM exam order by exam_name asc";
                 const data = await doquery({query:query});
-                res.status(200).json({data});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             } catch(error){
                 res.status(500).json({error: error.message});
             }
@@ -15,8 +18,11 @@ export default async function handler(req, res){
             case "POST":
                 try{
                     const {exam_name} = req.body.exam;
-                    const post_exam_query = "INSERT INTO exam(exam_name) values (?)";
-                    const data = await doquery({query: post_exam_query, values: [exam_name]});
+                    const query = "INSERT INTO exam(exam_name) values (?)";
+                    const data = await doquery({query: query, values: [exam_name]});
+                    if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
                     res.status(200).json({data});
                 }catch(error){
                     res.status(500).json({error: error.message});

@@ -6,9 +6,12 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const sector_query = "SELECT * FROM sector WHERE id = ?";
-                const sector_info = await doquery({query: sector_query,values: [sector_id]});
-                res.status(200).json({sector_info});
+                const query = "SELECT * FROM sector WHERE id = ?";
+                const data = await doquery({query: query,values: [sector_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
@@ -16,18 +19,24 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const {sector_name} = req.body.sector;
-                const put_sector_query = "UPDATE sector SET sector_name = ? WHERE id = ?";
-                const data = await doquery({query: put_sector_query,values: [sector_name,sector_id]});
-                res.status(200).json({data});
+                const query = "UPDATE sector SET sector_name = ? WHERE id = ?";
+                const data = await doquery({query: query,values: [sector_name,sector_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
             break;
         case "DELETE":
             try{
-                const delete_sector_query = "DELETE FROM sector WHERE id = ?";
-                const data = await doquery({query: delete_sector_query,values: [sector_id]});
-                res.status(200).json({data});
+                const query = "DELETE FROM sector WHERE id = ?";
+                const data = await doquery({query: query,values: [sector_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }

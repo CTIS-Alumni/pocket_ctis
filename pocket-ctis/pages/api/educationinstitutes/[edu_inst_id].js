@@ -6,15 +6,18 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const get_edu_inst_query = "SELECT ei.id, ei.inst_name, ci.city_name, co.country_name, ei.is_erasmus, ei.rating " +
+                const query = "SELECT ei.id, ei.inst_name, ci.city_name, co.country_name, ei.is_erasmus, ei.rating " +
                     "FROM educationinstitute ei LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) " +
                     "LEFT OUTER JOIN country co ON(ci.country_id = co.id) WHERE ei.id = ?"
                 //show that it is an erasmus uni
                 //show its rating if 0 or higher
                 //dont show if null
 
-                const edu_inst_info = await doquery({query: get_edu_inst_query, values: [edu_inst_id]});
-                res.status(200).json({edu_inst_info});
+                const data = await doquery({query: query, values: [edu_inst_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
@@ -22,17 +25,20 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const {inst_name, city_id, is_erasmus} = req.body.educationinstitute;
-                const put_edu_inst_query = "UPDATE educationinstitute SET inst_name = ?, city_id = ?, is_erasmus = ? WHERE id = ?"
-                const data = await doquery({query: put_edu_inst_query,values: [inst_name, city_id, is_erasmus, edu_inst_id]});
-                res.status(200).json({data});
+                const query = "UPDATE educationinstitute SET inst_name = ?, city_id = ?, is_erasmus = ? WHERE id = ?"
+                const data = await doquery({query: query,values: [inst_name, city_id, is_erasmus, edu_inst_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
             break;
         case "DELETE":
             try{
-                const delete_edu_inst_query = "DELETE FROM educationinstitute WHERE id = ?"
-                const data = await doquery({query: delete_edu_inst_query,values: [edu_inst_id]});
+                const query = "DELETE FROM educationinstitute WHERE id = ?"
+                const data = await doquery({query: query,values: [edu_inst_id]});
                 res.status(200).json({message: data});
             }catch(error){
                 res.status(500).json({error: error.message});
