@@ -1,5 +1,4 @@
 import React from 'react'
-import { Container } from 'react-bootstrap'
 import NavigationBar from '../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../components/UserInfoSidebar/UserInfoSidebar'
 import UsersInfoPanel from '../../components/UsersInfoPanel/UsersInfoPanel'

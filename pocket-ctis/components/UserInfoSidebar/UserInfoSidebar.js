@@ -10,13 +10,14 @@ import {
   PersonWorkspace,
 } from 'react-bootstrap-icons'
 import styles from '../../styles/UserInfoSidebar.module.css'
+import Link from 'next/link'
 
-const Button = ({ text, icon }) => {
+const Button = ({ text, icon, href }) => {
   return (
-    <div className={styles.buttonContainer}>
+    <Link href={`${href ? href : '#'}`} className={styles.buttonContainer}>
       {icon}
       <span className='ps-3'>{text}</span>
-    </div>
+    </Link>
   )
 }
 
@@ -39,8 +40,8 @@ const UserImage = () => {
         />
       </div>
       <div>
-        <p class='text-center my-0 pt-4'>Name Surname</p>
-        <p class='text-center my-0'>UNDERGRADUATE</p>
+        <p className='text-center my-0 pt-4'>Name Surname</p>
+        <p className='text-center my-0'>UNDERGRADUATE</p>
       </div>
     </div>
   )
@@ -64,18 +65,39 @@ const UserInfoSidebar = () => {
           className='border border-dark my-0 mx-auto'
           style={{ width: '80%' }}
         />
-        <Button text='COMPANIES' icon={<BuildingFill size='25px' />} />
-        <Button text='SECTORS' icon={<Easel2Fill size='25px' />} />
-        <Button text='INTERNSHIPS' icon={<ClipboardFill size='25px' />} />
+        <Button
+          text='COMPANIES'
+          icon={<BuildingFill size='25px' />}
+          href='/user/companies'
+        />
+        <Button
+          text='SECTORS'
+          icon={<Easel2Fill size='25px' />}
+          href='/user/sectors'
+        />
+        <Button
+          text='INTERNSHIPS'
+          icon={<ClipboardFill size='25px' />}
+          href='/user/internships'
+        />
         <hr
           className='border border-dark my-0 mx-auto'
           style={{ width: '80%' }}
         />
-        <Button text='UNIVERSITIES' icon={<MortarboardFill size='25px' />} />
-        <Button text='ERASMUS' icon={<StarFill size='25px' />} />
+        <Button
+          text='UNIVERSITIES'
+          icon={<MortarboardFill size='25px' />}
+          href='/user/universities'
+        />
+        <Button
+          text='ERASMUS'
+          icon={<StarFill size='25px' />}
+          href='/user/erasmus'
+        />
         <Button
           text='GRADUATION PROJECTS'
           icon={<PersonWorkspace size='25px' />}
+          href='/user/graduationProjects'
         />
       </Container>
     </div>

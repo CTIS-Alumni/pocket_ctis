@@ -7,7 +7,7 @@ const NavigationBar = () => {
     <>
       <Navbar style={{ backgroundColor: '#d9d9d9' }}>
         <Container>
-          <Navbar.Brand href=''>PocketCTIS</Navbar.Brand>
+          <Navbar.Brand href='/user'>PocketCTIS</Navbar.Brand>
           <Form className='d-flex align-items-center'>
             <Form.Control
               type='search'

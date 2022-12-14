@@ -17,7 +17,7 @@ const UsersInfoPanel = () => {
       >
         <div style={{ textAlign: 'center', margin: '50px 0' }}>
           <h1>PocketCTIS</h1>
-          <did>Welcome back, NAME SURNAME</did>
+          <div>Welcome back, NAME SURNAME</div>
         </div>
         <div className='d-flex justify-content-evenly'>
           <WorkUpdates />
