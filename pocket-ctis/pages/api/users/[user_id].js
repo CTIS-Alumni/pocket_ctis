@@ -7,7 +7,7 @@ export default async function handler(req, res){
         case "GET":
             try{
                 const query = "SELECT u.id, GROUP_CONCAT(act.type_name) as 'user_types', u.first_name, u.nee, u.last_name, u.gender," +
-                    "u.is_retired, u.profile_completion, u.graduation_project_id, g.project_name, u.is_active FROM users u " +
+                    "u.is_retired, u.profile_completion, u.graduation_project_id, g.project_name, g.project_year, g.description, u.is_active FROM users u " +
                     "JOIN useraccounttype uat ON (uat.user_id = u.id) " +
                     "JOIN accounttype act ON (act.id = uat.type_id) " +
                     "LEFT OUTER JOIN graduationproject g ON (u.graduation_project_id = g.id) " +
