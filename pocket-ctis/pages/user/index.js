@@ -21,11 +21,7 @@ const UsersRoute = ({ users }) => {
 export async function getStaticProps() {
   const res = await fetch('http://localhost:3000/api/users')
   const users = await res.json()
-  return {
-    props: {
-      users,
-    },
-  }
+  return { props: { users } }
 }
 
 export default UsersRoute
