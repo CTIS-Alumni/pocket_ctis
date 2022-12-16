@@ -5,12 +5,20 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const query = "SELECT * FROM sector order by sector_name asc";
-                const data = await doquery({query: query});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
+                let values = [];
+                let query = "SELECT * FROM sector ";
+
+                if(req.query.name){ // for general search
+                    query += "WHERE sector_name LIKE CONCAT('%', ?, '%') ";
+                    values.push(req.query.name);
+                }
+
+                query += "order by sector_name asc ";
+                const sectors = await doquery({query: query, values: values});
+                if(sectors.hasOwnProperty("error"))
+                    res.status(500).json({error: sectors.error.message});
                 else
-                    res.status(200).json({data});
+                    res.status(200).json({sectors});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
