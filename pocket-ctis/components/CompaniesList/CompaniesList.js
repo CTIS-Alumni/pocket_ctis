@@ -12,8 +12,6 @@ import SearchBar from '../SearchBar/SearchBar'
 import styles from './CompaniesList.module.css'
 
 const CompaniesList = ({ companies }) => {
-  const comp = companies.data[0]
-  console.log(comp)
   return (
     <Container fluid style={{ backgroundColor: '#f9f9f9', paddingTop: 20 }}>
       <h1>Companies</h1>
@@ -46,7 +44,7 @@ const CompaniesList = ({ companies }) => {
                 variant='flush'
                 style={{ boxShadow: '5px 5px 10px 0px rgba(0,0,0,0.3)' }}
               >
-                {companies.data.map((company) => (
+                {companies.map((company) => (
                   <ListGroupItem className={styles.listItem}>
                     <Link
                       href={`/user/companies/${company.id}`}
