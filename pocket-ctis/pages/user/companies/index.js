@@ -1,8 +1,17 @@
-import React from 'react'
+import CompaniesList from '../../../components/CompaniesList/CompaniesList'
+import NavigationBar from '../../../components/navbar/NavigationBar'
+import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 
-const CompaniesList = ({ companies }) => {
-  console.log('companies: ', companies)
-  return <div>CompaniesList</div>
+const CompaniesDashboard = ({ companies }) => {
+  return (
+    <div style={{ height: '100vh' }}>
+      <NavigationBar />
+      <div className='d-flex' style={{ height: '100%' }}>
+        <UserInfoSidebar />
+        <CompaniesList companies={companies} />
+      </div>
+    </div>
+  )
 }
 
 export async function getServerSideProps() {
@@ -11,4 +20,4 @@ export async function getServerSideProps() {
   return { props: { companies } }
 }
 
-export default CompaniesList
+export default CompaniesDashboard

@@ -9,8 +9,9 @@ import {
   StarFill,
   PersonWorkspace,
 } from 'react-bootstrap-icons'
-import styles from '../../styles/UserInfoSidebar.module.css'
+import styles from './UserInfoSidebar.module.css'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const Button = ({ text, icon, href }) => {
   return (
@@ -34,9 +35,12 @@ const UserImage = () => {
           overflow: 'hidden',
         }}
       >
-        <img
-          src='test.jpeg'
-          style={{ objectFit: 'cover', height: 150, width: 150 }}
+        <Image
+          src='/test.jpeg'
+          width={150}
+          height={150}
+          alt='User'
+          style={{ objectFit: 'cover' }}
         />
       </div>
       <div>
