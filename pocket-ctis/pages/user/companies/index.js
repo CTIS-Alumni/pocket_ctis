@@ -5,7 +5,7 @@ const CompaniesList = ({ companies }) => {
   return <div>CompaniesList</div>
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const res = await fetch('http://localhost:3000/api/companies')
   const companies = await res.json()
   return { props: { companies } }

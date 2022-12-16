@@ -5,7 +5,7 @@ const GraduationProjectsList = ({ gradProjects }) => {
   return <div>GraduationProjectsList</div>
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const res = await fetch('http://localhost:3000/api/graduationprojects')
   const gradProjects = await res.json()
   return { props: { gradProjects } }

@@ -16,9 +16,9 @@ const UsersRoute = ({ users }) => {
   )
 }
 
-//call API, using getStaticProps. This will be called before the page is served to the frontend
+//call API, using getServerSideProps. This will be called before the page is served to the frontend
 //the result will be added to props object, which will be added to the corresponding component.
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const res = await fetch('http://localhost:3000/api/users')
   const users = await res.json()
   return { props: { users } }

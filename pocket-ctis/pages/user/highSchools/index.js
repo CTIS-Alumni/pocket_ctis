@@ -5,7 +5,7 @@ const HighSchoolList = ({ highSchools }) => {
   return <div>HighSchoolList</div>
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const res = await fetch('http://localhost:3000/api/highschools')
   const highSchools = await res.json()
   return { props: { highSchools } }
