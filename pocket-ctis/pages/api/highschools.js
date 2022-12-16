@@ -5,12 +5,20 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const query = "SELECT h.id, h.high_school_name, ci.city_name, co.country_name " +
+                let values = [];
+                let query = "SELECT h.id, h.high_school_name, ci.city_name, co.country_name " +
                     "FROM highschool h LEFT OUTER JOIN city ci ON (h.city_id = ci.id) " +
-                    "LEFT OUTER JOIN country co ON (ci.country_id = co.id) order by h.high_school_name asc";
+                    "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 
-                const data = await doquery({query:query});
-                if(data.hasOwnProperty("error"))
+                if(req.query.name){
+                    query += "WHERE h.high_school_name LIKE CONCAT('%', ?, '%') ";
+                    values.push(req.query.name);
+                }
+
+                query += "order by h.high_school_name asc";
+
+                const highschools = await doquery({query:query, values: values});
+                if(highschools.hasOwnProperty("error"))
                     res.status(500).json({error: data.error.message});
                 else
                     res.status(200).json({data});

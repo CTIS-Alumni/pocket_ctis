@@ -2,22 +2,36 @@ import {doquery} from "../../helpers/dbconnect";
 
 export default async function handler(req, res){
     const method = req.method;
-    let erasmus = req.query.erasmus;
     switch(method){
         case "GET":
             try{
-                let query = "SElECT ei.id, ei.inst_name, ci.city_name, co.country_name, ei.is_erasmus " +
+                let values = [];
+                    let query = "SElECT ei.id, ei.inst_name, ci.city_name, co.country_name, ei.is_erasmus " +
                     "FROM educationinstitute ei LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) " +
                     "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 
                 //for erasmus page = showing only the universities which is for erasmus
-                if(erasmus)
-                    query += "WHERE ei.is_erasmus = ? ";
-                else erasmus = "";
+                if(req.query.erasmus){ //for the erasmus page
+                    query += "WHERE ei.is_erasmus = ? "
+                    values.push(req.query.erasmus);
+                }
+                if(req.query.name){ //for the general search
+                    if(query.indexOf("WHERE") !== -1)//if there is "WHERE"
+                        query += "AND ei.inst_name LIKE CONCAT('%', ?, '%') "
+                    else query += "WHERE ei.inst_name LIKE CONCAT('%', ?, '%') ";
+                    values.push(req.query.name);
+                }
+                if(req.query.location){ //TEST
+                    if(query.indexOf("WHERE") !== -1)//if there is "WHERE"
+                        query += "AND ci.id = ? "
+                    else query += "WHERE ci.id = ? ";
+                    values.push(req.query.location);
+                }
 
                 query +="order by ei.inst_name asc";
-                const data = await doquery({query:query, values: [erasmus]});
-                if(data.hasOwnProperty("error"))
+
+                const educationinstitutes = await doquery({query:query, values: values});
+                if(educationinstitutes.hasOwnProperty("error"))
                     res.status(500).json({error: data.error.message});
                 else
                     res.status(200).json({data});
