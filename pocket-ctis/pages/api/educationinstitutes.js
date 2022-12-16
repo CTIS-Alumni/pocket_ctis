@@ -32,12 +32,26 @@ export default async function handler(req, res){
 
                 const educationinstitutes = await doquery({query:query, values: values});
                 if(educationinstitutes.hasOwnProperty("error"))
+                    res.status(500).json({error: educationinstitutes.error.message});
+                else
+                    res.status(200).json({educationinstitutes});
+            }catch(error){
+                res.status(500).json({error: error.message});
+            }
+            break;
+
+        case "POST":{
+            try{
+                const {inst_name, city_id, is_erasmus} = req.body.erasmus;
+                const query = "INSERT INTO company(inst_name, city_id, is_erasmus) values(?,?,?)";
+                const data = await doquery({query: query, values: [inst_name, city_id, is_erasmus]});
+                if(data.hasOwnProperty("error"))
                     res.status(500).json({error: data.error.message});
                 else
                     res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
-            break;
+        }
     }
 }

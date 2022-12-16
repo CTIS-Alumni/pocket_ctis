@@ -33,9 +33,9 @@ export default async function handler(req, res){
 
                 const companies = await doquery({query: query, values: values});
                 if(companies.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
+                    res.status(500).json({error: companies.error.message});
                 else
-                    res.status(200).json({data});
+                    res.status(200).json({companies});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
