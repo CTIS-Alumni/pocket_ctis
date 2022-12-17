@@ -1,0 +1,36 @@
+@import '../../styles/variables.scss';
+
+.academic_updates {
+
+}
+
+.academic_updates_table {
+
+    width: 100%;
+    border-radius: 5px;
+    overflow: hidden;
+
+    thead {
+        background-color: $dark-grey;
+        color: $white;
+    }
+
+    tbody {
+        background-color: lighten($color: $white, $amount: 20);
+    }
+
+    td, th {
+        padding: 1em 1.5em;
+    }
+}
+
+.user_avatar_48 {
+    display: block;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: aqua;
+    background-image: linear-gradient(to bottom right, $light-grey, $medium-grey);
+}

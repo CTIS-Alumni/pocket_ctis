@@ -1,0 +1,55 @@
+@import '../../styles/variables.scss';
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 3em 3.5em;
+
+    > * {
+        width: 100%;
+    }
+
+    &_welcome {
+       text-align: center;
+       margin-bottom: 3em;
+    }
+
+    &_search {
+        display: flex;
+        margin-bottom: 3em;
+    }
+
+    &_search_button {
+        margin-left: 1em;
+        padding: 0.6em 2em;
+        font-weight: $fw-bold;
+        color: $white;
+        background-color: $medium-grey;
+        transition: background-color 0.3s linear;
+        border: none;
+        outline: none;
+
+        &:hover {
+            background-color: $dark-grey;
+            transition: background-color 0.3s linear;
+        }
+    }
+}
+
+.welcome {
+    &_logo {
+        font-weight: $fw-bold;
+        font-size: 3em;
+        letter-spacing: 0.02em;
+        margin-bottom: 0.5em;
+    }
+
+    &_name_surname {
+        font-weight: $fw-bold;
+
+        &::after {content: '.'; font-weight: $fw-regular;}
+    }
+}
