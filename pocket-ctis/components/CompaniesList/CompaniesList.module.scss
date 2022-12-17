@@ -1,0 +1,125 @@
+@import '../../styles/variables.scss';
+
+.companies {
+    padding: 3em 3.5em;
+
+    &_title {
+        text-align: center;
+        font-weight: $fw-bold;
+        margin-bottom: 1.2em;
+    }
+
+    &_search_bar {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1em;
+
+        svg {
+            width: 2em;
+            height: 2em;
+            color: $medium-grey;
+            transition: color 0.3s linear;
+            cursor: pointer;
+
+            &:hover {
+                color: $dark-grey;
+                transition: color 0.3s linear;
+            }
+        }
+    }
+
+    &_table {
+        width: 100%;
+        border-radius: 5px;
+        overflow: hidden;
+
+        thead {
+            background-color: $dark-grey;
+            color: $white;
+        }
+
+        tbody {
+            background-color: lighten($color: $white, $amount: 20);
+
+            tr {
+                background-color: inherit;
+                transition: background-color 0.3s linear;
+    
+                &:hover {
+                    background-color: darken($white, 2);;
+                    transition: background-color 0.3s linear;
+                }
+            }
+        }
+    
+        td, th {
+            padding: 1em 1.5em;
+        }
+    }
+}
+
+.companies_filters_form {
+    margin-bottom: 3em;
+
+    &_container {
+        position: relative;
+    }
+
+    &_check {
+        position: absolute;
+        display: none;
+
+        &:checked + .companies_filters_form_label {
+            background-color: $light-grey;
+            border: 1px solid $medium-grey;
+            transition: background-color 0.3s linear, border 0.3s linear;
+        }
+    }
+
+    &_label {
+        cursor: pointer;
+        text-transform: uppercase;
+        font-size: 0.8em;
+        padding: 0.8em 1em;
+        background-color: inherit;
+        border: 1px solid $light-grey;
+        border-radius: 500px;
+        transition: background-color 0.3s linear, border 0.3s linear;
+
+        &:hover {
+            background-color: darken($white, 5);
+            transition: background-color 0.3s linear, border 0.3s linear;
+        }
+    }
+}
+
+.internship_badge {
+    display: block;
+    width: 1.3em;
+    height: 1.3em;
+    background-color: $medium-grey;
+    color: $dark-grey;
+    border-radius: 50%;
+
+    svg{
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.company_link {
+    font-weight: $fw-bold;
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-color: inherit;
+    transition: background-color 0.3s linear;
+
+    &:hover {
+        color: $black;
+        background-color: $light-grey;
+        transition: background-color 0.3s linear;
+    }
+}

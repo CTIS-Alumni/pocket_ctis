@@ -1,6 +1,7 @@
 @import '../../styles/variables.scss';
 
 .sidebar {
+    color: $dark-grey;
     background-color: $white;
     height: 100vh;
     width: 20%;
@@ -26,6 +27,7 @@
             letter-spacing: 0.05em;
         }
         .user_name_surname {
+            color: $black;
             font-weight: $fw-bold;
             font-size: 1.2em;
             margin-bottom: 0.4em;
