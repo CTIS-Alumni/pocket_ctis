@@ -14,10 +14,8 @@ const CompaniesList = ({ companies }) => {
       </div>
       <div className={styles.companies_filters}>
         <form className={styles.companies_filters_form}>
-          <div className={styles.companies_filters_form_container}>
-            <input type="checkbox" className={styles.companies_filters_form_check} id='chk_accepts_internships' />
-            <label className={styles.companies_filters_form_label} for="chk_accepts_internships">Accepts Internships</label>
-          </div>
+          <input type="checkbox" className={styles.companies_filters_form_check} id='chk_accepts_internships' />
+          <label className={styles.companies_filters_form_label} for="chk_accepts_internships">Accepts Internships</label>
         </form>
       </div>
       <table className={styles.companies_table}>
@@ -31,11 +29,11 @@ const CompaniesList = ({ companies }) => {
         <tbody>
         {companies.map((company) => (
           <tr>
-            <a className={styles.company_link} href={`/user/companies/${company.id}`}>
-              <td>{company.company_name}</td>
-            </a>
-            <td>{company.sector_name}</td>
-            <td>{company.is_internship == 1 && (<div className={styles.internship_badge}><Check /></div>) }</td>
+            <td>
+              <a className={styles.company_link} href={`/user/companies/${company.id}`}>{company.company_name}</a>
+            </td>
+            <td><span>{company.sector_name}</span></td>
+            <td><span>{company.is_internship == 1 && (<div className={styles.internship_badge}><Check /></div>) }</span></td>
           </tr>
         ))}
         </tbody>

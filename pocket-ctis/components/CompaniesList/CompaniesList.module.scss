@@ -53,7 +53,7 @@
             }
         }
     
-        td, th {
+        td > :not(div), th {
             padding: 1em 1.5em;
         }
     }
@@ -61,10 +61,6 @@
 
 .companies_filters_form {
     margin-bottom: 3em;
-
-    &_container {
-        position: relative;
-    }
 
     &_check {
         position: absolute;
