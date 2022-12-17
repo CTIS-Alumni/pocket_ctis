@@ -21,7 +21,7 @@ const CompaniesList = ({ companies }) => {
           />
           <label
             className={styles.companies_filters_form_label}
-            htmlDor='chk_accepts_internships'
+            htmlFor='chk_accepts_internships'
           >
             Accepts Internships
           </label>
