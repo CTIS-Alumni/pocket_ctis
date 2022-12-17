@@ -9,13 +9,22 @@ const CompaniesList = ({ companies }) => {
     <div className={styles.companies}>
       <h2 className={styles.companies_title}>Companies</h2>
       <div className={styles.companies_search_bar}>
-        < FilterSquareFill />
+        <FilterSquareFill />
         <SearchBar />
       </div>
       <div className={styles.companies_filters}>
         <form className={styles.companies_filters_form}>
-          <input type="checkbox" className={styles.companies_filters_form_check} id='chk_accepts_internships' />
-          <label className={styles.companies_filters_form_label} for="chk_accepts_internships">Accepts Internships</label>
+          <input
+            type='checkbox'
+            className={styles.companies_filters_form_check}
+            id='chk_accepts_internships'
+          />
+          <label
+            className={styles.companies_filters_form_label}
+            htmlDor='chk_accepts_internships'
+          >
+            Accepts Internships
+          </label>
         </form>
       </div>
       <table className={styles.companies_table}>
@@ -27,15 +36,30 @@ const CompaniesList = ({ companies }) => {
           </tr>
         </thead>
         <tbody>
-        {companies.map((company) => (
-          <tr>
-            <td>
-              <a className={styles.company_link} href={`/user/companies/${company.id}`}>{company.company_name}</a>
-            </td>
-            <td><span>{company.sector_name}</span></td>
-            <td><span>{company.is_internship == 1 && (<div className={styles.internship_badge}><Check /></div>) }</span></td>
-          </tr>
-        ))}
+          {companies.map((company) => (
+            <tr>
+              <td>
+                <a
+                  className={styles.company_link}
+                  href={`/user/companies/${company.id}`}
+                >
+                  {company.company_name}
+                </a>
+              </td>
+              <td>
+                <span>{company.sector_name}</span>
+              </td>
+              <td>
+                <span>
+                  {company.is_internship == 1 && (
+                    <div className={styles.internship_badge}>
+                      <Check />
+                    </div>
+                  )}
+                </span>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
@@ -44,7 +68,8 @@ const CompaniesList = ({ companies }) => {
 
 export default CompaniesList
 
-{/* <Container>
+{
+  /* <Container>
         <h1>Companies</h1>
         <Row>
           <Col>
@@ -89,4 +114,5 @@ export default CompaniesList
             </Row>
           </Col>
         </Row>
-      </Container>  */}
+      </Container>  */
+}
