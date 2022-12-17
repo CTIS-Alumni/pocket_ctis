@@ -38,7 +38,7 @@ const GraduationProjectsList = ({ graduationProjects }) => {
                 {graduationProjects.map((graduationProject) => (
                   <ListGroupItem className={styles.listItem}>
                     <Link
-                      href={`/user/companies/${graduationProject.id}`}
+                      href={`/user/graduationProjects/${graduationProject.id}`}
                       className='d-flex justify-content-between align-items-start'
                     >
                       <div style={{ width: '100%' }}>
@@ -46,9 +46,9 @@ const GraduationProjectsList = ({ graduationProjects }) => {
                           <h5>{graduationProject.project_name}</h5>
                           <p>{`${graduationProject.project_year} - ${graduationProject.semester}`}</p>
                         </div>
-                        <span style={{ fontSize: 12, color: '#999' }}>
-                          {graduationProject.advisor} -{' '}
-                          {graduationProject.team_number} -{' '}
+                        <span style={{ fontSize: 12, color: '#999'}}>
+                          Team {graduationProject.team_number} -{' '}
+                            {graduationProject.advisor} -{' '}
                           {graduationProject.project_type}
                         </span>
                       </div>
