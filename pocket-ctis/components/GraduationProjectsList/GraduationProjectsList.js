@@ -8,12 +8,12 @@ import {
   Form,
 } from 'react-bootstrap'
 import SearchBar from '../SearchBar/SearchBar'
-import styles from './HighSchoolsList.module.css'
+import styles from './GraduationProjectsList.module.css'
 
-const HighSchoolList = ({ highSchools }) => {
+const GraduationProjectsList = ({ graduationProjects }) => {
   return (
     <Container fluid style={{ backgroundColor: '#f9f9f9', paddingTop: 20 }}>
-      <h1>High Schools</h1>
+      <h1>Graduation Projects</h1>
       <Row>
         <Col
           style={{
@@ -35,16 +35,21 @@ const HighSchoolList = ({ highSchools }) => {
                 variant='flush'
                 style={{ boxShadow: '5px 5px 10px 0px rgba(0,0,0,0.3)' }}
               >
-                {highSchools.map((highSchool) => (
+                {graduationProjects.map((graduationProject) => (
                   <ListGroupItem className={styles.listItem}>
                     <Link
-                      href={`/user/companies/${highSchool.id}`}
+                      href={`/user/companies/${graduationProject.id}`}
                       className='d-flex justify-content-between align-items-start'
                     >
-                      <div>
-                        <h5>{highSchool.high_school_name}</h5>
+                      <div style={{ width: '100%' }}>
+                        <div className='d-flex justify-content-between '>
+                          <h5>{graduationProject.project_name}</h5>
+                          <p>{`${graduationProject.project_year} - ${graduationProject.semester}`}</p>
+                        </div>
                         <span style={{ fontSize: 12, color: '#999' }}>
-                          {`${highSchool.country_name} - ${highSchool.city_name}`}
+                          {graduationProject.advisor} -{' '}
+                          {graduationProject.team_number} -{' '}
+                          {graduationProject.project_type}
                         </span>
                       </div>
                     </Link>
@@ -59,4 +64,4 @@ const HighSchoolList = ({ highSchools }) => {
   )
 }
 
-export default HighSchoolList
+export default GraduationProjectsList
