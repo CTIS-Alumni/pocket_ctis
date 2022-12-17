@@ -20,7 +20,7 @@ const UsersRoute = ({ users }) => {
 //the result will be added to props object, which will be added to the corresponding component.
 export async function getServerSideProps() {
   const res = await fetch('http://localhost:3000/api/users')
-  const users = await res.json()
+  const { users } = await res.json()
   return { props: { users } }
 }
 
