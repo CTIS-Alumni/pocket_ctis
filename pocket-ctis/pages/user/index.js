@@ -6,13 +6,11 @@ import UsersInfoPanel from '../../components/UsersInfoPanel/UsersInfoPanel'
 const UsersRoute = ({ users }) => {
   console.log('users: ', users)
   return (
-    <div style={{ height: '100vh' }}>
+    <main>
       <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <UsersInfoPanel />
-      </div>
-    </div>
+      <UserInfoSidebar />
+      <UsersInfoPanel />
+    </main>
   )
 }
 

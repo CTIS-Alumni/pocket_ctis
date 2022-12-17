@@ -1,0 +1,25 @@
+@import './reset.css';
+@import './variables.scss';
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald&family=Work+Sans&display=swap');
+
+
+
+body {
+    color: $black;
+    background-color: $white;
+    font-size: $fs-regular;
+    font-family: $ff-regular;
+    font-weight: $fw-regular;
+    line-height: 120%;
+    letter-spacing: 0.01em;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 20% 80%;
+    grid-template-rows: 64px 1fr;
+    grid-template-areas: 
+        "navbar navbar"
+        "sidebar main";
+}

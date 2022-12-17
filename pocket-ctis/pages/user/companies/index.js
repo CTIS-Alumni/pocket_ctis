@@ -5,13 +5,11 @@ import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar
 const CompaniesDashboard = ({ companies }) => {
   console.log(companies)
   return (
-    <div style={{ height: '100vh' }}>
+    <main>
       <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <CompaniesList companies={companies} />
-      </div>
-    </div>
+      <UserInfoSidebar />
+      <CompaniesList companies={companies} />
+    </main>
   )
 }
 

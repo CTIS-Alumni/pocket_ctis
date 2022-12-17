@@ -1,26 +1,21 @@
-import { Row, Col, Form } from 'react-bootstrap'
-import { Search } from 'react-bootstrap-icons'
+import { Row, Col, Form, Button } from 'react-bootstrap'
+import styles from './SearchBar.module.scss'
 
 const SearchBar = () => {
   return (
-    <Row>
-      <Col>
-        <div className='mx-auto' style={{ width: '80%' }}>
-          <Form className='d-flex align-items-center mb-2'>
-            <Form.Control
-              type='search'
-              placeholder='Search'
-              className='me-2'
-              aria-label='Search'
-            />
-            <Search
-              size='25px'
-              style={{ cursor: 'pointer', lineHeight: '25px' }}
-            />
-          </Form>
-        </div>
-      </Col>
-    </Row>
+    <div className={styles.search}>
+      <Form className={styles.search_form}>
+        <Form.Control
+          type='search'
+          placeholder='Search'
+          className={styles.search_bar}
+          aria-label='Search'
+        />
+        <Button className={styles.search_button}>
+          Search
+        </Button>
+      </Form>
+    </div>
   )
 }
 

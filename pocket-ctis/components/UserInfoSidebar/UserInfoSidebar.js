@@ -9,107 +9,91 @@ import {
   StarFill,
   PersonWorkspace,
 } from 'react-bootstrap-icons'
-import styles from './UserInfoSidebar.module.css'
 import Link from 'next/link'
 import Image from 'next/image'
 
+import styles from './UserInfoSidebar.module.scss'
+
 const Button = ({ text, icon, href }) => {
   return (
-    <Link href={`${href ? href : '#'}`} className={styles.buttonContainer}>
+    <Link href={`${href ? href : '#'}`} className={styles.sidebar_button}>
       {icon}
-      <span className='ps-3'>{text}</span>
+      <span className='button-text'>{text}</span>
     </Link>
   )
 }
 
 const UserImage = () => {
   return (
-    <div className='pb-4'>
-      <div
-        className='m-auto d-flex justify-content-center'
-        style={{
-          backgroundColor: 'lightcyan',
-          height: 150,
-          width: 150,
-          borderRadius: '50%',
-          overflow: 'hidden',
-        }}
-      >
-        <Image
-          src='/test.jpeg'
-          width={150}
-          height={150}
-          alt='User'
-          style={{ objectFit: 'cover' }}
-        />
-      </div>
-      <div>
-        <p className='text-center my-0 pt-4'>Name Surname</p>
-        <p className='text-center my-0'>UNDERGRADUATE</p>
-      </div>
+    <div className={styles.sidebar_user_avatar}>
+      <img src='https://i.pinimg.com/564x/86/6c/1e/866c1e4c27cc640e24838b0a0769dfa2.jpg' />
+    </div>
+  )
+}
+
+const UserInfo = () => {
+  return (
+    <div className={styles.sidebar_user_info}>
+      <span className={styles.user_name_surname}>Name Surname</span>
+      <span className={styles.user_role}>Undergraduate</span>
     </div>
   )
 }
 
 const UserInfoSidebar = () => {
   return (
-    <div
-      className='d-flex align-items-center'
-      style={{ backgroundColor: '#D9D9D9', width: '20%', height: '100%' }}
-    >
-      <Container>
-        <UserImage />
-        <Button text='PROFILE' icon={<PersonFill size='25px' />} />
-        <hr
-          className='border border-dark my-0 mx-auto'
-          style={{ width: '80%' }}
-        />
-        <Button text='USERS' icon={<PersonLinesFill size='25px' />} />
-        <hr
-          className='border border-dark my-0 mx-auto'
-          style={{ width: '80%' }}
-        />
+    <aside className={styles.sidebar}>
+      <UserImage />
+      <UserInfo />
+      <div className={styles.sidebar_buttons}>
         <Button
-          text='COMPANIES'
-          icon={<BuildingFill size='25px' />}
+          text='Profile'
+          icon={<PersonFill/>}
+        />
+        <hr className={styles.sidebar_divider} />
+        <Button
+          text='Users'
+          icon={<PersonLinesFill/>}
+        />
+        <hr className={styles.sidebar_divider} />
+        <Button
+          text='Companies'
+          icon={<BuildingFill/>}
           href='/user/companies'
         />
         <Button
-          text='SECTORS'
-          icon={<Easel2Fill size='25px' />}
+          text='Sectors'
+          icon={<Easel2Fill/>}
           href='/user/sectors'
         />
         <Button
-          text='INTERNSHIPS'
-          icon={<ClipboardFill size='25px' />}
+          text='Internships'
+          icon={<ClipboardFill/>}
           href='/user/internships'
         />
-        <hr
-          className='border border-dark my-0 mx-auto'
-          style={{ width: '80%' }}
-        />
+        <hr className={styles.sidebar_divider} />
         <Button
-          text='UNIVERSITIES'
-          icon={<MortarboardFill size='25px' />}
+          text='Universities'
+          icon={<MortarboardFill/>}
           href='/user/universities'
         />
         <Button
-          text='HIGH SCHOOLS'
-          icon={<BuildingFill size='25px' />}
+          text='High-schools'
+          icon={<BuildingFill/>}
           href='/user/highSchools'
         />
         <Button
-          text='ERASMUS'
-          icon={<StarFill size='25px' />}
+          text='Erasmus'
+          icon={<StarFill/>}
           href='/user/erasmus'
         />
         <Button
-          text='GRADUATION PROJECTS'
-          icon={<PersonWorkspace size='25px' />}
+          text='Graduation Projects'
+          icon={<PersonWorkspace/>}
           href='/user/graduationProjects'
         />
-      </Container>
-    </div>
+      </div>
+    </aside>
   )
 }
 
