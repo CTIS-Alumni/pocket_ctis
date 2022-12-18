@@ -169,7 +169,7 @@ const SearchDataList = ({ searchData }) => {
   )
 }
 
-const SearchPage = (props) => {
+const SearchPage = () => {
   const router = useRouter()
   const { query } = router
 
