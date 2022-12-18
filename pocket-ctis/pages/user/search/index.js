@@ -12,6 +12,7 @@ import {
   fetchEduinst,
   fetchGraduationproject,
 } from '../../../helpers/searchHelpers'
+import styles from "../../../components/UserInfoSidebar/UserInfoSidebar.module.scss";
 
 const getData = async (search) => {
   const [companies, eduInsts, gradProjects, users, highSchools] =
@@ -41,6 +42,8 @@ const SearchDataList = ({ searchData }) => {
                 >
                   <div>
                     <h5>
+                      <img alt={user.first_name} className={styles.user_avatar_48}
+                           src={'/profilepictures/'+(user.pic_visibility ? user.profile_picture : "defaultuser") +'.png'}/>
                       {user.first_name} {user.last_name}
                     </h5>
                     <span style={{ fontSize: 12, color: '#999' }}>
@@ -70,9 +73,9 @@ const SearchDataList = ({ searchData }) => {
                       {company.sector_name}
                     </span>
                   </div>
-                  {company.is_internship == 1 && (
+                  {company.is_internship && (
                     <Badge bg='primary' pill>
-                      Erasmus
+                      Accepts CTIS Interns
                     </Badge>
                   )}
                 </Link>
@@ -125,7 +128,7 @@ const SearchDataList = ({ searchData }) => {
                       }`}
                     </span>
                   </div>
-                  {eduInst.is_erasmus == 1 && (
+                  {eduInst.is_erasmus && (
                     <Badge bg='primary' pill>
                       Erasmus
                     </Badge>
