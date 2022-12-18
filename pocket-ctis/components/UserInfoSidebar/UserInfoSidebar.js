@@ -16,7 +16,7 @@ import styles from './UserInfoSidebar.module.scss'
 
 const Button = ({ text, icon, href }) => {
   return (
-    <Link href={`${href ? href : '#'}`} className={styles.sidebar_button}>
+    <Link href={`${href ? href : ''}`} className={styles.sidebar_button}>
       {icon}
       <span className='button-text'>{text}</span>
     </Link>
@@ -46,50 +46,36 @@ const UserInfoSidebar = () => {
       <UserImage />
       <UserInfo />
       <div className={styles.sidebar_buttons}>
-        <Button
-          text='Profile'
-          icon={<PersonFill/>}
-        />
+        <Button text='Profile' icon={<PersonFill />} />
         <hr className={styles.sidebar_divider} />
-        <Button
-          text='Users'
-          icon={<PersonLinesFill/>}
-        />
+        <Button text='Users' icon={<PersonLinesFill />} />
         <hr className={styles.sidebar_divider} />
         <Button
           text='Companies'
-          icon={<BuildingFill/>}
+          icon={<BuildingFill />}
           href='/user/companies'
         />
-        <Button
-          text='Sectors'
-          icon={<Easel2Fill/>}
-          href='/user/sectors'
-        />
+        <Button text='Sectors' icon={<Easel2Fill />} href='/user/sectors' />
         <Button
           text='Internships'
-          icon={<ClipboardFill/>}
+          icon={<ClipboardFill />}
           href='/user/internships'
         />
         <hr className={styles.sidebar_divider} />
         <Button
           text='Universities'
-          icon={<MortarboardFill/>}
+          icon={<MortarboardFill />}
           href='/user/universities'
         />
         <Button
           text='High-schools'
-          icon={<BuildingFill/>}
+          icon={<BuildingFill />}
           href='/user/highSchools'
         />
-        <Button
-          text='Erasmus'
-          icon={<StarFill/>}
-          href='/user/erasmus'
-        />
+        <Button text='Erasmus' icon={<StarFill />} href='/user/erasmus' />
         <Button
           text='Graduation Projects'
-          icon={<PersonWorkspace/>}
+          icon={<PersonWorkspace />}
           href='/user/graduationProjects'
         />
       </div>

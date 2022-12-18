@@ -34,7 +34,7 @@ const SearchDataList = ({ searchData }) => {
           <h5>Users</h5>
           <ListGroup>
             {users.map((user) => (
-              <ListGroupItem>
+              <ListGroupItem key={user.id}>
                 <Link
                   href={`/user`}
                   className='d-flex justify-content-between align-items-start'
@@ -59,9 +59,9 @@ const SearchDataList = ({ searchData }) => {
           <h5>Companies</h5>
           <ListGroup>
             {companies.map((company) => (
-              <ListGroupItem>
+              <ListGroupItem key={company.id}>
                 <Link
-                  href={`/user/universities/${company.id}`}
+                  href={`/user/companies/${company.id}`}
                   className='d-flex justify-content-between align-items-start'
                 >
                   <div>
@@ -87,9 +87,9 @@ const SearchDataList = ({ searchData }) => {
           <h5>High Schools</h5>
           <ListGroup>
             {highSchools.map((highSchool) => (
-              <ListGroupItem>
+              <ListGroupItem key={highSchool.id}>
                 <Link
-                  href={`/user/universities/${highSchool.id}`}
+                  href={`/user/hishSchools/${highSchool.id}`}
                   className='d-flex justify-content-between align-items-start'
                 >
                   <div>
@@ -112,7 +112,7 @@ const SearchDataList = ({ searchData }) => {
           <h5>Universities</h5>
           <ListGroup>
             {eduInsts.map((eduInst) => (
-              <ListGroupItem>
+              <ListGroupItem key={eduInst.id}>
                 <Link
                   href={`/user/universities/${eduInst.id}`}
                   className='d-flex justify-content-between align-items-start'
@@ -142,7 +142,7 @@ const SearchDataList = ({ searchData }) => {
           <h5>Graduation Projects</h5>
           <ListGroup>
             {gradProjects.map((graduationProject) => (
-              <ListGroupItem>
+              <ListGroupItem key={graduationProject.id}>
                 <Link
                   href={`/user/graduationProjects/${graduationProject.id}`}
                   className='d-flex justify-content-between align-items-start'
@@ -169,14 +169,16 @@ const SearchDataList = ({ searchData }) => {
   )
 }
 
-const SearchPage = (props) => {
+const SearchPage = () => {
   const router = useRouter()
   const { query } = router
 
   const [searchData, setSearchData] = useState(null)
+  const [searchString, setSearchString] = useState('')
 
   useEffect(() => {
-    if (query.searchValue.length > 0) {
+    if (query.searchValue?.length > 0) {
+      setSearchString(query.searchValue)
       getData(query.searchValue).then((res) => setSearchData(res))
     }
   }, [])
@@ -194,7 +196,7 @@ const SearchPage = (props) => {
       <div className='d-flex' style={{ height: '100%' }}>
         <UserInfoSidebar />
         <Container>
-          <SearchBar onSubmit={onSearch} />
+          <SearchBar onSubmit={onSearch} searchValue={searchString} />
           {searchData && <SearchDataList searchData={searchData} />}
         </Container>
       </div>

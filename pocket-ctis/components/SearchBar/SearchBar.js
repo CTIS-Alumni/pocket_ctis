@@ -6,7 +6,11 @@ import { useState } from 'react'
 const SearchBar = ({ onSubmit, searchValue = '' }) => {
   return (
     <div className={styles.search}>
-      <Formik initialValues={{ searchValue: searchValue }} onSubmit={onSubmit}>
+      <Formik
+        initialValues={{ searchValue: searchValue }}
+        enableReinitialize
+        onSubmit={onSubmit}
+      >
         <Form style={{ width: '100%', display: 'flex' }}>
           <label htmlFor='searchValue'>Search</label>
           <Field
