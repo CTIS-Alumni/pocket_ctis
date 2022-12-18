@@ -2,10 +2,18 @@ import { Navbar, Container, Nav, Form, Button } from 'react-bootstrap'
 import AcademicUpdates from '../AcademicUpdates/AcademicUpdates'
 import SearchBar from '../SearchBar/SearchBar'
 import WorkUpdates from '../WorkUpdates/WorkUpdates'
-
+import { useRouter } from 'next/router'
 import styles from './UsersInfoPanel.module.scss'
 
 const UsersInfoPanel = () => {
+  const router = useRouter()
+
+  const onSearch = ({ searchValue }) => {
+    if (searchValue.length > 0) {
+      router.push({ pathname: '/user/search', query: { searchValue } })
+    }
+  }
+
   return (
     <section className={styles.panel}>
       <div className={styles.panel_welcome}>
@@ -13,7 +21,7 @@ const UsersInfoPanel = () => {
         <span className={styles.welcome_message}>Welcome back, </span>
         <span className={styles.welcome_name_surname}>Name Surname</span>
       </div>
-      <SearchBar />
+      <SearchBar onSubmit={onSearch} />
       <div>
         <WorkUpdates />
         <AcademicUpdates />
