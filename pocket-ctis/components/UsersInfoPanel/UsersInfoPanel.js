@@ -10,7 +10,11 @@ const UsersInfoPanel = () => {
 
   const onSearch = ({ searchValue }) => {
     if (searchValue.length > 0) {
-      router.push({ pathname: '/user/search', query: { searchValue } })
+      router.push({
+        pathname: '/user/search',
+        query: { searchValue },
+        as: '/user/search',
+      })
     }
   }
 

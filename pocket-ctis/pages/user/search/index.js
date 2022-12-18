@@ -174,9 +174,11 @@ const SearchPage = (props) => {
   const { query } = router
 
   const [searchData, setSearchData] = useState(null)
+  const [searchString, setSearchString] = useState(null)
 
   useEffect(() => {
-    if (query.searchValue.length > 0) {
+    if (query.searchValue?.length > 0) {
+      setSearchString(query.searchValue)
       getData(query.searchValue).then((res) => setSearchData(res))
     }
   }, [])
@@ -194,7 +196,7 @@ const SearchPage = (props) => {
       <div className='d-flex' style={{ height: '100%' }}>
         <UserInfoSidebar />
         <Container>
-          <SearchBar onSubmit={onSearch} />
+          <SearchBar onSubmit={onSearch} searchValue={searchString} />
           {searchData && <SearchDataList searchData={searchData} />}
         </Container>
       </div>
