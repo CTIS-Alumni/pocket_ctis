@@ -1,9 +1,8 @@
 import React from 'react'
-import { Container } from 'react-bootstrap'
 
 import styles from './AcademicUpdates.module.scss'
 
-const AcademicUpdates = () => {
+const AcademicUpdates = ({edu}) => {
   return (
     <div className={styles.academic_updates}>
       <h3 className={styles.academic_updates_title}>
@@ -12,29 +11,32 @@ const AcademicUpdates = () => {
       <table className={styles.academic_updates_table}>
         <thead>
           <tr>
-            <th className={styles.header_number}></th>
             <th className={styles.header_avatar}></th>
             <th className={styles.header_name}>Name</th>
             <th className={styles.header_surname}>Surname</th>
             <th className={styles.header_degree}>Degree</th>
-            <th className={styles.header_field}>Field</th>
+            <th className={styles.header_field}>Program</th>
             <th className={styles.header_institute}>Institute</th>
-            <th className={styles.header_date}>Date</th>
+            <th className={styles.header_date}>Record Date</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td className={styles.data_number}>1</td>
+        {edu ? edu.map((record)=>(
+            <tr className={record.record_visibility ? (record.is_current ? styles.current : ""):styles.invisible}>
             <td className={styles.data_avatar}>
-              <div className={styles.user_avatar_48} />
+              <div className={styles.user_avatar_48}>
+                <img alt={record.first_name} className={styles.user_avatar_48} src={'/profilepictures/'+(record.record_visibility ? (record.pic_visibility ? record.profile_picture : "defaultuser") : "defaultuser") +'.png'}/>
+              </div>
             </td>
-            <td className={styles.data_name}>Name</td>
-            <td className={styles.data_surname}>Surname</td>
-            <td className={styles.data_degree}>MSc.</td>
-            <td className={styles.data_field}>Computer Science</td>
-            <td className={styles.data_institute}>Random University</td>
-            <td className={styles.data_date}>12/12/2012</td>
+
+              <td className={styles.data_name}>{record.record_visibility ? record.first_name : "Anonymous"}</td>
+              <td className={styles.data_surname}>{record.record_visibility ? record.last_name : ""}</td>
+              <td className={styles.data_degree}>{record.record_visibility ? record.degree_name : ""}</td>
+              <td className={styles.data_field}>{record.record_visibility ? record.name_of_program : ""}</td>
+              <td className={styles.data_institute}>{record.record_visibility ? record.inst_name : ""}</td>
+              <td className={styles.data_date}>{record.record_date.slice(0, -14)}</td>
           </tr>
+        )) : ""}
         </tbody>
       </table>
     </div>

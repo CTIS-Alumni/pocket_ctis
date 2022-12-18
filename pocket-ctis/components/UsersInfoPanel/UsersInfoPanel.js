@@ -5,7 +5,7 @@ import WorkUpdates from '../WorkUpdates/WorkUpdates'
 import { useRouter } from 'next/router'
 import styles from './UsersInfoPanel.module.scss'
 
-const UsersInfoPanel = () => {
+const UsersInfoPanel = ({work, edu}) => {
   const router = useRouter()
 
   const onSearch = ({ searchValue }) => {
@@ -27,8 +27,8 @@ const UsersInfoPanel = () => {
       </div>
       <SearchBar onSubmit={onSearch} />
       <div>
-        <WorkUpdates />
-        <AcademicUpdates />
+        <WorkUpdates work = {work}/>
+        <AcademicUpdates edu = {edu}/>
       </div>
     </section>
   )

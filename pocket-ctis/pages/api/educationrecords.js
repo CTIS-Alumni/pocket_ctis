@@ -7,7 +7,7 @@ export default async function handler(req, res){
         case "GET":
             try{
                 let query = "select e.id, e.user_id, GROUP_CONCAT(act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, e.edu_inst_id, ei.inst_name," +
-                    "d.degree_name, e.start_date, e.end_date, e.visibility as 'record_visibility', e.is_current, e.record_date " +
+                    "d.degree_name, e.name_of_program, e.start_date, e.end_date, e.visibility as 'record_visibility', e.is_current, e.record_date " +
                     "FROM educationrecord e JOIN users u ON (e.user_id = u.id) " +
                     "JOIN userprofilepicture upp ON (e.user_id = upp.user_id) " +
                     "JOIN useraccounttype uat ON (uat.user_id = u.id) " +
@@ -26,11 +26,11 @@ export default async function handler(req, res){
                 else institute_id = "";
 
                 query +="GROUP BY e.id order by e.record_date desc";
-                const data = await doquery({query:query, values: [institute_id]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
+                const edu = await doquery({query:query, values: [institute_id]});
+                if(edu.hasOwnProperty("error"))
+                    res.status(500).json({error: edu.error.message});
                 else
-                    res.status(200).json({data});
+                    res.status(200).json({edu});
             }catch(error){
                 res.status(500).json({error: error.message});
             }

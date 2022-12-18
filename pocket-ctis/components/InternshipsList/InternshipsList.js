@@ -45,7 +45,7 @@ const InternshipsList = ({ internships }) => {
                       <div style={{ width: '100%' }}>
                         <div className='d-flex justify-content-between '>
                           <h5>{`${internship.first_name} ${internship.last_name} - ${internship.company_name}`}</h5>
-                          <p>{`${internship.semester}`}</p>
+                            <p>{`${internship.semester}`}</p>
                         </div>
                       </div>
                     </Link>

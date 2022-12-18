@@ -65,3 +65,14 @@
         }
     }
 }
+
+.user_avatar_48 {
+    display: block;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: aqua;
+    background-image: linear-gradient(to bottom right, $light-grey, $medium-grey);
+}
