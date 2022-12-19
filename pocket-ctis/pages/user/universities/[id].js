@@ -2,6 +2,8 @@ import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
 import { getWorkTimePeriod } from '../../../helpers/dateHelpers'
+import styles from "../../../components/WorkUpdates/WorkUpdates.module.scss";
+import React from "react";
 
 const EducationInstitute = ({ edu_inst, users }) => {
   console.log(users)
@@ -35,6 +37,9 @@ const EducationInstitute = ({ edu_inst, users }) => {
                 )
                 return (
                     <ListGroupItem key={user.id}>
+                      <div>
+                        <img alt={user.first_name} className={styles.user_avatar_48} src={'/profilepictures/'+(user.record_visibility ? (user.pic_visibility ? user.profile_picture : "defaultuser") : "defaultuser") +'.png'}/>
+                      </div>
                       <div className='d-flex justify-content-between align-items'>
                         <h5>
                           {user.first_name} {user.last_name}
