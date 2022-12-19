@@ -73,7 +73,7 @@ const SearchDataList = ({ searchData }) => {
                       {company.sector_name}
                     </span>
                   </div>
-                  {company.is_internship && (
+                  {company.is_internship == 1 && (
                     <Badge bg='primary' pill>
                       Accepts CTIS Interns
                     </Badge>
@@ -128,7 +128,7 @@ const SearchDataList = ({ searchData }) => {
                       }`}
                     </span>
                   </div>
-                  {eduInst.is_erasmus && (
+                  {eduInst.is_erasmus == 1 && (
                     <Badge bg='primary' pill>
                       Erasmus
                     </Badge>
