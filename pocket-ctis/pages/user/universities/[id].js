@@ -6,7 +6,6 @@ import styles from "../../../components/WorkUpdates/WorkUpdates.module.scss";
 import React from "react";
 
 const EducationInstitute = ({ edu_inst, users }) => {
-  console.log(users)
   return (
       <div style={{ height: '100vh' }}>
         <NavigationBar />
@@ -19,7 +18,7 @@ const EducationInstitute = ({ edu_inst, users }) => {
             >
               <div>
                 <h5>{edu_inst.inst_name}</h5>
-                <p>{edu_inst.city_name} - {edu_inst.country_name}</p>
+                <p>{edu_inst.city_name} {edu_inst.city_name && edu_inst.country_name && `-`} {edu_inst.country_name}</p>
               </div>
               {edu_inst.is_erasmus == 1 && (
                   <Badge bg='primary' pill>
@@ -28,7 +27,7 @@ const EducationInstitute = ({ edu_inst, users }) => {
               )}
             </div>
             <hr className='mx-auto' style={{ width: '80%' }} />
-            <div className='my-2'>People who have studied at {edu_inst.inst_name}:</div>
+            <div className='my-2'>{users.length>0 ? `People who have studied at ${edu_inst.inst_name}:`:`No one from your department have studied at ${edu_inst.inst_name}.`}</div>
             <ListGroup variant='flush'>
               {users.map((user) => {
                 const studyPeriod = getWorkTimePeriod(

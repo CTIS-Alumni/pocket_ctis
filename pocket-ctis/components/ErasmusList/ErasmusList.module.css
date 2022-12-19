@@ -1,9 +1,7 @@
-
 .listItem:hover{
     border-left: 5px solid black;
     transition: 0.3s;
 }
-
 .user_avatar_48 {
     display: block;
     width: 48px;

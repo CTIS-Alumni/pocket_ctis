@@ -2,10 +2,10 @@ import {doquery} from "../../helpers/dbconnect";
 
 export default async function handler(req, res){
     const method = req.method;
-    let institute_id  = req.query.institute_id;
     switch (method){
         case "GET":
             try{
+                let values = [];
                 let query = "select e.id, e.user_id, GROUP_CONCAT(act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, e.edu_inst_id, ei.inst_name," +
                     "d.degree_name, e.name_of_program, e.start_date, e.end_date, e.visibility as 'record_visibility', e.is_current, e.record_date " +
                     "FROM educationrecord e JOIN users u ON (e.user_id = u.id) " +
@@ -21,12 +21,13 @@ export default async function handler(req, res){
                 //if the current session is admin, show the invisible ones as visible but indicate that they are actually invisible in some way
                 //use user_id and inst_id as links to their page
 
-                if(institute_id)
+                if(req.query.edu_inst_id){
                     query += "WHERE e.edu_inst_id = ? ";
-                else institute_id = "";
+                    values.push(req.query.edu_inst_id);
+                }
 
                 query +="GROUP BY e.id order by e.record_date desc";
-                const edu = await doquery({query:query, values: [institute_id]});
+                const edu = await doquery({query:query, values: values});
                 if(edu.hasOwnProperty("error"))
                     res.status(500).json({error: edu.error.message});
                 else

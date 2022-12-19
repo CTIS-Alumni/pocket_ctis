@@ -22,7 +22,7 @@ const HighSchool = ({ high_school, users }) => {
               </div>
             </div>
             <hr className='mx-auto' style={{ width: '80%' }} />
-            <div className='my-2'>People who have studied at {high_school.high_school_name}:</div>
+            <div className='my-2'>{users.length>0 ? `People who have studied at ${high_school.high_school_name}:`:`No one from your department have studied at ${high_school.high_school_name}.`}</div>
             <ListGroup variant='flush'>
               {users.map((user) => {
                 return (
@@ -32,16 +32,16 @@ const HighSchool = ({ high_school, users }) => {
                       </div>
                       <div className='d-flex justify-content-between align-items'>
                         <h5>
-                          {user.first_name} {user.last_name}
+                          {user.highschool_visibility ? (`${user.first_name} ${user.last_name}`) : "Anonymous"}
                         </h5>
-                        <div>
-                          {user.user_types.split(',').map((type) => (
-                              <Badge className='mx-1' bg='info' pill>
-                                {type.toLocaleUpperCase()}
-                              </Badge>
-                          ))}
-                        </div>
                       </div>
+                      <div>
+                      {user.highschool_visibility == 1 && user.user_types.split(',').map((type) => (
+                          <Badge className='mx-1' bg='info' pill>
+                            {type.toLocaleUpperCase()}
+                          </Badge>
+                      ))}
+                    </div>
                     </ListGroupItem>
                 )
               })}

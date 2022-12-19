@@ -28,7 +28,7 @@ const Company = ({ company, users }) => {
             )}
           </div>
           <hr className='mx-auto' style={{ width: '80%' }} />
-          <div className='my-2'>People working at {company.company_name}:</div>
+          <div className='my-2'>{users.length>0 ? `People who have worked at ${company.company_name}:`:`No one from your department have worked at ${company.company_name}.`}</div>
           <ListGroup variant='flush'>
             {users.map((user) => {
               const workPeriod = getWorkTimePeriod(
