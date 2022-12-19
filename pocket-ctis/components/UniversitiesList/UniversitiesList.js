@@ -39,7 +39,7 @@ const UniversitiesList = ({ universities }) => {
                 {universities.map((university) => (
                   <ListGroupItem className={styles.listItem}>
                     <Link
-                      href={`/user/companies/${university.id}`}
+                      href={`/user/universities/${university.id}`}
                       className='d-flex justify-content-between align-items-start'
                     >
                       <div>

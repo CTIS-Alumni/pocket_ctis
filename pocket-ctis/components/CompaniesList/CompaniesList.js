@@ -51,11 +51,11 @@ const CompaniesList = ({ companies }) => {
               </td>
               <td>
                 <span>
-                  {company.is_internship ? (
+                  {company.is_internship == 1 && (
                     <div className={styles.internship_badge}>
                       <Check />
                     </div>
-                  ) : ""}
+                  )}
                 </span>
               </td>
             </tr>

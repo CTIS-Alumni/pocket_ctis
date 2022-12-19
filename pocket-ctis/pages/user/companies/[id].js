@@ -84,7 +84,7 @@ export async function getServerSideProps(context) {
     'http://localhost:3000/api/workrecords?company_id=' + context.params.id
   )
   const users = await res2.json()
-  return { props: { company: data[0], users: users.data } }
+  return { props: { company: data[0], users: users.work } }
 }
 
 export default Company
