@@ -24,15 +24,6 @@ const SearchBar = ({ onSubmit, searchValue = '' }) => {
           </button>
         </Form>
       </Formik>
-      {/* <Form onChange={onChange} className={styles.search_form}>
-        <Form.Control
-          type='search'
-          placeholder='Search'
-          className={styles.search_bar}
-          aria-label='Search'
-        />
-        <Button className={styles.search_button}>Search</Button>
-      </Form> */}
     </div>
   )
 }

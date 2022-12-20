@@ -15,7 +15,7 @@ export default async function(req,res){
              if(user.length > 0 && user[0].hashed === password){
                  const token = sign({
                      exp: Math.floor(Date.now() / 1000) + 60,
-                     user_id: user.user_id
+                     user_id: user[0].user_id
                  }, secret);
 
                  const serialCookie = serialize("PocketCTISJWT", token, {
