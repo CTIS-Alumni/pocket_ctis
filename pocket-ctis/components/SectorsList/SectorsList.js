@@ -25,7 +25,7 @@ const SectorsList = ({ sectors }) => {
           }}
         >
           <h5>Filters</h5>
-          <Form.Check type='checkbox' id={`is_internship`} label={`Turkey`} />
+          <Form.Check type='checkbox' id={`turkey`} label={`Turkey`} />
         </Col>
         <Col lg='10'>
           <SearchBar />
@@ -38,7 +38,7 @@ const SectorsList = ({ sectors }) => {
                 {sectors.map((sector) => (
                   <ListGroupItem className={styles.listItem}>
                     <Link
-                      href={`/user/companies/${sector.id}`}
+                      href={`/user/sectors/${sector.id}`}
                       className='d-flex justify-content-between align-items-start'
                     >
                       <h5>{sector.sector_name}</h5>

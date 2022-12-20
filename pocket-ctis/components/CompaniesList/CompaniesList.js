@@ -1,6 +1,5 @@
-import Link from 'next/link'
 import { Form } from 'react-bootstrap'
-import { FilterSquareFill, Check } from 'react-bootstrap-icons'
+import { FilterSquareFill, Check} from 'react-bootstrap-icons'
 import SearchBar from '../SearchBar/SearchBar'
 import styles from './CompaniesList.module.scss'
 
@@ -47,7 +46,8 @@ const CompaniesList = ({ companies }) => {
                 </a>
               </td>
               <td>
-                <span>{company.sector_name}</span>
+                <a className={styles.company_link}
+                href={`/user/sectors/${company.sector_id}`}>{company.sector_name}</a>
               </td>
               <td>
                 <span>
