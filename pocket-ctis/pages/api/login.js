@@ -22,7 +22,7 @@ export default async function(req,res){
                      secure: process.env.NODE_ENV !== "development",
                      sameSite: "strict",
                      maxAge: 60,
-                     path: "/"
+                     path: "/user"
                  });
 
                  res.setHeader("Set-Cookie", serialCookie);

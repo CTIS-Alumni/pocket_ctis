@@ -12,9 +12,6 @@ export async function sign(payload, secret){
 }
 
 export async function verify(token, secret) {
-    const {payload} = await jwtVerify(token,secret);
-    // run some checks on the returned payload, perhaps you expect some specific values
-
-    // if its all good, return it, or perhaps just return a boolean
+    const {payload} = await jwtVerify(token,new TextEncoder().encode(secret));
     return payload;
 }
