@@ -33,3 +33,27 @@ export const fetchGraduationproject = async (search) => {
   const { gradprojects } = await res.json()
   return gradprojects
 }
+
+export const fetchPeoplWorkingInSector = async (sectorId) => {
+  const resPeople = await fetch(
+    'http://localhost:3000/api/workrecords?worksector_id=' + sectorId
+  )
+  const { work } = await resPeople.json()
+  return work
+}
+
+export const fetchCompaniesInSector = async (sectorId) => {
+  const resCompanies = await fetch(
+    'http://localhost:3000/api/companies?sector_id=' + sectorId
+  )
+  const { companies } = await resCompanies.json()
+  return companies
+}
+
+export const fetchPeopleWantingToWorkInSector = async (sectorId) => {
+  const resPeopleWanting = await fetch(
+    'http://localhost:3000/api/users?wantsector_id=' + sectorId
+  )
+  const { users } = await resPeopleWanting.json()
+  return users
+}

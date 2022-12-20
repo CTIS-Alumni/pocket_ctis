@@ -4,7 +4,6 @@ import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
 import { getWorkTimePeriod } from '../../../helpers/dateHelpers'
 
 const Company = ({ company, users }) => {
-  console.log(users)
   return (
     <div style={{ height: '100vh' }}>
       <NavigationBar />
@@ -29,9 +28,11 @@ const Company = ({ company, users }) => {
           <div className='my-2'>People working at {company.company_name}:</div>
           <ListGroup variant='flush'>
             {users.map((user) => {
+              console.log(user)
               const workPeriod = getWorkTimePeriod(
                 user.start_date,
-                user.end_date
+                user.end_date,
+                user.is_current
               )
               return (
                 <ListGroupItem key={user.id}>
@@ -52,7 +53,7 @@ const Company = ({ company, users }) => {
                       className='my-0'
                       style={{ fontSize: 16, fontWeight: 'bold' }}
                     >
-                      {user.position || 'Developer'}
+                      {user.position}
                       {user.department && ` - ${user.department}`}
                     </p>
                     <p className='my-0'>{user.type_name}</p>

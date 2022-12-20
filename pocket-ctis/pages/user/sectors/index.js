@@ -3,7 +3,6 @@ import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar
 import SectorsList from '../../../components/SectorsList/SectorsList'
 
 const SectorsDashboard = ({ sectors }) => {
-  console.log('sectors:', sectors)
   return (
     <div style={{ height: '100vh' }}>
       <NavigationBar />

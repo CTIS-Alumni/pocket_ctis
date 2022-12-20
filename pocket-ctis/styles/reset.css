@@ -40,7 +40,7 @@ a {
 /* Lists will have inset markers */
 /* Didn't remove markers because this is only a reset */
 ul li, ol li {
-  list-style: inset;
+  /* list-style: inset; */
 }
 
 /* Overlapping table borders */
