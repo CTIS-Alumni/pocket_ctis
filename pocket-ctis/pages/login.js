@@ -26,7 +26,6 @@ const requestLogin = async (authCredentials) => {
 
 const Login = () => {
   const onSubmit = (values) => {
-    console.log(values)
     requestLogin(values)
   }
   return (

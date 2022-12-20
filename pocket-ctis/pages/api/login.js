@@ -1,11 +1,11 @@
-import {sign} from "jsonwebtoken";
+import {sign} from "../../helpers/jwtHelper";
 import {serialize} from "cookie";
 import {doquery} from "../../helpers/dbconnect";
 
 const secret = process.env.SECRET;
 
 export default async function(req,res){
-    const {username, password} = req.body;
+    const {username, password} = JSON.parse(req.body);
     try{
         const query = "SELECT * FROM usercredential WHERE username = ? ";
         const user = await doquery({query: query,values: [username]});
@@ -13,9 +13,8 @@ export default async function(req,res){
             res.status(500).json({error: user.error.message});
         else {
              if(user.length > 0 && user[0].hashed === password){
-                 const token = sign({
-                     exp: Math.floor(Date.now() / 1000) + 60,
-                     user_id: user[0].user_id
+                 const token = await sign({
+                     user_id: user[0].user_id,
                  }, secret);
 
                  const serialCookie = serialize("PocketCTISJWT", token, {
@@ -27,8 +26,7 @@ export default async function(req,res){
                  });
 
                  res.setHeader("Set-Cookie", serialCookie);
-                 res.status(200).json({serialCookie});
-            res.status(200).json({user});
+                 res.status(200).json({message: "Authentication successful!"});
              }else{
                  res.status(401).json({message: "Invalid credentials"});
              }

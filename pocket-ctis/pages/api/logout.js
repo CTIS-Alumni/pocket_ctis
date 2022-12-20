@@ -12,8 +12,7 @@ export default async function(req,res){
             maxAge: -1,
             path: "/"
         });
-
         res.setHeader("Set-Cookie", serialCookie);
-        res.status(200).json({message: "Logged out"})
+        res.status(200).json({message: "Logged out"});
     }
 }
