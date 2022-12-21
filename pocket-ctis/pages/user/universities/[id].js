@@ -56,7 +56,7 @@ const EducationInstitute = ({ edu_inst, users }) => {
                       className='my-0'
                       style={{ fontSize: 16, fontWeight: 'bold' }}
                     >
-                      {user.degree_name || 'Developer'}
+                      {user.degree_name}
                       {user.name_of_program && ` - ${user.name_of_program}`}
                     </p>
                     <p className='my-0'>{user.type_name}</p>
