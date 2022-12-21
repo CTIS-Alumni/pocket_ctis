@@ -4,7 +4,6 @@ import UserInfoSidebar from '../../components/UserInfoSidebar/UserInfoSidebar'
 import UsersInfoPanel from '../../components/UsersInfoPanel/UsersInfoPanel'
 
 const UsersRoute = ({work, edu}) => {
-    console.log('work:', work)
   return (
     <main>
         <NavigationBar />

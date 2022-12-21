@@ -5,7 +5,7 @@ const requestLogin = async (authCredentials) => {
   const res = await fetch('http://localhost:3000/api/login', {
     method: 'POST',
     body: JSON.stringify(authCredentials),
-  })
+  });
 
   const token = await res.json()
   console.log(token)
@@ -26,7 +26,6 @@ const requestLogin = async (authCredentials) => {
 
 const Login = () => {
   const onSubmit = (values) => {
-    console.log(values)
     requestLogin(values)
   }
   return (
