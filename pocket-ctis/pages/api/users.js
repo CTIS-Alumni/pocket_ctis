@@ -6,8 +6,16 @@ export default async function handler(req, res){
         case "GET":
             try{
                 let values = [];
-                let query = "SELECT GROUP_CONCAT(act.type_name) as 'user_types', u.id, upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name " +
-                    "FROM users u JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
+                let query = "SELECT GROUP_CONCAT(act.type_name) as 'user_types', u.id, upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name ";
+
+                if(req.query.highschool_id)
+                    query += ",uhs.visibility as 'highschool_visibility' ";
+                if(req.query.wantsector_id)
+                    query += ",uws.visibility as 'wantsector_visibility' ";
+                if(req.query.society_id)
+                    query += ",uss.visibility as 'society_visibility'";
+
+                    query += "FROM users u JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
                     "JOIN useraccounttype uat ON (uat.user_id = u.id) " +
                     "JOIN accounttype act ON (act.id = uat.type_id) ";
 

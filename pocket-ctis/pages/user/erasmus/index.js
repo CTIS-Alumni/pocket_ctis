@@ -82,8 +82,7 @@ const ErasmusStudentsList = ({ erasmus }) => {
   )
 }
 
-const ErasmusList = ({ erasmus, eduInsts }) => {
-  console.log('Erasmus:', erasmus)
+const ErasmusDashboard = ({ erasmus, eduInsts }) => {
   return (
     <div style={{ height: '100vh' }}>
       <NavigationBar />
@@ -113,4 +112,4 @@ export async function getServerSideProps() {
 
   return { props: { erasmus, eduInsts } }
 }
-export default ErasmusList
+export default ErasmusDashboard

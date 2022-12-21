@@ -72,7 +72,11 @@ const UserInfoSidebar = () => {
           icon={<BuildingFill />}
           href='/user/highSchools'
         />
-        <Button text='Erasmus' icon={<StarFill />} href='/user/erasmus' />
+        <Button
+            text='Erasmus'
+            icon={<StarFill />}
+            href='/user/erasmus'
+        />
         <Button
           text='Graduation Projects'
           icon={<PersonWorkspace />}

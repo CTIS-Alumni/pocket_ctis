@@ -2,6 +2,8 @@ import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
 import { getTimePeriod } from '../../../helpers/dateHelpers'
+import styles from '../../../components/WorkUpdates/WorkUpdates.module.scss'
+import React from 'react'
 
 const EducationInstitute = ({ edu_inst, users }) => {
   return (
@@ -17,18 +19,23 @@ const EducationInstitute = ({ edu_inst, users }) => {
             <div>
               <h5>{edu_inst.inst_name}</h5>
               <p>
-                {edu_inst.city_name} - {edu_inst.country_name}
+                {edu_inst.city_name}{' '}
+                {edu_inst.city_name && edu_inst.country_name && `-`}{' '}
+                {edu_inst.country_name}
               </p>
             </div>
             {edu_inst.is_erasmus == 1 && (
               <Badge bg='primary' pill>
-                Erasmus
+                ERASMUS
               </Badge>
             )}
           </div>
           <hr className='mx-auto' style={{ width: '80%' }} />
           <div className='my-2'>
-            People who have studied at {edu_inst.inst_name}:
+            {users.length > 0
+              ? `
+            People who have studied at ${edu_inst.inst_name}:`
+              : `No one from your department have studied at ${edu_inst.inst_name}.`}
           </div>
           <ListGroup variant='flush'>
             {users.map((user) => {
@@ -39,6 +46,21 @@ const EducationInstitute = ({ edu_inst, users }) => {
               )
               return (
                 <ListGroupItem key={user.id}>
+                  <div>
+                    <img
+                      alt={user.first_name}
+                      className={styles.user_avatar_48}
+                      src={
+                        '/profilepictures/' +
+                        (user.record_visibility
+                          ? user.pic_visibility
+                            ? user.profile_picture
+                            : 'defaultuser'
+                          : 'defaultuser') +
+                        '.png'
+                      }
+                    />
+                  </div>
                   <div className='d-flex justify-content-between align-items'>
                     <h5>
                       {user.first_name} {user.last_name}

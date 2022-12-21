@@ -44,7 +44,7 @@ const HighSchoolList = ({ highSchools }) => {
                       <div>
                         <h5>{highSchool.high_school_name}</h5>
                         <span style={{ fontSize: 12, color: '#999' }}>
-                          {`${highSchool.country_name} - ${highSchool.city_name}`}
+                          {`${highSchool.city_name} - ${highSchool.country_name}`}
                         </span>
                       </div>
                     </Link>
