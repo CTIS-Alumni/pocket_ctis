@@ -1,15 +1,63 @@
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import InternshipsList from '../../../components/InternshipsList/InternshipsList'
+import {
+  Container,
+  Tab,
+  Tabs,
+  ListGroup,
+  ListGroupItem,
+  Badge,
+} from 'react-bootstrap'
+import { fetchInternshipCompanies } from '../../../helpers/searchHelpers'
+import Link from 'next/link'
 
-const InternshipsDashboard = ({ internships }) => {
-  console.log('Internships:', internships)
+const InternshipCompaniesList = ({ companies }) => {
+  return (
+    <Container>
+      <ListGroup variant='flush'>
+        {companies.map((company) => (
+          <ListGroupItem key={company.id}>
+            <Link href={`/internship/companies/${company.id}`}>
+              <Container>
+                <div className='d-flex justify-content-between'>
+                  <h5>{company.company_name}</h5>
+                  <div>
+                    <Badge className='mx-1' bg='primary' pill>
+                      Accepts CTIS Interns
+                    </Badge>
+                  </div>
+                </div>
+                <Container style={{ fontSize: 14, color: '#999' }}>
+                  {company.sector_name}
+                </Container>
+              </Container>
+            </Link>
+          </ListGroupItem>
+        ))}
+      </ListGroup>
+    </Container>
+  )
+}
+
+const InternshipsDashboard = ({ internships, companies }) => {
+  console.log('Companies:', companies)
   return (
     <div style={{ height: '100vh' }}>
       <NavigationBar />
       <div className='d-flex' style={{ height: '100%' }}>
         <UserInfoSidebar />
-        <InternshipsList internships={internships} />
+        <Container>
+          <h4>Internships</h4>
+          <Tabs defaultActiveKey='students' className='mb-3'>
+            <Tab eventKey='students' title='Students'>
+              <InternshipsList internships={internships} />
+            </Tab>
+            <Tab eventKey='companies' title='Companies'>
+              <InternshipCompaniesList companies={companies} />
+            </Tab>
+          </Tabs>
+        </Container>
       </div>
     </div>
   )
@@ -18,6 +66,7 @@ const InternshipsDashboard = ({ internships }) => {
 export async function getServerSideProps() {
   const res = await fetch('http://localhost:3000/api/internships')
   const { data } = await res.json()
-  return { props: { internships: data } }
+  const companies = await fetchInternshipCompanies()
+  return { props: { internships: data, companies } }
 }
 export default InternshipsDashboard

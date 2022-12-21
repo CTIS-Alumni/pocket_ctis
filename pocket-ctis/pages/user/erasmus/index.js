@@ -10,7 +10,7 @@ import {
 } from 'react-bootstrap'
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
-import { getSemester, getTimePeriod } from '../../../helpers/dateHelpers'
+import { getSemester, getTimePeriod } from '../../../helpers/formatHelpers'
 import {
   fetchErasmusRecords,
   fetchErasmusUniversities,

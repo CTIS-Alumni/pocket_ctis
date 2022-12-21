@@ -1,7 +1,7 @@
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
-import { getTimePeriod } from '../../../helpers/dateHelpers'
+import { getTimePeriod } from '../../../helpers/formatHelpers'
 import styles from '../../../components/WorkUpdates/WorkUpdates.module.scss'
 import React from 'react'
 

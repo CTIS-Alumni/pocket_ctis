@@ -67,8 +67,8 @@ export const fetchErasmusUniversities = async () => {
 }
 export const fetchInternshipCompanies = async () => {
   const res = await fetch(process.env.BACKEND_PATH + '/companies?internship=1')
-  const data = await res.json()
-  return data
+  const { companies } = await res.json()
+  return companies
 }
 export const fetchErasmusRecords = async () => {
   const res = await fetch(process.env.BACKEND_PATH + '/erasmus')

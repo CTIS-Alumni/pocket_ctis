@@ -9,7 +9,7 @@ import {
 } from 'react-bootstrap'
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
-import { getTimePeriod } from '../../../helpers/dateHelpers'
+import { getTimePeriod } from '../../../helpers/formatHelpers'
 import {
   fetchCompaniesInSector,
   fetchPeopleWantingToWorkInSector,
