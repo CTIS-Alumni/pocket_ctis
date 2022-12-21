@@ -9,7 +9,7 @@ import {
 } from 'react-bootstrap'
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
-import { getWorkTimePeriod } from '../../../helpers/dateHelpers'
+import { getTimePeriod } from '../../../helpers/dateHelpers'
 import {
   fetchCompaniesInSector,
   fetchPeopleWantingToWorkInSector,
@@ -21,7 +21,7 @@ const PeopleList = ({ people }) => {
     <Container>
       <ListGroup variant='flush'>
         {people.map((person) => {
-          const workPeriod = getWorkTimePeriod(
+          const workPeriod = getTimePeriod(
             person.start_date,
             person.end_date,
             person.is_current

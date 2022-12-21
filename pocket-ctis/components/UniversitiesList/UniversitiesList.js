@@ -52,7 +52,7 @@ const UniversitiesList = ({ universities }) => {
                       </div>
                       {university.is_erasmus == 1 && (
                         <Badge bg='primary' pill>
-                          Erasmus
+                          ERASMUS
                         </Badge>
                       )}
                     </Link>

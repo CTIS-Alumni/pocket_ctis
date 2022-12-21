@@ -13,7 +13,7 @@ export const monthNames = [
   'Dec',
 ]
 
-export const getWorkTimePeriod = (start_date, end_date, is_current) => {
+export const getTimePeriod = (start_date, end_date, is_current = false) => {
   const rawStartDate = new Date(start_date)
   const rawEndDate = new Date(end_date)
   const startDate =
@@ -33,15 +33,30 @@ export const getWorkTimePeriod = (start_date, end_date, is_current) => {
       return `Present`
     }
   } else if (start_date && end_date) {
-    let now = new Date()
-    months = now.getMonth() - rawStartDate.getMonth()
-    years = now.getFullYear() - rawStartDate.getFullYear()
-    return `${startDate} - ${endDate} | ${years} yrs ${months} months`
+    months = rawEndDate.getMonth() - rawStartDate.getMonth() + 1
+    years = rawEndDate.getFullYear() - rawStartDate.getFullYear()
+    if (months < 0) {
+      months += 12
+      years -= 1
+    }
+    return `${startDate} - ${endDate} | ${
+      years > 0 ? `${years} yrs` : ''
+    } ${months} months`
   } else if (start_date) {
     return `Started at: ${startDate}`
   } else if (end_date) {
     return `Ended at: ${endDate}`
   } else {
     return null
+  }
+}
+
+export const getSemester = (semester, start_date) => {
+  const rawStartDate = new Date(start_date)
+  if (start_date) {
+    const startYear = rawStartDate.getFullYear()
+    return `${semester} - ${startYear}`
+  } else {
+    return `${semester}`
   }
 }

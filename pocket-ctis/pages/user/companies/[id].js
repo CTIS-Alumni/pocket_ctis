@@ -1,7 +1,7 @@
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
-import { getWorkTimePeriod } from '../../../helpers/dateHelpers'
+import { getTimePeriod } from '../../../helpers/dateHelpers'
 
 const Company = ({ company, users }) => {
   return (
@@ -29,7 +29,7 @@ const Company = ({ company, users }) => {
           <ListGroup variant='flush'>
             {users.map((user) => {
               console.log(user)
-              const workPeriod = getWorkTimePeriod(
+              const workPeriod = getTimePeriod(
                 user.start_date,
                 user.end_date,
                 user.is_current

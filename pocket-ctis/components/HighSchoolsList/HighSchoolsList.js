@@ -38,7 +38,7 @@ const HighSchoolList = ({ highSchools }) => {
                 {highSchools.map((highSchool) => (
                   <ListGroupItem className={styles.listItem}>
                     <Link
-                      href={`/user/companies/${highSchool.id}`}
+                      href={`/user/highSchools/${highSchool.id}`}
                       className='d-flex justify-content-between align-items-start'
                     >
                       <div>

@@ -57,3 +57,26 @@ export const fetchPeopleWantingToWorkInSector = async (sectorId) => {
   const { users } = await resPeopleWanting.json()
   return users
 }
+
+export const fetchErasmusUniversities = async () => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/educationinstitutes?erasmus=1'
+  )
+  const { educationinstitutes } = await res.json()
+  return educationinstitutes
+}
+export const fetchInternshipCompanies = async () => {
+  const res = await fetch(process.env.BACKEND_PATH + '/companies?internship=1')
+  const data = await res.json()
+  return data
+}
+export const fetchErasmusRecords = async () => {
+  const res = await fetch(process.env.BACKEND_PATH + '/erasmus')
+  const { data } = await res.json()
+  return data
+}
+export const fetchInternshipRecords = async () => {
+  const res = await fetch(process.env.BACKEND_PATH + '/internship')
+  const data = await res.json()
+  return data
+}

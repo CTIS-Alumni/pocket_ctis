@@ -1,10 +1,9 @@
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
-import { getWorkTimePeriod } from '../../../helpers/dateHelpers'
+import { getTimePeriod } from '../../../helpers/dateHelpers'
 
 const EducationInstitute = ({ edu_inst, users }) => {
-  console.log(users)
   return (
     <div style={{ height: '100vh' }}>
       <NavigationBar />
@@ -33,7 +32,7 @@ const EducationInstitute = ({ edu_inst, users }) => {
           </div>
           <ListGroup variant='flush'>
             {users.map((user) => {
-              const studyPeriod = getWorkTimePeriod(
+              const studyPeriod = getTimePeriod(
                 user.start_date,
                 user.end_date,
                 user.is_current
@@ -45,8 +44,8 @@ const EducationInstitute = ({ edu_inst, users }) => {
                       {user.first_name} {user.last_name}
                     </h5>
                     <div>
-                      {user.user_types.split(',').map((type) => (
-                        <Badge className='mx-1' bg='info' pill>
+                      {user.user_types.split(',').map((type, i) => (
+                        <Badge className='mx-1' bg='info' pill key={i}>
                           {type.toLocaleUpperCase()}
                         </Badge>
                       ))}
