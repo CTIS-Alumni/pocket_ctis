@@ -17,6 +17,7 @@ export default async function middleware(req){
         }
     });
     const url = req.url
+
    if(jwt === undefined && refresh){
         try{
             const {serialCookie, refreshCookie} = await refreshToken(refresh, process.env.REFRESH_SECRET);
@@ -27,25 +28,18 @@ export default async function middleware(req){
             console.log("An error happened while refreshing access token")
         }
     }
-
-
-    if(jwt === undefined && refresh === undefined && !url.includes("login")){
-        console.log("inside no jwt no refresh and url not login")
-        if(url.includes("user") || url.includes("logout")){
-            console.log("inside includes user or includes logout");
+    if(refresh === undefined && !url.includes("login")){
+        if(url.includes("user") || url.includes("logout")) {
             return NextResponse.redirect(process.env.ORIGIN_PATH + "/login");
         }
     }
     if(jwt){
         try{
-            console.log("there is jwt")
             await verify(jwt, process.env.ACCESS_SECRET);
             if(url.includes("login")){
-                console.log("url includes login")
                 return NextResponse.redirect(process.env.ORIGIN_PATH + "/user");
             }
         }catch(error){
-            //console.log("couldnt verify");
             return NextResponse.redirect(process.env.ORIGIN_PATH + "/login");
         }
 

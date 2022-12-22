@@ -7,7 +7,7 @@ const GraduationProject = ({ graduationproject }) => {
 
 export async function getServerSideProps(context) {
   const res = await fetch(
-    'http://localhost:3000/api/graduationprojects/' + context.params.id
+    "http://localhost:3000/api"+"/graduationprojects/" + context.params.id+"?key="+process.env.API_KEY
   )
   const graduationproject = await res.json()
   return { props: { graduationproject } }

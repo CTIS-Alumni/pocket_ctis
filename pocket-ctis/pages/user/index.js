@@ -16,8 +16,8 @@ const UsersRoute = ({work, edu}) => {
 //call API, using getServerSideProps. This will be called before the page is served to the frontend
 //the result will be added to props object, which will be added to the corresponding component.
 export async function getServerSideProps() {
-  const workres = await fetch('http://localhost:3000/api/workrecords');
-  const edures = await fetch('http://localhost:3000/api/educationrecords');
+  const workres = await fetch("http://localhost:3000/api/"+"workrecords?key="+process.env.API_KEY);
+  const edures = await fetch("http://localhost:3000/api/"+"educationrecords?key="+process.env.API_KEY);
   const { work } = await workres.json();
   const { edu } = await edures.json();
   return { props: { work, edu } };

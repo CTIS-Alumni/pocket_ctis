@@ -14,7 +14,7 @@ const CompaniesDashboard = ({ companies }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch('http://localhost:3000/api/companies')
+  const res = await fetch("http://localhost:3000/api/companies?key="+process.env.API_KEY)
   const data = await res.json()
   return { props: { companies: data.companies } }
 }

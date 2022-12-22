@@ -15,7 +15,7 @@ export default async function(req,res){
                 if(user.length > 0 && user[0].hashed === password){
                     const access_token = await sign({
                         user_id: user[0].user_id
-                    }, process.env.ACCESS_SECRET, 20);
+                    }, process.env.ACCESS_SECRET, 60*7);
 
                     const refresh_token = await sign({
                         user_id: user[0].user_id
@@ -25,7 +25,7 @@ export default async function(req,res){
                         httpOnly: true,
                         secure: process.env.NODE_ENV !== "development",
                         sameSite: "strict",
-                        maxAge: 20,
+                        maxAge: 60*7,
                         path: "/"
                     });
 

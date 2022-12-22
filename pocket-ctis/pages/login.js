@@ -2,7 +2,7 @@ import { Formik, Field, Form } from 'formik'
 import { Col, Container, Row } from 'react-bootstrap'
 
 const requestLogin = async (authCredentials) => {
-  const res = await fetch('http://localhost:3000/api/login', {
+  const res = await fetch("http://localhost:3000/api"+"/login", {
     method: 'POST',
     body: JSON.stringify(authCredentials),
   });

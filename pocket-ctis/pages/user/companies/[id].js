@@ -98,12 +98,12 @@ const Company = ({ company, users }) => {
 
 export async function getServerSideProps(context) {
   const res = await fetch(
-    'http://localhost:3000/api/companies/' + context.params.id
+    "http://localhost:3000/api"+"/companies/" + context.params.id+"?key="+process.env.API_KEY
   )
   const { data } = await res.json()
 
   const res2 = await fetch(
-    'http://localhost:3000/api/workrecords?company_id=' + context.params.id
+    "http://localhost:3000/api"+"/workrecords?company_id=" + context.params.id+"&key="+process.env.API_KEY
   )
   const users = await res2.json()
   return { props: { company: data[0], users: users.work } }

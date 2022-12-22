@@ -64,7 +64,7 @@ const InternshipsDashboard = ({ internships, companies }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch('http://localhost:3000/api/internships')
+  const res = await fetch("http://localhost:3000/api"+"/internships" +"?key="+process.env.API_KEY)
   const { data } = await res.json()
   const companies = await fetchInternshipCompanies()
   return { props: { internships: data, companies } }

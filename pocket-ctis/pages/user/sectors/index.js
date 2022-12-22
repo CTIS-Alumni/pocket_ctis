@@ -15,7 +15,7 @@ const SectorsDashboard = ({ sectors }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch('http://localhost:3000/api/sectors')
+  const res = await fetch("http://localhost:3000/api"+"/sectors"+"?key="+process.env.API_KEY);
   const { sectors } = await res.json()
   return { props: { sectors } }
 }
