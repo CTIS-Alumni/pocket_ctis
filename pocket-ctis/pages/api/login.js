@@ -14,18 +14,18 @@ export default async function(req,res){
             try{
                 if(user.length > 0 && user[0].hashed === password){
                     const access_token = await sign({
-                        user_id: user[0].user_id,
-                    }, process.env.ACCESS_SECRET, 60);
+                        user_id: user[0].user_id
+                    }, process.env.ACCESS_SECRET, 20);
 
                     const refresh_token = await sign({
                         user_id: user[0].user_id
-                    }, process.env.ACCESS_SECRET, 60*60*24*3);
+                    }, process.env.REFRESH_SECRET, 60*60*24*3);
 
                     const serialCookie = serialize("PocketCTISJWT", access_token, {
                         httpOnly: true,
                         secure: process.env.NODE_ENV !== "development",
                         sameSite: "strict",
-                        maxAge: 60,
+                        maxAge: 20,
                         path: "/"
                     });
 
