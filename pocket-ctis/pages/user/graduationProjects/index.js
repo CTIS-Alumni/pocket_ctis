@@ -15,7 +15,11 @@ const GraduationProjectsDashboard = ({ gradprojects }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch("http://localhost:3000/api"+"/graduationprojects"+"?key="+process.env.API_KEY)
+  const res = await fetch(process.env.BACKEND_PATH+"/graduationprojects",{
+      headers: {
+          'x-api-key': process.env.API_KEY
+      }
+  });
   const { gradprojects } = await res.json()
   return { props: { gradprojects } }
 }

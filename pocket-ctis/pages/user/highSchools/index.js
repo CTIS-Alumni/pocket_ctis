@@ -16,7 +16,11 @@ const HighSchoolDashboard = ({ highschools }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch("http://localhost:3000/api"+"/highschools"+"?key="+process.env.API_KEY)
+  const res = await fetch(process.env.BACKEND_PATH+"/highschools", {
+          headers:{
+              'x-api-key': process.env.API_KEY
+          }
+  });
   const { highschools } = await res.json()
   return { props: { highschools } }
 }

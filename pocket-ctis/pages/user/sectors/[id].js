@@ -148,8 +148,11 @@ const Sector = ({ sector, companies, work, users }) => {
 
 export async function getServerSideProps(context) {
   const res = await fetch(
-    "http://localhost:3000/api"+"/sectors/" + context.params.id +"?key="+process.env.API_KEY
-  )
+    process.env.BACKEND_PATH+"/sectors/" + context.params.id,{
+          headers:{
+              'x-api-key': process.env.API_KEY
+          }
+      });
   const sector = await res.json()
 
   const data = await Promise.all([

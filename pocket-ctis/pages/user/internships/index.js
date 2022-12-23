@@ -41,7 +41,6 @@ const InternshipCompaniesList = ({ companies }) => {
 }
 
 const InternshipsDashboard = ({ internships, companies }) => {
-  console.log('Companies:', companies)
   return (
     <div style={{ height: '100vh' }}>
       <NavigationBar />
@@ -64,7 +63,11 @@ const InternshipsDashboard = ({ internships, companies }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch("http://localhost:3000/api"+"/internships" +"?key="+process.env.API_KEY)
+  const res = await fetch(process.env.BACKEND_PATH+"/internships", {
+    headers:{
+      'x-api-key': process.env.API_KEY
+    }
+  });
   const { data } = await res.json()
   const companies = await fetchInternshipCompanies()
   return { props: { internships: data, companies } }

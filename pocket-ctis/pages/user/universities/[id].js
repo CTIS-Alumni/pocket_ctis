@@ -102,15 +102,21 @@ const EducationInstitute = ({ edu_inst, users }) => {
 
 export async function getServerSideProps(context) {
   const res = await fetch(
-    "http://localhost:3000/api/educationinstitutes/" + context.params.id
-      +"?key="+process.env.API_KEY
+    process.env.BACKEND_PATH+"/educationinstitutes/" + context.params.id, {
+          headers:{
+              'x-api-key': process.env.API_KEY
+          }
+      }
   )
   const { data } = await res.json()
 
   const res2 = await fetch(
-    "http://localhost:3000/api/educationrecords?edu_inst_id= "+
-      context.params.id+"&key="+process.env.API_KEY
-  )
+    process.env.BACKEND_PATH+"/educationrecords?edu_inst_id= "+
+      context.params.id,{
+            headers: {
+              'x-api-key':process.env.API_KEY
+            }
+        });
   const users = await res2.json()
   return { props: { edu_inst: data[0], users: users.edu } }
 }
