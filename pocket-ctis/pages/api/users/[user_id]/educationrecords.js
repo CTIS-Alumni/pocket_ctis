@@ -6,10 +6,14 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
         try{
-            const query = "SELECT e.id, ei.inst_name, d.degree_name, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current " +
-                "FROM educationrecord e JOIN educationinstitute ei ON (e.edu_inst_id = ei.id) " +
-                "JOIN degreetype d ON (e.degree_type_id = d.id) " +
-                "WHERE e.user_id = 1 order by e.start_date desc";
+            const query = "SELECT e.id, e.edu_inst_id, ei.inst_name, d.degree_name, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current, " +
+                "ci.city_name, co.country_name  " +
+                "FROM educationrecord e " +
+                "JOIN educationinstitute ei ON (e.edu_inst_id = ei.id)  " +
+                "JOIN degreetype d ON (e.degree_type_id = d.id)  " +
+                "LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) " +
+                "LEFT OUTER JOIN country co ON (ci.country_id = co.id) " +
+                "WHERE e.user_id = ? order by e.start_date desc ";
 
             const data = await doquery({query: query, values: [user_id]});
             if(data.hasOwnProperty("error"))
