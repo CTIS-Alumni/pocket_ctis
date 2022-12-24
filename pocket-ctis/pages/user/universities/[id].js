@@ -1,10 +1,11 @@
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
-import { getWorkTimePeriod } from '../../../helpers/dateHelpers'
+import { getTimePeriod } from '../../../helpers/formatHelpers'
+import styles from '../../../components/WorkUpdates/WorkUpdates.module.scss'
+import React from 'react'
 
 const EducationInstitute = ({ edu_inst, users }) => {
-  console.log(users)
   return (
     <div style={{ height: '100vh' }}>
       <NavigationBar />
@@ -18,35 +19,55 @@ const EducationInstitute = ({ edu_inst, users }) => {
             <div>
               <h5>{edu_inst.inst_name}</h5>
               <p>
-                {edu_inst.city_name} - {edu_inst.country_name}
+                {edu_inst.city_name}{' '}
+                {edu_inst.city_name && edu_inst.country_name && `-`}{' '}
+                {edu_inst.country_name}
               </p>
             </div>
             {edu_inst.is_erasmus == 1 && (
               <Badge bg='primary' pill>
-                Erasmus
+                ERASMUS
               </Badge>
             )}
           </div>
           <hr className='mx-auto' style={{ width: '80%' }} />
           <div className='my-2'>
-            People who have studied at {edu_inst.inst_name}:
+            {users.length > 0
+              ? `
+            People who have studied at ${edu_inst.inst_name}:`
+              : `No one from your department have studied at ${edu_inst.inst_name}.`}
           </div>
           <ListGroup variant='flush'>
             {users.map((user) => {
-              const studyPeriod = getWorkTimePeriod(
+              const studyPeriod = getTimePeriod(
                 user.start_date,
                 user.end_date,
                 user.is_current
               )
               return (
                 <ListGroupItem key={user.id}>
+                  <div>
+                    <img
+                      alt={user.first_name}
+                      className={styles.user_avatar_48}
+                      src={
+                        '/profilepictures/' +
+                        (user.record_visibility
+                          ? user.pic_visibility
+                            ? user.profile_picture
+                            : 'defaultuser'
+                          : 'defaultuser') +
+                        '.png'
+                      }
+                    />
+                  </div>
                   <div className='d-flex justify-content-between align-items'>
                     <h5>
                       {user.first_name} {user.last_name}
                     </h5>
                     <div>
-                      {user.user_types.split(',').map((type) => (
-                        <Badge className='mx-1' bg='info' pill>
+                      {user.user_types.split(',').map((type, i) => (
+                        <Badge className='mx-1' bg='info' pill key={i}>
                           {type.toLocaleUpperCase()}
                         </Badge>
                       ))}
@@ -57,7 +78,7 @@ const EducationInstitute = ({ edu_inst, users }) => {
                       className='my-0'
                       style={{ fontSize: 16, fontWeight: 'bold' }}
                     >
-                      {user.degree_name || 'Developer'}
+                      {user.degree_name}
                       {user.name_of_program && ` - ${user.name_of_program}`}
                     </p>
                     <p className='my-0'>{user.type_name}</p>

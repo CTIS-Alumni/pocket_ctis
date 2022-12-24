@@ -1,7 +1,9 @@
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
-import { getWorkTimePeriod } from '../../../helpers/dateHelpers'
+import { getTimePeriod } from '../../../helpers/formatHelpers'
+import styles from '../../../components/WorkUpdates/WorkUpdates.module.scss'
+import React from 'react'
 
 const Company = ({ company, users }) => {
   return (
@@ -25,17 +27,36 @@ const Company = ({ company, users }) => {
             )}
           </div>
           <hr className='mx-auto' style={{ width: '80%' }} />
-          <div className='my-2'>People working at {company.company_name}:</div>
+          <div className='my-2'>
+            {users.length > 0
+              ? `People who have worked at ${company.company_name}:`
+              : `No one from your department have worked at ${company.company_name}.`}
+          </div>
           <ListGroup variant='flush'>
             {users.map((user) => {
               console.log(user)
-              const workPeriod = getWorkTimePeriod(
+              const workPeriod = getTimePeriod(
                 user.start_date,
                 user.end_date,
                 user.is_current
               )
               return (
                 <ListGroupItem key={user.id}>
+                  <div>
+                    <img
+                      alt={user.first_name}
+                      className={styles.user_avatar_48}
+                      src={
+                        '/profilepictures/' +
+                        (user.record_visibility
+                          ? user.pic_visibility
+                            ? user.profile_picture
+                            : 'defaultuser'
+                          : 'defaultuser') +
+                        '.png'
+                      }
+                    />
+                  </div>
                   <div className='d-flex justify-content-between align-items'>
                     <h5>
                       {user.first_name} {user.last_name}

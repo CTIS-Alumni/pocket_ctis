@@ -38,13 +38,13 @@ const HighSchoolList = ({ highSchools }) => {
                 {highSchools.map((highSchool) => (
                   <ListGroupItem className={styles.listItem}>
                     <Link
-                      href={`/user/companies/${highSchool.id}`}
+                      href={`/user/highSchools/${highSchool.id}`}
                       className='d-flex justify-content-between align-items-start'
                     >
                       <div>
                         <h5>{highSchool.high_school_name}</h5>
                         <span style={{ fontSize: 12, color: '#999' }}>
-                          {`${highSchool.country_name} - ${highSchool.city_name}`}
+                          {`${highSchool.city_name} - ${highSchool.country_name}`}
                         </span>
                       </div>
                     </Link>

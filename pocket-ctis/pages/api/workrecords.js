@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     switch (method) {
         case "GET":
             try {//For displaying all work records
-                let id_params = "";
+                let values = [];
                 let query = "SELECT w.id, w.user_id, GROUP_CONCAT(act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, w.company_id,\n" +
                     "c.company_name, wt.type_name, w.department, w.position, w.work_description, ci.city_name," +
                     "co.country_name, w.start_date, w.end_date, w.visibility as 'record_visibility', w.is_current, w.record_date " +
@@ -20,16 +20,16 @@ export default async function handler(req, res) {
 
                 if(req.query.company_id){
                     query += "WHERE w.company_id = ? ";
-                    id_params = req.query.company_id;
+                    values.push(req.query.company_id);
                 }
 
                 if(req.query.worksector_id){
-                    query += "WHERE c.sector_id = ? "
-                    id_params = req.query.worksector_id;
+                    query += "WHERE c.sector_id = ? ";
+                    values.push(req.query.worksector_id);
                 }
 
                 query +="GROUP BY w.id order by record_date desc";
-                const work = await doquery({query:query, values: [id_params]});
+                const work = await doquery({query:query, values: values});
 
                 //use user_id and company_id as links to their page
                 //use user_types array to denote types with icon
