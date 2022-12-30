@@ -179,3 +179,10 @@ export const fetchUserInternships = async (id) => {
   const { data } = await res.json()
   return data
 }
+export const fetchUserHighSchool = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/highschool'
+  )
+  const { data } = await res.json()
+  return data
+}

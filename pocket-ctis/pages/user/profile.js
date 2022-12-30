@@ -24,6 +24,8 @@ import {
   fetchUserWantSectors,
   fetchUserSocieties,
   fetchUserInternships,
+  fetchUserCareerObjectives,
+  fetchUserHighSchool,
 } from '../../helpers/searchHelpers'
 import {
   getProfilePicturePath,
@@ -144,7 +146,6 @@ const ProfileWorkSection = ({ work }) => {
 }
 
 const ProfileInternshipSection = ({ internships }) => {
-  console.log(internships)
   return (
     <div>
       {/* <SectionHeading title='Internship' /> */}
@@ -217,7 +218,6 @@ const SkillsSection = ({ skills }) => {
 }
 
 const ProfileErasmusSection = ({ erasmus }) => {
-  console.log(erasmus, erasmus.length)
   if (erasmus.length > 0) {
     return (
       <div>
@@ -230,7 +230,7 @@ const ProfileErasmusSection = ({ erasmus }) => {
             const studyPeriod = getTimePeriod(eras.start_date, eras.end_date)
             const semester = getSemester(eras.semester, eras.start_date)
             return (
-              <div key={eras.id}>
+              <div key={eras.id} style={{ borderBottom: '1px solid #ccc' }}>
                 <div className='d-flex justify-content-between align-items-center'>
                   <p className='m-0'>{eras.inst_name}</p>
                   <CustomBadge>{semester}</CustomBadge>
@@ -276,7 +276,7 @@ const SocialsSection = ({ socials }) => {
             className={`${styles[social.social_media_name.toLowerCase()]} ${
               styles.smGlobalBtn
             }`}
-            href='https://www.facebook.com'
+            href={social.link}
           >
             {getIcon(social.social_media_name)}
           </a>
@@ -343,6 +343,39 @@ const ProfileEduSection = ({ edu }) => {
   )
 }
 
+const ProfileHighSchoolSection = ({ highSchool }) => {
+  console.log(highSchool)
+  if (highSchool.length == 0) {
+    return (
+      <Container
+        className='px-0'
+        style={{ height: 200, width: 350, overflowY: 'scroll', color: '#999' }}
+      >
+        No data available
+      </Container>
+    )
+  }
+  return (
+    <Container
+      className='px-0'
+      style={{ height: 200, width: 350, overflowY: 'scroll' }}
+    >
+      {highSchool.map((highSchool, i) => {
+        return (
+          <div key={i}>
+            <div
+              className='pb-1'
+              style={{ fontSize: 18, borderBottom: '1px solid #ccc' }}
+            >
+              {highSchool.high_school_name}
+            </div>
+          </div>
+        )
+      })}
+    </Container>
+  )
+}
+
 const ProfileStudentSocieties = ({ societies }) => {
   return (
     <div className='mt-4'>
@@ -352,11 +385,9 @@ const ProfileStudentSocieties = ({ societies }) => {
           return (
             <div style={{ display: 'flex', alignItems: 'center' }}>
               {society.society_name}
-              <CircleFill
-                className='ms-3'
-                size={12}
-                fill={society.activity_status == 1 ? 'green' : 'red'}
-              />
+              <span className='ms-2' style={{ color: '#999' }}>
+                {society.activity_status == 1 ? 'Active' : 'Inactive'}
+              </span>
             </div>
           )
         })}
@@ -380,6 +411,8 @@ const Profile = ({ user, meta }) => {
     location,
     societies,
     internships,
+    careerObjectives,
+    highSchool,
   } = meta
   // console.log(user)
   console.log('meta', meta)
@@ -410,6 +443,9 @@ const Profile = ({ user, meta }) => {
                   <Tab eventKey='erasmus' title='Erasmus'>
                     <ProfileErasmusSection erasmus={erasmus} />
                   </Tab>
+                  <Tab eventKey='highSchool' title='High School'>
+                    <ProfileHighSchoolSection highSchool={highSchool} />
+                  </Tab>
                 </Tabs>
                 <SkillsSection skills={skills} />
               </Container>
@@ -435,13 +471,16 @@ const Profile = ({ user, meta }) => {
                 </span>
               </div>
               <Container>
-                Wants to work in:&nbsp;
-                {wantSectors.map((s, i) => {
-                  if (wantSectors.length - 1 === i) {
-                    return <span>{s.sector_name}</span>
-                  }
-                  return <span>{s.sector_name}, </span>
-                })}
+                <div>{careerObjectives[0].career_objective}</div>
+                <div className='my-1'>
+                  Wants to work in:&nbsp;
+                  {wantSectors.map((s, i) => {
+                    if (wantSectors.length - 1 === i) {
+                      return <span>{s.sector_name}</span>
+                    }
+                    return <span>{s.sector_name}, </span>
+                  })}
+                </div>
                 <Row style={{ color: '#999' }}>
                   <Col md='auto'>Emails:</Col>
                   <Col>
@@ -493,6 +532,8 @@ export async function getServerSideProps() {
     fetchUserWantSectors(1),
     fetchUserSocieties(1),
     fetchUserInternships(1),
+    fetchUserCareerObjectives(1),
+    fetchUserHighSchool(2),
   ])
   const meta = {
     cert: metaArr[0],
@@ -508,6 +549,8 @@ export async function getServerSideProps() {
     wantSectors: metaArr[10],
     societies: metaArr[11],
     internships: metaArr[12],
+    careerObjectives: metaArr[13],
+    highSchool: metaArr[14],
   }
 
   return { props: { user: data[0], meta } }
