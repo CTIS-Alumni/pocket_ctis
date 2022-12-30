@@ -80,3 +80,109 @@ export const fetchInternshipRecords = async () => {
   const data = await res.json()
   return data
 }
+
+export const fetchUserWorkRecords = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/workrecords'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserEduRecords = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/educationrecords'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserSocials = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/usersocialmedia'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserPhone = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/phonenumbers'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserSkills = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/userskills'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserCertificates = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/certificates'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserEmail = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/emailaddress'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserErasmus = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/erasmus'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserLocation = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/location'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserWantSectors = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/userwantsector'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserSocieties = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/userstudentsocieties'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserCareerObjectives = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/careerobjective'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchProfilePicture = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/profilepicture'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserInternships = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/internships'
+  )
+  const { data } = await res.json()
+  return data
+}
+export const fetchUserHighSchool = async (id) => {
+  const res = await fetch(
+    process.env.BACKEND_PATH + '/users/' + id + '/highschool'
+  )
+  const { data } = await res.json()
+  return data
+}

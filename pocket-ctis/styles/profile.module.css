@@ -1,0 +1,63 @@
+.smGlobalBtn{ /* global button class */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    box-shadow: 0 2px 2px #999;
+    padding: 0px;
+    text-decoration: none;
+    text-align: center;
+    color: #fff;
+    font-size: 25px;
+    font-weight: normal;
+    line-height: 2em;
+    border-radius: 25px;
+    -moz-border-radius:25px;
+    -webkit-border-radius:25px;
+    overflow: hidden;
+}
+
+/* facebook button class*/
+.facebook{
+    background: #4060A5;
+}
+/* .facebook:before{
+    font-family:"Bootstrap-icons";
+    content: "\F344";
+} */
+.facebook:hover{
+    color: #4060A5;
+    background: #fff;
+    transition: 0.5ms;
+}
+
+/* twitter button class*/
+.twitterBtn{
+    background: #00ABE3;
+}
+
+/* .twitterBtn:before{
+      font-family: "FontAwesome";
+      /* content: "\F472"; add twitter icon 
+} */
+
+.twitterBtn:hover{
+      color: #00ABE3;
+      background: #fff;
+}
+ 
+/* linkedin button class*/
+.linkedin{
+    background: #0094BC;
+}
+
+/* .linkedin:before{
+      content: "\f0e1"; /* add linkedin icon 
+} */
+
+.linkedin:hover{
+      color: #0094BC;
+      background: #fff;
+}
