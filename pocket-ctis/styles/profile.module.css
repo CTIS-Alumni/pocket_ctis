@@ -17,6 +17,7 @@
     -moz-border-radius:25px;
     -webkit-border-radius:25px;
     overflow: hidden;
+    transition: 0.3s;
 }
 
 /* facebook button class*/
@@ -30,7 +31,6 @@
 .facebook:hover{
     color: #4060A5;
     background: #fff;
-    transition: 0.5ms;
 }
 
 /* twitter button class*/

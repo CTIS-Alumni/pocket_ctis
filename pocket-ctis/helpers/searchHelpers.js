@@ -50,6 +50,30 @@ export const fetchCompaniesInSector = async (sectorId) => {
   return companies
 }
 
+export const fetchAllCompanies = async () => {
+  const res = await fetch('http://localhost:3000/api/companies')
+  const { companies } = await res.json()
+  return companies
+}
+
+export const fetchAllEducationInstitutes = async () => {
+  const res = await fetch('http://localhost:3000/api/educationinstitutes')
+  const { educationinstitutes } = await res.json()
+  return educationinstitutes
+}
+
+export const fetchAllSkillTypes = async () => {
+  const res = await fetch('http://localhost:3000/api/skilltypes')
+  const { data } = await res.json()
+  return data
+}
+
+export const fetchAllHighSchool = async () => {
+  const res = await fetch('http://localhost:3000/api/highschools')
+  const { highschools } = await res.json()
+  return highschools
+}
+
 export const fetchPeopleWantingToWorkInSector = async (sectorId) => {
   const resPeopleWanting = await fetch(
     'http://localhost:3000/api/users?wantsector_id=' + sectorId

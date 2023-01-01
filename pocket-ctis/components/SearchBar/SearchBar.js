@@ -1,7 +1,5 @@
-import { Button } from 'react-bootstrap'
 import { Formik, Field, Form } from 'formik'
 import styles from './SearchBar.module.scss'
-import { useState } from 'react'
 
 const SearchBar = ({ onSubmit, searchValue = '' }) => {
   return (

@@ -6,6 +6,7 @@ import {
   GeoAltFill,
   Link45deg,
   Linkedin,
+  PencilSquare,
 } from 'react-bootstrap-icons'
 import ReactStars from 'react-stars'
 import NavigationBar from '../../components/navbar/NavigationBar'
@@ -34,6 +35,8 @@ import {
 } from '../../helpers/formatHelpers'
 import Link from 'next/link'
 import styles from '../../styles/profile.module.css'
+import { useState } from 'react'
+import ProfileEditModal from '../../components/Modals/ProfileEditModal/ProfileEditModal'
 
 /*
 get pfp
@@ -44,18 +47,6 @@ education should also show which uni the education is from.
 #1F272B
 #f5a425
 #8d2729
-
-<div
-style={{
-margin: '5px 0',
-width: '100%',
-background: 'rgb(245,164,37)',
-background: 'radial-gradient(circle, rgba(245,164,37,1) 0%, rgba(255,255,255,1) 100%)',
-height: 4,
-borderRadius: 2,
-overflow: 'hidden',
-}}
-/>
 */
 
 const SectionHeading = ({ title }) => {
@@ -221,7 +212,6 @@ const ProfileErasmusSection = ({ erasmus }) => {
   if (erasmus.length > 0) {
     return (
       <div>
-        {/* <SectionHeading title='Erasmus' /> */}
         <Container
           className='px-0'
           style={{ height: 200, width: 350, overflowY: 'scroll' }}
@@ -415,102 +405,107 @@ const Profile = ({ user, meta }) => {
     highSchool,
   } = meta
   // console.log(user)
-  console.log('meta', meta)
+  // console.log('meta', meta)
   // console.log(getProfilePicturePath(pfp[0].visibility, pfp[0].profile_picture))
   // console.log('her', wantSectors.length)
+
   return (
-    <div style={{ height: '100vh' }}>
-      <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <Container>
-          <Row>
-            <Col md='auto'>
-              <img
-                width={400}
-                height={300}
-                style={{ objectFit: 'contain' }}
-                src={getProfilePicturePath(
-                  pfp[0].visibility,
-                  pfp[0].profile_picture
-                )}
-              />
-              <Container>
-                <Tabs defaultActiveKey='education' className='my-2'>
-                  <Tab eventKey='education' title='Education'>
-                    <ProfileEduSection edu={eduRecords} />
+    <>
+      <div style={{ height: '100vh' }}>
+        <NavigationBar />
+        <div className='d-flex' style={{ height: '100%' }}>
+          <UserInfoSidebar />
+          <Container>
+            <Row>
+              <Col md='auto'>
+                <img
+                  width={400}
+                  height={300}
+                  style={{ objectFit: 'contain' }}
+                  src={getProfilePicturePath(
+                    pfp[0].visibility,
+                    pfp[0].profile_picture
+                  )}
+                />
+                <Container>
+                  <Tabs defaultActiveKey='education' className='my-2'>
+                    <Tab eventKey='education' title='Education'>
+                      <ProfileEduSection edu={eduRecords} />
+                    </Tab>
+                    <Tab eventKey='erasmus' title='Erasmus'>
+                      <ProfileErasmusSection erasmus={erasmus} />
+                    </Tab>
+                    <Tab eventKey='highSchool' title='High School'>
+                      <ProfileHighSchoolSection highSchool={highSchool} />
+                    </Tab>
+                  </Tabs>
+                  <SkillsSection skills={skills} />
+                </Container>
+              </Col>
+              <Col>
+                <div className='d-flex justify-content-between align-items-center'>
+                  <h4 style={{ display: 'flex', alignItems: 'baseline' }}>
+                    {user.first_name} {user.last_name}
+                    <span
+                      className='ms-4'
+                      style={{
+                        fontSize: 14,
+                        alignItems: 'baseline',
+                        display: 'flex',
+                      }}
+                    >
+                      <GeoAltFill size={18} fill='#f5a425' />
+                      {location[0].city_name}, {location[0].country_name}
+                    </span>
+                  </h4>
+                  <span className=''>
+                    <SocialsSection socials={socials} />
+                  </span>
+                </div>
+                <Container>
+                  <div>{careerObjectives[0].career_objective}</div>
+                  <div className='my-1'>
+                    Wants to work in:&nbsp;
+                    {wantSectors.map((s, i) => {
+                      if (wantSectors.length - 1 === i) {
+                        return <span>{s.sector_name}</span>
+                      }
+                      return <span>{s.sector_name}, </span>
+                    })}
+                  </div>
+                  <Row style={{ color: '#999' }}>
+                    <Col md='auto'>Emails:</Col>
+                    <Col>
+                      {email.map((e, i) => (
+                        <div key={i}>{e.email_address}</div>
+                      ))}
+                    </Col>
+                    <Col md='auto'>Phone Numbers:</Col>
+                    <Col>
+                      {phone.map((p, i) => (
+                        <div key={i}>{p.phone_number}</div>
+                      ))}
+                    </Col>
+                  </Row>
+                </Container>
+                <Tabs defaultActiveKey='work' className='my-2'>
+                  <Tab eventKey='work' title='Work'>
+                    <ProfileWorkSection work={workRecords} />
                   </Tab>
-                  <Tab eventKey='erasmus' title='Erasmus'>
-                    <ProfileErasmusSection erasmus={erasmus} />
-                  </Tab>
-                  <Tab eventKey='highSchool' title='High School'>
-                    <ProfileHighSchoolSection highSchool={highSchool} />
+                  <Tab eventKey='internship' title='Internship'>
+                    <ProfileInternshipSection internships={internships} />
                   </Tab>
                 </Tabs>
-                <SkillsSection skills={skills} />
-              </Container>
-            </Col>
-            <Col>
-              <div className='d-flex justify-content-between align-items-center'>
-                <h4 style={{ display: 'flex', alignItems: 'baseline' }}>
-                  {user.first_name} {user.last_name}
-                  <span
-                    className='ms-4'
-                    style={{
-                      fontSize: 14,
-                      alignItems: 'baseline',
-                      display: 'flex',
-                    }}
-                  >
-                    <GeoAltFill size={18} fill='#f5a425' />
-                    {location[0].city_name}, {location[0].country_name}
-                  </span>
-                </h4>
-                <span className=''>
-                  <SocialsSection socials={socials} />
-                </span>
-              </div>
-              <Container>
-                <div>{careerObjectives[0].career_objective}</div>
-                <div className='my-1'>
-                  Wants to work in:&nbsp;
-                  {wantSectors.map((s, i) => {
-                    if (wantSectors.length - 1 === i) {
-                      return <span>{s.sector_name}</span>
-                    }
-                    return <span>{s.sector_name}, </span>
-                  })}
-                </div>
-                <Row style={{ color: '#999' }}>
-                  <Col md='auto'>Emails:</Col>
-                  <Col>
-                    {email.map((e, i) => (
-                      <div key={i}>{e.email_address}</div>
-                    ))}
-                  </Col>
-                  <Col md='auto'>Phone Numbers:</Col>
-                  <Col>
-                    {phone.map((p, i) => (
-                      <div key={i}>{p.phone_number}</div>
-                    ))}
-                  </Col>
-                </Row>
-              </Container>
-              <Tabs defaultActiveKey='work' className='my-2'>
-                <Tab eventKey='work' title='Work'>
-                  <ProfileWorkSection work={workRecords} />
-                </Tab>
-                <Tab eventKey='internship' title='Internship'>
-                  <ProfileInternshipSection internships={internships} />
-                </Tab>
-              </Tabs>
-              <CertificatesSection certs={cert} />
-              <ProfileStudentSocieties societies={societies} />
-            </Col>
-          </Row>
-        </Container>
+                <CertificatesSection certs={cert} />
+                <ProfileStudentSocieties societies={societies} />
+              </Col>
+            </Row>
+          </Container>
+        </div>
       </div>
-    </div>
+
+      <ProfileEditModal meta={meta} user={user} />
+    </>
   )
 }
 
