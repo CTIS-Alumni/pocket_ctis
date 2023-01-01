@@ -5,9 +5,11 @@ import styles from './ProfileEditModal.module.css'
 import { Field, Form, Formik, useFormik, FieldArray } from 'formik'
 import {
   fetchAllCompanies,
+  fetchAllDegreeTypes,
   fetchAllEducationInstitutes,
   fetchAllHighSchool,
   fetchAllSkillTypes,
+  fetchAllSocieties,
 } from '../../../helpers/searchHelpers'
 
 const PersonalInformationForm = ({
@@ -413,6 +415,11 @@ const WorkInformationForm = ({ workRecords }) => {
 }
 
 const SocietiesInformationForm = ({ societies }) => {
+  const [studentSocieties, setStudentSocieties] = useState([])
+  useEffect(() => {
+    fetchAllSocieties().then((res) => setStudentSocieties(res))
+  }, [])
+
   const onSubmitHandler = (values) => {
     console.log(values)
   }
@@ -443,10 +450,19 @@ const SocietiesInformationForm = ({ societies }) => {
                         <p>
                           <label>Society Name:</label>
                           <Field
-                            type='text'
+                            component='select'
                             name={`societies[${index}]society_name`}
                             id={`societies[${index}]society_name`}
-                          />
+                          >
+                            <option value='' disabled selected hidden>
+                              Select here
+                            </option>
+                            {studentSocieties.map((s) => (
+                              <option value={s.society_name}>
+                                {s.society_name}
+                              </option>
+                            ))}
+                          </Field>
                         </p>
                         <p>
                           <label>Active:</label>
@@ -504,10 +520,12 @@ const SocietiesInformationForm = ({ societies }) => {
 
 const EducationInformationForm = ({ eduRecords }) => {
   const [eduInsts, setEduInsts] = useState([])
+  const [degreeTypes, setDegreeTypes] = useState([])
   useEffect(() => {
     fetchAllEducationInstitutes().then((res) => {
       setEduInsts(res)
     })
+    fetchAllDegreeTypes().then((res) => setDegreeTypes(res))
   }, [])
 
   const onSubmitHandler = (values) => {
@@ -562,9 +580,19 @@ const EducationInformationForm = ({ eduRecords }) => {
                           <p>
                             <label>Name of Degree:</label>
                             <Field
+                              component='select'
                               name={`eduRecords[${index}]degree_name`}
                               id={`eduRecords[${index}]degree_name`}
-                            />
+                            >
+                              <option value='' disabled hidden selected>
+                                Select here
+                              </option>
+                              {degreeTypes.map((degree) => (
+                                <option value={degree.degree_name}>
+                                  {degree.degree_name}
+                                </option>
+                              ))}
+                            </Field>
                           </p>
                           <p>
                             <label>Name of Program:</label>

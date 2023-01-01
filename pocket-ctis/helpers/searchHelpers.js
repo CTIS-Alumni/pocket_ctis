@@ -74,6 +74,17 @@ export const fetchAllHighSchool = async () => {
   return highschools
 }
 
+export const fetchAllDegreeTypes = async () => {
+  const res = await fetch('http://localhost:3000/api/degreetypes')
+  const { data } = await res.json()
+  return data
+}
+export const fetchAllSocieties = async () => {
+  const res = await fetch('http://localhost:3000/api/studentsocieties')
+  const { data } = await res.json()
+  return data
+}
+
 export const fetchPeopleWantingToWorkInSector = async (sectorId) => {
   const resPeopleWanting = await fetch(
     'http://localhost:3000/api/users?wantsector_id=' + sectorId
