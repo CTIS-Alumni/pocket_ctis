@@ -974,7 +974,7 @@ const ProfileEditModal = ({ meta, user }) => {
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Modal title</Modal.Title>
+          <Modal.Title>Edit Profile</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Accordion defaultActiveKey='0' flush>
