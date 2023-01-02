@@ -2,97 +2,83 @@ import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
 import { getTimePeriod } from '../../../helpers/formatHelpers'
-import styles from '../../../components/WorkUpdates/WorkUpdates.module.scss'
+import styles from '../../../styles/companies.module.scss'
 import React from 'react'
+import { BuildingFill } from 'react-bootstrap-icons'
 
 const Company = ({ company, users }) => {
   return (
-    <div style={{ height: '100vh' }}>
+    <main>
       <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <Container className='py-3'>
-          <div
-            className='d-flex justify-content-between align-items-start'
-            style={{ width: '100%' }}
-          >
-            <div>
-              <h5>{company.company_name}</h5>
-              <p>{company.sector_name}</p>
+      <UserInfoSidebar />
+        <div className={styles.company}>
+
+          <div className={styles.top_part}>
+            <div className={styles.company_info}>
+              <div>
+                <div className={styles.company_info_icon}>
+                  <BuildingFill/>
+                </div>
+                <div>
+                  <h5 className={styles.company_info_title}>{company.company_name}</h5>
+                  <span className={styles.company_info_sector}>{company.sector_name}</span>
+                </div>
+              </div>
+
+              <span className={styles.company_info_people}>
+                {users.length > 0
+                  ? `People who have worked at ${company.company_name}:`
+                  : `No one from your department have worked at ${company.company_name}.`}
+              </span>
             </div>
+
             {company.is_internship == 1 && (
-              <Badge bg='primary' pill>
-                Accepts CTIS Interns
-              </Badge>
+              <div className={styles.company_internship_badge}>
+                <span>Accepts CTIS Internships</span>
+              </div>
             )}
           </div>
-          <hr className='mx-auto' style={{ width: '80%' }} />
-          <div className='my-2'>
-            {users.length > 0
-              ? `People who have worked at ${company.company_name}:`
-              : `No one from your department have worked at ${company.company_name}.`}
-          </div>
-          <ListGroup variant='flush'>
-            {users.map((user) => {
-              console.log(user)
-              const workPeriod = getTimePeriod(
-                user.start_date,
-                user.end_date,
-                user.is_current
-              )
-              return (
-                <ListGroupItem key={user.id}>
-                  <div>
-                    <img
-                      alt={user.first_name}
-                      className={styles.user_avatar_48}
-                      src={
-                        '/profilepictures/' +
-                        (user.record_visibility
-                          ? user.pic_visibility
-                            ? user.profile_picture
-                            : 'defaultuser'
-                          : 'defaultuser') +
-                        '.png'
-                      }
-                    />
-                  </div>
-                  <div className='d-flex justify-content-between align-items'>
-                    <h5>
-                      {user.first_name} {user.last_name}
-                    </h5>
-                    <div>
-                      {user.user_types.split(',').map((type) => (
-                        <Badge className='mx-1' bg='info' pill>
-                          {type.toLocaleUpperCase()}
-                        </Badge>
-                      ))}
+
+          {users.map((user) => {
+            console.log(user)
+
+            const workPeriod = getTimePeriod(
+              user.start_date,
+              user.end_date,
+              user.is_current
+            )
+
+            return (
+              <div className={styles.company_people_item} key={user.id}>
+                <div>
+                  <div
+                    className='user_avatar_48'
+                    style={{backgroundImage: "url(" + '/profilepictures/' + (user.record_visibility ? (user.pic_visibility ? user.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
+                  />
+
+                  <div className={styles.company_people_item_info}>
+                    <span className={styles.company_people_item_name}>{user.first_name} {user.last_name}</span>
+                    <span className={styles.company_people_item_position}>{user.position}</span>
+                    <span className={styles.company_people_item_department}>{user.department && `${user.department}`}</span>
+                    <span className={styles.company_people_item_type}>{user.type_name}</span>
+                    <span className={styles.company_people_item_work_period}>{workPeriod}</span>
+                    <div className={styles.company_people_item_location}>
+                      <span className={styles.company_people_item_city}>{user.city_name && `${user.city_name}, `}</span>
+                      <span className={styles.company_people_item_country}>{user.country_name}</span>
                     </div>
                   </div>
-                  <Container style={{ fontSize: 14 }}>
-                    <p
-                      className='my-0'
-                      style={{ fontSize: 16, fontWeight: 'bold' }}
-                    >
-                      {user.position}
-                      {user.department && ` - ${user.department}`}
-                    </p>
-                    <p className='my-0'>{user.type_name}</p>
-                    <p style={{ color: '#999' }} className='my-0'>
-                      {workPeriod}
-                    </p>
-                    <p style={{ color: '#999' }}>
-                      {user.city_name && `${user.city_name} - `}
-                      {user.country_name}
-                    </p>
-                  </Container>
-                </ListGroupItem>
-              )
-            })}
-          </ListGroup>
-        </Container>
-      </div>
-    </div>
+                </div>
+
+                <div className={styles.company_people_item_badge}>
+                  {user.user_types.split(',').map((type) => (
+                    <span>{type.toLocaleUpperCase()}</span>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+    </main>
   )
 }
 
