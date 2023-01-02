@@ -48,8 +48,8 @@ const PeopleList = ({ people }) => {
                 </div>
               </div>
               <div className={styles.people_item_badge}>
-                {person.user_types.split(',').map((type) => (
-                  <span>
+                {person.user_types.split(',').map((type,i) => (
+                  <span key={i}>
                     {type.toLocaleUpperCase()}
                   </span>
                 ))}

@@ -70,8 +70,8 @@ const Company = ({ company, users }) => {
                 </div>
 
                 <div className={styles.company_people_item_badge}>
-                  {user.user_types.split(',').map((type) => (
-                    <span>{type.toLocaleUpperCase()}</span>
+                  {user.user_types.split(',').map((type, i) => (
+                    <span key={i}>{type.toLocaleUpperCase()}</span>
                   ))}
                 </div>
               </div>
