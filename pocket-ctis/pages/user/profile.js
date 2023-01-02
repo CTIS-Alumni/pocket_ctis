@@ -405,7 +405,7 @@ const Profile = ({ user, meta }) => {
     highSchool,
   } = meta
   // console.log(user)
-  // console.log('meta', meta)
+  console.log('meta', meta)
   // console.log(getProfilePicturePath(pfp[0].visibility, pfp[0].profile_picture))
   // console.log('her', wantSectors.length)
 
@@ -510,7 +510,11 @@ const Profile = ({ user, meta }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch(process.env.BACKEND_PATH + '/users/1')
+  const res = await fetch(process.env.BACKEND_PATH + '/users/1', {
+    headers: {
+      'x-api-key': process.env.API_KEY,
+    },
+  })
   const { data } = await res.json()
 
   const metaArr = await Promise.all([

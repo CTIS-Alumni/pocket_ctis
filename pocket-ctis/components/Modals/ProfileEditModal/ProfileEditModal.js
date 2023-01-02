@@ -242,7 +242,9 @@ const PersonalInformationForm = ({
 const WorkInformationForm = ({ workRecords }) => {
   const [companies, setCompanies] = useState([])
   useEffect(() => {
-    fetchAllCompanies().then((res) => setCompanies(res))
+    fetchAllCompanies()
+      .then((res) => setCompanies(res))
+      .catch((err) => console.log(err))
   }, [])
 
   const handleSubmit = (values) => {
@@ -417,7 +419,9 @@ const WorkInformationForm = ({ workRecords }) => {
 const SocietiesInformationForm = ({ societies }) => {
   const [studentSocieties, setStudentSocieties] = useState([])
   useEffect(() => {
-    fetchAllSocieties().then((res) => setStudentSocieties(res))
+    fetchAllSocieties()
+      .then((res) => setStudentSocieties(res))
+      .catch((err) => console.log(err))
   }, [])
 
   const onSubmitHandler = (values) => {
@@ -522,10 +526,14 @@ const EducationInformationForm = ({ eduRecords }) => {
   const [eduInsts, setEduInsts] = useState([])
   const [degreeTypes, setDegreeTypes] = useState([])
   useEffect(() => {
-    fetchAllEducationInstitutes().then((res) => {
-      setEduInsts(res)
-    })
-    fetchAllDegreeTypes().then((res) => setDegreeTypes(res))
+    fetchAllEducationInstitutes()
+      .then((res) => {
+        setEduInsts(res)
+      })
+      .catch((err) => console.log(err))
+    fetchAllDegreeTypes()
+      .then((res) => setDegreeTypes(res))
+      .catch((err) => console.log(err))
   }, [])
 
   const onSubmitHandler = (values) => {
@@ -762,7 +770,9 @@ const CertificatesInformationForm = ({ certificates }) => {
 const SkillsInformationForm = ({ skills }) => {
   const [skillTypes, setSkillTypes] = useState([])
   useEffect(() => {
-    fetchAllSkillTypes().then((res) => setSkillTypes(res))
+    fetchAllSkillTypes()
+      .then((res) => setSkillTypes(res))
+      .catch((err) => console.log(err))
   }, [])
   const onSubmitHandler = (values) => {
     console.log(values)
@@ -873,7 +883,9 @@ const SkillsInformationForm = ({ skills }) => {
 const HighSchoolInformationForm = ({ highSchool }) => {
   const [highSchools, setHighSchools] = useState([])
   useEffect(() => {
-    fetchAllHighSchool().then((res) => setHighSchools(res))
+    fetchAllHighSchool()
+      .then((res) => setHighSchools(res))
+      .catch((err) => console.log(err))
   }, [])
 
   //   console.log(highSchool[0])
