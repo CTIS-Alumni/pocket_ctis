@@ -1,0 +1,98 @@
+@import 'variables.scss';
+
+.university {
+    padding: 4em 3em;
+
+    &_info {
+        span {display: block;}
+        margin-bottom: 3em;
+
+        > div:first-of-type {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3em;
+        }
+
+        &_icon {
+            width: 2.5em;
+            height: 2.5em;
+            background-color: $light-grey;
+            border-radius: 50%;
+            display: grid;
+            place-content: center;
+            color: $dark-grey;
+            margin-right: 1em;
+        }
+
+        &_title {
+            font-weight: $fw-bold;
+        }
+
+        &_location {
+            font-size: 0.9em;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: $dark-grey;
+        }
+    }
+
+    &_erasmus_badge span {
+        font-size: 0.8em;
+        color: $white;
+        background-color: $medium-grey;
+        padding: 0.4em 0.6em;
+        border-radius: 500px;
+    }
+
+    &_people_item {
+        background-color: white;
+        margin-bottom: 1em;
+        padding: 0.4em 0.8em;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        > div:first-of-type { display: flex;}
+
+        > div > div:first-of-type {margin-right: 1em;}
+
+        &_info {
+            span {display: block;}
+        }
+
+        &_name {
+
+        }
+
+        &_program {
+            font-size: 0.9em;
+            color: $dark-grey;
+            margin-bottom: 1em;
+        }
+
+        &_degree {
+            font-size: 0.8em;
+            color: $medium-grey;
+        }
+
+        &_study_period {
+            font-size: 0.8em;
+            color: $medium-grey;
+        }
+
+        &_location {
+            span{display: inline;}
+            color: $medium-grey;
+            font-size: 0.8em;
+        }
+
+        &_badge span {
+            font-size: 0.8em;
+            color: $white;
+            background-color: $medium-grey;
+            padding: 0.4em 0.6em;
+            border-radius: 500px;
+        }
+    }
+}
