@@ -8,7 +8,7 @@ import {
     Form, Badge,
 } from 'react-bootstrap'
 import SearchBar from '../SearchBar/SearchBar'
-import styles from './ErasmusList.module.css'
+import styles from './ErasmusList.module.scss'
 import React from "react";
 
 const ErasmusList = ({ erasmus }) => {

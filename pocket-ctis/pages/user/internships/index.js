@@ -9,34 +9,33 @@ import {
   ListGroupItem,
   Badge,
 } from 'react-bootstrap'
+import { BuildingFill } from 'react-bootstrap-icons'
+import styles from '../../../styles/internships.module.scss'
 import { fetchInternshipCompanies } from '../../../helpers/searchHelpers'
 import Link from 'next/link'
 
 const InternshipCompaniesList = ({ companies }) => {
   return (
-    <Container>
-      <ListGroup variant='flush'>
+    <div className={styles.internship_companies}>
         {companies.map((company) => (
-          <ListGroupItem key={company.id}>
-            <Link href={`/internship/companies/${company.id}`}>
-              <Container>
-                <div className='d-flex justify-content-between'>
-                  <h5>{company.company_name}</h5>
-                  <div>
-                    <Badge className='mx-1' bg='primary' pill>
-                      Accepts CTIS Interns
-                    </Badge>
-                  </div>
+          <div className={styles.internship_companies_item} key={company.id}>
+            <a className={styles.company_link} href={`/internship/companies/${company.id}`}>
+              <div className={styles.internship_companies_item_info}>
+                <div>
+                  <BuildingFill/>
                 </div>
-                <Container style={{ fontSize: 14, color: '#999' }}>
-                  {company.sector_name}
-                </Container>
-              </Container>
-            </Link>
-          </ListGroupItem>
+                <div>
+                  <span className={styles.internship_companies_item_name}>{company.company_name}</span>
+                  <span className={styles.internship_companies_item_sector}>{company.sector_name}</span>
+                </div>
+              </div>
+              <div className={styles.internship_companies_item_badge}>
+                <span>Accepts CTIS Interns</span>
+              </div>
+            </a>
+          </div>
         ))}
-      </ListGroup>
-    </Container>
+    </div>
   )
 }
 
@@ -48,7 +47,7 @@ const InternshipsDashboard = ({ internships, companies }) => {
       <div className='d-flex' style={{ height: '100%' }}>
         <UserInfoSidebar />
         <Container>
-          <h4>Internships</h4>
+          <h2 className='custom_table_title'>Internships</h2>
           <Tabs defaultActiveKey='students' className='mb-3'>
             <Tab eventKey='students' title='Students'>
               <InternshipsList internships={internships} />
