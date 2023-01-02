@@ -19,7 +19,7 @@ const InternshipCompaniesList = ({ companies }) => {
     <div className={styles.internship_companies}>
         {companies.map((company) => (
           <div className={styles.internship_companies_item} key={company.id}>
-            <a className={styles.company_link} href={`/internship/companies/${company.id}`}>
+            <a className={styles.company_link} href={`companies/${company.id}`}>
               <div className={styles.internship_companies_item_info}>
                 <div>
                   <BuildingFill/>
