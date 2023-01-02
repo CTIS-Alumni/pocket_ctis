@@ -4,19 +4,20 @@
     color: $dark-grey;
     background-color: $white;
     height: 100vh;
-    width: 20%;
-    max-width: 450px;
-    min-width: 300px;
+    width: 100%;
+    padding-left: 1.5em;
+    max-width: 320px;
+    min-width: 310px;
     grid-area: sidebar;
 
     &_user_avatar {
-        width: 164px;
-        height: 164px;
+        width: 128px;
+        height: 128px;
         border-radius: 50%;
-        overflow: hidden;
-        display: grid;
-        align-content: center;
-        margin: 1em auto;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+        margin: 2em auto 1em;
     }
 
     &_user_info {
@@ -33,18 +34,17 @@
             margin-bottom: 0.4em;
         }
         margin: auto;
-        margin-bottom: 1em;
+        margin-bottom: 2em;
         text-align: center;
     }
 
     &_buttons {
-        width: 95%;
-        margin: auto;
+        width: 100%;
     }
 
     &_button {
         display: flex;
-        padding: 1em 1.2em;
+        padding: 0.8em 1.5em;
         background-color: $light-grey;
         border-radius: 5px;
         text-transform: uppercase;
@@ -73,6 +73,5 @@
     border-radius: 50%;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: aqua;
-    background-image: linear-gradient(to bottom right, $light-grey, $medium-grey);
+    background-size: cover;
 }

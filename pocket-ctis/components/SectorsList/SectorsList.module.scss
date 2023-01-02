@@ -1,6 +1,6 @@
 @import '../../styles/variables.scss';
 
-.companies {
+.sectors {
     padding: 3em 3.5em;
 
     &_title {
@@ -30,12 +30,12 @@
     }
 }
 
-.companies_filters_title {
+.sectors_filters_title {
     margin-right: 1em;
     color: $dark-grey;
 }
 
-.companies_filters_form {
+.sectors_filters_form {
     margin-bottom: 3em;
     display: inline-block;
 
@@ -43,7 +43,7 @@
         position: absolute;
         display: none;
 
-        &:checked + .companies_filters_form_label {
+        &:checked + .sectors_filters_form_label {
             background-color: $light-grey;
             border: 1px solid $medium-grey;
             transition: background-color 0.3s linear, border 0.3s linear;
@@ -67,23 +67,7 @@
     }
 }
 
-.internship_badge {
-    display: block;
-    width: 1.3em;
-    height: 1.3em;
-    margin: 0 1em;
-    background-color: $medium-grey;
-    color: $dark-grey;
-    border-radius: 50%;
-
-    svg{
-        display: block;
-        width: 100%;
-        height: 100%;
-    }
-}
-
-.company_link {
+.sector_link {
     font-weight: $fw-bold;
     width: 100%;
     height: 100%;

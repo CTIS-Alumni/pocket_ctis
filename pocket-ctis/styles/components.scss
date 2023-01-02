@@ -1,0 +1,62 @@
+@import './variables.scss';
+
+.custom_table {
+    width: 100%;
+    border-radius: 5px;
+    overflow: hidden;
+
+    &_title {
+        /* empty */
+    }
+
+    thead {
+        background-color: $dark-grey;
+        color: $white;
+    }
+
+    tbody {
+        background-color: lighten($color: $white, $amount: 20);
+    }
+
+    th, td { padding: 0.8em 1.2em; }
+
+    tr {
+        &.hoverable {
+            background-color: inherit;
+            transition: background-color 0.3s linear;
+        
+            &:hover {
+                background-color: darken($white, 2);
+                transition: background-color 0.3s linear;
+            }
+        }
+
+        &.anonymous {
+            color: $medium-grey;
+        }
+        
+        &.current {
+            background-color: rgba(231, 245, 218, 0.86);
+        }
+    }
+}
+
+[class^='user_avatar'] {
+    display: block;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.user_avatar {
+    &_36 {
+        width: 36px;
+        height: 36px;
+    }
+
+    &_128 {
+        width: 128px;
+        height: 128px;
+    }
+}

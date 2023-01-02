@@ -4,13 +4,11 @@ import UniversitiesList from '../../../components/UniversitiesList/UniversitiesL
 
 const UniversitiesDashboard = ({ universities }) => {
   return (
-    <div style={{ height: '100vh' }}>
+    <main>
       <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <UniversitiesList universities={universities} />
-      </div>
-    </div>
+      <UserInfoSidebar />
+      <UniversitiesList universities={universities} />
+    </main>
   )
 }
 

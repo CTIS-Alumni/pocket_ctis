@@ -8,6 +8,8 @@ import {
   TabPane,
   Tabs,
 } from 'react-bootstrap'
+import { MortarboardFill } from 'react-bootstrap-icons'
+import styles from '../../../styles/erasmus.module.scss'
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { getSemester, getTimePeriod } from '../../../helpers/formatHelpers'
@@ -18,67 +20,72 @@ import {
 
 const ErasmusUnisList = ({ universities }) => {
   return (
-    <Container>
-      <ListGroup variant='flush'>
+    <div className={styles.erasmus_universities}>
         {universities.map((university) => (
-          <ListGroupItem key={university.id}>
-            <Link href={'/user/universities/' + university.id}>
-              <div className='d-flex justify-content-between align-items-start'>
-                <h5>{university.inst_name}</h5>
-                <Badge pill>ERASMUS</Badge>
+          <div className={styles.erasmus_universities_item} key={university.id}>
+            <a className={styles.university_link} href={'/user/universities/' + university.id}>
+              <div className={styles.erasmus_universities_item_info}>
+                <div><MortarboardFill/></div>
+                <div>
+                  <span className={styles.erasmus_universities_item_name}>{university.inst_name}</span>
+                  <span className={styles.erasmus_universities_item_location}>
+                    {university.country_name && `${university.country_name} - `}
+                    {university.city_name}
+                  </span>
+                </div>
               </div>
-              <Container>
-                <span style={{ color: '#999', fontSize: 14 }}>
-                  {university.country_name && `${university.country_name} - `}
-                  {university.city_name}
-                </span>
-              </Container>
-            </Link>
-          </ListGroupItem>
+              <div className={styles.erasmus_universities_item_badge}>
+                <span>ERASMUS</span>
+              </div>
+            </a>
+          </div>
         ))}
-      </ListGroup>
-    </Container>
+    </div>
   )
 }
 
 const ErasmusStudentsList = ({ erasmus }) => {
   return (
-    <Container>
-      <ListGroup variant='flush'>
+    <div className={styles.erasmus_students}>
         {erasmus.map((record) => {
           const timePeriod = getTimePeriod(record.start_date, record.end_date)
           const semester = getSemester(record.semester, record.start_date)
+
           return (
-            <ListGroupItem key={record.id}>
-              <Link href={'/erasmus/' + record.id}>
-                <div className='d-flex justify-content-between align-items-start'>
-                  <h5>{`${record.first_name} ${record.last_name}`}</h5>
+            <div className={styles.erasmus_students_item} key={record.id}>
+              <a className={styles.student_link} href={'/erasmus/' + record.id}>
+                <div className={styles.erasmus_students_item_info}>
+                  <div
+                    className='user_avatar_48'
+                    style={{backgroundImage: "url(" + '/profilepictures/' + (record.record_visibility ? (record.pic_visibility ? record.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
+                  />
                   <div>
-                    {record.user_types.split(',').map((type, i) => (
-                      <Badge key={i} className='mx-1' bg='info' pill>
-                        {type.toLocaleUpperCase()}
-                      </Badge>
-                    ))}
+                    <span className={styles.erasmus_students_item_name}>
+                      {`${record.first_name} ${record.last_name}`}
+                    </span>
+                    <span className={styles.erasmus_students_item_university}>
+                      {record.inst_name}
+                    </span>
+                    <span className={styles.erasmus_students_item_semester}>
+                      Semester: {semester}
+                    </span>
+                    <span className={styles.erasmus_students_item_time_period}>
+                      {timePeriod}
+                    </span>
                   </div>
                 </div>
-                <Container>
-                  <p
-                    style={{ fontSize: 16, fontWeight: 'bold' }}
-                    className='my-0'
-                  >
-                    {record.inst_name}
-                  </p>
-                  <p style={{ fontSize: 14, color: '#999' }} className='mb-0'>
-                    Semester: {semester}
-                  </p>
-                  <p style={{ fontSize: 14, color: '#999' }}>{timePeriod}</p>
-                </Container>
-              </Link>
-            </ListGroupItem>
+                <div className={styles.erasmus_students_item_badge}>
+                  {record.user_types.split(',').map((type, i) => (
+                    <span key={i}>
+                      {type.toLocaleUpperCase()}
+                    </span>
+                  ))}
+                </div>
+              </a>
+            </div>
           )
         })}
-      </ListGroup>
-    </Container>
+    </div>
   )
 }
 
@@ -89,7 +96,7 @@ const ErasmusDashboard = ({ erasmus, eduInsts }) => {
       <div className='d-flex' style={{ height: '100%' }}>
         <UserInfoSidebar />
         <Container>
-          <h4>Erasmus</h4>
+          <h2 className='custom_table_title'>Erasmus</h2>
           <Tabs defaultActiveKey='students' className='mb-3'>
             <Tab eventKey='students' title='Students'>
               <ErasmusStudentsList erasmus={erasmus} />

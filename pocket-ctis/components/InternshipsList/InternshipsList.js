@@ -7,7 +7,7 @@ import {
   Row,
   Col,
 } from 'react-bootstrap'
-import styles from './InternshipsList.module.css'
+import styles from './InternshipsList.module.scss'
 import React from 'react'
 import { getProfilePicturePath, getSemester } from '../../helpers/formatHelpers'
 
@@ -33,57 +33,44 @@ const Anonymous = () => {
 
 const InternshipsList = ({ internships }) => {
   return (
-    <Container>
-      <ListGroup variant='flush'>
-        {internships.map((internship) => {
-          if (internship.record_visibility == 0) {
-            return <Anonymous key={internship.id} />
-          }
-          const profilePicture = getProfilePicturePath(
-            internship.pic_visibility,
-            internship.profile_picture
-          )
-          const internshipSemester = getSemester(
-            internship.semester,
-            internship.start_date
-          )
-          return (
-            <ListGroupItem className={styles.listItem} key={internship.id}>
-              <Link href={`/internship/companies/${internship.id}`}>
-                <Container>
-                  <Row>
-                    <Col md='auto'>
-                      <img
-                        alt={internship.first_name}
-                        className={styles.user_avatar_48}
-                        src={profilePicture}
-                      />
-                    </Col>
-                    <Col>
-                      <div className='d-flex justify-content-between'>
-                        <h5>
-                          {`${internship.first_name} ${internship.last_name} - ${internship.company_name}`}
-                        </h5>
-                        <div>
-                          {internship.user_types.split(',').map((type, i) => (
-                            <Badge className='mx-1' bg='info' pill key={i}>
-                              {type.toLocaleUpperCase()}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                      <Container style={{ fontSize: 14, color: '#999' }}>
-                        {internshipSemester}
-                      </Container>
-                    </Col>
-                  </Row>
-                </Container>
-              </Link>
-            </ListGroupItem>
-          )
-        })}
-      </ListGroup>
-    </Container>
+    <div className={styles.internship_students}>
+      {internships.map((internship) => {
+        const profilePicture = getProfilePicturePath(
+          internship.pic_visibility,
+          internship.profile_picture
+        )
+        const internshipSemester = getSemester(
+          internship.semester,
+          internship.start_date
+        )
+        return (
+          <div className={styles.internship_students_item} key={internship.id}>
+
+            {/* This will become a link in the future maybe */}
+            <div className={styles.student_link} href={`/#`}>
+              <div className={styles.internship_students_item_info}>
+                <div
+                  className='user_avatar_48'
+                  style={{backgroundImage: "url(" + '/profilepictures/' + (internship.record_visibility ? (internship.pic_visibility ? internship.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
+                />
+                <div>
+                  <span className={`${internship.record_visibility ? "" : styles.internship_students_item_name_anonymous } ${styles.internship_students_item_name}`}>{`${internship.record_visibility ? internship.first_name : "Anonymous"} ${internship.record_visibility ? internship.last_name : ""}`}</span>
+                  <span className={styles.internship_students_item_company}>{internship.record_visibility ? internship.company_name: ""}</span>
+                  <span className={styles.internship_students_item_semester}>{internship.record_visibility ? internshipSemester : ""}</span>
+                </div>
+              </div>
+              <div className={styles.internship_students_item_badge}>
+                {internship.record_visibility ? internship.user_types.split(',').map((type, i) => (
+                  <span>
+                    {type.toLocaleUpperCase()}
+                  </span>
+                )) : null}
+              </div>
+            </div>
+          </div>
+        )
+      })}
+    </div>
   )
 }
 

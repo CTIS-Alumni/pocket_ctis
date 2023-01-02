@@ -25,9 +25,10 @@ const Button = ({ text, icon, href }) => {
 
 const UserImage = () => {
   return (
-    <div className={styles.sidebar_user_avatar}>
-      <img src='https://i.pinimg.com/564x/86/6c/1e/866c1e4c27cc640e24838b0a0769dfa2.jpg' />
-    </div>
+    <div 
+      className={styles.sidebar_user_avatar}
+      style={{backgroundImage : `URL('https://i.pinimg.com/564x/86/6c/1e/866c1e4c27cc640e24838b0a0769dfa2.jpg')`}}
+    />
   )
 }
 

@@ -5,10 +5,10 @@ import styles from './AcademicUpdates.module.scss'
 const AcademicUpdates = ({edu}) => {
   return (
     <div className={styles.academic_updates}>
-      <h3 className={styles.academic_updates_title}>
+      <h3 className='custom_table_title'>
         Academic Updates
       </h3>
-      <table className={styles.academic_updates_table}>
+      <table className='custom_table'>
         <thead>
           <tr>
             <th className={styles.header_avatar}></th>
@@ -22,11 +22,12 @@ const AcademicUpdates = ({edu}) => {
         </thead>
         <tbody>
         {edu ? edu.map((record)=>(
-            <tr className={record.record_visibility ? (record.is_current ? styles.current : ""):styles.invisible}>
+            <tr className={record.record_visibility ? (record.is_current ? 'current' : ""):'anonymous'}>
             <td className={styles.data_avatar}>
-              <div className={styles.user_avatar_48}>
-                <img alt={record.first_name} className={styles.user_avatar_48} src={'/profilepictures/'+(record.record_visibility ? (record.pic_visibility ? record.profile_picture : "defaultuser") : "defaultuser") +'.png'}/>
-              </div>
+              <div
+                  className='user_avatar_36'
+                  style={{backgroundImage: "url(" + '/profilepictures/' + (record.record_visibility ? (record.pic_visibility ? record.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
+                />
             </td>
 
               <td className={styles.data_name}>{record.record_visibility ? record.first_name : "Anonymous"}</td>
