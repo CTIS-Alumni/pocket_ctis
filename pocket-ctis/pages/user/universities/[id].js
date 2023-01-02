@@ -2,101 +2,89 @@ import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
 import { getTimePeriod } from '../../../helpers/formatHelpers'
-import styles from '../../../components/WorkUpdates/WorkUpdates.module.scss'
 import React from 'react'
+import { MortarboardFill } from 'react-bootstrap-icons'
+import styles from '../../../styles/universities.module.scss'
 
 const EducationInstitute = ({ edu_inst, users }) => {
   return (
-    <div style={{ height: '100vh' }}>
+    <main>
       <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <Container className='py-3'>
-          <div
-            className='d-flex justify-content-between align-items-start'
-            style={{ width: '100%' }}
-          >
+      <UserInfoSidebar />
+      <div className={styles.university}>
+
+        <div className={styles.university_info}>
+          <div>
+            <div className={styles.university_info_icon}>
+              <MortarboardFill/>
+            </div>
+
             <div>
-              <h5>{edu_inst.inst_name}</h5>
-              <p>
+              <h5 className={styles.university_info_title}>{edu_inst.inst_name}</h5>
+              <span className={styles.university_info_location}>
                 {edu_inst.city_name}{' '}
                 {edu_inst.city_name && edu_inst.country_name && `-`}{' '}
                 {edu_inst.country_name}
-              </p>
+              </span>
             </div>
-            {edu_inst.is_erasmus == 1 && (
-              <Badge bg='primary' pill>
-                ERASMUS
-              </Badge>
-            )}
           </div>
-          <hr className='mx-auto' style={{ width: '80%' }} />
-          <div className='my-2'>
+          
+          <span className={styles.university_info_people}>
             {users.length > 0
               ? `
             People who have studied at ${edu_inst.inst_name}:`
               : `No one from your department have studied at ${edu_inst.inst_name}.`}
+          </span>
+        </div>
+
+        {edu_inst.is_erasmus == 1 && (
+          <div className={styles.university_erasmus_badge}>
+            <span>ERASMUS</span>
           </div>
-          <ListGroup variant='flush'>
-            {users.map((user) => {
-              const studyPeriod = getTimePeriod(
-                user.start_date,
-                user.end_date,
-                user.is_current
-              )
-              return (
-                <ListGroupItem key={user.id}>
-                  <div>
-                    <img
-                      alt={user.first_name}
-                      className={styles.user_avatar_48}
-                      src={
-                        '/profilepictures/' +
-                        (user.record_visibility
-                          ? user.pic_visibility
-                            ? user.profile_picture
-                            : 'defaultuser'
-                          : 'defaultuser') +
-                        '.png'
-                      }
-                    />
-                  </div>
-                  <div className='d-flex justify-content-between align-items'>
-                    <h5>
-                      {user.first_name} {user.last_name}
-                    </h5>
-                    <div>
-                      {user.user_types.split(',').map((type, i) => (
-                        <Badge className='mx-1' bg='info' pill key={i}>
-                          {type.toLocaleUpperCase()}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  <Container style={{ fontSize: 14 }}>
-                    <p
-                      className='my-0'
-                      style={{ fontSize: 16, fontWeight: 'bold' }}
-                    >
-                      {user.degree_name}
-                      {user.name_of_program && ` - ${user.name_of_program}`}
-                    </p>
-                    <p className='my-0'>{user.type_name}</p>
-                    <p style={{ color: '#999' }} className='my-0'>
-                      {studyPeriod}
-                    </p>
-                    <p style={{ color: '#999' }}>
-                      {user.city_name && `${user.city_name} - `}
-                      {user.country_name}
-                    </p>
-                  </Container>
-                </ListGroupItem>
-              )
-            })}
-          </ListGroup>
-        </Container>
+        )}
+
+{users.map((user) => {
+        
+        const studyPeriod = getTimePeriod(
+          user.start_date,
+          user.end_date,
+          user.is_current
+        )
+
+        return (
+          <div className={styles.university_people_item} key={user.id}>
+
+            <div>
+              <div
+                className='user_avatar_48'
+                style={{backgroundImage: "url(" + '/profilepictures/' + (user.record_visibility ? (user.pic_visibility ? user.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
+              />
+
+              <div className={styles.university_people_item_info}>
+                <span className={styles.university_people_item_name}>{user.first_name} {user.last_name}</span>
+                <span className={styles.university_people_item_degree}>{user.degree_name}</span>
+                <span className={styles.university_people_item_program}>{user.name_of_program && `${user.name_of_program}`}</span>
+                <span className={styles.university_people_item_study_period}>{studyPeriod}</span>
+                <div className={styles.university_people_item_location}>
+                  <span className={styles.university_people_item_city}>{user.city_name && `${user.city_name}, `}</span>
+                  <span className={styles.university_people_item_country}>{user.country_name}</span>
+                </div>
+              </div>
+            </div>
+
+
+            <div className={styles.university_people_item_badge}>
+              {user.user_types.split(',').map((type, i) => (
+                <span key={i}>
+                  {type.toLocaleUpperCase()}
+                </span>
+              ))}
+            </div>
+          </div>
+        )
+      })}
       </div>
-    </div>
+    </main>
   )
 }
 
