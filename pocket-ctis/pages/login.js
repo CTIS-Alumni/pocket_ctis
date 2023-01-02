@@ -1,5 +1,7 @@
 import { Formik, Field, Form } from 'formik'
 import { Col, Container, Row } from 'react-bootstrap'
+import { useRouter } from 'next/router'
+
 
 const requestLogin = async (authCredentials) => {
   const res = await fetch("http://localhost:3000/api/login", {
@@ -7,13 +9,20 @@ const requestLogin = async (authCredentials) => {
     body: JSON.stringify(authCredentials),
   });
 
-  const token = await res.json()
+  const response = await res;
+  return response;
 
 }
 
 const Login = () => {
-  const onSubmit = (values) => {
-    requestLogin(values)
+  const router = useRouter();
+  const onSubmit = async (values) => {
+    const response = await requestLogin(values);
+    if(response.status === 200){
+      router.push({
+        pathname: '/user'
+      });
+    }
   }
   return (
     <div
