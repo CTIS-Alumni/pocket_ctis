@@ -1,6 +1,10 @@
 import {doquery} from "../../helpers/dbconnect";
 
 export default async function handler(req, res){
+    const api_key = req.headers['x-api-key'];
+    if(api_key === undefined ||api_key !== process.env.API_KEY){
+        res.status(401).json({message: "Unauthorized user!"});
+    }
     const method = req.method;
     switch(method){
         case "GET":

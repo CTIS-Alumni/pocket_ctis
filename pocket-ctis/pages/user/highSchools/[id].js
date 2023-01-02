@@ -54,13 +54,19 @@ const HighSchool = ({ high_school, users }) => {
 
 export async function getServerSideProps(context) {
   const res = await fetch(
-      'http://localhost:3000/api/highschools/' + context.params.id
-  )
+      process.env.BACKEND_PATH+"/highschools/" + context.params.id, {
+          headers:{
+              'x-api-key': process.env.API_KEY
+          }
+      });
   const  {data}  = await res.json()
 
   const res2 = await fetch(
-      'http://localhost:3000/api/users?highschool_id=' + context.params.id
-  )
+      process.env.BACKEND_PATH+"/users?highschool_id=" + context.params.id,{
+            headers: {
+              'x-api-key':process.env.API_KEY
+            }
+        });
   const { users } = await res2.json()
   return { props: { high_school: data[0], users: users } }
 }

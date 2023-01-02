@@ -12,7 +12,6 @@ import styles from './ErasmusList.module.css'
 import React from "react";
 
 const ErasmusList = ({ erasmus }) => {
-  console.log(erasmus)
   return (
     <Container fluid style={{ backgroundColor: '#f9f9f9', paddingTop: 20 }}>
       <h1>Erasmus</h1>
