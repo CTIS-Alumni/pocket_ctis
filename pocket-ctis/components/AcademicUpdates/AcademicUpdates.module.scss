@@ -19,26 +19,26 @@
         background-color: lighten($color: $white, $amount: 20);
     }
 
-    td, th {
-        padding: 1em 1.5em;
+    th { padding: 0.8em 1.5em; }
+    td { padding: 0.4em 1.5em; }
+
+    tr {
+        &.invisible {
+            color: $medium-grey;
+        }
+        
+        &.current {
+            background-color: rgba(196, 255, 196, 0.86);
+        }
     }
 }
 
-.user_avatar_48 {
+.user_avatar_36 {
     display: block;
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: aqua;
-    background-image: linear-gradient(to bottom right, $light-grey, $medium-grey);
-}
-
-.invisible {
-    background-color: darkgray;
-}
-
-.current {
-    background-color: rgba(196, 255, 196, 0.86);
+    background-size: cover;
 }

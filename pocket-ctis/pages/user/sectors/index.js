@@ -4,13 +4,11 @@ import SectorsList from '../../../components/SectorsList/SectorsList'
 
 const SectorsDashboard = ({ sectors }) => {
   return (
-    <div style={{ height: '100vh' }}>
+    <main>
       <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <SectorsList sectors={sectors} />
-      </div>
-    </div>
+      <UserInfoSidebar />
+      <SectorsList sectors={sectors} />
+    </main>
   )
 }
 

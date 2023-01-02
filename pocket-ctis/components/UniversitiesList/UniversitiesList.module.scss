@@ -1,6 +1,6 @@
 @import '../../styles/variables.scss';
 
-.companies {
+.universities {
     padding: 3em 3.5em;
 
     &_title {
@@ -30,12 +30,12 @@
     }
 }
 
-.companies_filters_title {
+.universities_filters_title {
     margin-right: 1em;
     color: $dark-grey;
 }
 
-.companies_filters_form {
+.universities_filters_form {
     margin-bottom: 3em;
     display: inline-block;
 
@@ -43,7 +43,7 @@
         position: absolute;
         display: none;
 
-        &:checked + .companies_filters_form_label {
+        &:checked + .universities_filters_form_label {
             background-color: $light-grey;
             border: 1px solid $medium-grey;
             transition: background-color 0.3s linear, border 0.3s linear;
@@ -83,7 +83,7 @@
     }
 }
 
-.company_link {
+.university_link {
     font-weight: $fw-bold;
     width: 100%;
     height: 100%;

@@ -6,12 +6,13 @@ import styles from './CompaniesList.module.scss'
 const CompaniesList = ({ companies }) => {
   return (
     <div className={styles.companies}>
-      <h2 className={styles.companies_title}>Companies</h2>
+      <h2 className='custom_table_title'>Companies</h2>
       <div className={styles.companies_search_bar}>
         <FilterSquareFill />
         <SearchBar />
       </div>
       <div className={styles.companies_filters}>
+        <span className={styles.companies_filters_title}>Filters:</span>
         <form className={styles.companies_filters_form}>
           <input
             type='checkbox'
@@ -26,7 +27,7 @@ const CompaniesList = ({ companies }) => {
           </label>
         </form>
       </div>
-      <table className={styles.companies_table}>
+      <table className='custom_table'>
         <thead>
           <tr>
             <th>Company Name</th>
@@ -36,17 +37,17 @@ const CompaniesList = ({ companies }) => {
         </thead>
         <tbody>
           {companies.map((company) => (
-            <tr>
+            <tr className='hoverable'>
               <td>
                 <a
-                  className={styles.company_link}
+                  className={`${styles.company_link} link`}
                   href={`/user/companies/${company.id}`}
                 >
                   {company.company_name}
                 </a>
               </td>
               <td>
-                <a className={styles.company_link}
+                <a className={`${styles.company_link} link`}
                 href={`/user/sectors/${company.sector_id}`}>{company.sector_name}</a>
               </td>
               <td>

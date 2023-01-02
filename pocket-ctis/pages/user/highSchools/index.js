@@ -5,13 +5,11 @@ import HighSchoolList from '../../../components/HighSchoolsList/HighSchoolsList'
 const HighSchoolDashboard = ({ highschools }) => {
   console.log('high schools: ', highschools)
   return (
-    <div style={{ height: '100vh' }}>
+    <main>
       <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <HighSchoolList highSchools={highschools} />
-      </div>
-    </div>
+      <UserInfoSidebar />
+      <HighSchoolList highSchools={highschools} />
+    </main>
   )
 }
 

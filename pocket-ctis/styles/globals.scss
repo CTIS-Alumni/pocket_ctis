@@ -17,9 +17,19 @@ body {
 
 main {
     display: grid;
-    grid-template-columns: 20% 80%;
+    grid-template-columns: 20% 70% 10%;
     grid-template-rows: 64px 1fr;
     grid-template-areas: 
-        "navbar navbar"
-        "sidebar main";
+        "navbar navbar navbar"
+        "sidebar main empty";
+}
+
+.user_avatar_48 {
+    display: block;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 }

@@ -9,8 +9,8 @@ const SearchBar = ({ onSubmit, searchValue = '' }) => {
         enableReinitialize
         onSubmit={onSubmit}
       >
-        <Form style={{ width: '100%', display: 'flex' }}>
-          <label htmlFor='searchValue'>Search</label>
+        <Form className={styles.search_form}>
+          <label className={styles.search_bar_label} htmlFor='searchValue'>Search</label>
           <Field
             className={styles.search_bar}
             id='searchValue'

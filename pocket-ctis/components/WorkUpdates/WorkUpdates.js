@@ -2,13 +2,14 @@ import React from 'react'
 import { Container } from 'react-bootstrap'
 import styles from './WorkUpdates.module.scss'
 
+
 const WorkUpdates = ({work}) => {
   return (
     <div className={styles.work_updates}>
-      <h3 className={styles.work_updates_title}>
+      <h3 className='custom_table_title'>
         Work Updates
       </h3>
-      <table className={styles.work_updates_table}>
+      <table className='custom_table'>
         <thead>
           <tr>
             <th className={styles.header_avatar}></th>
@@ -22,11 +23,12 @@ const WorkUpdates = ({work}) => {
         </thead>
         <tbody>
           {work ? work.map((record)=>(
-              <tr className={record.record_visibility ? (record.is_current ? styles.current : ""):styles.invisible}>
+              <tr className={record.record_visibility ? (record.is_current ? 'current' : ""):'anonymous'}>
                 <td className={styles.data_avatar}>
-                  <div className={styles.user_avatar_48}>
-                    <img alt={record.first_name} className={styles.user_avatar_48} src={'/profilepictures/'+(record.record_visibility ? (record.pic_visibility ? record.profile_picture : "defaultuser") : "defaultuser") +'.png'}/>
-                  </div>
+                  <div
+                    className='user_avatar_36'
+                    style={{backgroundImage: "url(" + '/profilepictures/' + (record.record_visibility ? (record.pic_visibility ? record.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
+                  />
                 </td>
                 <td className={styles.data_name}>{record.record_visibility ? record.first_name : "Anonymous"}</td>
                 <td className={styles.data_surname}>{record.record_visibility ? record.last_name : ""}</td>
