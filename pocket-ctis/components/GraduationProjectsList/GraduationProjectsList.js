@@ -15,8 +15,8 @@ const GraduationProjectsList = ({ graduationProjects }) => {
     <div className={styles.graduation_projects}>
       <h2 className='custom-table-title'>Graduation Projects</h2>
       <div>
-        {graduationProjects.map((graduationProject) => (
-          <a className={styles.graduation_project_link} href={`/user/graduationProjects/${graduationProject.id}`}>
+        {graduationProjects.map((graduationProject, i) => (
+          <a key={i} className={styles.graduation_project_link} href={`/user/graduationProjects/${graduationProject.id}`}>
             <div className={styles.graduation_projects_item}>
               <span className={styles.graduation_projects_item_team}>Team {graduationProject.team_number}</span>
               <span className={styles.graduation_projects_item_name}>{graduationProject.project_name}</span>

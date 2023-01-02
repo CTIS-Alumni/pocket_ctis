@@ -46,8 +46,8 @@ const HighSchool = ({ high_school, users }) => {
                   </div>
 
                   <div className={styles.highschool_students_item_badge}>
-                    {user.highschool_visibility == 1 && user.user_types.split(',').map((type) => (
-                        <span>
+                    {user.highschool_visibility == 1 && user.user_types.split(',').map((type, i) => (
+                        <span key={i}>
                           {type.toLocaleUpperCase()}
                         </span>
                     ))}
