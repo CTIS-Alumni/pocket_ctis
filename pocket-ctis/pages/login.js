@@ -42,22 +42,26 @@ const Login = () => {
               onSubmit={onSubmit}
             >
               <Form>
-                <label htmlFor='username'>Username</label>
-                <Field id='username' name='username' placeholder='Username' />
-                <label htmlFor='password'>Password</label>
-                <Field id='password' name='password' placeholder='Password' />
-                <button
-                  type='submit'
-                  className='mt-3'
-                  style={{
-                    backgroundColor: '#f5a425',
-                    border: 'none',
-                    padding: 5,
-                    width: 100,
-                  }}
-                >
-                  Login
-                </button>
+                <p>
+                  <label htmlFor='username'>Username</label>
+                  <Field id='username' name='username' placeholder='Username' />
+                </p>
+                <p>
+                  <label htmlFor='password'>Password</label>
+                  <Field id='password' name='password' placeholder='Password' />
+                </p>
+                  <button
+                    type='submit'
+                    className='mt-3'
+                    style={{
+                      backgroundColor: '#f5a425',
+                      border: 'none',
+                      padding: 5,
+                      width: 100,
+                    }}
+                    >
+                    Login
+                  </button>
               </Form>
             </Formik>
           </Col>
