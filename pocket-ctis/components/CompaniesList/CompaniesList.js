@@ -36,8 +36,8 @@ const CompaniesList = ({ companies }) => {
           </tr>
         </thead>
         <tbody>
-          {companies.map((company) => (
-            <tr className='hoverable'>
+          {companies.map((company, i) => (
+            <tr className='hoverable' key={i}>
               <td>
                 <a
                   className={`${styles.company_link} link`}

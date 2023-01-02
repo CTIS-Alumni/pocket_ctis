@@ -42,8 +42,8 @@ const SectorsList = ({ sectors }) => {
             </tr>
           </thead>
           <tbody>
-            {sectors.map((sector) => (
-              <tr className='hoverable'>
+            {sectors.map((sector, i) => (
+              <tr className='hoverable' key={i}>
                 <td>
                   <a 
                     className={`${styles.sector_link} link`}

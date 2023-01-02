@@ -43,8 +43,8 @@ const HighSchoolList = ({ highSchools }) => {
           </tr>
         </thead>
         <tbody>
-          {highSchools.map((highSchool) => (
-            <tr className='hoverable'>
+          {highSchools.map((highSchool, i) => (
+            <tr className='hoverable' key={i}>
               <td>
                 <a
                   className={`${styles.highSchool_link} link`}

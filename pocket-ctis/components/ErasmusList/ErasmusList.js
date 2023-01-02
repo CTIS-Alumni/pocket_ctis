@@ -34,8 +34,8 @@ const ErasmusList = ({ erasmus }) => {
                 variant='flush'
                 style={{ boxShadow: '5px 5px 10px 0px rgba(0,0,0,0.3)' }}
               >
-                {erasmus.map((erasmus) => (
-                  <ListGroupItem className={styles.listItem}>
+                {erasmus.map((erasmus, i) => (
+                  <ListGroupItem className={styles.listItem} key={i}>
                     <Link
                       href={`/erasmus/companies/${erasmus.id}`}
                       className='d-flex justify-content-between align-items-start'
@@ -49,8 +49,8 @@ const ErasmusList = ({ erasmus }) => {
                             <p>{erasmus.record_visibility ? `${erasmus.semester} - ${erasmus.end_date.substring(0,4)}` : ""}</p>
                         </div>
                           <div>
-                              {erasmus.record_visibility == 1 && erasmus.user_types.split(',').map((type) => (
-                                  <Badge className='mx-1' bg='info' pill>
+                              {erasmus.record_visibility == 1 && erasmus.user_types.split(',').map((type, i) => (
+                                  <Badge className='mx-1' bg='info' pill key={i}>
                                       {type.toLocaleUpperCase()}
                                   </Badge>
                               ))}

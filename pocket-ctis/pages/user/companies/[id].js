@@ -62,8 +62,8 @@ const Company = ({company, users}) => {
                                             {user.first_name} {user.last_name}
                                         </h5>
                                         <div>
-                                            {user.user_types.split(',').map((type) => (
-                                                <Badge className='mx-1' bg='info' pill>
+                                            {user.user_types.split(',').map((type, i) => (
+                                                <Badge className='mx-1' bg='info' pill key={i}>
                                                     {type.toLocaleUpperCase()}
                                                 </Badge>
                                             ))}

@@ -61,7 +61,7 @@ const InternshipsList = ({ internships }) => {
               </div>
               <div className={styles.internship_students_item_badge}>
                 {internship.record_visibility ? internship.user_types.split(',').map((type, i) => (
-                  <span>
+                  <span key={i}>
                     {type.toLocaleUpperCase()}
                   </span>
                 )) : null}

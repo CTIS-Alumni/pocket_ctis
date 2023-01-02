@@ -288,7 +288,7 @@ const WorkInformationForm = ({ workRecords }) => {
                             </option>
                             {companies.map((company, i) => {
                               return (
-                                <option value={company.company_name}>
+                                <option key={i} value={company.company_name}>
                                   {company.company_name}
                                 </option>
                               )
@@ -461,8 +461,8 @@ const SocietiesInformationForm = ({ societies }) => {
                             <option value='' disabled selected hidden>
                               Select here
                             </option>
-                            {studentSocieties.map((s) => (
-                              <option value={s.society_name}>
+                            {studentSocieties.map((s, i) => (
+                              <option key={i} value={s.society_name}>
                                 {s.society_name}
                               </option>
                             ))}
@@ -575,9 +575,9 @@ const EducationInformationForm = ({ eduRecords }) => {
                               <option value='' hidden disabled selected>
                                 Select here
                               </option>
-                              {eduInsts.map((inst) => {
+                              {eduInsts.map((inst, i) => {
                                 return (
-                                  <option value={inst.inst_name}>
+                                  <option key={i} value={inst.inst_name}>
                                     {inst.inst_name} | {inst.city_name},{' '}
                                     {inst.country_name}
                                   </option>
@@ -595,8 +595,8 @@ const EducationInformationForm = ({ eduRecords }) => {
                               <option value='' disabled hidden selected>
                                 Select here
                               </option>
-                              {degreeTypes.map((degree) => (
-                                <option value={degree.degree_name}>
+                              {degreeTypes.map((degree, i) => (
+                                <option key={i} value={degree.degree_name}>
                                   {degree.degree_name}
                                 </option>
                               ))}
@@ -811,8 +811,8 @@ const SkillsInformationForm = ({ skills }) => {
                             <option value='' hidden selected disabled>
                               Select here
                             </option>
-                            {skillTypes.map((skillType) => (
-                              <option value={skillType.type_name}>
+                            {skillTypes.map((skillType, i) => (
+                              <option key={i} value={skillType.type_name}>
                                 {skillType.type_name}
                               </option>
                             ))}
@@ -908,8 +908,8 @@ const HighSchoolInformationForm = ({ highSchool }) => {
             <option hidden disabled selected>
               Select here
             </option>
-            {highSchools.map((datum) => (
-              <option value={datum.high_school_name}>
+            {highSchools.map((datum, i) => (
+              <option key={i} value={datum.high_school_name}>
                 {datum.high_school_name}
               </option>
             ))}

@@ -263,6 +263,7 @@ const SocialsSection = ({ socials }) => {
         <div key={i} className='mx-1' style={{ display: 'inline-block' }}>
           <a
             target='_blank'
+            rel="noreferrer"
             className={`${styles[social.social_media_name.toLowerCase()]} ${
               styles.smGlobalBtn
             }`}
@@ -371,9 +372,9 @@ const ProfileStudentSocieties = ({ societies }) => {
     <div className='mt-4'>
       <SectionHeading title='Societies' />
       <Container>
-        {societies.map((society) => {
+        {societies.map((society, i) => {
           return (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }} key={i}>
               {society.society_name}
               <span className='ms-2' style={{ color: '#999' }}>
                 {society.activity_status == 1 ? 'Active' : 'Inactive'}
@@ -468,9 +469,9 @@ const Profile = ({ user, meta }) => {
                     Wants to work in:&nbsp;
                     {wantSectors.map((s, i) => {
                       if (wantSectors.length - 1 === i) {
-                        return <span>{s.sector_name}</span>
+                        return <span key={i}>{s.sector_name}</span>
                       }
-                      return <span>{s.sector_name}, </span>
+                      return <span key={i}>{s.sector_name}, </span>
                     })}
                   </div>
                   <Row style={{ color: '#999' }}>

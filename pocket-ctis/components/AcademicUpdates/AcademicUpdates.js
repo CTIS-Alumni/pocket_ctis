@@ -21,8 +21,8 @@ const AcademicUpdates = ({edu}) => {
           </tr>
         </thead>
         <tbody>
-        {edu ? edu.map((record)=>(
-            <tr className={record.record_visibility ? (record.is_current ? 'current' : ""):'anonymous'}>
+        {edu ? edu.map((record, i)=>(
+            <tr key={i} className={record.record_visibility ? (record.is_current ? 'current' : ""):'anonymous'}>
             <td className={styles.data_avatar}>
               <div
                   className='user_avatar_36'

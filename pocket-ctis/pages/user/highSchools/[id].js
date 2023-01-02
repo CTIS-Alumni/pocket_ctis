@@ -36,8 +36,8 @@ const HighSchool = ({ high_school, users }) => {
                         </h5>
                       </div>
                       <div>
-                      {user.highschool_visibility == 1 && user.user_types.split(',').map((type) => (
-                          <Badge className='mx-1' bg='info' pill>
+                      {user.highschool_visibility == 1 && user.user_types.split(',').map((type, i) => (
+                          <Badge className='mx-1' bg='info' pill key={i}>
                             {type.toLocaleUpperCase()}
                           </Badge>
                       ))}

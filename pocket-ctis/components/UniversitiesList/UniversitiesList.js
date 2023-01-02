@@ -44,8 +44,8 @@ const UniversitiesList = ({ universities }) => {
           </tr>
         </thead>
         <tbody>
-          {universities.map((university) => (
-            <tr className='hoverable'>
+          {universities.map((university, i) => (
+            <tr className='hoverable' key={i}>
               <td>
                 <a
                   href={`/user/universities/${university.id}`}

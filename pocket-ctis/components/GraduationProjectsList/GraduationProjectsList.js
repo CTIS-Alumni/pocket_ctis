@@ -35,8 +35,8 @@ const GraduationProjectsList = ({ graduationProjects }) => {
                 variant='flush'
                 style={{ boxShadow: '5px 5px 10px 0px rgba(0,0,0,0.3)' }}
               >
-                {graduationProjects.map((graduationProject) => (
-                  <ListGroupItem className={styles.listItem}>
+                {graduationProjects.map((graduationProject, i) => (
+                  <ListGroupItem className={styles.listItem} key={i}>
                     <Link
                       href={`/user/graduationProjects/${graduationProject.id}`}
                       className='d-flex justify-content-between align-items-start'
