@@ -1,54 +1,62 @@
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
-import styles from "../../../components/WorkUpdates/WorkUpdates.module.scss";
 import React from "react";
+import styles from '../../../styles/highSchools.module.scss'
+import { BuildingFill } from 'react-bootstrap-icons'
 
 const HighSchool = ({ high_school, users }) => {
   console.log(users)
+  
   return (
-      <div style={{ height: '100vh' }}>
+      <main>
         <NavigationBar />
-        <div className='d-flex' style={{ height: '100%' }}>
-          <UserInfoSidebar />
-          <Container className='py-3'>
-            <div
-                className='d-flex justify-content-between align-items-start'
-                style={{ width: '100%' }}
-            >
+        <UserInfoSidebar />
+        <div className={styles.highschool}>
+          <div className={styles.highschool_info}>
+            <div>
+              <div className={styles.highschool_info_icon}>
+                <BuildingFill/>
+              </div>
               <div>
-                <h5>{high_school.high_school_name}</h5>
-                <p>{high_school.city_name} - {high_school.country_name}</p>
+                <h5 className={styles.highschool_info_title}>{high_school.high_school_name}</h5>
+                <span className={styles.highschool_info_location}>{high_school.city_name} - {high_school.country_name}</span>
               </div>
             </div>
-            <hr className='mx-auto' style={{ width: '80%' }} />
-            <div className='my-2'>{users.length>0 ? `People who have studied at ${high_school.high_school_name}:`:`No one from your department have studied at ${high_school.high_school_name}.`}</div>
-            <ListGroup variant='flush'>
-              {users.map((user) => {
-                return (
-                    <ListGroupItem key={user.id}>
-                      <div>
-                        <img alt={user.first_name} className={styles.user_avatar_48} src={'/profilepictures/'+(user.record_visibility ? (user.pic_visibility ? user.profile_picture : "defaultuser") : "defaultuser") +'.png'}/>
-                      </div>
-                      <div className='d-flex justify-content-between align-items'>
-                        <h5>
-                          {user.highschool_visibility ? (`${user.first_name} ${user.last_name}`) : "Anonymous"}
-                        </h5>
-                      </div>
-                      <div>
-                      {user.highschool_visibility == 1 && user.user_types.split(',').map((type) => (
-                          <Badge className='mx-1' bg='info' pill>
-                            {type.toLocaleUpperCase()}
-                          </Badge>
-                      ))}
+
+            <span className={styles.highschool_info_people}>
+              {users.length > 0
+                ? `People who have studied at ${high_school.high_school_name}:`
+                : `No one from your department have studied at ${high_school.high_school_name}.`}
+            </span>
+          </div>
+
+          {users.map((user) => {
+            return (
+                <div className={styles.highschool_students_item} key={user.id}>
+
+                  <div>
+                    <div
+                      className='user_avatar_48'
+                      style={{backgroundImage: "url(" + '/profilepictures/' + (user.highschool_visibility ? (user.pic_visibility ? user.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
+                    />
+                    <div className={styles.highschool_students_item_info}>
+                      <span className={styles.highschool_students_name}>{user.highschool_visibility ? (`${user.first_name} ${user.last_name}`) : "Anonymous"}</span>
                     </div>
-                    </ListGroupItem>
-                )
-              })}
-            </ListGroup>
-          </Container>
+                  </div>
+
+                  <div className={styles.highschool_students_item_badge}>
+                    {user.highschool_visibility == 1 && user.user_types.split(',').map((type) => (
+                        <span>
+                          {type.toLocaleUpperCase()}
+                        </span>
+                    ))}
+                  </div>
+                </div>
+              )
+          })}
         </div>
-      </div>
+      </main>
   )
 }
 
