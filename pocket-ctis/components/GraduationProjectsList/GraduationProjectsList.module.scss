@@ -1,15 +1,18 @@
 @import '../../styles/variables.scss';
 
 .graduation_projects {
-    margin-top: 3em;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 64px 1fr 1fr 1fr 1fr;;
-
-    h2 {grid-column: span 3;}
+    padding: 4em 3em;
 
     .graduation_project_link {
         color: inherit;
+    }
+
+    h2 {margin-bottom: 3em;}
+
+    > div {
+        display: flex;
+        width: 100%;
+        flex-wrap: wrap;
     }
 
     &_item {
@@ -20,6 +23,8 @@
         border-radius: 5px;
         box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
         transition: box-shadow 0.3s linear;
+        margin-right: 3em;
+        margin-bottom: 3em;
 
         &:hover {
             box-shadow: 2px 4px 5px 0 rgba(0, 0, 0, 0.2);
