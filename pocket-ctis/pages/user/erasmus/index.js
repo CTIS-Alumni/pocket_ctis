@@ -91,23 +91,21 @@ const ErasmusStudentsList = ({ erasmus }) => {
 
 const ErasmusDashboard = ({ erasmus, eduInsts }) => {
   return (
-    <div style={{ height: '100vh' }}>
+    <main>
       <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <Container>
-          <h2 className='custom_table_title'>Erasmus</h2>
-          <Tabs defaultActiveKey='students' className='mb-3'>
-            <Tab eventKey='students' title='Students'>
-              <ErasmusStudentsList erasmus={erasmus} />
-            </Tab>
-            <Tab eventKey='university' title='University'>
-              <ErasmusUnisList universities={eduInsts} />
-            </Tab>
-          </Tabs>
-        </Container>
+      <UserInfoSidebar />
+      <div>
+        <h2 className='custom_table_title'>Erasmus</h2>
+        <Tabs defaultActiveKey='students' className='mb-3'>
+          <Tab eventKey='students' title='Students'>
+            <ErasmusStudentsList erasmus={erasmus} />
+          </Tab>
+          <Tab eventKey='university' title='University'>
+            <ErasmusUnisList universities={eduInsts} />
+          </Tab>
+        </Tabs>
       </div>
-    </div>
+    </main>
   )
 }
 
