@@ -94,8 +94,8 @@ const ErasmusDashboard = ({ erasmus, eduInsts }) => {
     <main>
       <NavigationBar />
       <UserInfoSidebar />
-      <div>
-        <h2 className='custom_table_title'>Erasmus</h2>
+      <div className={styles.erasmus_wrapper}>
+        <h2 className={styles.erasmus_title}>Erasmus</h2>
         <Tabs defaultActiveKey='students' className='mb-3'>
           <Tab eventKey='students' title='Students'>
             <ErasmusStudentsList erasmus={erasmus} />
