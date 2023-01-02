@@ -41,23 +41,21 @@ const InternshipCompaniesList = ({ companies }) => {
 
 const InternshipsDashboard = ({ internships, companies }) => {
   return (
-    <div style={{ height: '100vh' }}>
+    <main>
       <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <Container>
-          <h2 className='custom_table_title'>Internships</h2>
-          <Tabs defaultActiveKey='students' className='mb-3'>
-            <Tab eventKey='students' title='Students'>
-              <InternshipsList internships={internships} />
-            </Tab>
-            <Tab eventKey='companies' title='Companies'>
-              <InternshipCompaniesList companies={companies} />
-            </Tab>
-          </Tabs>
-        </Container>
+      <UserInfoSidebar />
+      <div>
+        <h2 className='custom_table_title'>Internships</h2>
+        <Tabs defaultActiveKey='students' className='mb-3'>
+          <Tab eventKey='students' title='Students'>
+            <InternshipsList internships={internships} />
+          </Tab>
+          <Tab eventKey='companies' title='Companies'>
+            <InternshipCompaniesList companies={companies} />
+          </Tab>
+        </Tabs>
       </div>
-    </div>
+    </main>
   )
 }
 

@@ -15,134 +15,134 @@ import {
   fetchPeopleWantingToWorkInSector,
   fetchPeoplWorkingInSector,
 } from '../../../helpers/searchHelpers'
+import { Easel2Fill } from 'react-bootstrap-icons'
+import styles from '../../../styles/sectors.module.scss'
 
 const PeopleList = ({ people }) => {
   return (
-    <Container>
-      <ListGroup variant='flush'>
-        {people.map((person) => {
-          const workPeriod = getTimePeriod(
-            person.start_date,
-            person.end_date,
-            person.is_current
-          )
-          return (
-            <ListGroupItem key={person.id}>
-              <Link href={'/user/' + person.id}>
-                <div className='d-flex justify-content-between align-items'>
-                  <h5>
-                    {person.first_name} {person.last_name}
-                  </h5>
-                  <div>
-                    {person.user_types.split(',').map((type, i) => (
-                      <Badge className='mx-1' bg='info' pill key={i}>
-                        {type.toLocaleUpperCase()}
-                      </Badge>
-                    ))}
+    <div>
+      {people.map((person) => {
+        const workPeriod = getTimePeriod(
+          person.start_date,
+          person.end_date,
+          person.is_current
+        )
+
+        return (
+          <div className={styles.people_item} key={person.id}>
+            <a className={styles.people_link} href={'/user/' + person.id}>
+              <div>
+                <div
+                  className='user_avatar_48'
+                  style={{backgroundImage: "url(" + '/profilepictures/' + (person.record_visibility ? (person.pic_visibility ? person.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
+                />
+                <div className={styles.people_item_info}>
+                  <span className={styles.people_item_name}>{person.first_name} {person.last_name}</span>
+                  <span className={styles.people_item_position}>{person.position || 'Developer'}</span>
+                  <span className={styles.people_item_department}>{person.department && `${person.department}`}</span>
+                  <span className={styles.people_item_work_period}>{workPeriod}</span>
+                  <div className={styles.people_item_location}>
+                    <span className={styles.people_item_city}>{person.city_name && `${person.city_name}, `}</span>
+                    <span className={styles.people_item_country}>{person.country_name}</span>
                   </div>
                 </div>
-                <Container style={{ fontSize: 14 }}>
-                  <p
-                    className='my-0'
-                    style={{ fontSize: 16, fontWeight: 'bold' }}
-                  >
-                    {person.position || 'Developer'}
-                    {person.department && ` - ${person.department}`}
-                  </p>
-                  <p className='my-0'>{person.type_name}</p>
-                  <p style={{ color: '#999' }} className='my-0'>
-                    {workPeriod}
-                  </p>
-                  <p style={{ color: '#999' }}>
-                    {person.city_name && `${person.city_name} - `}
-                    {person.country_name}
-                  </p>
-                </Container>
-              </Link>
-            </ListGroupItem>
-          )
-        })}
-      </ListGroup>
-    </Container>
+              </div>
+              <div className={styles.people_item_badge}>
+                {person.user_types.split(',').map((type) => (
+                  <span>
+                    {type.toLocaleUpperCase()}
+                  </span>
+                ))}
+              </div>
+            </a>
+          </div>
+        )
+      })}
+    </div>
   )
 }
+
 const PeopleWishingList = ({ peopleWishing }) => {
   return (
-    <Container>
-      <ListGroup variant='flush'>
+      <div>
         {peopleWishing.map((person) => {
           return (
-            <ListGroupItem key={person.id}>
-              <Link href={'/user/' + person.id}>
-                <div className='d-flex justify-content-between align-items'>
-                  <h5>
-                    {person.first_name} {person.last_name}
-                  </h5>
-                  <div>
-                    {person.user_types.split(',').map((type, index) => (
-                      <Badge key={index} className='mx-1' bg='info' pill>
-                        {type.toLocaleUpperCase()}
-                      </Badge>
-                    ))}
+            <div className={styles.people_wishing_item} key={person.id}>
+              <a className={styles.people_wishing_link} href={'/user/' + person.id}>
+                <div>
+                  <div
+                    className='user_avatar_48'
+                    style={{backgroundImage: "url(" + '/profilepictures/' + (person.record_visibility ? (person.pic_visibility ? person.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
+                  />
+                  <div className={styles.people_wishing_item_info}>
+                    <span className={styles.people_wishing_item_name}>{person.first_name} {person.last_name}</span>
                   </div>
                 </div>
-              </Link>
-            </ListGroupItem>
+                <div className={styles.people_wishing_item_badge}>
+                  {person.user_types.split(',').map((type, index) => (
+                    <span key={index}>
+                      {type.toLocaleUpperCase()}
+                    </span>
+                  ))}
+                </div>
+              </a>
+            </div>
           )
         })}
-      </ListGroup>
-    </Container>
+      </div>
   )
 }
+
 const CompaniesList = ({ companies }) => {
   return (
-    <Container>
-      <ListGroup variant='flush'>
-        {companies.map((company) => {
-          return (
-            <ListGroupItem key={company.id}>
-              <Link href={'/user/companies/' + company.id}>
-                <div className='d-flex justify-content-between align-items'>
-                  <h5>{company.company_name}</h5>
-                  <div>
-                    {company.is_internship == 1 && (
-                      <Badge className='mx-1' bg='info' pill>
-                        Accepts CTIS Interns
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            </ListGroupItem>
-          )
-        })}
-      </ListGroup>
-    </Container>
+    <div>
+      {companies.map((company) => {
+        return (
+          <div className={styles.company_item} key={company.id}>
+            <a className={styles.company_link} href={'/user/companies/' + company.id}>
+              <div className={styles.company_item_info}>
+                <span className={styles.company_item_name}>{company.company_name}</span>
+              </div>
+              <div className={styles.company_item_badge}>
+                {company.is_internship == 1 && (
+                  <span>
+                    Accepts CTIS Interns
+                  </span>
+                )}
+              </div>
+            </a>
+          </div>
+        )
+      })}
+    </div>
   )
 }
 
 const Sector = ({ sector, companies, work, users }) => {
   return (
-    <div style={{ height: '100vh' }}>
+    <main>
       <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <Container>
-          <h4>{sector.data[0].sector_name}</h4>
-          <Tabs defaultActiveKey='people' className='mb-3'>
-            <Tab eventKey='people' title='People'>
-              <PeopleList people={work} />
-            </Tab>
-            <Tab eventKey='people_wishing' title='People Wishing'>
-              <PeopleWishingList peopleWishing={users} />
-            </Tab>
-            <Tab eventKey='companies' title='Companies'>
-              <CompaniesList companies={companies} />
-            </Tab>
-          </Tabs>
-        </Container>
+      <UserInfoSidebar />
+      <div className={styles.main_div}>
+        <div className={styles.sector_info}>
+          <div className={styles.sector_icon}>
+            <Easel2Fill/>
+          </div>
+          <h4 className={styles.sector_name}>{sector.data[0].sector_name}</h4>
+        </div>
+        <Tabs defaultActiveKey='people' className='mb-3'>
+          <Tab eventKey='people' title='People'>
+            <PeopleList people={work} />
+          </Tab>
+          <Tab eventKey='people_wishing' title='People Wishing'>
+            <PeopleWishingList peopleWishing={users} />
+          </Tab>
+          <Tab eventKey='companies' title='Companies'>
+            <CompaniesList companies={companies} />
+          </Tab>
+        </Tabs>
       </div>
-    </div>
+    </main>
   )
 }
 

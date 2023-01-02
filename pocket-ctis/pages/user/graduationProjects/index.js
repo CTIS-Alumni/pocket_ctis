@@ -4,13 +4,11 @@ import GraduationProjectsList from '../../../components/GraduationProjectsList/G
 
 const GraduationProjectsDashboard = ({ gradprojects }) => {
   return (
-    <div style={{ height: '100vh' }}>
+    <main>
       <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <GraduationProjectsList graduationProjects={gradprojects} />
-      </div>
-    </div>
+      <UserInfoSidebar />
+      <GraduationProjectsList graduationProjects={gradprojects} />
+    </main>
   )
 }
 
