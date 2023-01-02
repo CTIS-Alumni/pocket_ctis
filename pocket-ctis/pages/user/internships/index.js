@@ -45,8 +45,8 @@ const InternshipsDashboard = ({ internships, companies }) => {
     <main>
       <NavigationBar />
       <UserInfoSidebar />
-      <div>
-        <h2 className='custom_table_title'>Internships</h2>
+      <div className={styles.internships_wrapper}>
+        <h2 className={styles.internships_title}>Internships</h2>
         <Tabs defaultActiveKey='students' className='mb-3'>
           <Tab eventKey='students' title='Students'>
             <InternshipsList internships={internships} />
