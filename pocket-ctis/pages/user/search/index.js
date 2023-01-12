@@ -6,28 +6,30 @@ import { Container, ListGroup, ListGroupItem, Badge } from 'react-bootstrap'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import {
-  fetchUsers,
-  fetchHighSchools,
-  fetchCompany,
-  fetchEduinst,
-  fetchGraduationproject,
+    fetchUsers,
+    fetchHighSchools,
+    fetchCompany,
+    fetchEduinst,
+    fetchGraduationproject,
+    fetchSectors
 } from '../../../helpers/searchHelpers'
 import styles from "../../../components/UserInfoSidebar/UserInfoSidebar.module.scss";
 
 const getData = async (search) => {
-  const [companies, eduInsts, gradProjects, users, highSchools] =
+  const [companies, eduInsts, gradProjects, users, highSchools, sectors] =
     await Promise.all([
       fetchCompany(search),
       fetchEduinst(search),
       fetchGraduationproject(search),
       fetchUsers(search),
       fetchHighSchools(search),
+      fetchSectors(search)
     ])
-  return { companies, eduInsts, gradProjects, users, highSchools }
+  return { companies, eduInsts, gradProjects, users, highSchools, sectors }
 }
 
 const SearchDataList = ({ searchData }) => {
-  const { users, companies, eduInsts, gradProjects, highSchools } = searchData
+  const { users, companies, eduInsts, gradProjects, highSchools, sectors } = searchData
   return (
     <div className='mt-2'>
       {users.length > 0 && (
@@ -85,6 +87,27 @@ const SearchDataList = ({ searchData }) => {
           <hr style={{ width: '80%' }} className='mx-auto' />
         </div>
       )}
+        {sectors.length > 0 && (
+            <div>
+            <h5>Sectors</h5>
+            <ListGroup>
+                {sectors.map((sector) => (
+                    <ListGroupItem key={sector.id}>
+                        <Link
+                            href={`/user/sectors/${sector.id}`}
+                            className='d-flex justify-content-between align-items-start'
+                        >
+                            <div>
+                                <h5>{sector.sector_name}</h5>
+                                <span style={{ fontSize: 12, color: '#999' }}></span>
+                            </div>
+                        </Link>
+                    </ListGroupItem>
+                ))}
+            </ListGroup>
+            <hr style={{ width: '80%' }} className='mx-auto' />
+            </div>
+        )}
       {highSchools.length > 0 && (
         <div>
           <h5>High Schools</h5>

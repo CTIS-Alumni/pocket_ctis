@@ -21,6 +21,19 @@ export const fetchHighSchools = async (search) => {
   return highschools
 }
 
+export const fetchSectors = async (search) => {
+  const res = await fetch(
+      `http://localhost:3000/api/sectors?name=${search}`,
+      {
+        headers: {
+          'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
+        },
+      }
+  )
+  const { sectors } = await res.json()
+  return sectors
+}
+
 export const fetchCompany = async (search) => {
   const res = await fetch(
     `http://localhost:3000/api/companies?name=${search}`,

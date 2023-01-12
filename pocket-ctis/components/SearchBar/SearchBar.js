@@ -10,7 +10,6 @@ const SearchBar = ({ onSubmit, searchValue = '' }) => {
         onSubmit={onSubmit}
       >
         <Form className={styles.search_form}>
-          <label className={styles.search_bar_label} htmlFor='searchValue'>Search</label>
           <Field
             className={styles.search_bar}
             id='searchValue'

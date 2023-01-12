@@ -1,6 +1,4 @@
-import { Form } from 'react-bootstrap'
 import { FilterSquareFill, Check} from 'react-bootstrap-icons'
-import SearchBar from '../SearchBar/SearchBar'
 import styles from './CompaniesList.module.scss'
 
 const CompaniesList = ({ companies }) => {
@@ -9,7 +7,6 @@ const CompaniesList = ({ companies }) => {
       <h2 className='custom_table_title'>Companies</h2>
       <div className={styles.companies_search_bar}>
         <FilterSquareFill />
-        <SearchBar />
       </div>
       <div className={styles.companies_filters}>
         <span className={styles.companies_filters_title}>Filters:</span>
@@ -69,51 +66,3 @@ const CompaniesList = ({ companies }) => {
 
 export default CompaniesList
 
-{
-  /* <Container>
-        <h1>Companies</h1>
-        <Row>
-          <Col>
-            <h5>Filters</h5>
-            <Row>
-              <Col>
-                <Form.Check
-                  type='checkbox'
-                  id={`is_internship`}
-                  label={`Accepts CTIS Interns?`}
-                />
-              </Col>
-            </Row>
-          </Col>
-          <Col>
-            <SearchBar />
-            <Row>
-              <Col>
-                <ListGroup>
-                  {companies.map((company) => (
-                    <ListGroupItem className={styles.listItem}>
-                      <Link
-                        href={`/user/companies/${company.id}`}
-                        className='d-flex justify-content-between align-items-start'
-                      >
-                        <div>
-                          <h5>{company.company_name}</h5>
-                          <span style={{ fontSize: 12, color: '#999' }}>
-                            {company.sector_name}
-                          </span>
-                        </div>
-                        {company.is_internship == 1 && (
-                          <Badge bg='primary' pill>
-                            Accepts CTIS Interns
-                          </Badge>
-                        )}
-                      </Link>
-                    </ListGroupItem>
-                  ))}
-                </ListGroup>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-      </Container>  */
-}
