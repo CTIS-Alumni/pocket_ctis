@@ -1,6 +1,6 @@
 import {sign} from "../../helpers/jwtHelper";
 import {serialize} from "cookie";
-import {doquery} from "../../helpers/dbconnect";
+import {doquery} from "../../helpers/dbHelpers";
 
 
 export default async function(req,res){

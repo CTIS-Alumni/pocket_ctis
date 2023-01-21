@@ -1,39 +1,75 @@
-import {doquery} from "../../helpers/dbconnect";
+import {doquery} from "../../helpers/dbHelpers";
 
-export default async function handler(req, res){
+const columns = {
+    company_name: "c.company_name",
+    sector_name: "s.sector_name"
+}
+
+export default async function handler(req, res) {
     const api_key = req.headers['x-api-key'];
-    if(api_key === undefined ||api_key !== process.env.API_KEY){
+    if (api_key === undefined || api_key !== process.env.API_KEY) {
         res.status(401).json({message: "Unauthorized user!"});
     }
     const method = req.method;
-    switch(method){
+    switch (method) {
         case "GET":
             let values = [];
-            try{
-                let query = "select c.id, c.company_name, c.sector_id, s.sector_name, c.is_internship " +
-                "FROM company c JOIN sector s on (c.sector_id = s.id) ";
-                //use is_internship to show some little icon or sth next to it to indicate its an internship company
-                //if it is internship company show its rating next to it -> if rating is NULL dont show any stars, if 0 show empty star
-                //use sector_id as link to its page
+            try {
+                let query;
 
-                if(req.query.sector_id){ //for a specific sectors page
+                if(req.query.count)
+                    query = "SELECT COUNT(c.id) as count ";
+                else
+                    query = "SELECT c.id, c.company_name, c.sector_id, s.sector_name, c.is_internship ";
+
+                query += "FROM company c JOIN sector s on (c.sector_id = s.id) ";
+                if (req.query.sector_id) {
                     query += "WHERE s.id = ? ";
                     values.push(req.query.sector_id);
                 }
-                if(req.query.name){ //for the general search
-                    if(query.indexOf("WHERE") !== -1)//if there is "WHERE"
+                if (req.query.name) {
+                    if (query.indexOf("WHERE") !== -1)
                         query += "AND c.company_name LIKE CONCAT('%', ?, '%') "
                     else query += "WHERE c.company_name LIKE CONCAT('%', ?, '%') ";
                     values.push(req.query.name);
                 }
-                if(req.query.internship){//for the internships page
-                    if(query.indexOf("WHERE") !== -1)//if there is "WHERE"
+
+                if(req.query.searchcol && req.query.search){
+                    const cols = req.query.searchcol.split(",");
+                    let searchColumns = [];
+                    cols.forEach((column)=>{
+                        if(!columns.hasOwnProperty(column))
+                            res.status(500).json({error: "Error in search column!"});
+                        searchColumns.push(columns[column]);
+                    });
+                    if (query.indexOf("WHERE") !== -1)
+                        query += "AND ( ";
+                    else query += "WHERE ( ";
+                    searchColumns.forEach(function(column){
+                        query += column + " LIKE CONCAT('%', ?, '%') "
+                        if(column !== searchColumns[searchColumns.length - 1])
+                            query += "OR ";
+                        values.push(req.query.search);
+                    });
+                    query += ") ";
+                }
+
+                if (req.query.internship) {
+                    if (query.indexOf("WHERE") !== -1)
                         query += "AND c.is_internship = ? "
                     else query += "WHERE c.is_internship = ? ";
                     values.push(req.query.internship);
                 }
 
-                query += "order by c.company_name asc";
+                if (req.query.column && columns.hasOwnProperty(req.query.column) && req.query.order && (req.query.order === "asc" ||req.query.order === "desc")) {
+                        query += "ORDER BY " + columns[req.query.column] + " " + req.query.order + " ";
+                }
+
+                if (req.query.offset && req.query.limit) {
+                    query += "LIMIT ? OFFSET ? ";
+                    values.push(req.query.limit);
+                    values.push(req.query.offset);
+                }
 
                 const companies = await doquery({query: query, values: values});
                 if(companies.hasOwnProperty("error"))
@@ -41,7 +77,7 @@ export default async function handler(req, res){
                 else
                     res.status(200).json({companies});
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({error: error.message, query: req.query});
             }
             break;
         case "POST":

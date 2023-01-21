@@ -10,7 +10,7 @@
     }
 
     &_search_bar {
-        width: 100%;
+        width: 30%;
         display: flex;
         align-items: center;
         margin-bottom: 1em;
@@ -97,3 +97,12 @@
         transition: background-color 0.3s linear;
     }
 }
+
+.right{
+    float: right;
+}
+
+.left{
+    float: left;
+}
+

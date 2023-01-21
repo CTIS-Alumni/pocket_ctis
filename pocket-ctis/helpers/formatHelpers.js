@@ -68,3 +68,15 @@ export const getProfilePicturePath = (visibility = 0, fileName = null) => {
     return '/profilepictures/defaultUser.png'
   }
 }
+
+export const toEnglish = (text) =>{
+text = text.replace(/\s/g, '')
+      .replace(/ğ/gim, "g")
+      .replace(/ü/gim, "u")
+      .replace(/ş/gim, "s")
+      .replace(/ı/gm, "i")
+      .replace(/İ/gm, "i")
+      .replace(/ö/gim, "o")
+      .replace(/ç/gim, "c")
+  return text;
+}
