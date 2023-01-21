@@ -1,15 +1,15 @@
-import { Form } from 'react-bootstrap'
-import { FilterSquareFill, Check} from 'react-bootstrap-icons'
+import { FilterSquareFill, Check } from 'react-bootstrap-icons'
 import SearchBar from '../SearchBar/SearchBar'
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
 import styles from './CompaniesList.module.scss'
 
-const CompaniesList = ({ companies }) => {
+const CompaniesList = ({ companies, onSearch, isLoading }) => {
   return (
     <div className={styles.companies}>
       <h2 className='custom_table_title'>Companies</h2>
       <div className={styles.companies_search_bar}>
         <FilterSquareFill />
-        <SearchBar />
+        <SearchBar onSubmit={onSearch} />
       </div>
       <div className={styles.companies_filters}>
         <span className={styles.companies_filters_title}>Filters:</span>
@@ -27,6 +27,7 @@ const CompaniesList = ({ companies }) => {
           </label>
         </form>
       </div>
+      <LoadingSpinner isLoading={isLoading} />
       <table className='custom_table'>
         <thead>
           <tr>
@@ -47,8 +48,12 @@ const CompaniesList = ({ companies }) => {
                 </a>
               </td>
               <td>
-                <a className={`${styles.company_link} link`}
-                href={`/user/sectors/${company.sector_id}`}>{company.sector_name}</a>
+                <a
+                  className={`${styles.company_link} link`}
+                  href={`/user/sectors/${company.sector_id}`}
+                >
+                  {company.sector_name}
+                </a>
               </td>
               <td>
                 <span>

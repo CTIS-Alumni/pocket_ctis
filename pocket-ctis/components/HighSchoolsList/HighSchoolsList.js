@@ -1,23 +1,16 @@
 import Link from 'next/link'
-import {
-  Container,
-  ListGroup,
-  ListGroupItem,
-  Row,
-  Col,
-  Form,
-} from 'react-bootstrap'
-import { FilterSquareFill, Check} from 'react-bootstrap-icons'
+import { FilterSquareFill } from 'react-bootstrap-icons'
 import SearchBar from '../SearchBar/SearchBar'
 import styles from './HighSchoolsList.module.scss'
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
 
-const HighSchoolList = ({ highSchools }) => {
+const HighSchoolList = ({ highSchools, onSearch, isLoading }) => {
   return (
     <div className={styles.highSchools}>
       <h2 className='custom_table_title'>High Schools</h2>
       <div className={styles.highSchools_search_bar}>
         <FilterSquareFill />
-        <SearchBar />
+        <SearchBar onSubmit={onSearch} />
       </div>
       <div className={styles.highSchools_filters}>
         <span className={styles.highSchools_filters_title}>Filters:</span>
@@ -35,6 +28,7 @@ const HighSchoolList = ({ highSchools }) => {
           </label>
         </form>
       </div>
+      <LoadingSpinner isLoading={isLoading} />
       <table className='custom_table'>
         <thead>
           <tr>
@@ -43,19 +37,17 @@ const HighSchoolList = ({ highSchools }) => {
           </tr>
         </thead>
         <tbody>
-          {highSchools.map((highSchool, i) => (
+          {highSchools?.map((highSchool, i) => (
             <tr className='hoverable' key={i}>
               <td>
-                <a
+                <Link
                   className={`${styles.highSchool_link} link`}
                   href={`/user/highSchools/${highSchool.id}`}
                 >
                   {highSchool.high_school_name}
-                </a>
+                </Link>
               </td>
-              <td>
-                {`${highSchool.city_name} - ${highSchool.country_name}`}
-              </td>
+              <td>{`${highSchool.city_name} - ${highSchool.country_name}`}</td>
             </tr>
           ))}
         </tbody>
