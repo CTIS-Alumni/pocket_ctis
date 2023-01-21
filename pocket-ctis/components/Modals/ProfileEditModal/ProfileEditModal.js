@@ -928,30 +928,31 @@ const HighSchoolInformationForm = ({ highSchool }) => {
   )
 }
 
-const ProfileEditModal = ({ meta, user }) => {
+const ProfileEditModal = ({ user }) => {
   const [show, setShow] = useState(false)
   const {
-    cert,
-    eduRecords,
-    email,
+    certificates,
+    edu_records,
+    emails,
     erasmus,
-    workRecords,
-    phone,
+    work_records,
+    phone_numbers,
     socials,
     skills,
-    pfp,
-    wantSectors,
+    profile_picture,
+    wanted_sectors,
     location,
     societies,
     internships,
-    careerObjectives,
-    highSchool,
-  } = meta
+    career_objective,
+    high_school,
+      basic_info
+  } = user
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
   //   console.log(user)
   useEffect(() => {
-    user.name = user.first_name + ' ' + user.last_name
+    user.name = basic_info[0].first_name + ' ' + basic_info[0].last_name
   }, [])
 
   return (
@@ -985,34 +986,34 @@ const ProfileEditModal = ({ meta, user }) => {
                   user={user}
                   location={location}
                   socials={socials}
-                  email={email}
-                  phone={phone}
-                  careerObjectives={careerObjectives}
+                  email={emails}
+                  phone={phone_numbers}
+                  career_objectives={career_objective}
                 />
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='1'>
               <Accordion.Header>Work Information</Accordion.Header>
               <Accordion.Body>
-                <WorkInformationForm workRecords={workRecords} />
+                <WorkInformationForm workRecords={work_records} />
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='2'>
               <Accordion.Header>Education Information</Accordion.Header>
               <Accordion.Body>
-                <EducationInformationForm eduRecords={eduRecords} />
+                <EducationInformationForm eduRecords={edu_records} />
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='3'>
               <Accordion.Header>High School Information</Accordion.Header>
               <Accordion.Body>
-                <HighSchoolInformationForm highSchool={highSchool} />
+                <HighSchoolInformationForm highSchool={high_school} />
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='4'>
               <Accordion.Header>Certificates</Accordion.Header>
               <Accordion.Body>
-                <CertificatesInformationForm certificates={cert} />
+                <CertificatesInformationForm certificates={certificates} />
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='5'>
