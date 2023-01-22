@@ -1,13 +1,4 @@
 import Link from 'next/link'
-import {
-  Container,
-  ListGroup,
-  ListGroupItem,
-  Row,
-  Badge,
-  Col,
-  Form,
-} from 'react-bootstrap'
 import SearchBar from '../SearchBar/SearchBar'
 import { FilterSquareFill, Check } from 'react-bootstrap-icons'
 import styles from './UniversitiesList.module.scss'
@@ -49,12 +40,12 @@ const UniversitiesList = ({ universities, isLoading, onSearch }) => {
           {universities.map((university, i) => (
             <tr className='hoverable' key={i}>
               <td>
-                <a
+                <Link
                   href={`/user/universities/${university.id}`}
                   className={`${styles.university_link} link`}
                 >
                   {university.inst_name}
-                </a>
+                </Link>
               </td>
               <td>
                 <span>
