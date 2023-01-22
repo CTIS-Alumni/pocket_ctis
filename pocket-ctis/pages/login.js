@@ -1,6 +1,7 @@
 import { Formik, Field, Form } from 'formik'
 import { Col, Container, Row } from 'react-bootstrap'
 import { useRouter } from 'next/router'
+import styles from '../styles/login.module.css'
 
 const requestLogin = async (authCredentials) => {
   const res = await fetch('http://localhost:3000/api/login', {
@@ -41,27 +42,32 @@ const Login = () => {
               enableReinitialize
               onSubmit={onSubmit}
             >
-              <Form>
+              <Form className={styles.form_container}>
                 <p>
-                  <label htmlFor='username'>Username</label>
-                  <Field id='username' name='username' placeholder='Username' />
+                  <Field
+                    className={styles.input_field}
+                    id='username'
+                    name='username'
+                    placeholder='username'
+                  />
+                  <label className={styles.input_label} htmlFor='username'>
+                    Username
+                  </label>
                 </p>
                 <p>
-                  <label htmlFor='password'>Password</label>
-                  <Field id='password' name='password' placeholder='Password' />
+                  <Field
+                    className={styles.input_field}
+                    id='password'
+                    name='password'
+                    placeholder='password'
+                  />
+                  <label className={styles.input_label} htmlFor='password'>
+                    Password
+                  </label>
                 </p>
-                  <button
-                    type='submit'
-                    className='mt-3'
-                    style={{
-                      backgroundColor: '#f5a425',
-                      border: 'none',
-                      padding: 5,
-                      width: 100,
-                    }}
-                    >
-                    Login
-                  </button>
+                <button type='submit' className={styles.button}>
+                  Login
+                </button>
               </Form>
             </Formik>
           </Col>
