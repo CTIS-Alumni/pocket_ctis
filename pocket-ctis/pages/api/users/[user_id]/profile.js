@@ -36,7 +36,7 @@ export default async function handler(req, res){
                 queries.push({name: "high_school", query: temp, values: [user_id]});
 
                 temp = "SELECT ul.id, ul.city_id, ci.city_name, co.country_name, ul.visibility FROM userlocation ul JOIN city ci ON (ul.city_id = ci.id) " +
-                "JOIN country co ON (ci.country_id = co.id) WHERE ul.user_id = ?";
+                    "JOIN country co ON (ci.country_id = co.id) WHERE ul.user_id = ?";
                 queries.push({name: "location", query: temp, values: [user_id]});
 
                 temp = "SELECT id, phone_number, visibility FROM userphone WHERE user_id = ?";
@@ -66,7 +66,7 @@ export default async function handler(req, res){
                 queries.push({name: "societies", query: temp, values: [user_id]});
 
                 temp = "SELECT uws.id, s.sector_name, uws.visibility FROM userwantsector uws JOIN sector s ON (uws.sector_id = s.id) " +
-                "WHERE uws.user_id = ? order by s.sector_name asc";
+                    "WHERE uws.user_id = ? order by s.sector_name asc";
                 queries.push({name: "wanted_sectors", query: temp, values: [user_id]});
 
                 temp = "SELECT w.id, c.company_name, wt.type_name, w.department, w.position, w.work_description, ci.city_name, co.country_name, w.start_date, w.end_date, w.visibility, w.is_current " +
@@ -102,7 +102,7 @@ export default async function handler(req, res){
 
 
                 const {data, errors} = await doMultiQueries(queries);
-                    res.status(200).json({data, errors});
+                res.status(200).json({data, errors});
             }catch(error){
                 res.status(500).json({error: error.message});
             }

@@ -20,11 +20,11 @@ export default async function handler(req, res){
 
                 query += "order by g.project_year";
 
-                const gradprojects = await doquery({query: query, values: values});
-                if(gradprojects.hasOwnProperty("error"))
-                    res.status(500).json({error: gradprojects.error.message});
+                const data = await doquery({query: query, values: values});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
                 else
-                    res.status(200).json({gradprojects});
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }

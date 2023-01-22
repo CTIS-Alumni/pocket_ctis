@@ -8,6 +8,19 @@ export default async function handler(req, res){
     const { user_id } = req.query;
     const method = req.method;
     switch(method){
+        case "GET":
+            try{
+                const query = "SELECT uhs.id, hs.high_school_name, uhs.visibility FROM userhighschool uhs JOIN highschool hs ON (uhs.high_school_id = hs.id) " +
+                    "WHERE uhs.user_id = ?";
+                const data = await doquery({query: query, values: [user_id]});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
+            } catch(error){
+                res.status(500).json({error: error.message});
+            }
+            break;
         case "POST":
             try{
                 const {high_school_id, visibility} = req.body.highschool;

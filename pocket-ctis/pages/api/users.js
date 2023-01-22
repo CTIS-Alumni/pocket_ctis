@@ -55,11 +55,11 @@ export default async function handler(req, res){
 
                 query += "GROUP BY uat.user_id order by u.first_name asc";
 
-                const users = await doquery({query:query, values: values});
-                if(users.hasOwnProperty("error"))
-                    res.status(500).json({error: users.error.message});
+                const data = await doquery({query:query, values: values});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
                 else
-                    res.status(200).json({users});
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
