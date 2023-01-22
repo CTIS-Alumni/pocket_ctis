@@ -1,3 +1,12 @@
+const _getFetcher = async (url) => {
+  const res = await fetch(url, {
+    headers: {
+      'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
+    },
+  })
+  return await res.json()
+}
+
 export const fetchUsers = async (search) => {
   const res = await fetch(`http://localhost:3000/api/users?name=${search}`, {
     headers: {
@@ -6,6 +15,13 @@ export const fetchUsers = async (search) => {
   })
   const { users } = await res.json()
   return users
+}
+
+export const fetchSectors = async (search) => {
+  const { sectors } = await _getFetcher(
+    `http://localhost:3000/api/sectors?name=${search}`
+  )
+  return sectors
 }
 
 export const fetchHighSchools = async (search) => {
