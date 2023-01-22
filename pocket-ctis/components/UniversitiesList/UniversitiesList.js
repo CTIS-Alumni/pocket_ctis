@@ -9,16 +9,17 @@ import {
   Form,
 } from 'react-bootstrap'
 import SearchBar from '../SearchBar/SearchBar'
-import { FilterSquareFill, Check} from 'react-bootstrap-icons'
+import { FilterSquareFill, Check } from 'react-bootstrap-icons'
 import styles from './UniversitiesList.module.scss'
+import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
 
-const UniversitiesList = ({ universities }) => {
+const UniversitiesList = ({ universities, isLoading, onSearch }) => {
   return (
     <div className={styles.universities}>
       <h2 className='custom_table_title'>Universities</h2>
       <div className={styles.universities_search_bar}>
         <FilterSquareFill />
-        <SearchBar />
+        <SearchBar onSubmit={onSearch} />
       </div>
       <div className={styles.universities_filters}>
         <span className={styles.universities_filters_title}>Filters:</span>
@@ -36,6 +37,7 @@ const UniversitiesList = ({ universities }) => {
           </label>
         </form>
       </div>
+      <LoadingSpinner isLoading={isLoading} />
       <table className='custom_table'>
         <thead>
           <tr>
