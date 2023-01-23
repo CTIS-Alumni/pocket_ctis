@@ -3,7 +3,7 @@
     border: none;
     padding: 5px;
     width: 100%;
-
+    border-radius: 4px;
 }
 
 .input_label{
@@ -19,11 +19,15 @@
     transition: all .3s;
 }
 
+.input_container{
+    margin: 0px;
+}
+
 .input_field{
     width: 100%;
     padding: 5px;
     border: none;
-    /* border-radius: 4px; */
+    border-radius: 4px 4px 0px 0px;
     background-color: lightgrey;
     border-style: none none solid none;
     transition: all .3s;
@@ -42,9 +46,23 @@
 .input_field:focus + .input_label, 
 .input_field:not(:placeholder-shown) + .input_label{
     transform: translateY(-4em) scale(1.1);
+    letter-spacing: 3px;
 }
 
 .form_container{
     width: 100%;
     transition: all .3s;
+}
+
+.forgot_password{
+    font-size: 13px;
+    transition: all .3s;
+    cursor: pointer;
+}
+.forgot_password:hover{
+    color:#f5a425
+}
+
+.forgot_password_container{
+    text-align: right;
 }

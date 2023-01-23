@@ -43,7 +43,7 @@ const Login = () => {
               onSubmit={onSubmit}
             >
               <Form className={styles.form_container}>
-                <p>
+                <p className={styles.input_container}>
                   <Field
                     className={styles.input_field}
                     id='username'
@@ -54,7 +54,7 @@ const Login = () => {
                     Username
                   </label>
                 </p>
-                <p>
+                <p className={styles.input_container}>
                   <Field
                     className={styles.input_field}
                     id='password'
@@ -64,6 +64,11 @@ const Login = () => {
                   <label className={styles.input_label} htmlFor='password'>
                     Password
                   </label>
+                </p>
+                <p className={styles.forgot_password_container}>
+                  <span className={styles.forgot_password}>
+                    Forgot password?
+                  </span>
                 </p>
                 <button type='submit' className={styles.button}>
                   Login
