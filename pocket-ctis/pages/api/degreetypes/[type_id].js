@@ -13,7 +13,10 @@ export default async function handler(req, res){
                 const {degree_name} = req.body.degreetype;
                 const query = "UPDATE degreetype SET degree_name = ? WHERE id = ?"
                 const data = await doquery({query: query,values: [degree_name,type_id]});
-                res.status(200).json({message: data });
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
+                else
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
@@ -22,7 +25,7 @@ export default async function handler(req, res){
             try{
                 const query = "DELETE FROM degreetypes WHERE id = ?"
                 const data = await doquery({query: query,values: [degree_id]});
-                res.status(200).json({message: data});
+                res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }

@@ -33,7 +33,7 @@ export default async function handler(req, res) {
                 }
 
                 query +="GROUP BY w.id order by record_date desc";
-                const work = await doquery({query:query, values: values});
+                const data = await doquery({query:query, values: values});
 
                 //use user_id and company_id as links to their page
                 //use user_types array to denote types with icon
@@ -44,10 +44,10 @@ export default async function handler(req, res) {
                 //if the current session is admin, show the invisible ones as visible but indicate that they are actually invisible in some way
                 //use profile pic before first name last name
 
-                if(work.hasOwnProperty("error"))
-                    res.status(500).json({error: work.error.message});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
                 else
-                    res.status(200).json({work});
+                    res.status(200).json({data});
             } catch (error) {
                 res.status(500).json({error: error.message});
             }

@@ -34,11 +34,11 @@ export default async function handler(req, res){
 
                 query +="order by ei.inst_name asc";
 
-                const educationinstitutes = await doquery({query:query, values: values});
-                if(educationinstitutes.hasOwnProperty("error"))
-                    res.status(500).json({error: educationinstitutes.error.message});
+                const data = await doquery({query:query, values: values});
+                if(data.hasOwnProperty("error"))
+                    res.status(500).json({error: data.error.message});
                 else
-                    res.status(200).json({educationinstitutes});
+                    res.status(200).json({data});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
