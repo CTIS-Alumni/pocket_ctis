@@ -1,0 +1,39 @@
+@import '../../../styles/variables.scss';
+
+.people_wishing_item {
+    a {
+        background-color: white;
+        margin-bottom: 1em;
+        padding: 0.8em 1.2em;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: inherit;
+
+        >div:first-of-type {
+            display: flex;
+            align-items: center;
+        }
+
+        >div>div:first-of-type {
+            margin-right: 1em;
+        }
+    }
+
+    &_info {
+        span {
+            display: block;
+        }
+    }
+
+    &_name {}
+
+    &_badge span {
+        font-size: 0.8em;
+        color: $white;
+        background-color: $medium-grey;
+        padding: 0.4em 0.6em;
+        border-radius: 500px;
+    }
+}

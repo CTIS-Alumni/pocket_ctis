@@ -3,19 +3,19 @@ import { Spinner } from 'react-bootstrap'
 import CompaniesList from '../../../components/CompaniesList/CompaniesList'
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
-import { fetchCompany } from '../../../helpers/searchHelpers'
+import { fetchAllCompanies, fetchCompany } from '../../../helpers/searchHelpers'
 
-const CompaniesDashboard = ({ data }) => {
+const CompaniesDashboard = ({ res }) => {
   const [companies, setCompanies] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
-    setCompanies(data)
+    setCompanies(res.data)
   }, [])
 
   const onSearch = ({ searchValue }) => {
     setIsLoading(true)
     fetchCompany(searchValue)
-      .then((res) => setCompanies(res))
+      .then((res) => setCompanies(res.data))
       .catch((err) => console.log(err))
       .finally((_) => setIsLoading(false))
   }
@@ -34,13 +34,8 @@ const CompaniesDashboard = ({ data }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch(process.env.BACKEND_PATH + '/companies', {
-    headers: {
-      'x-api-key': process.env.API_KEY,
-    },
-  })
-  const { companies } = await res.json()
-  return { props: { data: companies } }
+  const res = await fetchAllCompanies()
+  return { props: { res } }
 }
 
 export default CompaniesDashboard

@@ -5,6 +5,7 @@ import { getTimePeriod } from '../../../helpers/formatHelpers'
 import React from 'react'
 import { MortarboardFill } from 'react-bootstrap-icons'
 import styles from '../../../styles/universities.module.scss'
+import { fetchEducationalRecordsByInstitute, fetchEducationInstituteById } from '../../../helpers/searchHelpers'
 
 const EducationInstitute = ({ edu_inst, users }) => {
   return (
@@ -30,7 +31,7 @@ const EducationInstitute = ({ edu_inst, users }) => {
           </div>
           
           <span className={styles.university_info_people}>
-            {users.length > 0
+            {users.data.length > 0
               ? `
             People who have studied at ${edu_inst.inst_name}:`
               : `No one from your department have studied at ${edu_inst.inst_name}.`}
@@ -43,7 +44,7 @@ const EducationInstitute = ({ edu_inst, users }) => {
           </div>
         )}
 
-{users.map((user) => {
+{users.data.map((user) => {
         
         const studyPeriod = getTimePeriod(
           user.start_date,
@@ -89,24 +90,9 @@ const EducationInstitute = ({ edu_inst, users }) => {
 }
 
 export async function getServerSideProps(context) {
-  const res = await fetch(
-    process.env.BACKEND_PATH+"/educationinstitutes/" + context.params.id, {
-          headers:{
-              'x-api-key': process.env.API_KEY
-          }
-      }
-  )
-  const { data } = await res.json()
-
-  const res2 = await fetch(
-    process.env.BACKEND_PATH+"/educationrecords?edu_inst_id= "+
-      context.params.id,{
-            headers: {
-              'x-api-key':process.env.API_KEY
-            }
-        });
-  const users = await res2.json()
-  return { props: { edu_inst: data[0], users: users.edu } }
+  const educationinstitute = await fetchEducationInstituteById(context.params.id)
+  const users = await fetchEducationalRecordsByInstitute(context.params.id)
+  return { props: { edu_inst: educationinstitute , users } }
 }
 
 export default EducationInstitute

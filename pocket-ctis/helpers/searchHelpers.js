@@ -1,219 +1,199 @@
-const _getFetcher = async (url) => {
-  const res = await fetch(url, {
-    headers: {
-      'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-    },
-  })
-  return await res.json()
-}
+import { _getFetcher } from './fetchHelper'
 
 export const fetchUsers = async (search) => {
-  const res = await fetch(`http://localhost:3000/api/users?name=${search}`, {
-    headers: {
-      'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-    },
-  })
-  const { users } = await res.json()
-  return users
+  const res = await _getFetcher(
+    `http://localhost:3000/api/users?name=${search}`
+  )
+  return res
 }
 
 export const fetchSectors = async (search) => {
-  const { sectors } = await _getFetcher(
+  const res = await _getFetcher(
     `http://localhost:3000/api/sectors?name=${search}`
   )
-  return sectors
+  return res
 }
 
 export const fetchHighSchools = async (search) => {
-  const res = await fetch(
-    `http://localhost:3000/api/highschools?name=${search}`,
-    {
-      headers: {
-        'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-      },
-    }
+  const res = await _getFetcher(
+    `http://localhost:3000/api/highschools?name=${search}`
   )
-  const { highschools } = await res.json()
-  return highschools
+  return res
+}
+
+export const fetchHighSchoolById = async (highSchoolId) => {
+  const res = await _getFetcher(
+    `http://localhost:3000/api/highschools/${highSchoolId}`
+  )
+  return res.data[0]
+}
+
+export const fetchUsersInHighShool = async (highSchoolId) => {
+  const res = await _getFetcher(
+    `http://localhost:3000/api/users?highschool_id=${highSchoolId}`
+  )
+  return res
 }
 
 export const fetchCompany = async (search) => {
-  const res = await fetch(
-    `http://localhost:3000/api/companies?name=${search}`,
-    {
-      headers: {
-        'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-      },
-    }
+  const res = await _getFetcher(
+    `http://localhost:3000/api/companies?name=${search}`
   )
-  const { companies } = await res.json()
-  return companies
+  return res
 }
 
-export const fetchEduinst = async (search) => {
-  const res = await fetch(
-    `http://localhost:3000/api/educationinstitutes?name=${search}`,
-    {
-      headers: {
-        'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-      },
-    }
+export const fetchEducationInstitutes = async (search) => {
+  const res = await _getFetcher(
+    `http://localhost:3000/api/educationinstitutes?name=${search}`
   )
-  const { educationinstitutes } = await res.json()
-  return educationinstitutes
+  return res
 }
 
 export const fetchGraduationproject = async (search) => {
-  const res = await fetch(
-    `http://localhost:3000/api/graduationprojects?name=${search}`,
-    {
-      headers: {
-        'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-      },
-    }
+  const res = await _getFetcher(
+    `http://localhost:3000/api/graduationprojects?name=${search}`
   )
-  const { gradprojects } = await res.json()
-  return gradprojects
+  return res
 }
 
 export const fetchPeoplWorkingInSector = async (sectorId) => {
-  const resPeople = await fetch(
-    'http://localhost:3000/api/workrecords?worksector_id=' + sectorId,
-    {
-      headers: {
-        'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-      },
-    }
+  const res = await _getFetcher(
+    'http://localhost:3000/api/workrecords?worksector_id=' + sectorId
   )
-  const { work } = await resPeople.json()
-  return work
+  return res
 }
 
 export const fetchCompaniesInSector = async (sectorId) => {
-  const resCompanies = await fetch(
-    'http://localhost:3000/api/companies?sector_id=' + sectorId,
-    {
-      headers: {
-        'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-      },
-    }
+  const res = await _getFetcher(
+    'http://localhost:3000/api/companies?sector_id=' + sectorId
   )
-  const { companies } = await resCompanies.json()
-  return companies
+  return res
+}
+
+export const fetchUsersInCompany = async (companyId) => {
+  const res = await _getFetcher(
+    'http://localhost:3000/api/workrecords?company_id=' + companyId
+  )
+  return res
+}
+
+export const fetchCompanyById = async (companyId) => {
+  const res = await _getFetcher(
+    'http://localhost:3000/api/companies/' + companyId
+  )
+  return res.data[0]
+}
+
+export const fetchEducationInstituteById = async (eduInstId) => {
+  const res = await _getFetcher(
+    'http://localhost:3000/api/educationinstitutes/' + eduInstId
+  )
+  return res.data[0]
+}
+
+export const fetchEducationalRecordsByInstitute = async (eduInstId) => {
+  const res = await _getFetcher(
+    'http://localhost:3000/api/educationrecords?edu_inst_id=' + eduInstId
+  )
+  return res
+}
+
+export const fetchSector = async (sectorId) => {
+  const res = await _getFetcher('http://localhost:3000/api/sectors/' + sectorId)
+  return res
 }
 
 export const fetchAllCompanies = async () => {
-  const res = await fetch('http://localhost:3000/api/companies', {
-    headers: {
-      'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-    },
-  })
-  const { companies } = await res.json()
-  return companies
+  const res = await _getFetcher('http://localhost:3000/api/companies')
+  return res
+}
+
+export const fetchAllInternshipRecords = async () => {
+  const res = await _getFetcher('http://localhost:3000/api/internships')
+  return res
 }
 
 export const fetchAllEducationInstitutes = async () => {
-  const res = await fetch('http://localhost:3000/api/educationinstitutes', {
-    headers: {
-      'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-    },
-  })
-  const { educationinstitutes } = await res.json()
-  return educationinstitutes
+  const res = await _getFetcher('http://localhost:3000/api/educationinstitutes')
+  return res
 }
 
 export const fetchAllSkillTypes = async () => {
-  const res = await fetch('http://localhost:3000/api/skilltypes', {
-    headers: {
-      'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-    },
-  })
-  const { data } = await res.json()
-  return data
+  const res = await _getFetcher('http://localhost:3000/api/skilltypes')
+  return res
+}
+
+export const fetchAllSectors = async () => {
+  const res = await _getFetcher('http://localhost:3000/api/sectors')
+  return res
 }
 
 export const fetchAllHighSchool = async () => {
-  const res = await fetch('http://localhost:3000/api/highschools', {
-    headers: {
-      'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-    },
-  })
-  const { highschools } = await res.json()
-  return highschools
+  const res = await _getFetcher('http://localhost:3000/api/highschools')
+  return res
 }
 
 export const fetchAllDegreeTypes = async () => {
-  const res = await fetch('http://localhost:3000/api/degreetypes', {
-    headers: {
-      'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-    },
-  })
-  const { data } = await res.json()
-  return data
+  const res = await _getFetcher('http://localhost:3000/api/degreetypes')
+  return res
 }
+
 export const fetchAllSocieties = async () => {
-  const res = await fetch('http://localhost:3000/api/studentsocieties', {
-    headers: {
-      'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-    },
-  })
-  const { data } = await res.json()
-  return data
+  const res = await _getFetcher('http://localhost:3000/api/studentsocieties')
+  return res
+}
+
+export const fetchAllGraduationProjects = async () => {
+  const res = await _getFetcher('http://localhost:3000/api/graduationprojects')
+  return res
 }
 
 export const fetchPeopleWantingToWorkInSector = async (sectorId) => {
-  const resPeopleWanting = await fetch(
-    'http://localhost:3000/api/users?wantsector_id=' + sectorId,
-    {
-      headers: {
-        'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-      },
-    }
+  const res = await _getFetcher(
+    'http://localhost:3000/api/users?wantsector_id=' + sectorId
   )
-  const { users } = await resPeopleWanting.json()
-  return users
+  return res
 }
 
 export const fetchErasmusUniversities = async () => {
-  const res = await fetch(
-    'http://localhost:3000/api/educationinstitutes?erasmus=1',
-    {
-      headers: {
-        'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-      },
-    }
+  const res = await _getFetcher(
+    'http://localhost:3000/api/educationinstitutes?erasmus=1'
   )
-  const { educationinstitutes } = await res.json()
-  return educationinstitutes
+  return res
 }
+
 export const fetchInternshipCompanies = async () => {
-  const res = await fetch('http://localhost:3000/api/companies?internship=1', {
-    headers: {
-      'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-    },
-  })
-  const { companies } = await res.json()
-  return companies
+  const res = await _getFetcher(
+    'http://localhost:3000/api/companies?internship=1'
+  )
+  return res
 }
+
 export const fetchErasmusRecords = async () => {
-  const res = await fetch('http://localhost:3000/api/erasmus', {
-    headers: {
-      'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-    },
-  })
-  const { data } = await res.json()
-  return data
+  const res = await _getFetcher('http://localhost:3000/api/erasmus')
+  return res
 }
 
 export const fetchProfile = async (id) => {
   const res = await fetch(
-      'http://localhost:3000/api/users/' + id + '/profile',
-      {
-        headers: {
-          'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-        },
-      }
+    'http://localhost:3000/api/users/' + id + '/profile',
+    {
+      headers: {
+        'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
+      },
+    }
   )
-  const { data, errors } = await res.json();
-  return  {data, errors}
+  const { data, errors } = await res.json()
+  return { data, errors }
+}
+
+export const getWorkUpdates = async () => {
+  const res = await _getFetcher('http://localhost:3000/api/users/workrecords')
+  return res
+}
+
+export const getEducationUpdates = async () => {
+  const res = await fetch('http://localhost:3000/api/users/educationrecords')
+  console.log(res)
+  return res
 }

@@ -2,20 +2,23 @@ import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import HighSchoolList from '../../../components/HighSchoolsList/HighSchoolsList'
 import { useEffect, useState } from 'react'
-import { fetchHighSchools } from '../../../helpers/searchHelpers'
+import {
+  fetchAllHighSchool,
+  fetchHighSchools,
+} from '../../../helpers/searchHelpers'
 
 const HighSchoolDashboard = ({ data }) => {
-  const [highschools, setHighschools] = useState(data)
+  const [highschools, setHighschools] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
-    setHighschools(data)
+    setHighschools(data.data)
     setIsLoading(false)
   }, [])
 
   const onSearch = ({ searchValue }) => {
     setIsLoading(true)
     fetchHighSchools(searchValue)
-      .then((res) => setHighschools(res))
+      .then((res) => setHighschools(res.data))
       .catch((err) => console.log(err))
       .finally((_) => setIsLoading(false))
   }
@@ -34,14 +37,8 @@ const HighSchoolDashboard = ({ data }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch(process.env.BACKEND_PATH + '/highschools', {
-    headers: {
-      'x-api-key': process.env.API_KEY,
-    },
-  })
-  const { highschools } = await res.json()
-  console.log(highschools)
-  return { props: { data: highschools } }
+  const res = await fetchAllHighSchool()
+  return { props: { data: res } }
 }
 
 export default HighSchoolDashboard

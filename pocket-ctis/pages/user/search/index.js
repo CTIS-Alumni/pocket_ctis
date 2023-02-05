@@ -9,7 +9,7 @@ import {
   fetchUsers,
   fetchHighSchools,
   fetchCompany,
-  fetchEduinst,
+  fetchEducationInstitutes,
   fetchGraduationproject,
 } from '../../../helpers/searchHelpers'
 import styles from "../../../components/UserInfoSidebar/UserInfoSidebar.module.scss";
@@ -18,7 +18,7 @@ const getData = async (search) => {
   const [companies, eduInsts, gradProjects, users, highSchools] =
     await Promise.all([
       fetchCompany(search),
-      fetchEduinst(search),
+      fetchEducationInstitutes(search),
       fetchGraduationproject(search),
       fetchUsers(search),
       fetchHighSchools(search),

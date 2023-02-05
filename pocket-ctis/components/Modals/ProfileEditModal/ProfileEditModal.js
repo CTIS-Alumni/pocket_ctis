@@ -243,7 +243,7 @@ const WorkInformationForm = ({ workRecords }) => {
   const [companies, setCompanies] = useState([])
   useEffect(() => {
     fetchAllCompanies()
-      .then((res) => setCompanies(res))
+      .then((res) => setCompanies(res.data))
       .catch((err) => console.log(err))
   }, [])
 
@@ -420,7 +420,7 @@ const SocietiesInformationForm = ({ societies }) => {
   const [studentSocieties, setStudentSocieties] = useState([])
   useEffect(() => {
     fetchAllSocieties()
-      .then((res) => setStudentSocieties(res))
+      .then((res) => setStudentSocieties(res.data))
       .catch((err) => console.log(err))
   }, [])
 
@@ -528,11 +528,11 @@ const EducationInformationForm = ({ eduRecords }) => {
   useEffect(() => {
     fetchAllEducationInstitutes()
       .then((res) => {
-        setEduInsts(res)
+        setEduInsts(res.data)
       })
       .catch((err) => console.log(err))
     fetchAllDegreeTypes()
-      .then((res) => setDegreeTypes(res))
+      .then((res) => setDegreeTypes(res.data))
       .catch((err) => console.log(err))
   }, [])
 
@@ -771,7 +771,7 @@ const SkillsInformationForm = ({ skills }) => {
   const [skillTypes, setSkillTypes] = useState([])
   useEffect(() => {
     fetchAllSkillTypes()
-      .then((res) => setSkillTypes(res))
+      .then((res) => setSkillTypes(res.data))
       .catch((err) => console.log(err))
   }, [])
   const onSubmitHandler = (values) => {
@@ -884,7 +884,7 @@ const HighSchoolInformationForm = ({ highSchool }) => {
   const [highSchools, setHighSchools] = useState([])
   useEffect(() => {
     fetchAllHighSchool()
-      .then((res) => setHighSchools(res))
+      .then((res) => setHighSchools(res.data))
       .catch((err) => console.log(err))
   }, [])
 
@@ -934,19 +934,15 @@ const ProfileEditModal = ({ user }) => {
     certificates,
     edu_records,
     emails,
-    erasmus,
     work_records,
     phone_numbers,
     socials,
     skills,
-    profile_picture,
-    wanted_sectors,
     location,
     societies,
-    internships,
     career_objective,
     high_school,
-      basic_info
+    basic_info,
   } = user
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)

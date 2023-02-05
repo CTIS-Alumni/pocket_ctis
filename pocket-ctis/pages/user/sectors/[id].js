@@ -1,122 +1,19 @@
-import Link from 'next/link'
-import {
-  Tab,
-  Tabs,
-  Container,
-  ListGroup,
-  ListGroupItem,
-  Badge,
-} from 'react-bootstrap'
-import NavigationBar from '../../../components/navbar/NavigationBar'
-import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
-import { getTimePeriod } from '../../../helpers/formatHelpers'
 import {
   fetchCompaniesInSector,
   fetchPeopleWantingToWorkInSector,
   fetchPeoplWorkingInSector,
+  fetchSector,
 } from '../../../helpers/searchHelpers'
 import { Easel2Fill } from 'react-bootstrap-icons'
+
+import { Tab, Tabs } from 'react-bootstrap'
+import NavigationBar from '../../../components/navbar/NavigationBar'
+import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
+import PeopleList from '../../../components/SectorPageComponents/PeopleList/PeopleList'
+import PeopleWishingList from '../../../components/SectorPageComponents/PeopleWishingList/PeopleWIshingList'
+import CompaniesList from '../../../components/SectorPageComponents/CompaniesList/CompaniesList'
+
 import styles from '../../../styles/sectors.module.scss'
-
-const PeopleList = ({ people }) => {
-  return (
-    <div>
-      {people.map((person) => {
-        const workPeriod = getTimePeriod(
-          person.start_date,
-          person.end_date,
-          person.is_current
-        )
-
-        return (
-          <div className={styles.people_item} key={person.id}>
-            <a className={styles.people_link} href={'/user/' + person.id}>
-              <div>
-                <div
-                  className='user_avatar_48'
-                  style={{backgroundImage: "url(" + '/profilepictures/' + (person.record_visibility ? (person.pic_visibility ? person.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
-                />
-                <div className={styles.people_item_info}>
-                  <span className={styles.people_item_name}>{person.first_name} {person.last_name}</span>
-                  <span className={styles.people_item_position}>{person.position || 'Developer'}</span>
-                  <span className={styles.people_item_department}>{person.department && `${person.department}`}</span>
-                  <span className={styles.people_item_work_period}>{workPeriod}</span>
-                  <div className={styles.people_item_location}>
-                    <span className={styles.people_item_city}>{person.city_name && `${person.city_name}, `}</span>
-                    <span className={styles.people_item_country}>{person.country_name}</span>
-                  </div>
-                </div>
-              </div>
-              <div className={styles.people_item_badge}>
-                {person.user_types.split(',').map((type,i) => (
-                  <span key={i}>
-                    {type.toLocaleUpperCase()}
-                  </span>
-                ))}
-              </div>
-            </a>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
-
-const PeopleWishingList = ({ peopleWishing }) => {
-  return (
-      <div>
-        {peopleWishing.map((person) => {
-          return (
-            <div className={styles.people_wishing_item} key={person.id}>
-              <a className={styles.people_wishing_link} href={'/user/' + person.id}>
-                <div>
-                  <div
-                    className='user_avatar_48'
-                    style={{backgroundImage: "url(" + '/profilepictures/' + (person.record_visibility ? (person.pic_visibility ? person.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
-                  />
-                  <div className={styles.people_wishing_item_info}>
-                    <span className={styles.people_wishing_item_name}>{person.first_name} {person.last_name}</span>
-                  </div>
-                </div>
-                <div className={styles.people_wishing_item_badge}>
-                  {person.user_types.split(',').map((type, index) => (
-                    <span key={index}>
-                      {type.toLocaleUpperCase()}
-                    </span>
-                  ))}
-                </div>
-              </a>
-            </div>
-          )
-        })}
-      </div>
-  )
-}
-
-const CompaniesList = ({ companies }) => {
-  return (
-    <div>
-      {companies.map((company) => {
-        return (
-          <div className={styles.company_item} key={company.id}>
-            <a className={styles.company_link} href={'/user/companies/' + company.id}>
-              <div className={styles.company_item_info}>
-                <span className={styles.company_item_name}>{company.company_name}</span>
-              </div>
-              <div className={styles.company_item_badge}>
-                {company.is_internship == 1 && (
-                  <span>
-                    Accepts CTIS Interns
-                  </span>
-                )}
-              </div>
-            </a>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
 
 const Sector = ({ sector, companies, work, users }) => {
   return (
@@ -126,19 +23,19 @@ const Sector = ({ sector, companies, work, users }) => {
       <div className={styles.main_div}>
         <div className={styles.sector_info}>
           <div className={styles.sector_icon}>
-            <Easel2Fill/>
+            <Easel2Fill />
           </div>
           <h4 className={styles.sector_name}>{sector.data[0].sector_name}</h4>
         </div>
         <Tabs defaultActiveKey='people' className='mb-3'>
           <Tab eventKey='people' title='People'>
-            <PeopleList people={work} />
+            <PeopleList people={work.data} />
           </Tab>
           <Tab eventKey='people_wishing' title='People Wishing'>
-            <PeopleWishingList peopleWishing={users} />
+            <PeopleWishingList peopleWishing={users.data} />
           </Tab>
           <Tab eventKey='companies' title='Companies'>
-            <CompaniesList companies={companies} />
+            <CompaniesList companies={companies.data} />
           </Tab>
         </Tabs>
       </div>
@@ -147,13 +44,7 @@ const Sector = ({ sector, companies, work, users }) => {
 }
 
 export async function getServerSideProps(context) {
-  const res = await fetch(
-    process.env.BACKEND_PATH+"/sectors/" + context.params.id,{
-          headers:{
-              'x-api-key': process.env.API_KEY
-          }
-      });
-  const sector = await res.json()
+  const sector = await fetchSector(context.params.id)
 
   const data = await Promise.all([
     fetchCompaniesInSector(context.params.id),
@@ -163,7 +54,14 @@ export async function getServerSideProps(context) {
 
   const [companies, work, users] = data
 
-  return { props: { sector, companies, work, users } }
+  return {
+    props: {
+      sector: sector,
+      companies: companies,
+      work: work,
+      users: users,
+    },
+  }
 }
 
 export default Sector

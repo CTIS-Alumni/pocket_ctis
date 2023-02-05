@@ -5,6 +5,7 @@ import { getTimePeriod } from '../../../helpers/formatHelpers'
 import styles from '../../../styles/companies.module.scss'
 import React from 'react'
 import { BuildingFill } from 'react-bootstrap-icons'
+import { fetchCompanyById, fetchUsersInCompany } from '../../../helpers/searchHelpers'
 
 const Company = ({ company, users }) => {
   return (
@@ -26,7 +27,7 @@ const Company = ({ company, users }) => {
               </div>
 
               <span className={styles.company_info_people}>
-                {users.length > 0
+                {users.data.length > 0
                   ? `People who have worked at ${company.company_name}:`
                   : `No one from your department have worked at ${company.company_name}.`}
               </span>
@@ -39,9 +40,7 @@ const Company = ({ company, users }) => {
             )}
           </div>
 
-          {users.map((user) => {
-            console.log(user)
-
+          {users.data.map((user) => {
             const workPeriod = getTimePeriod(
               user.start_date,
               user.end_date,
@@ -83,22 +82,10 @@ const Company = ({ company, users }) => {
 }
 
 export async function getServerSideProps(context) {
-    const res = await fetch(
-        process.env.BACKEND_PATH + "/companies/" + context.params.id, {
-            headers: {
-                'x-api-key': process.env.API_KEY
-            }
-        });
-    const {data} = await res.json()
+    const company = await fetchCompanyById(context.params.id)
+    const users = await fetchUsersInCompany(context.params.id)
 
-    const res2 = await fetch(
-        process.env.BACKEND_PATH + "/workrecords?company_id=" + context.params.id, {
-            headers: {
-                'x-api-key': process.env.API_KEY
-            }
-        });
-    const users = await res2.json()
-    return {props: {company: data[0], users: users.work}}
+    return {props: {company, users}}
 }
 
 export default Company

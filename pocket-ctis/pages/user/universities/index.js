@@ -2,20 +2,20 @@ import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import UniversitiesList from '../../../components/UniversitiesList/UniversitiesList'
 import { useState, useEffect } from 'react'
-import { fetchEduinst } from '../../../helpers/searchHelpers'
+import { fetchAllEducationInstitutes, fetchEducationInstitutes } from '../../../helpers/searchHelpers'
 
-const UniversitiesDashboard = ({ data }) => {
+const UniversitiesDashboard = ({ educationinstitutes }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [universities, setUniversities] = useState([])
 
   useEffect(() => {
-    setUniversities(data)
+    setUniversities(educationinstitutes.data)
   }, [])
 
   const onSearch = ({ searchValue }) => {
     setIsLoading(true)
-    fetchEduinst(searchValue)
-      .then((res) => setUniversities(res))
+    fetchEducationInstitutes(searchValue)
+      .then((res) => setUniversities(res.data))
       .catch((err) => console.log(err))
       .finally((_) => setIsLoading(false))
   }
@@ -34,12 +34,7 @@ const UniversitiesDashboard = ({ data }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch(process.env.BACKEND_PATH + '/educationinstitutes', {
-    headers: {
-      'x-api-key': process.env.API_KEY,
-    },
-  })
-  const { educationinstitutes } = await res.json()
-  return { props: { data: educationinstitutes } }
+  const educationinstitutes = await fetchAllEducationInstitutes()
+  return { props: { educationinstitutes } }
 }
 export default UniversitiesDashboard

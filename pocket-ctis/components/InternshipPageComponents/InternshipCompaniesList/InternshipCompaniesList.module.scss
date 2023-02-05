@@ -1,12 +1,12 @@
-@import '../../styles/variables.scss';
+@import '../../../styles/variables.scss';
 
-.internship_students {
+.internship_companies {
     width: 100%;
 
     &_item {
         width: 100%;
     
-        .student_link {
+        .company_link {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
@@ -27,25 +27,28 @@
             display: flex;
             align-items: center;
 
+            svg {
+                width: 1.1em;
+                height: 1.1em;
+                color: $dark-grey;
+            }
+
             div:first-of-type {
+                background-color: $light-grey;
                 margin-right: 1em;
+                width: 2em;
+                height: 2em;
+                display: grid;
+                place-content: center;
+                border-radius: 50%;
             }
         }
     
         &_name {
             font-size: 1.1em;
-
-            &_anonymous {
-                color: $medium-grey;
-            }
-        }
-
-        &_company {
-            font-size: 1em;
-            color: $dark-grey;
         }
     
-        &_semester {
+        &_sector {
             font-size: 0.9em;
             color: $medium-grey;
         }
@@ -56,10 +59,6 @@
             background-color: $medium-grey;
             padding: 0.4em 0.6em;
             border-radius: 500px;
-
-            &:not(:last-of-type) {
-                margin-right: 0.8em;
-            }
         }
     }
 }

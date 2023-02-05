@@ -2,20 +2,20 @@ import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import SectorsList from '../../../components/SectorsList/SectorsList'
 import { useEffect, useState } from 'react'
-import { fetchSectors } from '../../../helpers/searchHelpers'
+import { fetchAllSectors, fetchSectors } from '../../../helpers/searchHelpers'
 
 const SectorsDashboard = ({ data }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [sectors, setSectors] = useState([])
 
   useEffect(() => {
-    setSectors(data)
+    setSectors(data.data)
   }, [])
 
   const onSearch = ({ searchValue }) => {
     setIsLoading(true)
     fetchSectors(searchValue)
-      .then((res) => setSectors(res))
+      .then((res) => setSectors(res.data))
       .catch((err) => console.log(err))
       .finally((_) => setIsLoading(false))
   }
@@ -34,13 +34,8 @@ const SectorsDashboard = ({ data }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch(process.env.BACKEND_PATH + '/sectors', {
-    headers: {
-      'x-api-key': process.env.API_KEY,
-    },
-  })
-  const { sectors } = await res.json()
-  return { props: { data: sectors } }
+  const res = await fetchAllSectors()
+  return { props: { data: res } }
 }
 
 export default SectorsDashboard
