@@ -26,3 +26,7 @@
 .editBtn:hover{
     background: #f5a425;
 }
+
+.inputLabel{
+    width: 200px;
+}

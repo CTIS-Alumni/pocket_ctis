@@ -18,9 +18,9 @@ import ProfileHighSchoolSection from '../../components/ProfilePageComponents/Pro
 import ProfileStudentSocieties from '../../components/ProfilePageComponents/ProfileStudentSocieties/ProfileStudentSocieties'
 
 /*
-#1F272B
-#f5a425
-#8d2729
+#1F272B = dark green
+#f5a425 = orange
+#8d2729 = red
 */
 
 const Profile = ({ user, errors }) => {

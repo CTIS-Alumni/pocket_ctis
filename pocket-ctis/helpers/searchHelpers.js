@@ -123,6 +123,11 @@ export const fetchAllSkillTypes = async () => {
   return res
 }
 
+export const fetchAllWorkTypes = async () => {
+  const res = await _getFetcher('http://localhost:3000/api/worktypes')
+  return res
+}
+
 export const fetchAllSectors = async () => {
   const res = await _getFetcher('http://localhost:3000/api/sectors')
   return res
