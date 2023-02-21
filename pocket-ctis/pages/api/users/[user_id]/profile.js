@@ -31,7 +31,7 @@ export default async function handler(req, res){
                 temp = "SELECT  id, email_address, visibility FROM useremail WHERE user_id = ? order by email_address asc";
                 queries.push({name: "emails", query: temp, values: [user_id]});
 
-                temp = "SELECT uhs.id, hs.high_school_name, uhs.visibility FROM userhighschool uhs JOIN highschool hs ON (uhs.high_school_id = hs.id) " +
+                temp = "SELECT uhs.id, hs.high_school_name, uhs.high_school_id, uhs.visibility FROM userhighschool uhs JOIN highschool hs ON (uhs.high_school_id = hs.id) " +
                     "WHERE uhs.user_id = ?";
                 queries.push({name: "high_school", query: temp, values: [user_id]});
 
@@ -60,7 +60,7 @@ export default async function handler(req, res){
                     "WHERE usm.user_id = ? order by sm.social_media_name asc ";
                 queries.push({name: "socials", query: temp, values: [user_id]});
 
-                temp = "SELECT uss.id, ss.society_name, uss.activity_status, uss.visibility " +
+                temp = "SELECT uss.id, uss.society_id, ss.society_name, uss.activity_status, uss.visibility " +
                     "FROM userstudentsociety uss JOIN studentsociety ss ON (uss.society_id = ss.id) " +
                     "WHERE uss.user_id = ? order by ss.society_name asc";
                 queries.push({name: "societies", query: temp, values: [user_id]});
