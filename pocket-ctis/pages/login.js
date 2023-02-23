@@ -2,6 +2,8 @@ import { Formik, Field, Form } from 'formik'
 import { Col, Container, Row } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import styles from '../styles/login.module.css'
+import { User_data } from '../context/context'
+import { useContext } from 'react'
 
 const requestLogin = async (authCredentials) => {
   const res = await fetch('http://localhost:3000/api/login', {
@@ -13,11 +15,15 @@ const requestLogin = async (authCredentials) => {
 }
 
 const Login = () => {
+  const { userData, setUserData } = useContext(User_data)
+
   const router = useRouter()
   const onSubmit = async (values) => {
     const res = await requestLogin(values)
     if (res.status === 200) {
       router.push({ pathname: '/user' })
+      console.log(res.body)
+      setUserData({ name: 'iqbal' })
     }
   }
 
