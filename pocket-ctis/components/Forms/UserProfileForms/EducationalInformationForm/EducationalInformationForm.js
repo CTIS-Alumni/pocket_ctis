@@ -21,7 +21,7 @@ const EducationInformationForm = ({ data }) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
-      return datum
+      return { ...datum, inst: `${datum.edu_inst_id}-${datum.inst_name}` }
     })
     return newData
   }
@@ -93,15 +93,17 @@ const EducationInformationForm = ({ data }) => {
                                           <Field
                                             as='select'
                                             className={styles.inputField}
-                                            id={`edu_records[${index}]inst_name`}
-                                            name={`edu_records[${index}]inst_name`}
+                                            id={`edu_records[${index}]inst`}
+                                            name={`edu_records[${index}]inst`}
                                           >
                                             <option disabled selected value=''>
                                               Please select Educational
                                               Institute
                                             </option>
                                             {eduInsts.map((inst) => (
-                                              <option value={inst.inst_name}>
+                                              <option
+                                                value={`${inst.id}-${inst.inst_name}`}
+                                              >
                                                 {inst.inst_name}
                                               </option>
                                             ))}
