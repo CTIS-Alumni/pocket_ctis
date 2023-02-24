@@ -61,7 +61,7 @@ const ProfileEditModal = ({ user }) => {
           <Modal.Title>Edit Profile</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Accordion defaultActiveKey='6' flush>
+          <Accordion defaultActiveKey='2' flush>
             <Accordion.Item eventKey='0'>
               <Accordion.Header>Personal Information</Accordion.Header>
               <Accordion.Body style={{ overflowY: 'scroll' }}>

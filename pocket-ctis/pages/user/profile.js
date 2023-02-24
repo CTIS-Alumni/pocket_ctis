@@ -17,6 +17,8 @@ import ProfileEduSection from '../../components/ProfilePageComponents/ProfileEdu
 import ProfileHighSchoolSection from '../../components/ProfilePageComponents/ProfileHighSchoolSection/ProfileHighSchoolSection'
 import ProfileStudentSocieties from '../../components/ProfilePageComponents/ProfileStudentSocieties/ProfileStudentSocieties'
 
+import { User_data } from '../../context/context'
+import { useContext } from 'react'
 /*
 #1F272B = dark green
 #f5a425 = orange
@@ -24,6 +26,9 @@ import ProfileStudentSocieties from '../../components/ProfilePageComponents/Prof
 */
 
 const Profile = ({ user, errors }) => {
+  const { userData } = useContext(User_data)
+  console.log('from context', userData)
+
   const {
     certificates,
     edu_records,
