@@ -69,7 +69,7 @@ export default async function handler(req, res){
                     "WHERE uws.user_id = ? order by s.sector_name asc";
                 queries.push({name: "wanted_sectors", query: temp, values: [user_id]});
 
-                temp = "SELECT w.id, w.company_id, c.company_name, wt.type_name, w.work_type_id, w.department, w.position, w.work_description, ci.city_name, co.country_name, w.start_date, w.end_date, w.visibility, w.is_current " +
+                temp = "SELECT w.id, w.company_id, c.company_name, wt.type_name, w.work_type_id, w.department, w.position, w.work_description, ci.city_name, ci.id as 'city_id', co.country_name, co.id as 'country_id', w.start_date, w.end_date, w.visibility, w.is_current " +
                     "FROM workrecord w LEFT OUTER JOIN company c ON (w.company_id = c.id) " +
                     "JOIN worktype wt ON (w.work_type_id = wt.id) " +
                     "LEFT OUTER JOIN city ci ON (w.city_id = ci.id) " +
@@ -91,7 +91,7 @@ export default async function handler(req, res){
                 queries.push({name: "erasmus", query: temp, values: [user_id]});
 
                 temp = "SELECT e.id, e.edu_inst_id, ei.inst_name, d.id as 'degree_type_id', d.degree_name, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current, " +
-                    "ci.city_name, co.country_name  " +
+                    "ci.city_name, ci.id as 'city_id', co.country_name, co.id as 'country_id'  " +
                     "FROM educationrecord e " +
                     "JOIN educationinstitute ei ON (e.edu_inst_id = ei.id)  " +
                     "JOIN degreetype d ON (e.degree_type_id = d.id)  " +
