@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../styles/globals.scss'
+import '../styles/DatePicker.css'
 import '../styles/components.scss'
 import { SSRProvider } from 'react-bootstrap'
 import Context from '../context/context'

@@ -12,11 +12,11 @@ import {
   PlusCircleFill,
   XCircleFill,
 } from 'react-bootstrap-icons'
+import DatePickerField from '../../../DatePickers/DatePicker'
 
 const WorkInformationForm = ({ data }) => {
   const [companies, setCompanies] = useState([])
   const [worktypes, setWorktypes] = useState([])
-  //   console.log(companies)
 
   useEffect(() => {
     fetchAllCompanies().then((res) => setCompanies(res.data))
@@ -27,11 +27,34 @@ const WorkInformationForm = ({ data }) => {
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
+    console.log(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
+      datum.start_date = datum.start_date && new Date(datum.start_date)
+      datum.end_date = datum.end_date && new Date(datum.end_date)
+      datum.company = `${datum.company_id}-${datum.company_name}`
+      datum.work_type = `${datum.work_type_id}-${datum.type_name}`
+
       return datum
     })
     return newData
+  }
+
+  const onSubmitHandler = (values) => {
+    //transform data
+    let newData = cloneDeep(values)
+    console.log(newData)
+    newData.work_records = newData.work_records.map((val) => {
+      val.visibility = val.visibility ? 1 : 0
+      val.start_date =
+        val.start_date != null ? new Date(val.start_date).toISOString() : null
+      val.end_date =
+        val.end_date != null ? new Date(val.end_date).toISOString() : null
+      return val
+    })
+    console.log('values', newData)
+
+    //continue here
   }
 
   return (
@@ -41,7 +64,7 @@ const WorkInformationForm = ({ data }) => {
           work_records: transformData(data),
         }}
         enableReinitialize
-        onSubmit={(values) => console.log('values', values)}
+        onSubmit={(values) => onSubmitHandler(values)}
       >
         {(props) => {
           return (
@@ -110,8 +133,8 @@ const WorkInformationForm = ({ data }) => {
                                             <Field
                                               as='select'
                                               className={styles.inputField}
-                                              name={`work_records[${index}]company_name`}
-                                              id={`work_records[${index}]company_name`}
+                                              name={`work_records[${index}]company`}
+                                              id={`work_records[${index}]company`}
                                             >
                                               <option
                                                 value=''
@@ -122,7 +145,7 @@ const WorkInformationForm = ({ data }) => {
                                               </option>
                                               {companies.map((company) => (
                                                 <option
-                                                  value={company.company_name}
+                                                  value={`${company.id}-${company.company_name}`}
                                                 >
                                                   {company.company_name}
                                                 </option>
@@ -215,8 +238,8 @@ const WorkInformationForm = ({ data }) => {
                                               <Field
                                                 as='select'
                                                 className={styles.inputField}
-                                                name={`work_records[${index}]type_name`}
-                                                id={`work_records[${index}]type_name`}
+                                                name={`work_records[${index}]work_type`}
+                                                id={`work_records[${index}]work_type`}
                                               >
                                                 <option
                                                   value=''
@@ -227,7 +250,7 @@ const WorkInformationForm = ({ data }) => {
                                                 </option>
                                                 {worktypes.map((workType) => (
                                                   <option
-                                                    value={workType.type_name}
+                                                    value={`${workType.id}-${workType.type_name}`}
                                                   >
                                                     {workType.type_name}
                                                   </option>
@@ -250,8 +273,12 @@ const WorkInformationForm = ({ data }) => {
                                               >
                                                 Start Date
                                               </label>
-                                              <Field
-                                                className={styles.inputField}
+                                              <DatePickerField
+                                                format='MMM/y'
+                                                maxDetail='year'
+                                                className={
+                                                  styles.dateInputField
+                                                }
                                                 name={`work_records[${index}]start_date`}
                                                 id={`work_records[${index}]start_date`}
                                               />
@@ -265,8 +292,12 @@ const WorkInformationForm = ({ data }) => {
                                               >
                                                 End Date
                                               </label>
-                                              <Field
-                                                className={styles.inputField}
+                                              <DatePickerField
+                                                format='MMM/y'
+                                                maxDetail='year'
+                                                className={
+                                                  styles.dateInputField
+                                                }
                                                 name={`work_records[${index}]end_date`}
                                                 id={`work_records[${index}]end_date`}
                                               />
