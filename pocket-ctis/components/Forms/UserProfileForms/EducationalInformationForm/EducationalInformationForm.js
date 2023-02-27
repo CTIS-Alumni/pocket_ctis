@@ -22,7 +22,11 @@ const EducationInformationForm = ({ data }) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
-      return { ...datum, inst: `${datum.edu_inst_id}-${datum.inst_name}` }
+      datum.inst = `${datum.edu_inst_id}-${datum.inst_name}`
+      datum.start_date = datum.start_date && new Date(datum.start_date)
+      datum.end_date = datum.end_date && new Date(datum.end_date)
+
+      return datum
     })
     return newData
   }
