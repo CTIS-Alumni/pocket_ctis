@@ -15,6 +15,7 @@
     font-size: 13px;
     width: fit-content;
     letter-spacing: 1px;
+    z-index: 1;
     /* opacity: 50%; */
 }
 .inputField:disabled{
@@ -23,6 +24,14 @@
 }
 .inputField{
     padding: 10px 5px 5px 5px;
+    width: 100%;
+    border: 1px solid #f5a425;
+    border-radius: 4px;
+    resize: none;
+    color: #666;
+}
+.dateInputField{
+    padding: 5px 5px 2px 5px;
     width: 100%;
     border: 1px solid #f5a425;
     border-radius: 4px;

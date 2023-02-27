@@ -9,6 +9,7 @@ import {
 } from 'react-bootstrap-icons'
 import { useEffect, useState } from 'react'
 import { fetchAllEducationInstitutes } from '../../../../helpers/searchHelpers'
+import DatePickerField from '../../../DatePickers/DatePicker'
 
 const EducationInformationForm = ({ data }) => {
   const [eduInsts, setEduInsts] = useState([])
@@ -26,6 +27,23 @@ const EducationInformationForm = ({ data }) => {
     return newData
   }
 
+  const onSubmitHandler = (values) => {
+    //transform data
+    let newData = cloneDeep(values)
+    console.log(newData)
+    newData.edu_records = newData.edu_records.map((val) => {
+      val.visibility = val.visibility ? 1 : 0
+      val.start_date =
+        val.start_date != null ? new Date(val.start_date).toISOString() : null
+      val.end_date =
+        val.end_date != null ? new Date(val.end_date).toISOString() : null
+      return val
+    })
+    console.log('values', newData)
+
+    //continue here
+  }
+
   return (
     <>
       <Formik
@@ -33,7 +51,7 @@ const EducationInformationForm = ({ data }) => {
           edu_records: transformData(data),
         }}
         enableReinitialize
-        onSubmit={(values) => console.log('values', values)}
+        onSubmit={(values) => onSubmitHandler(values)}
       >
         {(props) => {
           return (
@@ -189,7 +207,7 @@ const EducationInformationForm = ({ data }) => {
                                             justifyContent: 'space-between',
                                           }}
                                         >
-                                          <div
+                                          {/* <div
                                             className={styles.inputContainer}
                                             style={{ width: '49%' }}
                                           >
@@ -203,7 +221,25 @@ const EducationInformationForm = ({ data }) => {
                                               name={`edu_records[${index}]start_date`}
                                               id={`edu_records[${index}]start_date`}
                                             />
+                                          </div> */}
+                                          <div
+                                            className={styles.inputContainer}
+                                            style={{ width: '49%' }}
+                                          >
+                                            <label
+                                              className={styles.inputLabel}
+                                            >
+                                              Start Date
+                                            </label>
+                                            <DatePickerField
+                                              format='MMM/y'
+                                              maxDetail='year'
+                                              className={styles.dateInputField}
+                                              name={`edu_records[${index}]start_date`}
+                                              id={`edu_records[${index}]start_date`}
+                                            />
                                           </div>
+
                                           <div
                                             className={styles.inputContainer}
                                             style={{ width: '49%' }}
@@ -213,8 +249,10 @@ const EducationInformationForm = ({ data }) => {
                                             >
                                               End Date
                                             </label>
-                                            <Field
-                                              className={styles.inputField}
+                                            <DatePickerField
+                                              format='MMM/y'
+                                              maxDetail='year'
+                                              className={styles.dateInputField}
                                               name={`edu_records[${index}]end_date`}
                                               id={`edu_records[${index}]end_date`}
                                             />
