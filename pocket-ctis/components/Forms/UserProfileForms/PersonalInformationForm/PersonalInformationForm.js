@@ -1,4 +1,4 @@
-import React from 'react'
+import { useContext } from 'react'
 import { FieldArray, Field, Formik, Form } from 'formik'
 import { cloneDeep } from 'lodash'
 import styles from './PersonalInformationForm.module.css'
@@ -9,15 +9,22 @@ import {
   XCircleFill,
 } from 'react-bootstrap-icons'
 
+import { Location_data } from '../../../../context/locationContext'
+
 const PersonalInformationForm = ({ data }) => {
-  // console.log(data)
+  const { locationData } = useContext(Location_data)
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
+      if ('city_name' in datum) {
+        datum.city = `${datum.city_id}-${datum.city_name}`
+        datum.country = `${datum.country_id}-${datum.country_name}`
+      }
       return datum
     })
+    // console.log(newData)
     return newData
   }
 
@@ -140,20 +147,44 @@ const PersonalInformationForm = ({ data }) => {
                           Country
                         </label>
                         <Field
+                          as='select'
                           className={`${styles.inputField}`}
-                          id='location[0].country_name'
-                          name='location[0].country_name'
-                          placeholder='Enter your country...'
-                        />
+                          id='location[0].country'
+                          name='location[0].country'
+                        >
+                          <option selected value=''>
+                            Please select a Country
+                          </option>
+                          {Object.keys(locationData).map((country) => {
+                            let countryName = country.split('-')[1]
+                            return (
+                              <option value={country}>{countryName}</option>
+                            )
+                          })}
+                        </Field>
                       </div>
                       <div className={`${styles.inputContainer}`}>
                         <label className={`${styles.inputLabel}`}>City</label>
                         <Field
+                          as='select'
                           className={`${styles.inputField}`}
-                          id='location[0].city_name'
-                          name='location[0].city_name'
-                          placeholder='Enter your city...'
-                        />
+                          id='location[0].city'
+                          name='location[0].city'
+                          disabled={!props.values.location[0].country}
+                        >
+                          <option selected value={''}>
+                            Please select a{' '}
+                            {props.values.location[0].country
+                              ? 'City'
+                              : 'Country'}
+                          </option>
+                          {locationData[props.values.location[0].country]?.map(
+                            (city) => {
+                              let cityName = city.split('-')[1]
+                              return <option value={city}>{cityName}</option>
+                            }
+                          )}
+                        </Field>
                       </div>
                     </td>
                     <td className={styles.visibilityCheckboxContainer}>
