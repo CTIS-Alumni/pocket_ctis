@@ -55,6 +55,20 @@
     color: rgb(245, 164, 37);
 }
 
+.isCurrentCheckbox{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+.isCurrentCheckbox:hover{
+    transform-origin: left;
+    transform: scale(1.05);
+    transition: all 0.3s;
+}
+.isCurrentTrue{
+    color: rgb(245, 164, 37);
+}
+
 .removeBtnContainer{
     margin-right: 10px;
     display: flex;

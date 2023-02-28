@@ -5,6 +5,10 @@ import {
   EyeFill,
   EyeSlashFill,
   PlusCircleFill,
+  Toggle2Off,
+  Toggle2On,
+  ToggleOff,
+  ToggleOn,
   XCircleFill,
 } from 'react-bootstrap-icons'
 import { useEffect, useState, useContext } from 'react'
@@ -34,9 +38,10 @@ const EducationInformationForm = ({ data }) => {
       datum.inst = `${datum.edu_inst_id}-${datum.inst_name}`
       datum.start_date = datum.start_date && new Date(datum.start_date)
       datum.end_date = datum.end_date && new Date(datum.end_date)
-      datum.country = `${datum.country_id}-${datum.country_name}`
-      datum.city = `${datum.city_id}-${datum.city_name}`
+      // datum.country = `${datum.country_id}-${datum.country_name}`
+      // datum.city = `${datum.city_id}-${datum.city_name}`
       datum.degree = `${datum.degree_type_id}-${datum.degree_name}`
+      datum.is_current = datum.is_current == 1
 
       return datum
     })
@@ -49,6 +54,7 @@ const EducationInformationForm = ({ data }) => {
     console.log(newData)
     newData.edu_records = newData.edu_records.map((val) => {
       val.visibility = val.visibility ? 1 : 0
+      val.is_current = val.is_current ? 1 : 0
       val.start_date =
         val.start_date != null ? new Date(val.start_date).toISOString() : null
       val.end_date =
@@ -143,7 +149,7 @@ const EducationInformationForm = ({ data }) => {
                                             ))}
                                           </Field>
                                         </div>
-                                        <div
+                                        {/* <div
                                           style={{
                                             display: 'flex',
                                             justifyContent: 'space-between',
@@ -214,8 +220,8 @@ const EducationInformationForm = ({ data }) => {
                                                 )
                                               })}
                                             </Field>
-                                          </div>
-                                        </div>
+                                          </div> 
+                                        </div>*/}
                                         <div
                                           style={{
                                             display: 'flex',
@@ -269,23 +275,9 @@ const EducationInformationForm = ({ data }) => {
                                           style={{
                                             display: 'flex',
                                             justifyContent: 'space-between',
+                                            flexWrap: 'wrap',
                                           }}
                                         >
-                                          {/* <div
-                                            className={styles.inputContainer}
-                                            style={{ width: '49%' }}
-                                          >
-                                            <label
-                                              className={styles.inputLabel}
-                                            >
-                                              Start Date
-                                            </label>
-                                            <Field
-                                              className={styles.inputField}
-                                              name={`edu_records[${index}]start_date`}
-                                              id={`edu_records[${index}]start_date`}
-                                            />
-                                          </div> */}
                                           <div
                                             className={styles.inputContainer}
                                             style={{ width: '49%' }}
@@ -314,12 +306,58 @@ const EducationInformationForm = ({ data }) => {
                                               End Date
                                             </label>
                                             <DatePickerField
+                                              disabled={edu_record.is_current}
                                               format='MMM/y'
                                               maxDetail='year'
                                               className={styles.dateInputField}
                                               name={`edu_records[${index}]end_date`}
                                               id={`edu_records[${index}]end_date`}
                                             />
+                                          </div>
+                                        </div>
+                                        <div
+                                          style={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                          }}
+                                        >
+                                          <div
+                                            className={styles.inputContainer}
+                                            style={{ width: '49%' }}
+                                          >
+                                            <Field
+                                              name={`edu_records[${index}]is_current`}
+                                              id={`edu_records[${index}]is_current`}
+                                            >
+                                              {({ field, form, meta }) => {
+                                                return (
+                                                  <label
+                                                    className={
+                                                      styles.isCurrentCheckbox
+                                                    }
+                                                  >
+                                                    {field.value ? (
+                                                      <ToggleOn
+                                                        size={25}
+                                                        className={
+                                                          styles.isCurrentTrue
+                                                        }
+                                                      />
+                                                    ) : (
+                                                      <ToggleOff size={25} />
+                                                    )}
+                                                    &nbsp; Currently Studying?
+                                                    <input
+                                                      type='checkbox'
+                                                      {...field}
+                                                      style={{
+                                                        display: 'none',
+                                                      }}
+                                                    />
+                                                  </label>
+                                                )
+                                              }}
+                                            </Field>
                                           </div>
                                         </div>
                                       </div>
