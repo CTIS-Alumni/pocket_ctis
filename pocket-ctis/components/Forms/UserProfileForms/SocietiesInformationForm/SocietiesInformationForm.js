@@ -18,9 +18,11 @@ const SocietiesInformationForm = ({ data }) => {
   }, [])
 
   const transformData = (data) => {
+    console.log(data)
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
+      datum.society = `${datum.society_id}-${datum.society_name}`
       return datum
     })
     return newData
@@ -88,15 +90,15 @@ const SocietiesInformationForm = ({ data }) => {
                                         <Field
                                           as='select'
                                           className={styles.inputField}
-                                          id={`societies[${index}]society_name`}
-                                          name={`societies[${index}]society_name`}
+                                          id={`societies[${index}]society`}
+                                          name={`societies[${index}]society`}
                                         >
                                           <option disabled selected value=''>
                                             Please select Activity Status
                                           </option>
                                           {societies.map((society) => (
                                             <option
-                                              value={society.society_name}
+                                              value={`${society.id}-${society.society_name}`}
                                             >
                                               {society.society_name} -{' '}
                                               {society.description}
