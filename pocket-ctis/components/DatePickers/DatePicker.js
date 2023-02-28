@@ -13,6 +13,8 @@ the styles were copied (from the node_modules of react-calender and react-date-p
 added to /styles direcctory as global, and imported on _app.js
 
 for any changes in styles, YOU can directly make changes to /styles/DatePicker.css
+
+tl,dr; to avoid error when opening calender, make sure the value passed is of datatype Date and not string
 */
 
 export const DatePickerField = ({ ...props }) => {

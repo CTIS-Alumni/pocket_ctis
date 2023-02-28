@@ -3,16 +3,19 @@ import '../styles/globals.scss'
 import '../styles/DatePicker.css'
 import '../styles/components.scss'
 import { SSRProvider } from 'react-bootstrap'
-import Context from '../context/context'
+import UserContext from '../context/userContext'
+import LocationContext from '../context/locationContext'
 
 function MyApp({ Component, pageProps }) {
   return (
     <>
-      <Context>
-        <SSRProvider>
-          <Component {...pageProps} />
-        </SSRProvider>
-      </Context>
+      <UserContext>
+        <LocationContext>
+          <SSRProvider>
+            <Component {...pageProps} />
+          </SSRProvider>
+        </LocationContext>
+      </UserContext>
     </>
   )
 }

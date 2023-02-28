@@ -2,7 +2,7 @@ import { createContext, useState } from 'react'
 
 export const User_data = createContext(null)
 
-function Context({ children }) {
+function UserContext({ children }) {
   const [userData, setUserData] = useState()
 
   return (
@@ -12,4 +12,4 @@ function Context({ children }) {
   )
 }
 
-export default Context
+export default UserContext
