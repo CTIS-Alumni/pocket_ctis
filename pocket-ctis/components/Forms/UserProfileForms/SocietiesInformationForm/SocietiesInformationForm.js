@@ -18,7 +18,6 @@ const SocietiesInformationForm = ({ data }) => {
   }, [])
 
   const transformData = (data) => {
-    console.log(data)
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1

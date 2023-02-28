@@ -5,8 +5,6 @@ import {
   EyeFill,
   EyeSlashFill,
   PlusCircleFill,
-  Toggle2Off,
-  Toggle2On,
   ToggleOff,
   ToggleOn,
   XCircleFill,
@@ -23,7 +21,7 @@ import { Location_data } from '../../../../context/locationContext'
 const EducationInformationForm = ({ data }) => {
   const [eduInsts, setEduInsts] = useState([])
   const [degreeTypes, setDegreeTypes] = useState([])
-  const { locationData } = useContext(Location_data)
+  // const { locationData } = useContext(Location_data)
 
   useEffect(() => {
     fetchAllEducationInstitutes().then((res) => setEduInsts(res.data))
@@ -32,7 +30,6 @@ const EducationInformationForm = ({ data }) => {
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
-    console.log(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
       datum.inst = `${datum.edu_inst_id}-${datum.inst_name}`
