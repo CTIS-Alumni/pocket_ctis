@@ -3,7 +3,7 @@ import {
   fetchAllCompanies,
   fetchAllWorkTypes,
 } from '../../../../helpers/searchHelpers'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { Formik, Form, Input, FieldArray, Field } from 'formik'
 import { cloneDeep } from 'lodash'
 import {
@@ -14,9 +14,12 @@ import {
 } from 'react-bootstrap-icons'
 import DatePickerField from '../../../DatePickers/DatePicker'
 
+import { Location_data } from '../../../../context/locationContext'
+
 const WorkInformationForm = ({ data }) => {
   const [companies, setCompanies] = useState([])
   const [worktypes, setWorktypes] = useState([])
+  const { locationData } = useContext(Location_data)
 
   useEffect(() => {
     fetchAllCompanies().then((res) => setCompanies(res.data))
@@ -27,13 +30,14 @@ const WorkInformationForm = ({ data }) => {
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
-    console.log(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
       datum.start_date = datum.start_date && new Date(datum.start_date)
       datum.end_date = datum.end_date && new Date(datum.end_date)
       datum.company = `${datum.company_id}-${datum.company_name}`
       datum.work_type = `${datum.work_type_id}-${datum.type_name}`
+      datum.country = `${datum.country_id}-${datum.country_name}`
+      datum.city = `${datum.city_id}-${datum.city_name}`
 
       return datum
     })
@@ -168,10 +172,26 @@ const WorkInformationForm = ({ data }) => {
                                                 Country
                                               </label>
                                               <Field
+                                                as='select'
                                                 className={styles.inputField}
-                                                name={`work_records[${index}]country_name`}
-                                                id={`work_records[${index}]country_name`}
-                                              />
+                                                name={`work_records[${index}]country`}
+                                                id={`work_records[${index}]country`}
+                                              >
+                                                <option selected value=''>
+                                                  Please select a country
+                                                </option>
+                                                {Object.keys(locationData).map(
+                                                  (country) => {
+                                                    let countryName =
+                                                      country.split('-')[1]
+                                                    return (
+                                                      <option value={country}>
+                                                        {countryName}
+                                                      </option>
+                                                    )
+                                                  }
+                                                )}
+                                              </Field>
                                             </div>
                                             <div
                                               className={styles.inputContainer}
@@ -183,10 +203,30 @@ const WorkInformationForm = ({ data }) => {
                                                 City
                                               </label>
                                               <Field
+                                                as='select'
+                                                disabled={!work_record.country}
                                                 className={styles.inputField}
-                                                name={`work_records[${index}]city_name`}
-                                                id={`work_records[${index}]city_name`}
-                                              />
+                                                name={`work_records[${index}]city`}
+                                                id={`work_records[${index}]city`}
+                                              >
+                                                <option selected value=''>
+                                                  Please select a{' '}
+                                                  {work_record.country
+                                                    ? 'city'
+                                                    : 'country'}
+                                                </option>
+                                                {locationData[
+                                                  work_record.country
+                                                ]?.map((city) => {
+                                                  let cityName =
+                                                    city.split('-')[1]
+                                                  return (
+                                                    <option value={city}>
+                                                      {cityName}
+                                                    </option>
+                                                  )
+                                                })}
+                                              </Field>
                                             </div>
                                           </div>
                                           <div
@@ -355,7 +395,7 @@ const WorkInformationForm = ({ data }) => {
                                       </Field>
                                     </td>
                                   </tr>
-                                  {/* shows spaver only between records */}
+                                  {/* shows spacer only between records */}
                                   {props.values.work_records.length - 1 >
                                     index && (
                                     <tr className={styles.spacer}>

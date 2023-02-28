@@ -183,17 +183,21 @@ const EducationInformationForm = ({ data }) => {
                                               City
                                             </label>
                                             <Field
+                                              disabled={!edu_record.country}
                                               as='select'
                                               className={styles.inputField}
                                               name={`edu_records[${index}]city`}
                                               id={`edu_records[${index}]city`}
                                             >
                                               <option selected value=''>
-                                                Please select a country
+                                                Please select a{' '}
+                                                {edu_record.country
+                                                  ? 'city'
+                                                  : 'country'}
                                               </option>
                                               {locationData[
                                                 edu_record.country
-                                              ].map((city) => {
+                                              ]?.map((city) => {
                                                 let cityName =
                                                   city.split('-')[1]
                                                 return (
