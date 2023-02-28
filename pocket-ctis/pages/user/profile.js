@@ -30,7 +30,7 @@ const Profile = ({ user, errors }) => {
   const { userData } = useContext(User_data)
   const { locationData } = useContext(Location_data)
 
-  console.log('from context location', locationData)
+  // console.log('from context location', locationData)
   // console.log('from context', userData)
 
   const {

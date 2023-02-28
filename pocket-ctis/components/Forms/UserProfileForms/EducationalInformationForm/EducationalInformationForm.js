@@ -7,12 +7,15 @@ import {
   PlusCircleFill,
   XCircleFill,
 } from 'react-bootstrap-icons'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { fetchAllEducationInstitutes } from '../../../../helpers/searchHelpers'
 import DatePickerField from '../../../DatePickers/DatePicker'
 
+import { Location_data } from '../../../../context/locationContext'
+
 const EducationInformationForm = ({ data }) => {
   const [eduInsts, setEduInsts] = useState([])
+  const { locationData } = useContext(Location_data)
 
   useEffect(() => {
     fetchAllEducationInstitutes().then((res) => setEduInsts(res.data))
@@ -25,6 +28,8 @@ const EducationInformationForm = ({ data }) => {
       datum.inst = `${datum.edu_inst_id}-${datum.inst_name}`
       datum.start_date = datum.start_date && new Date(datum.start_date)
       datum.end_date = datum.end_date && new Date(datum.end_date)
+      datum.country = `${datum.country_id}-${datum.country_name}`
+      datum.city = `${datum.city_id}-${datum.city_name}`
 
       return datum
     })
@@ -147,10 +152,26 @@ const EducationInformationForm = ({ data }) => {
                                               Country
                                             </label>
                                             <Field
+                                              as='select'
                                               className={styles.inputField}
-                                              name={`edu_records[${index}]country_name`}
-                                              id={`edu_records[${index}]country_name`}
-                                            />
+                                              name={`edu_records[${index}]country`}
+                                              id={`edu_records[${index}]country`}
+                                            >
+                                              <option selected value=''>
+                                                Please select a country
+                                              </option>
+                                              {Object.keys(locationData).map(
+                                                (country) => {
+                                                  let countryName =
+                                                    country.split('-')[1]
+                                                  return (
+                                                    <option value={country}>
+                                                      {countryName}
+                                                    </option>
+                                                  )
+                                                }
+                                              )}
+                                            </Field>
                                           </div>
                                           <div
                                             className={styles.inputContainer}
@@ -162,10 +183,26 @@ const EducationInformationForm = ({ data }) => {
                                               City
                                             </label>
                                             <Field
+                                              as='select'
                                               className={styles.inputField}
-                                              name={`edu_records[${index}]city_name`}
-                                              id={`edu_records[${index}]city_name`}
-                                            />
+                                              name={`edu_records[${index}]city`}
+                                              id={`edu_records[${index}]city`}
+                                            >
+                                              <option selected value=''>
+                                                Please select a country
+                                              </option>
+                                              {locationData[
+                                                edu_record.country
+                                              ].map((city) => {
+                                                let cityName =
+                                                  city.split('-')[1]
+                                                return (
+                                                  <option value={city}>
+                                                    {cityName}
+                                                  </option>
+                                                )
+                                              })}
+                                            </Field>
                                           </div>
                                         </div>
                                         <div
