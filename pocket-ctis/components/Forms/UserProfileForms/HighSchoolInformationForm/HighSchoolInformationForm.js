@@ -16,6 +16,7 @@ const HighSchoolInformationForm = ({ data }) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
+      datum.high_school = `${datum.high_school_id}-${datum.high_school_name}`
       return datum
     })
     return newData
@@ -44,8 +45,8 @@ const HighSchoolInformationForm = ({ data }) => {
                           </label>
                           <Field
                             as='select'
-                            name='high_school.high_school_name'
-                            id='high_school.high_school_name'
+                            name='high_school[0].high_school'
+                            id='high_school[0].high_school'
                             className={styles.inputField}
                           >
                             <option selected disabled value=''>
@@ -54,7 +55,7 @@ const HighSchoolInformationForm = ({ data }) => {
                             {highSchools.map((highSchool, index) => (
                               <option
                                 key={index}
-                                value={highSchool.high_school_name}
+                                value={`${highSchool.id}-${highSchool.high_school_name}`}
                               >
                                 {highSchool.high_school_name}
                               </option>
@@ -63,7 +64,7 @@ const HighSchoolInformationForm = ({ data }) => {
                         </div>
                       </td>
                       <td className={styles.visibilityCheckboxContainer}>
-                        <Field name={`high_school.visibility`}>
+                        <Field name={`high_school[0].visibility`}>
                           {({ field, form, meta }) => {
                             return (
                               <label>
