@@ -8,21 +8,27 @@ import {
   XCircleFill,
 } from 'react-bootstrap-icons'
 import { useEffect, useState, useContext } from 'react'
-import { fetchAllEducationInstitutes } from '../../../../helpers/searchHelpers'
+import {
+  fetchAllDegreeTypes,
+  fetchAllEducationInstitutes,
+} from '../../../../helpers/searchHelpers'
 import DatePickerField from '../../../DatePickers/DatePicker'
 
 import { Location_data } from '../../../../context/locationContext'
 
 const EducationInformationForm = ({ data }) => {
   const [eduInsts, setEduInsts] = useState([])
+  const [degreeTypes, setDegreeTypes] = useState([])
   const { locationData } = useContext(Location_data)
 
   useEffect(() => {
     fetchAllEducationInstitutes().then((res) => setEduInsts(res.data))
+    fetchAllDegreeTypes().then((res) => setDegreeTypes(res.data))
   }, [])
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
+    console.log(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
       datum.inst = `${datum.edu_inst_id}-${datum.inst_name}`
@@ -30,6 +36,7 @@ const EducationInformationForm = ({ data }) => {
       datum.end_date = datum.end_date && new Date(datum.end_date)
       datum.country = `${datum.country_id}-${datum.country_name}`
       datum.city = `${datum.city_id}-${datum.city_name}`
+      datum.degree = `${datum.degree_type_id}-${datum.degree_name}`
 
       return datum
     })
@@ -225,10 +232,22 @@ const EducationInformationForm = ({ data }) => {
                                               Degree Name
                                             </label>
                                             <Field
+                                              as='select'
                                               className={styles.inputField}
-                                              name={`edu_records[${index}]degree_name`}
-                                              id={`edu_records[${index}]degree_name`}
-                                            />
+                                              name={`edu_records[${index}]degree`}
+                                              id={`edu_records[${index}]degree`}
+                                            >
+                                              <option selected value=''>
+                                                Please select a Degree
+                                              </option>
+                                              {degreeTypes.map((degree) => (
+                                                <option
+                                                  value={`${degree.id}-${degree.degree_name}`}
+                                                >
+                                                  {degree.degree_name}
+                                                </option>
+                                              ))}
+                                            </Field>
                                           </div>
                                           <div
                                             className={styles.inputContainer}
