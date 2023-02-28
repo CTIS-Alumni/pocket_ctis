@@ -118,6 +118,22 @@ export const fetchAllEducationInstitutes = async () => {
   return res
 }
 
+export const fetchAllCountries = async () => {
+  const res = await _getFetcher('http://localhost:3000/api/countries')
+  return res
+}
+export const fetchCitiesOfACountry = async (countryId) => {
+  const res = await _getFetcher(
+    'http://localhost:3000/api/countries/' + countryId + '/cities'
+  )
+  return res
+}
+
+export const fetchAllCities = async () => {
+  const res = await _getFetcher('http://localhost:3000/api/cities')
+  return res
+}
+
 export const fetchAllSkillTypes = async () => {
   const res = await _getFetcher('http://localhost:3000/api/skilltypes')
   return res
