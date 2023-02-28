@@ -59,11 +59,11 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    transition: all 0.3s;
 }
 .isCurrentCheckbox:hover{
     transform-origin: left;
     transform: scale(1.05);
-    transition: all 0.3s;
 }
 .isCurrentTrue{
     color: rgb(245, 164, 37);
