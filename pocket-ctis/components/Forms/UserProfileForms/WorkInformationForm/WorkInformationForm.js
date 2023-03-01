@@ -10,6 +10,8 @@ import {
   EyeFill,
   EyeSlashFill,
   PlusCircleFill,
+  ToggleOff,
+  ToggleOn,
   XCircleFill,
 } from 'react-bootstrap-icons'
 import DatePickerField from '../../../DatePickers/DatePicker'
@@ -32,6 +34,7 @@ const WorkInformationForm = ({ data }) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
+      datum.is_current = datum.is_current == 1
       datum.start_date = datum.start_date && new Date(datum.start_date)
       datum.end_date = datum.end_date && new Date(datum.end_date)
       datum.company = `${datum.company_id}-${datum.company_name}`
@@ -50,6 +53,7 @@ const WorkInformationForm = ({ data }) => {
     console.log(newData)
     newData.work_records = newData.work_records.map((val) => {
       val.visibility = val.visibility ? 1 : 0
+      val.is_current = val.is_current ? 1 : 0
       val.start_date =
         val.start_date != null ? new Date(val.start_date).toISOString() : null
       val.end_date =
@@ -333,6 +337,9 @@ const WorkInformationForm = ({ data }) => {
                                                 End Date
                                               </label>
                                               <DatePickerField
+                                                disabled={
+                                                  work_record.is_current
+                                                }
                                                 format='MMM/y'
                                                 maxDetail='year'
                                                 className={
@@ -341,6 +348,51 @@ const WorkInformationForm = ({ data }) => {
                                                 name={`work_records[${index}]end_date`}
                                                 id={`work_records[${index}]end_date`}
                                               />
+                                            </div>
+                                          </div>
+                                          <div
+                                            style={{
+                                              display: 'flex',
+                                              justifyContent: 'flex-end',
+                                            }}
+                                          >
+                                            <div
+                                              className={styles.inputContainer}
+                                              style={{ width: '49%' }}
+                                            >
+                                              <Field
+                                                name={`work_records[${index}]is_current`}
+                                                id={`work_records[${index}]is_current`}
+                                              >
+                                                {({ field, form, meta }) => {
+                                                  return (
+                                                    <label
+                                                      className={
+                                                        styles.isCurrentCheckbox
+                                                      }
+                                                    >
+                                                      {field.value ? (
+                                                        <ToggleOn
+                                                          size={25}
+                                                          className={
+                                                            styles.isCurrentTrue
+                                                          }
+                                                        />
+                                                      ) : (
+                                                        <ToggleOff size={25} />
+                                                      )}
+                                                      &nbsp; Currently Working?
+                                                      <input
+                                                        type='checkbox'
+                                                        {...field}
+                                                        style={{
+                                                          display: 'none',
+                                                        }}
+                                                      />
+                                                    </label>
+                                                  )
+                                                }}
+                                              </Field>
                                             </div>
                                           </div>
                                           <div

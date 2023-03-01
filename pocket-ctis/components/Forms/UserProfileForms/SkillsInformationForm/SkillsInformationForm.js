@@ -20,8 +20,10 @@ const SkillsInformationForm = ({ data }) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
+      datum.skill_type = `${datum.skill_type_id}-${datum.type_name}`
       return datum
     })
+    // console.log(newData)
     return newData
   }
 
@@ -105,14 +107,16 @@ const SkillsInformationForm = ({ data }) => {
                                           <Field
                                             as='select'
                                             className={styles.inputField}
-                                            id={`skills[${index}]type_name`}
-                                            name={`skills[${index}]type_name`}
+                                            id={`skills[${index}]skill_type`}
+                                            name={`skills[${index}]skill_type`}
                                           >
                                             <option disabled selected value=''>
                                               Please Select skill type
                                             </option>
                                             {skillType.map((type) => (
-                                              <option value={type.type_name}>
+                                              <option
+                                                value={`${type.id}-${type.type_name}`}
+                                              >
                                                 {type.type_name}
                                               </option>
                                             ))}
