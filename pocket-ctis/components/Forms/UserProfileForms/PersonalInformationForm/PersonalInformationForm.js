@@ -170,15 +170,15 @@ const PersonalInformationForm = ({ data }) => {
                           className={`${styles.inputField}`}
                           id='location[0].city'
                           name='location[0].city'
-                          disabled={!props.values.location[0].country}
+                          disabled={!props.values.location[0]?.country}
                         >
                           <option selected value={''}>
                             Please select a{' '}
-                            {props.values.location[0].country
+                            {props.values.location[0]?.country
                               ? 'City'
                               : 'Country'}
                           </option>
-                          {locationData[props.values.location[0].country]?.map(
+                          {locationData[props.values.location[0]?.country]?.map(
                             (city) => {
                               let cityName = city.split('-')[1]
                               return <option value={city}>{cityName}</option>
