@@ -49,7 +49,7 @@ const HighSchoolInformationForm = ({ data }) => {
                             id='high_school[0].high_school'
                             className={styles.inputField}
                           >
-                            <option selected disabled value=''>
+                            <option selected value=''>
                               Please select High School
                             </option>
                             {highSchools.map((highSchool, index) => (

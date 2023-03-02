@@ -92,7 +92,7 @@ const SocietiesInformationForm = ({ data }) => {
                                           id={`societies[${index}]society`}
                                           name={`societies[${index}]society`}
                                         >
-                                          <option disabled selected value=''>
+                                          <option selected value=''>
                                             Please select Activity Status
                                           </option>
                                           {societies.map((society) => (

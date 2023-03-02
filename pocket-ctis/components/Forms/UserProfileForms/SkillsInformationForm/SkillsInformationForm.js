@@ -7,12 +7,18 @@ import {
   PlusCircleFill,
 } from 'react-bootstrap-icons'
 import { cloneDeep } from 'lodash'
-import { fetchAllSkillTypes } from '../../../../helpers/searchHelpers'
+import {
+  fetchAllSkills,
+  fetchAllSkillTypes,
+} from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
 
 const SkillsInformationForm = ({ data }) => {
   const [skillType, setSkillType] = useState([])
+  const [skills, setSkills] = useState([])
+
   useEffect(() => {
+    fetchAllSkills().then((res) => setSkills(res.data))
     fetchAllSkillTypes().then((res) => setSkillType(res.data))
   }, [])
 
@@ -21,6 +27,7 @@ const SkillsInformationForm = ({ data }) => {
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
       datum.skill_type = `${datum.skill_type_id}-${datum.type_name}`
+      datum.skill_value = `${datum.skill_id}-${datum.skill_name}`
       return datum
     })
     // console.log(newData)
@@ -83,13 +90,25 @@ const SkillsInformationForm = ({ data }) => {
                                     <div style={{ flexGrow: '1' }}>
                                       <div className={styles.inputContainer}>
                                         <label className={styles.inputLabel}>
-                                          Skill Name
+                                          Skill Type
                                         </label>
                                         <Field
+                                          as='select'
                                           className={styles.inputField}
-                                          id={`skills[${index}]skill_name`}
-                                          name={`skills[${index}]skill_name`}
-                                        />
+                                          id={`skills[${index}]skill_type`}
+                                          name={`skills[${index}]skill_type`}
+                                        >
+                                          <option disabled selected value=''>
+                                            Please Select skill type
+                                          </option>
+                                          {skillType.map((type) => (
+                                            <option
+                                              value={`${type.id}-${type.type_name}`}
+                                            >
+                                              {type.type_name}
+                                            </option>
+                                          ))}
+                                        </Field>
                                       </div>
                                       <div
                                         style={{
@@ -102,24 +121,31 @@ const SkillsInformationForm = ({ data }) => {
                                           style={{ width: '49%' }}
                                         >
                                           <label className={styles.inputLabel}>
-                                            Skill Type
+                                            Skill Name
                                           </label>
                                           <Field
                                             as='select'
                                             className={styles.inputField}
-                                            id={`skills[${index}]skill_type`}
-                                            name={`skills[${index}]skill_type`}
+                                            id={`skills[${index}]skill_value`}
+                                            name={`skills[${index}]skill_value`}
                                           >
-                                            <option disabled selected value=''>
-                                              Please Select skill type
+                                            <option selected disabled value=''>
+                                              Please select a Skill
                                             </option>
-                                            {skillType.map((type) => (
-                                              <option
-                                                value={`${type.id}-${type.type_name}`}
-                                              >
-                                                {type.type_name}
-                                              </option>
-                                            ))}
+                                            {skills
+                                              .filter(
+                                                (s) =>
+                                                  skill.skill_type.split(
+                                                    '-'
+                                                  )[0] == s.skill_type_id
+                                              )
+                                              .map((s) => (
+                                                <option
+                                                  value={`${s.id}-${s.skill_name}`}
+                                                >
+                                                  {s.skill_name}
+                                                </option>
+                                              ))}
                                           </Field>
                                         </div>
                                         <div
