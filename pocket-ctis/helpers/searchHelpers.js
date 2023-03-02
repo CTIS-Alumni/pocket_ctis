@@ -35,6 +35,11 @@ export const fetchUsersInHighShool = async (highSchoolId) => {
   return res
 }
 
+export const fetchAllSkills = async () => {
+  const res = await _getFetcher(`http://localhost:3000/api/skills`)
+  return res
+}
+
 export const fetchCompany = async (search) => {
   const res = await _getFetcher(
     `http://localhost:3000/api/companies?name=${search}`

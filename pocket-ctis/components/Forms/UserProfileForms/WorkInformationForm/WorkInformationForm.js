@@ -285,11 +285,7 @@ const WorkInformationForm = ({ data }) => {
                                                 name={`work_records[${index}]work_type`}
                                                 id={`work_records[${index}]work_type`}
                                               >
-                                                <option
-                                                  value=''
-                                                  disabled
-                                                  selected
-                                                >
+                                                <option value='' selected>
                                                   Select Work Type
                                                 </option>
                                                 {worktypes.map((workType) => (

@@ -52,7 +52,7 @@ const Profile = ({ user, errors }) => {
     graduation_project,
     basic_info,
   } = user
-  console.log(user)
+  // console.log(user)
 
   return (
     <>

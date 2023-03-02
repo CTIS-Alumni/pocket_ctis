@@ -51,7 +51,6 @@
     transform:scale(1.3);
 }
 .visibilityUnchecked{
-    transform:scale(1.3);
     color: rgb(245, 164, 37);
 }
 
