@@ -28,7 +28,6 @@ const SkillsInformationForm = ({ data }) => {
       datum.visibility = datum.visibility == 1
       datum.skill_type = `${datum.skill_type_id}-${datum.type_name}`
       datum.skill_value = `${datum.skill_id}-${datum.skill_name}`
-      console.log(datum)
       return datum
     })
     // console.log(newData)
