@@ -91,20 +91,19 @@ const Profile = ({ user, errors }) => {
                 <div className='d-flex justify-content-between align-items-center'>
                   <h4 style={{ display: 'flex', alignItems: 'baseline' }}>
                     {basic_info[0].first_name} {basic_info[0].last_name}
-                    {location[0]?.city_name ||
-                      (location[0]?.country_name && (
-                        <span
-                          className='ms-4'
-                          style={{
-                            fontSize: 14,
-                            alignItems: 'baseline',
-                            display: 'flex',
-                          }}
-                        >
-                          <GeoAltFill size={18} fill='#f5a425' />
-                          {location[0]?.city_name}, {location[0]?.country_name}
-                        </span>
-                      ))}
+                    {location.length > 0 && (
+                      <span
+                        className='ms-4'
+                        style={{
+                          fontSize: 14,
+                          alignItems: 'baseline',
+                          display: 'flex',
+                        }}
+                      >
+                        <GeoAltFill size={18} fill='#f5a425' />
+                        {location[0]?.city_name}, {location[0]?.country_name}
+                      </span>
+                    )}
                   </h4>
                   <span className=''>
                     <SocialsSection socials={socials} />
