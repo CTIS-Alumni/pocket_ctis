@@ -50,7 +50,6 @@ const WorkInformationForm = ({ data }) => {
   const onSubmitHandler = (values) => {
     //transform data
     let newData = cloneDeep(values)
-    console.log(newData)
     newData.work_records = newData.work_records.map((val) => {
       val.visibility = val.visibility ? 1 : 0
       val.is_current = val.is_current ? 1 : 0
@@ -180,6 +179,37 @@ const WorkInformationForm = ({ data }) => {
                                                 className={styles.inputField}
                                                 name={`work_records[${index}]country`}
                                                 id={`work_records[${index}]country`}
+                                                onChange={(event) => {
+                                                  props.setFieldValue(
+                                                    `work_records[${index}]city`,
+                                                    ''
+                                                  )
+                                                  props.setFieldValue(
+                                                    `work_records[${index}]city_id`,
+                                                    ''
+                                                  )
+                                                  props.setFieldValue(
+                                                    `work_records[${index}]city_name`,
+                                                    ''
+                                                  )
+
+                                                  props.setFieldValue(
+                                                    `work_records[${index}]country_id`,
+                                                    event.target.value.split(
+                                                      '-'
+                                                    )[0]
+                                                  )
+                                                  props.setFieldValue(
+                                                    `work_records[${index}]country_name`,
+                                                    event.target.value.split(
+                                                      '-'
+                                                    )[1]
+                                                  )
+                                                  props.setFieldValue(
+                                                    `work_records[${index}]country`,
+                                                    event.target.value
+                                                  )
+                                                }}
                                               >
                                                 <option selected value=''>
                                                   Please select a country
@@ -212,6 +242,24 @@ const WorkInformationForm = ({ data }) => {
                                                 className={styles.inputField}
                                                 name={`work_records[${index}]city`}
                                                 id={`work_records[${index}]city`}
+                                                onChange={(event) => {
+                                                  props.setFieldValue(
+                                                    `work_records[${index}]city`,
+                                                    event.target.value
+                                                  )
+                                                  props.setFieldValue(
+                                                    `work_records[${index}]city_id`,
+                                                    event.target.value.split(
+                                                      '-'
+                                                    )[0]
+                                                  )
+                                                  props.setFieldValue(
+                                                    `work_records[${index}]city_name`,
+                                                    event.target.value.split(
+                                                      '-'
+                                                    )[1]
+                                                  )
+                                                }}
                                               >
                                                 <option selected value=''>
                                                   Please select a{' '}

@@ -128,6 +128,7 @@ const SkillsInformationForm = ({ data }) => {
                                             className={styles.inputField}
                                             id={`skills[${index}]skill_value`}
                                             name={`skills[${index}]skill_value`}
+                                            disabled={!skill.skill_type}
                                           >
                                             <option selected disabled value=''>
                                               Please select a Skill
@@ -135,7 +136,7 @@ const SkillsInformationForm = ({ data }) => {
                                             {skills
                                               .filter(
                                                 (s) =>
-                                                  skill.skill_type.split(
+                                                  skill.skill_type?.split(
                                                     '-'
                                                   )[0] == s.skill_type_id
                                               )
