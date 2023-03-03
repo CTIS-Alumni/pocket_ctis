@@ -35,8 +35,6 @@ const EducationInformationForm = ({ data }) => {
       datum.inst = `${datum.edu_inst_id}-${datum.inst_name}`
       datum.start_date = datum.start_date && new Date(datum.start_date)
       datum.end_date = datum.end_date && new Date(datum.end_date)
-      // datum.country = `${datum.country_id}-${datum.country_name}`
-      // datum.city = `${datum.city_id}-${datum.city_name}`
       datum.degree = `${datum.degree_type_id}-${datum.degree_name}`
       datum.is_current = datum.is_current == 1
 

@@ -49,7 +49,7 @@ const PersonalInformationForm = ({ data }) => {
         location: transformData(location),
       }}
       enableReinitialize
-      onSubmit={(values) => console.log('values', values)}
+      onSubmit={(values) => console.log('values', values.location[0])}
     >
       {(props) => {
         return (
@@ -151,6 +151,24 @@ const PersonalInformationForm = ({ data }) => {
                           className={`${styles.inputField}`}
                           id='location[0].country'
                           name='location[0].country'
+                          onChange={(event) => {
+                            props.setFieldValue('location[0]city', '')
+                            props.setFieldValue('location[0]city_id', '')
+                            props.setFieldValue('location[0]city_name', '')
+
+                            props.setFieldValue(
+                              'location[0]country_id',
+                              event.target.value.split('-')[0]
+                            )
+                            props.setFieldValue(
+                              'location[0]country_name',
+                              event.target.value.split('-')[1]
+                            )
+                            props.setFieldValue(
+                              'location[0]country',
+                              event.target.value
+                            )
+                          }}
                         >
                           <option selected value=''>
                             Please select a Country
@@ -171,6 +189,20 @@ const PersonalInformationForm = ({ data }) => {
                           id='location[0].city'
                           name='location[0].city'
                           disabled={!props.values.location[0]?.country}
+                          onChange={(event) => {
+                            props.setFieldValue(
+                              'location[0]city',
+                              event.target.value
+                            )
+                            props.setFieldValue(
+                              'location[0]city_id',
+                              event.target.value.split('-')[0]
+                            )
+                            props.setFieldValue(
+                              'location[0]city_name',
+                              event.target.value.split('-')[1]
+                            )
+                          }}
                         >
                           <option selected value={''}>
                             Please select a{' '}
