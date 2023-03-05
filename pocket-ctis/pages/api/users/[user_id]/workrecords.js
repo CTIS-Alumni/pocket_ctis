@@ -1,4 +1,4 @@
-import {doquery} from "../../../../helpers/dbconnect";
+import {createPostQueries, createPutQueries, doMultiQueries, doquery} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -28,13 +28,45 @@ export default async function handler(req, res){
             break;
         case "POST":
             try{
-                const {company_id, work_type_id, department, position, work_description, city_id, start_date, end_date, visibility, is_current} = req.body.workrecord;
-                const query = "INSERT INTO workrecord(user_id, company_id, work_type_id, department, position, work_description, city_id, start_date, end_date, visibility, is_current) values (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                const data = await doquery({query: query, values: [user_id,company_id, work_type_id, department, position, work_description, city_id, start_date, end_date, visibility, is_current]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
+                const work_records = JSON.parse(req.body);
+                const base_query = "INSERT INTO workrecord(user_id, work_type_id ";
+                const base_values = ["user_id", "work_type_id"];
+                const optional_values = ["company_id","department","position","work_description", "city_id", "country_id", "start_date", "end_date", "visibility", "is_current"];
+                const queries = createPostQueries(work_records, base_query, base_values, optional_values, user_id);
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
+
+            }catch(error){
+                res.status(500).json({error: error.message});
+            }
+            break;
+        case "PUT":
+            try{
+                const work_records = JSON.parse(req.body);
+                const base_query = "UPDATE workrecord SET work_type_id = ?, ";
+                const base_values = ["company_id", "work_type_id"];
+                const optional_values = ["department","position","work_description", "city_id", "country_id","start_date", "end_date", "visibility", "is_current"];
+                const queries = createPutQueries(work_records, base_query, base_values, optional_values);
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
+            }catch(error){
+               res.status(500).json({error: error.message});
+            }
+            break;
+        case "DELETE":
+            try{
+                const work_records = JSON.parse(req.body);
+                let queries = [];
+                const tempQuery = "DELETE FROM workrecord WHERE id = ?";
+                work_records.forEach((record)=>{
+                   queries.push({
+                       name: record.id,
+                       query: tempQuery,
+                       values: [record.id]
+                   });
+                });
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
             }catch(error){
                 res.status(500).json({error: error.message});
             }

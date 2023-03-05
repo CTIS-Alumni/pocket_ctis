@@ -21,9 +21,16 @@ const Login = () => {
   const onSubmit = async (values) => {
     const res = await requestLogin(values)
     if (res.status === 200) {
+      const {data} = await res.json();
       router.push({ pathname: '/user' })
-      console.log(res.body)
-      setUserData({ name: 'iqbal' })
+
+      setUserData({
+        id: data[0].id,
+        first_name: data[0].first_name,
+        last_name: data[0].last_name,
+        profile_picture: data[0].profile_picture,
+        user_types: data[0].user_types
+      })
     }
   }
 

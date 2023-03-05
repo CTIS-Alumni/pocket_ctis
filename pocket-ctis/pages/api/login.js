@@ -1,6 +1,6 @@
 import {sign} from "../../helpers/jwtHelper";
 import {serialize} from "cookie";
-import {doquery} from "../../helpers/dbconnect";
+import {doquery} from "../../helpers/dbHelpers";
 import {compare} from "bcrypt"
 
 
@@ -44,8 +44,19 @@ export default async function (req, res) {
                                 path: "/"
                             });
 
+                            const data_query = "SELECT u.id, u.first_name, u.last_name, upp.profile_picture, GROUP_CONCAT(act.type_name) as 'user_types' " +
+                                "FROM users u LEFT OUTER JOIN usercredential uc ON (u.id = uc.user_id) JOIN useraccounttype uat ON (uat.user_id = u.id) " +
+                                "JOIN accounttype act ON (act.id = uat.type_id) " +
+                                "LEFT OUTER JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
+                                "WHERE uc.username = ? "
+
+                            const data = await doquery({query: data_query,values: [username]});
+
+                            if(data.hasOwnProperty("error"))
+                                res.status(500).json({error: data.error.message})
+
                             res.setHeader("Set-Cookie", [serialCookie, refreshCookie]);
-                            res.status(200).json({message: "Authenticated Successfully"});
+                            res.status(200).json({data});
                         });
                     } else {
                         res.status(401).json({message: "Invalid credentials"});

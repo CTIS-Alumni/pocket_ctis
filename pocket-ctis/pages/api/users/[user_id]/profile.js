@@ -1,4 +1,4 @@
-import {doMultiQueries, doquery} from "../../../../helpers/dbconnect";
+import {doMultiQueries, doquery} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -35,8 +35,9 @@ export default async function handler(req, res){
                     "WHERE uhs.user_id = ?";
                 queries.push({name: "high_school", query: temp, values: [user_id]});
 
-                temp = "SELECT ul.id, ul.city_id, ci.city_name, ci.country_id, co.country_name, ul.visibility FROM userlocation ul JOIN city ci ON (ul.city_id = ci.id) " +
-                    "JOIN country co ON (ci.country_id = co.id) WHERE ul.user_id = ?";
+                temp = "SELECT ul.id, ul.city_id, ci.city_name, ul.country_id, co.country_name, ul.visibility FROM userlocation ul " +
+                    "LEFT OUTER JOIN city ci ON (ul.city_id = ci.id) " +
+                    "LEFT OUTER JOIN country co ON (ul.country_id = co.id) WHERE ul.user_id = ?";
                 queries.push({name: "location", query: temp, values: [user_id]});
 
                 temp = "SELECT id, phone_number, visibility FROM userphone WHERE user_id = ?";
@@ -69,11 +70,11 @@ export default async function handler(req, res){
                     "WHERE uws.user_id = ? order by s.sector_name asc";
                 queries.push({name: "wanted_sectors", query: temp, values: [user_id]});
 
-                temp = "SELECT w.id, w.company_id, c.company_name, wt.type_name, w.work_type_id, w.department, w.position, w.work_description, ci.city_name, ci.id as 'city_id', co.country_name, co.id as 'country_id', w.start_date, w.end_date, w.visibility, w.is_current " +
+                temp = "SELECT w.id, w.company_id, c.company_name, wt.type_name as 'work_type_name', w.work_type_id, w.department, w.position, w.work_description, w.city_id, ci.city_name, w.country_id, co.country_name, w.start_date, w.end_date, w.visibility, w.is_current " +
                     "FROM workrecord w LEFT OUTER JOIN company c ON (w.company_id = c.id) " +
                     "JOIN worktype wt ON (w.work_type_id = wt.id) " +
                     "LEFT OUTER JOIN city ci ON (w.city_id = ci.id) " +
-                    "LEFT OUTER JOIN country co ON (ci.country_id = co.id) " +
+                    "LEFT OUTER JOIN country co ON (w.country_id = co.id) " +
                     "WHERE w.user_id = ? order by w.start_date desc";
                 queries.push({name: "work_records", query: temp, values: [user_id]});
 
@@ -90,7 +91,7 @@ export default async function handler(req, res){
                     "WHERE er.user_id = ?";
                 queries.push({name: "erasmus", query: temp, values: [user_id]});
 
-                temp = "SELECT e.id, e.edu_inst_id, ei.inst_name, d.id as 'degree_type_id', d.degree_name, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current, " +
+                temp = "SELECT e.id, e.edu_inst_id, ei.inst_name as 'edu_inst_name', d.id as 'degree_type_id', d.degree_name as 'degree_type_name', e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current, " +
                     "ci.city_name, ci.id as 'city_id', co.country_name, co.id as 'country_id'  " +
                     "FROM educationrecord e " +
                     "JOIN educationinstitute ei ON (e.edu_inst_id = ei.id)  " +

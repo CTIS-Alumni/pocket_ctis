@@ -1,4 +1,4 @@
-import {doquery} from "../../helpers/dbconnect";
+import {doquery} from "../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -10,7 +10,7 @@ export default async function handler(req, res){
         case "GET":
             try{
                 let values = [];
-                    let query = "SElECT ei.id, ei.inst_name, ci.city_name, co.country_name, ei.is_erasmus " +
+                    let query = "SElECT ei.id, ei.inst_name as 'edu_inst_name', ci.city_name, co.country_name, ei.is_erasmus " +
                     "FROM educationinstitute ei LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) " +
                     "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 

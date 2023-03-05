@@ -7,25 +7,39 @@ import {
 } from 'react-bootstrap-icons'
 import { Formik, Field, Form, FieldArray } from 'formik'
 import { cloneDeep } from 'lodash'
+import {createReqObject} from "../../../../helpers/fetchHelpers";
+import {submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUserUrl} from "../../../../helpers/urlHelper";
+
 
 const CertificatesInformationForm = ({ data }) => {
-  //   console.log('data', data)
+  let deletedData = [];
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
-      datum.visibility = datum.visibility == 1
+      if(typeof datum.visibility == "number")
+        datum.visibility = datum.visibility == 1
+      else datum.visibility = datum.visibility ? 1 : 0;
       return datum
     })
 
     return newData
   }
 
+  const onSubmit = async (values) => {
+    const requestObj = createReqObject(data, transformData(values.certificates), deletedData);
+    const url = craftUserUrl(1, "certificates");
+    const responseObj = await submitChanges(url ,requestObj);
+    console.log(responseObj);
+    deletedData = [];
+  }
+
   return (
     <Formik
       enableReinitialize
       initialValues={{ certificates: transformData(data) }}
-      onSubmit={(values) => console.log(values)}
+      onSubmit={onSubmit}
     >
       {(props) => (
         <Form>
@@ -65,9 +79,11 @@ const CertificatesInformationForm = ({ data }) => {
                                       <button
                                         className={styles.removeBtn}
                                         type='button'
-                                        onClick={() =>
-                                          arrayHelpers.remove(index)
-                                        }
+                                        onClick={() => {
+                                          arrayHelpers.remove(index);
+                                          if(certificate.hasOwnProperty("id"))
+                                            deletedData.push({name: certificate.certificate_name, id: certificate.id});
+                                        }}
                                       >
                                         <XCircleFill
                                           size={13}

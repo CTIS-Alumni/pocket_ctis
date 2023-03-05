@@ -7,7 +7,7 @@ const ProfileWorkSection = ({ work }) => {
   return (
     <div>
       {/* <SectionHeading title='Work' /> */}
-      <Container style={{ height: 300, oveflowY: 'scroll' }}>
+        {work.length > 0 && <Container style={{ height: 300, oveflowY: 'scroll' }}>
         {work.map((datum, i) => {
           const workPeriod = getTimePeriod(
             datum.start_date,
@@ -28,23 +28,32 @@ const ProfileWorkSection = ({ work }) => {
                 <p className='m-0' style={{ fontSize: 18, color: 'black' }}>
                   {datum.company_name}
                 </p>
-                <CustomBadge>{datum.position}</CustomBadge>
+                {datum.position && <CustomBadge>{datum.position}</CustomBadge>}
               </div>
               <Container>
-                <div style={{ color: 'black' }}>
+                {datum.department && <div style={{ color: 'black' }}>
                   {datum.department} Department
-                </div>
-                <div style={{ color: 'rgb(245,164,37)' }}>
+                </div>}
+                {datum.city_name && <div style={{ color: 'rgb(245,164,37)' }}>
                   <GeoAltFill />
                   {datum.city_name}, {datum.country_name}
-                </div>
-                <div>{datum.type_name}</div>
+                </div>}
+                <div>{datum.work_type_name}</div>
                 <div>{workPeriod}</div>
+                <div>{datum.work_description}</div>
               </Container>
             </div>
           )
         })}
-      </Container>
+      </Container>}
+      {work.length == 0 &&
+          <Container
+              className='px-0'
+              style={{ height: 50, width: 350, color: '#999' }}
+          >
+            No data available
+          </Container>
+      }
     </div>
   )
 }

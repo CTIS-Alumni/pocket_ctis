@@ -4,9 +4,14 @@ import { EyeFill, EyeSlashFill } from 'react-bootstrap-icons'
 import { Formik, Field, Form } from 'formik'
 import { cloneDeep } from 'lodash'
 import { fetchAllHighSchool } from '../../../../helpers/searchHelpers'
+import {splitFields} from "../../../../helpers/formatHelpers";
+import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUserUrl} from "../../../../helpers/urlHelper";
 
 const HighSchoolInformationForm = ({ data }) => {
   const [highSchools, setHighSchools] = useState([])
+
+    let deletedData = [];
 
   useEffect(() => {
     fetchAllHighSchool().then((res) => setHighSchools(res.data))
@@ -15,11 +20,31 @@ const HighSchoolInformationForm = ({ data }) => {
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
-      datum.visibility = datum.visibility == 1
-      datum.high_school = `${datum.high_school_id}-${datum.high_school_name}`
+        datum.visibility = datum.visibility == 1
+        datum.high_school = `${datum.high_school_id}-${datum.high_school_name}`
+
       return datum
     })
     return newData
+  }
+
+  const onSubmit = async (values) => {
+      let newData = cloneDeep(values);
+      if(newData.high_school.length > 0){
+          if(newData.high_school[0].high_school =="")
+              newData.high_school = [];
+          else{
+              newData.high_school[0].visibility = newData.high_school[0].visibility ? 1 : 0;
+              splitFields(newData.high_school[0], ["high_school"]);
+          }
+      }
+      if(data.length > newData.high_school.length)
+          deletedData.push({name: data[0].id, id: data[0].id});
+
+      const requestObj = createReqObject(data, newData.high_school, deletedData);
+      const url = craftUserUrl(1, "highschool");
+      const responseObj = await submitChanges(url ,requestObj);
+      deletedData = [];
   }
 
   return (
@@ -29,7 +54,7 @@ const HighSchoolInformationForm = ({ data }) => {
         initialValues={{
           high_school: transformData(data),
         }}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={onSubmit}
       >
         {(props) => {
           return (

@@ -1,4 +1,4 @@
-import {doquery} from "../../../../helpers/dbconnect";
+import {doquery} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -10,8 +10,9 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const query = "SELECT ul.id, ul.city_id, ci.city_name, co.country_name, ul.visibility FROM userlocation ul JOIN city ci ON (ul.city_id = ci.id) " +
-                    "JOIN country co ON (ci.country_id = co.id) WHERE ul.user_id = ?";
+                const query = "SELECT ul.id, ul.city_id, ci.city_name, ul.country_id, co.country_name, ul.visibility FROM userlocation ul " +
+                    "LEFT OUTER JOIN city ci ON (ul.city_id = ci.id) " +
+                    "LEFT OUTER JOIN country co ON (w.country_id = co.id) WHERE ul.user_id = ?";
                 const data = await doquery({query: query, values: [user_id]});
                 res.status(200).json({data});
             } catch(error){

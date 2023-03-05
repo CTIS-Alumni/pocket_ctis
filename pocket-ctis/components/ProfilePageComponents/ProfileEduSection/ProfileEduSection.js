@@ -6,7 +6,7 @@ const ProfileEduSection = ({ edu }) => {
   return (
     <div>
       {/* <SectionHeading title='Education' /> */}
-      <Container
+        {edu.length > 0 && <Container
         className='px-0'
         style={{ height: 200, width: 350, overflowY: 'scroll' }}
       >
@@ -22,21 +22,29 @@ const ProfileEduSection = ({ edu }) => {
               style={{ fontSize: 18, borderBottom: '1px solid #ccc' }}
               className='mb-3 pb-1'
             >
-              {datum.degree_name} - {datum.name_of_program}
+              {datum.degree_type_name} - {datum.name_of_program}
               <Container style={{ fontSize: 14, color: '#999' }}>
                 <div style={{ color: 'black', fontSize: 16 }}>
-                  {datum.inst_name}
+                  {datum.edu_inst_name}
                 </div>
-                <div style={{ color: 'rgb(245,164,37)' }}>
+                {datum.city_name && <div style={{ color: 'rgb(245,164,37)' }}>
                   <GeoAltFill />
                   {datum.city_name}, {datum.country_name}
-                </div>
+                </div>}
                 {studyPeriod}
               </Container>
             </div>
           )
         })}
-      </Container>
+      </Container>}
+        {edu.length == 0 &&
+            <Container
+                className='px-0'
+                style={{ height: 50, width: 350, color: '#999' }}
+            >
+                No data available
+            </Container>
+        }
     </div>
   )
 }

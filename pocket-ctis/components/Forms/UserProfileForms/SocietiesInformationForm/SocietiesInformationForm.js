@@ -9,6 +9,9 @@ import {
 import { cloneDeep } from 'lodash'
 import { fetchAllSocieties } from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
+import {splitFields} from "../../../../helpers/formatHelpers";
+import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUserUrl} from "../../../../helpers/urlHelper";
 
 const SocietiesInformationForm = ({ data }) => {
   const [societies, setSocieties] = useState([])
@@ -17,21 +20,40 @@ const SocietiesInformationForm = ({ data }) => {
     fetchAllSocieties().then((res) => setSocieties(res.data))
   }, [])
 
+  let deletedData = [];
+
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
-      datum.visibility = datum.visibility == 1
+        datum.visibility = datum.visibility == 1;
       datum.society = `${datum.society_id}-${datum.society_name}`
       return datum
     })
     return newData
   }
 
+  const onSubmit = async (values) => {
+    //transform data
+    let newData = cloneDeep(values);
+    newData.societies = newData.societies.map((val) => {
+      val.visibility = val.visibility ? 1 : 0
+      val.activity_status = parseInt(val.activity_status) ? 1 : 0;
+      splitFields(val, ["society"]);
+      return val;
+    })
+
+    const requestObj = createReqObject(data, newData.societies, deletedData);
+    const url = craftUserUrl(1, "userstudentsocieties");
+    const responseObj = await submitChanges(url ,requestObj);
+    console.log(responseObj);
+    deletedData = [];
+  }
+
   return (
     <Formik
       enableReinitialize
       initialValues={{ societies: transformData(data) }}
-      onSubmit={(values) => console.log(values)}
+      onSubmit={onSubmit}
     >
       {(props) => (
         <Form>
@@ -71,9 +93,11 @@ const SocietiesInformationForm = ({ data }) => {
                                       <button
                                         className={styles.removeBtn}
                                         type='button'
-                                        onClick={() =>
-                                          arrayHelpers.remove(index)
-                                        }
+                                        onClick={() => {
+                                          arrayHelpers.remove(index);
+                                          if(society.hasOwnProperty("id"))
+                                            deletedData.push({name: society.id, id: society.id});
+                                        }}
                                       >
                                         <XCircleFill
                                           size={13}
@@ -92,8 +116,8 @@ const SocietiesInformationForm = ({ data }) => {
                                           id={`societies[${index}]society`}
                                           name={`societies[${index}]society`}
                                         >
-                                          <option selected value=''>
-                                            Please select Activity Status
+                                          <option disabled selected value=''>
+                                            Please select a student society
                                           </option>
                                           {societies.map((society) => (
                                             <option

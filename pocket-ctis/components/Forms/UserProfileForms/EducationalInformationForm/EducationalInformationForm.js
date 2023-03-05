@@ -15,13 +15,14 @@ import {
   fetchAllEducationInstitutes,
 } from '../../../../helpers/searchHelpers'
 import DatePickerField from '../../../DatePickers/DatePicker'
-
-import { Location_data } from '../../../../context/locationContext'
+import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUserUrl} from "../../../../helpers/urlHelper";
+import {replaceWithNull, splitFields} from "../../../../helpers/formatHelpers";
 
 const EducationInformationForm = ({ data }) => {
+  let deletedData = [];
   const [eduInsts, setEduInsts] = useState([])
   const [degreeTypes, setDegreeTypes] = useState([])
-  // const { locationData } = useContext(Location_data)
 
   useEffect(() => {
     fetchAllEducationInstitutes().then((res) => setEduInsts(res.data))
@@ -32,10 +33,10 @@ const EducationInformationForm = ({ data }) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
-      datum.inst = `${datum.edu_inst_id}-${datum.inst_name}`
+      datum.edu_inst = `${datum.edu_inst_id}-${datum.edu_inst_name}`
       datum.start_date = datum.start_date && new Date(datum.start_date)
       datum.end_date = datum.end_date && new Date(datum.end_date)
-      datum.degree = `${datum.degree_type_id}-${datum.degree_name}`
+      datum.degree_type = `${datum.degree_type_id}-${datum.degree_type_name}`
       datum.is_current = datum.is_current == 1
 
       return datum
@@ -43,22 +44,26 @@ const EducationInformationForm = ({ data }) => {
     return newData
   }
 
-  const onSubmitHandler = (values) => {
+  const onSubmit = async (values) => {
     //transform data
     let newData = cloneDeep(values)
-    console.log(newData)
     newData.edu_records = newData.edu_records.map((val) => {
       val.visibility = val.visibility ? 1 : 0
       val.is_current = val.is_current ? 1 : 0
       val.start_date =
         val.start_date != null ? new Date(val.start_date).toISOString() : null
       val.end_date =
-        val.end_date != null ? new Date(val.end_date).toISOString() : null
+          (val.end_date != null && val.is_current == 0) ? new Date(val.end_date).toISOString() : null
+      replaceWithNull(val);
+      splitFields(val, ["edu_inst", "degree_type"])
       return val
-    })
-    console.log('values', newData)
+    });
 
-    //continue here
+    const requestObj = createReqObject(data, newData.edu_records, deletedData);
+    const url = craftUserUrl(1, "educationrecords");
+    const responseObj = await submitChanges(url ,requestObj);
+    console.log(responseObj);
+    deletedData = [];
   }
 
   return (
@@ -68,7 +73,7 @@ const EducationInformationForm = ({ data }) => {
           edu_records: transformData(data),
         }}
         enableReinitialize
-        onSubmit={(values) => onSubmitHandler(values)}
+        onSubmit={onSubmit}
       >
         {(props) => {
           return (
@@ -110,9 +115,11 @@ const EducationInformationForm = ({ data }) => {
                                         <button
                                           className={styles.removeBtn}
                                           type='button'
-                                          onClick={() =>
-                                            arrayHelpers.remove(index)
-                                          }
+                                          onClick={() =>{
+                                            arrayHelpers.remove(index);
+                                            if(edu_record.hasOwnProperty("id"))
+                                              deletedData.push({name: edu_record.id, id: edu_record.id});
+                                          }}
                                         >
                                           <XCircleFill
                                             size={13}
@@ -128,8 +135,8 @@ const EducationInformationForm = ({ data }) => {
                                           <Field
                                             as='select'
                                             className={styles.inputField}
-                                            id={`edu_records[${index}]inst`}
-                                            name={`edu_records[${index}]inst`}
+                                            id={`edu_records[${index}]edu_inst`}
+                                            name={`edu_records[${index}]edu_inst`}
                                           >
                                             <option disabled selected value=''>
                                               Please select Educational
@@ -137,86 +144,13 @@ const EducationInformationForm = ({ data }) => {
                                             </option>
                                             {eduInsts.map((inst) => (
                                               <option
-                                                value={`${inst.id}-${inst.inst_name}`}
+                                                value={`${inst.id}-${inst.edu_inst_name}`}
                                               >
-                                                {inst.inst_name}
+                                                {inst.edu_inst_name}
                                               </option>
                                             ))}
                                           </Field>
                                         </div>
-                                        {/* <div
-                                          style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                          }}
-                                        >
-                                          <div
-                                            className={styles.inputContainer}
-                                            style={{ width: '49%' }}
-                                          >
-                                            <label
-                                              className={styles.inputLabel}
-                                            >
-                                              Country
-                                            </label>
-                                            <Field
-                                              as='select'
-                                              className={styles.inputField}
-                                              name={`edu_records[${index}]country`}
-                                              id={`edu_records[${index}]country`}
-                                            >
-                                              <option selected value=''>
-                                                Please select a country
-                                              </option>
-                                              {Object.keys(locationData).map(
-                                                (country) => {
-                                                  let countryName =
-                                                    country.split('-')[1]
-                                                  return (
-                                                    <option value={country}>
-                                                      {countryName}
-                                                    </option>
-                                                  )
-                                                }
-                                              )}
-                                            </Field>
-                                          </div>
-                                          <div
-                                            className={styles.inputContainer}
-                                            style={{ width: '49%' }}
-                                          >
-                                            <label
-                                              className={styles.inputLabel}
-                                            >
-                                              City
-                                            </label>
-                                            <Field
-                                              disabled={!edu_record.country}
-                                              as='select'
-                                              className={styles.inputField}
-                                              name={`edu_records[${index}]city`}
-                                              id={`edu_records[${index}]city`}
-                                            >
-                                              <option selected value=''>
-                                                Please select a{' '}
-                                                {edu_record.country
-                                                  ? 'city'
-                                                  : 'country'}
-                                              </option>
-                                              {locationData[
-                                                edu_record.country
-                                              ]?.map((city) => {
-                                                let cityName =
-                                                  city.split('-')[1]
-                                                return (
-                                                  <option value={city}>
-                                                    {cityName}
-                                                  </option>
-                                                )
-                                              })}
-                                            </Field>
-                                          </div> 
-                                        </div>*/}
                                         <div
                                           style={{
                                             display: 'flex',
@@ -235,17 +169,17 @@ const EducationInformationForm = ({ data }) => {
                                             <Field
                                               as='select'
                                               className={styles.inputField}
-                                              name={`edu_records[${index}]degree`}
-                                              id={`edu_records[${index}]degree`}
+                                              name={`edu_records[${index}]degree_type`}
+                                              id={`edu_records[${index}]degree_type`}
                                             >
                                               <option selected value=''>
                                                 Please select a Degree
                                               </option>
                                               {degreeTypes.map((degree) => (
                                                 <option
-                                                  value={`${degree.id}-${degree.degree_name}`}
+                                                  value={`${degree.id}-${degree.degree_type_name}`}
                                                 >
-                                                  {degree.degree_name}
+                                                  {degree.degree_type_name}
                                                 </option>
                                               ))}
                                             </Field>

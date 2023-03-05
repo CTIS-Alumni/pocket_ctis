@@ -12,6 +12,9 @@ import {
   fetchAllSkillTypes,
 } from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
+import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {splitFields} from "../../../../helpers/formatHelpers";
+import {craftUserUrl} from "../../../../helpers/urlHelper";
 
 const SkillsInformationForm = ({ data }) => {
   const [skillType, setSkillType] = useState([])
@@ -22,23 +25,38 @@ const SkillsInformationForm = ({ data }) => {
     fetchAllSkillTypes().then((res) => setSkillType(res.data))
   }, [])
 
+  let deletedData = [];
+
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
       datum.skill_type = `${datum.skill_type_id}-${datum.type_name}`
-      datum.skill_value = `${datum.skill_id}-${datum.skill_name}`
+      datum.skill = `${datum.skill_id}-${datum.skill_name}`
       return datum
     })
-    // console.log(newData)
     return newData
+  }
+
+  const onSubmit = async (values) =>{
+    let newData = cloneDeep(values);
+    newData.skills = newData.skills.map((val) => {
+      val.visibility = val.visibility ? 1 : 0
+      splitFields(val, ["skill_type", "skill"]);
+      return val;
+    });
+
+    const requestObj = createReqObject(data, newData.skills, deletedData);
+    const url = craftUserUrl(1, "userskills");
+    const responseObj = await submitChanges(url, requestObj);
+    deletedData = [];
   }
 
   return (
     <Formik
       enableReinitialize
       initialValues={{ skills: transformData(data) }}
-      onSubmit={(values) => console.log(values)}
+      onSubmit={onSubmit}
     >
       {(props) => (
         <Form>
@@ -77,9 +95,11 @@ const SkillsInformationForm = ({ data }) => {
                                       <button
                                         className={styles.removeBtn}
                                         type='button'
-                                        onClick={() =>
-                                          arrayHelpers.remove(index)
-                                        }
+                                        onClick={() =>{
+                                          arrayHelpers.remove(index);
+                                          if(skill.hasOwnProperty("id"))
+                                            deletedData.push({name: skill.id, id: skill.id});
+                                        }}
                                       >
                                         <XCircleFill
                                           size={13}
@@ -103,9 +123,9 @@ const SkillsInformationForm = ({ data }) => {
                                           </option>
                                           {skillType.map((type) => (
                                             <option
-                                              value={`${type.id}-${type.type_name}`}
+                                              value={`${type.id}-${type.skill_type_name}`}
                                             >
-                                              {type.type_name}
+                                              {type.skill_type_name}
                                             </option>
                                           ))}
                                         </Field>
@@ -126,8 +146,8 @@ const SkillsInformationForm = ({ data }) => {
                                           <Field
                                             as='select'
                                             className={styles.inputField}
-                                            id={`skills[${index}]skill_value`}
-                                            name={`skills[${index}]skill_value`}
+                                            id={`skills[${index}]skill`}
+                                            name={`skills[${index}]skill`}
                                             disabled={!skill.skill_type}
                                           >
                                             <option selected disabled value=''>

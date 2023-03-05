@@ -1,4 +1,4 @@
-import {doquery} from "../../helpers/dbconnect";
+import {doquery} from "../../helpers/dbHelpers";
 
 export default async function handler(req, res) {
     const api_key = req.headers['x-api-key'];
@@ -9,8 +9,7 @@ export default async function handler(req, res) {
     switch (method) {
         case "GET":
             try {
-                const query = "SELECT * FROM worktype order by type_name asc";
-                //for dropboxes
+                const query = "SELECT id, type_name as 'work_type_name' FROM worktype order by type_name asc";
 
                 const data = await doquery({query: query});
                 if(data.hasOwnProperty("error"))

@@ -1,4 +1,4 @@
-import {doquery} from "../../../../helpers/dbconnect";
+import {doquery} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -10,9 +10,10 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const query = "SELECT uws.id, s.sector_name, uws.visibility " +
-                    "FROM userwantsector uws JOIN sector s ON (uws.sector_id = s.id) " +
-                    "WHERE uws.user_id = ? order by s.sector_name asc";
+                const query = "SELECT usm.id, sm.social_media_name, usm.link, usm.visibility " +
+                    "FROM usersocialmedia usm JOIN socialmedia sm ON (usm.social_media_id = sm.id) " +
+                    "WHERE usm.user_id = ? order by sm.social_media_name asc ";
+
                 const data = await doquery({query: query, values: [user_id]});
                 if(data.hasOwnProperty("error"))
                     res.status(500).json({error: data.error.message});
@@ -24,9 +25,9 @@ export default async function handler(req, res){
             break;
         case "POST":
             try {
-                const {sector_id,visibility} = req.body.userwantsector;
-                const query = "INSERT INTO userwantsector(user_id, sector_id, visibility) values (?,?,?)";
-                const data = await doquery({query: query, values: [user_id, sector_id,visibility]});
+                const {social_media_id,link,visibility} = req.body.usersocialmedia;
+                const query = "INSERT INTO usersocialmedia(user_id,social_media_id,link, visibility) values (?,?,?,?)";
+                const data = await doquery({query: query, values: [user_id,social_media_id,link,visibility]});
                 if(data.hasOwnProperty("error"))
                     res.status(500).json({error: data.error.message});
                 else
@@ -35,6 +36,5 @@ export default async function handler(req, res){
                 res.status(500).json({error: error.message});
             }
             break;
-            
     }
 }

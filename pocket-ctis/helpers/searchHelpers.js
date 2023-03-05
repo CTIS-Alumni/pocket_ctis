@@ -1,4 +1,4 @@
-import { _getFetcher } from './fetchHelper'
+import { _getFetcher } from './fetchHelpers'
 
 export const fetchUsers = async (search) => {
   const res = await _getFetcher(
@@ -233,3 +233,4 @@ export const getEducationUpdates = async () => {
   console.log(res)
   return res
 }
+

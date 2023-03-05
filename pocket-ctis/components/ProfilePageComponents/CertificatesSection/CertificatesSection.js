@@ -5,7 +5,7 @@ const CertificatesSection = ({ certs }) => {
   return (
     <div>
       <SectionHeading title={'Certificates'} />
-      <Container>
+        {certs.length > 0 && <Container>
         {certs.map((cert, i) => (
           <div key={i}>
             {cert.certificate_name}
@@ -14,7 +14,15 @@ const CertificatesSection = ({ certs }) => {
             </Container>
           </div>
         ))}
-      </Container>
+      </Container>}
+        {certs.length == 0 &&
+            <Container
+                className='px-0'
+                style={{ height: 50, width: 350, color: '#999' }}
+            >
+                No data available
+            </Container>
+        }
     </div>
   )
 }

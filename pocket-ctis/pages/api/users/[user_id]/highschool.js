@@ -1,4 +1,4 @@
-import {doquery} from "../../../../helpers/dbconnect";
+import {createPostQueries, createPutQueries, doMultiQueries, doquery} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -23,38 +23,47 @@ export default async function handler(req, res){
             break;
         case "POST":
             try{
-                const {high_school_id, visibility} = req.body.highschool;
-                const query = "INSERT INTO userhighschool(user_id, high_school_id, visibility) values (?, ?, ?)";
-                const data = await doquery({query: query, values: [user_id, high_school_id, visibility]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
+                const high_schools = JSON.parse(req.body);
+                const base_query = "INSERT INTO userhighschool(user_id, high_school_id ";
+                const base_values = ["user_id", "high_school_id"];
+                const optional_values = ["visibility"];
+                const queries = createPostQueries(high_schools, base_query, base_values, optional_values, user_id);
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
+
             }catch(error){
                 res.status(500).json({error: error.message});
             }
             break;
         case "PUT":
             try{
-                const {high_school_id, visibility} = req.body.highschool;
-                const query = "UPDATE userhighschool SET high_school_id = ?, visibility = ? WHERE user_id = ?";
-                const data = await doquery({query: query,values: [high_school_id, visibility, user_id]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
+                const high_schools = JSON.parse(req.body);
+                const base_query = "UPDATE userhighschool SET high_school_id = ?, "
+                const base_values = ["high_school_id"];
+                const optional_values = ["visibility"];
+                const queries = createPutQueries(high_schools, base_query, base_values, optional_values);
+               const {data, errors} = await doMultiQueries(queries);
+               res.status(200).json({data, errors});
+
             }catch(error){
                 res.status(500).json({error: error.message});
             }
             break;
         case "DELETE":
             try{
-                const query = "DELETE FROM userhighschool WHERE user_id = ?"
-                const data = await doquery({query: query,values: [user_id]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
+                const high_schools = JSON.parse(req.body);
+                let queries = [];
+                const tempQuery = "DELETE FROM userhighschool WHERE id = ?"
+                high_schools.forEach((hs) => {
+                    queries.push({
+                        name: hs.id,
+                        query: tempQuery,
+                        values: [hs.id]
+                    });
+                });
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
+
             }catch(error){
                 res.status(500).json({error: error.message});
             }break;

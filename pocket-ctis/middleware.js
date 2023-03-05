@@ -29,7 +29,7 @@ export default async function middleware(req){
         }
     }
     if(refresh === undefined && !url.includes("login")){
-        if(!url.includes("users") && url.includes("user") || url.includes("logout")) {//todo change the !url.includes("users")
+        if(!url.includes("users") && url.includes("user") || url.includes("logout")) {
             return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/login");
         }
     }

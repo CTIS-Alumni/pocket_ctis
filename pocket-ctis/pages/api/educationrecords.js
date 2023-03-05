@@ -1,4 +1,4 @@
-import {doquery} from "../../helpers/dbconnect";
+import {doquery} from "../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -20,12 +20,6 @@ export default async function handler(req, res){
                     "JOIN degreetype d ON (e.degree_type_id = d.id) " +
                     "LEFT OUTER JOIN city ci ON (ei.city_id = ci.id)" +
                     "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
-                //use is_current to color some part of the record red or green to indicate if its current or not
-                //use pic_visibility to see if pp should be shown or anonymous
-                //use record_visibility to see if name and surname should be anonymous, if record is invisible but pp is visible, make the pp default pp anyway
-                //record visibility overrides pp visibility
-                //if the current session is admin, show the invisible ones as visible but indicate that they are actually invisible in some way
-                //use user_id and inst_id as links to their page
 
                 if(req.query.edu_inst_id){
                     query += "WHERE e.edu_inst_id = ? ";

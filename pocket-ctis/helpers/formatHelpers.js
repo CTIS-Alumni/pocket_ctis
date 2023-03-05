@@ -28,7 +28,7 @@ export const getTimePeriod = (start_date, end_date, is_current = false) => {
       let now = new Date()
       months = now.getMonth() - rawStartDate.getMonth()
       years = now.getFullYear() - rawStartDate.getFullYear()
-      return `${startDate} - Present | ${years} yrs ${months} months`
+      return `${startDate} - Present | ${years > 0 ? `${years} ${years == 1 ? 'year' : 'yrs' }`: ''} ${months == 0 ? '' : months + (months == 1 ? ' month' : ' months')}`
     } else {
       return `Present`
     }
@@ -40,8 +40,8 @@ export const getTimePeriod = (start_date, end_date, is_current = false) => {
       years -= 1
     }
     return `${startDate} - ${endDate} | ${
-      years > 0 ? `${years} yrs` : ''
-    } ${months} months`
+      years > 0 ? ` ${years} ${years == 1 ? 'year' : 'yrs'}` : ''
+    } ${months == 0 ? '' : months + (months == 1 ? ' month' : ' months')}`
   } else if (start_date) {
     return `Started at: ${startDate}`
   } else if (end_date) {
@@ -67,4 +67,29 @@ export const getProfilePicturePath = (visibility = 0, fileName = null) => {
   } else {
     return '/profilepictures/defaultUser.png'
   }
+}
+
+export const splitFields = (data, fields) => {
+  //splits field into name and id values
+  fields.forEach((field) => {
+    if(data.hasOwnProperty(field) && data[field] != null && data[field] != "null-null"){
+      const splitData = data[field].split("-");
+      data[field + "_id"] = parseInt(splitData[0]);
+      data[field + "_name"] = splitData[1];
+    }
+    delete data[field];
+  });
+}
+
+export const replaceWithNull = (data) => {
+  Object.keys(data).forEach((field)=>{
+    if(data[field] === "")
+      data[field] = null;
+  });
+}
+
+export const convertToLastDay = (date) => {
+  const tempDate = new Date(new Date(date).getTime() + 86400000);
+  const splitDate =  tempDate.toISOString().split("-");
+  return new Date(parseInt(splitDate[0]), parseInt(splitDate[1])).toISOString();
 }

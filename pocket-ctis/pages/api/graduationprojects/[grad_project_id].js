@@ -1,4 +1,4 @@
-import {doquery} from "../../../helpers/dbconnect";
+import {doquery} from "../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];

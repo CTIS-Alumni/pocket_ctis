@@ -1,4 +1,4 @@
-import {doquery} from "../../../../helpers/dbconnect";
+import {createPostQueries, createPutQueries, doMultiQueries, doquery} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -26,16 +26,49 @@ export default async function handler(req, res){
             break;
         case "POST":
             try {
-                const {skill_id,skill_level,visibility} = req.body.userskill;
-                const query = "INSERT INTO userskill(user_id,skill_id,skill_level, visibility) values (?,?,?,?)";
-                const data = await doquery({query: query, values: [user_id,skill_id,skill_level,visibility]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
+                const skills = JSON.parse(req.body);
+                const base_query = "INSERT INTO userskill(user_id,skill_id,skill_level" ;
+                const base_values = ["user_id", "skill_id", "skill_level"];
+                const optional_values = ["visibility"];
+                const queries = createPostQueries(skills, base_query, base_values, optional_values, user_id);
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
+
             } catch(error){
                 res.status(500).json({error: error.message});
             }
+            break;
+        case "PUT":
+            try{
+                const skills = JSON.parse(req.body);
+                const base_query = "UPDATE userskill SET skill_id = ?, skill_level = ?, ";
+                const base_values = ["skill_id", "skill_level"];
+                const optional_values = ["visibility"];
+                const queries = createPutQueries(skills, base_query, base_values, optional_values);
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
+            }catch(error){
+                res.status(500).json({error: error.message});
+            }
+            break;
+        case "DELETE":
+            try{
+                const skills = JSON.parse(req.body);
+                let queries = [];
+                const tempQuery = "DELETE FROM userskill WHERE id = ?";
+                skills.forEach((skill)=>{
+                    queries.push({
+                        name: skill.id,
+                        query: tempQuery,
+                        values: [skill.id]
+                    })
+                });
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
+            }catch(errors){
+                res.status(500).json({error: error.message});
+            }
+            break;
     }
 
 }

@@ -54,7 +54,6 @@ const Profile = ({ user, errors }) => {
     basic_info,
     exams,
   } = user
-  // console.log(user)
 
   return (
     <>
@@ -112,7 +111,7 @@ const Profile = ({ user, errors }) => {
                   </span>
                 </div>
                 <Container>
-                  <div>{career_objective[0].career_objective}</div>
+                  {career_objective.length > 0 && <div>{career_objective[0].career_objective}</div>}
                   <div className='my-1'>
                     Wants to work in:&nbsp;
                     {wanted_sectors.map((s, i) => {
