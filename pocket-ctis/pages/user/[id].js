@@ -15,7 +15,7 @@ const Profile = ({ user }) => {
 
 export async function getServerSideProps(context) {
   const res = await fetch(
-    process.env.BACKEND_PATH + '/users/' + context.params.id
+    process.env.NEXT_PUBLIC_BACKEND_PATH + '/users/' + context.params.id
   )
   const { data } = await res.json()
 

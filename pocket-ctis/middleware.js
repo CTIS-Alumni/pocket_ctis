@@ -30,17 +30,17 @@ export default async function middleware(req){
     }
     if(refresh === undefined && !url.includes("login")){
         if(!url.includes("users") && url.includes("user") || url.includes("logout")) {//todo change the !url.includes("users")
-            return NextResponse.redirect(process.env.ORIGIN_PATH + "/login");
+            return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/login");
         }
     }
     if(jwt && refresh){
         try{
             await verify(jwt, process.env.ACCESS_SECRET);
             if(url.includes("login")){
-                return NextResponse.redirect(process.env.ORIGIN_PATH + "/user");
+                return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user");
             }
         }catch(error){
-            return NextResponse.redirect(process.env.ORIGIN_PATH + "/login");
+            return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/login");
         }
 
     }

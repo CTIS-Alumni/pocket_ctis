@@ -22,12 +22,12 @@ const UsersRoute = ({ work, edu }) => {
 export async function getServerSideProps() {
   //   const workres = await getWorkUpdates()
   //   const edures = await getEducationUpdates()
-  const workres = await fetch(process.env.BACKEND_PATH + '/workrecords', {
+  const workres = await fetch(process.env.NEXT_PUBLIC_BACKEND_PATH + '/workrecords', {
     headers: {
       'x-api-key': process.env.API_KEY,
     },
   })
-  const edures = await fetch(process.env.BACKEND_PATH + '/educationrecords', {
+  const edures = await fetch(process.env.NEXT_PUBLIC_BACKEND_PATH + '/educationrecords', {
     headers: {
       'x-api-key': process.env.API_KEY,
     },

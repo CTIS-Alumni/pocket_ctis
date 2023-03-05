@@ -7,7 +7,7 @@ const GraduationProject = ({ graduationproject }) => {
 
 export async function getServerSideProps(context) {
   const res = await fetch(
-    process.env.BACKEND_PATH+"/graduationprojects/" + context.params.id,{
+    process.env.NEXT_PUBLIC_BACKEND_PATH+"/graduationprojects/" + context.params.id,{
         headers: {
           'x-api-key': process.env.API_KEY
         }
