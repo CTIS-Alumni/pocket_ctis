@@ -154,6 +154,11 @@ export const fetchAllWorkTypes = async () => {
   return res
 }
 
+export const fetchAllSocialMediaTypes = async () => {
+  const res = await _getFetcher('http://localhost:3000/api/socialmedia')
+  return res
+}
+
 export const fetchAllSectors = async () => {
   const res = await _getFetcher('http://localhost:3000/api/sectors')
   return res

@@ -10,11 +10,15 @@ import {
 } from 'react-bootstrap-icons'
 
 import { Location_data } from '../../../../context/locationContext'
-import { fetchAllSectors } from '../../../../helpers/searchHelpers'
+import {
+  fetchAllSectors,
+  fetchAllSocialMediaTypes,
+} from '../../../../helpers/searchHelpers'
 
 const PersonalInformationForm = ({ data }) => {
   const { locationData } = useContext(Location_data)
   const [sectors, setSectors] = useState([])
+  const [socialMediaTypes, setSocialMediaTypes] = useState([])
 
   useEffect(() => {
     fetchAllSectors().then((res) => {
@@ -27,6 +31,16 @@ const PersonalInformationForm = ({ data }) => {
         })
       )
     })
+    fetchAllSocialMediaTypes().then((res) =>
+      setSocialMediaTypes(
+        res.data.map((social) => {
+          return {
+            ...social,
+            social: `${social.id}-${social.social_media_name}`,
+          }
+        })
+      )
+    )
   }, [])
 
   const transformData = (data) => {
@@ -51,6 +65,15 @@ const PersonalInformationForm = ({ data }) => {
     newData.visibility = data[0].visibility == 1
     // console.log(newData)
     return newData
+  }
+
+  const transformSocials = (data) => {
+    return data.map((datum) => {
+      return {
+        ...datum,
+        social: `${datum.social_media_id}-${datum.social_media_name}`,
+      }
+    })
   }
 
   const {
@@ -93,7 +116,7 @@ const PersonalInformationForm = ({ data }) => {
       initialValues={{
         first_name: basic_info[0].first_name,
         last_name: basic_info[0].last_name,
-        socials: transformData(socials),
+        socials: transformSocials(socials),
         phone: transformData(phone_numbers),
         email: transformData(emails),
         careerObjectives: transformData(career_objective),
@@ -404,15 +427,32 @@ const PersonalInformationForm = ({ data }) => {
                                         <Field
                                           className={styles.inputField}
                                           as='select'
-                                          name={`socials[${index}]social_media_name`}
-                                          id={`socials[${index}]social_media_name`}
+                                          name={`socials[${index}]social`}
+                                          id={`socials[${index}]social`}
+                                          onChange={(event) => {
+                                            const val = event.target.value
+                                            props.setFieldValue(
+                                              `socials[${index}]social`,
+                                              val
+                                            )
+                                            props.setFieldValue(
+                                              `socials[${index}]social_media_name`,
+                                              val.split('-')[1]
+                                            )
+                                            props.setFieldValue(
+                                              `socials[${index}]social_media_id`,
+                                              val.split('-')[0]
+                                            )
+                                          }}
                                         >
-                                          <option value='Facebook'>
-                                            Facebook
+                                          <option value='' disabled selected>
+                                            Please select a Social Media Type
                                           </option>
-                                          <option value='Linkedin'>
-                                            LinkedIn
-                                          </option>
+                                          {socialMediaTypes.map((social) => (
+                                            <option value={social.social}>
+                                              {social.social_media_name}
+                                            </option>
+                                          ))}
                                           <option value='Other'>Other</option>
                                         </Field>
                                       </div>
