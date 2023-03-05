@@ -20,6 +20,7 @@ import ProfileStudentSocieties from '../../components/ProfilePageComponents/Prof
 import { User_data } from '../../context/userContext'
 import { Location_data } from '../../context/locationContext'
 import { useContext } from 'react'
+import ProfileExamsSection from '../../components/ProfilePageComponents/ProfileExamsSection/ProfileExamsSection'
 /*
 #1F272B = dark green
 #f5a425 = orange
@@ -51,7 +52,9 @@ const Profile = ({ user, errors }) => {
     high_school,
     graduation_project,
     basic_info,
+    exams,
   } = user
+  console.log(user)
   // console.log(user)
 
   return (
@@ -145,6 +148,7 @@ const Profile = ({ user, errors }) => {
                 </Tabs>
                 <CertificatesSection certs={certificates} />
                 <ProfileStudentSocieties societies={societies} />
+                <ProfileExamsSection exams={exams} />
               </Col>
             </Row>
           </Container>
