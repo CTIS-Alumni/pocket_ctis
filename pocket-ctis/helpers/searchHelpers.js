@@ -40,6 +40,11 @@ export const fetchAllSkills = async () => {
   return res
 }
 
+export const fetchAllExams = async () => {
+  const res = await _getFetcher(`http://localhost:3000/api/exams`)
+  return res
+}
+
 export const fetchCompany = async (search) => {
   const res = await _getFetcher(
     `http://localhost:3000/api/companies?name=${search}`

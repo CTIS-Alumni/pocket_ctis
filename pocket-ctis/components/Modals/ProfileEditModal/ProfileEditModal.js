@@ -9,6 +9,7 @@ import HighSchoolInformationForm from '../../Forms/UserProfileForms/HighSchoolIn
 import CertificatesInformationForm from '../../Forms/UserProfileForms/CertificatesInformationForm/CertificatesInformationForm'
 import SkillsInformationForm from '../../Forms/UserProfileForms/SkillsInformationForm/SkillsInformationForm'
 import SocietiesInformationForm from '../../Forms/UserProfileForms/SocietiesInformationForm/SocietiesInformationForm'
+import ExamsInformationForm from '../../Forms/UserProfileForms/ExamsInformationForm/ExamsInformationForm'
 
 const ProfileEditModal = ({ user }) => {
   const [show, setShow] = useState(false)
@@ -26,6 +27,7 @@ const ProfileEditModal = ({ user }) => {
     high_school,
     basic_info,
     wanted_sectors,
+    exams,
   } = user
   // console.log(user)
   const handleClose = () => setShow(false)
@@ -105,6 +107,12 @@ const ProfileEditModal = ({ user }) => {
               <Accordion.Header>Socieites</Accordion.Header>
               <Accordion.Body>
                 <SocietiesInformationForm data={societies} />
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey='7'>
+              <Accordion.Header>Exams</Accordion.Header>
+              <Accordion.Body>
+                <ExamsInformationForm data={exams} />
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>

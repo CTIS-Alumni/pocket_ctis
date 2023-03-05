@@ -54,7 +54,6 @@ const Profile = ({ user, errors }) => {
     basic_info,
     exams,
   } = user
-  console.log(user)
   // console.log(user)
 
   return (

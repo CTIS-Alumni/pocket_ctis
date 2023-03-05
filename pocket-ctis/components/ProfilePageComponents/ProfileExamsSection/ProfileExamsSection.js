@@ -2,7 +2,6 @@ import { Container } from 'react-bootstrap'
 import SectionHeading from '../SectionHeading/SectionHeading'
 
 const ProfileExamsSection = ({ exams }) => {
-  console.log(exams)
   return (
     <div className='mt-4'>
       <SectionHeading title={'Exams'} />
