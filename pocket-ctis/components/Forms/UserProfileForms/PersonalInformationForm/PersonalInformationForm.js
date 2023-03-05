@@ -1,6 +1,6 @@
-import { useContext } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import { FieldArray, Field, Formik, Form } from 'formik'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, isArray, isObject } from 'lodash'
 import styles from './PersonalInformationForm.module.css'
 import {
   EyeFill,
@@ -10,9 +10,24 @@ import {
 } from 'react-bootstrap-icons'
 
 import { Location_data } from '../../../../context/locationContext'
+import { fetchAllSectors } from '../../../../helpers/searchHelpers'
 
 const PersonalInformationForm = ({ data }) => {
   const { locationData } = useContext(Location_data)
+  const [sectors, setSectors] = useState([])
+
+  useEffect(() => {
+    fetchAllSectors().then((res) => {
+      setSectors(
+        res.data.map((s) => {
+          return {
+            ...s,
+            sector: `${s.id}-${s.sector_name}`,
+          }
+        })
+      )
+    })
+  }, [])
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
@@ -28,6 +43,16 @@ const PersonalInformationForm = ({ data }) => {
     return newData
   }
 
+  const transformWantedSectors = (data) => {
+    const newData = {}
+    newData.sectors = data.map(
+      (sector) => `${sector.sector_id}-${sector.sector_name}`
+    )
+    newData.visibility = data[0].visibility == 1
+    // console.log(newData)
+    return newData
+  }
+
   const {
     basic_info,
     socials,
@@ -35,7 +60,33 @@ const PersonalInformationForm = ({ data }) => {
     emails,
     career_objective,
     location,
+    wanted_sectors,
   } = data
+
+  const onSubmitHandler = (values) => {
+    //transform data
+    let newData = cloneDeep(values)
+    for (const datum in newData) {
+      if (isObject(newData[datum]) && 'sectors' in newData[datum]) {
+        newData[datum] = newData[datum].sectors.map((sector) => {
+          return {
+            sector_name: sector.split('-')[1],
+            sector_id: sector.split('-')[0],
+            visibility: newData[datum].visibility ? 1 : 0,
+          }
+        })
+      } else if (isArray(newData[datum])) {
+        newData[datum].map((val) => {
+          val.visibility = val.visibility ? 1 : 0
+          return val
+        })
+      }
+    }
+
+    console.log('values', newData)
+
+    //continue here
+  }
 
   return (
     <Formik
@@ -47,9 +98,10 @@ const PersonalInformationForm = ({ data }) => {
         email: transformData(emails),
         careerObjectives: transformData(career_objective),
         location: transformData(location),
+        wanted_sectors: transformWantedSectors(wanted_sectors),
       }}
       enableReinitialize
-      onSubmit={(values) => console.log('values', values.location[0])}
+      onSubmit={(values) => onSubmitHandler(values)}
     >
       {(props) => {
         return (
@@ -108,6 +160,56 @@ const PersonalInformationForm = ({ data }) => {
                     </td>
                     <td className={styles.visibilityCheckboxContainer}>
                       <Field name='careerObjectives[0].visibility'>
+                        {({ field, form, meta }) => {
+                          return (
+                            <label>
+                              {field.value ? (
+                                <EyeFill
+                                  size={20}
+                                  className={`${styles.visibilityUnchecked} ${styles.visibilityCheckbox}`}
+                                />
+                              ) : (
+                                <EyeSlashFill
+                                  size={20}
+                                  className={`${styles.visibilityCheckbox}`}
+                                />
+                              )}
+                              <input
+                                type='checkbox'
+                                {...field}
+                                style={{ display: 'none' }}
+                              />
+                            </label>
+                          )
+                        }}
+                      </Field>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div className={`${styles.inputContainer}`}>
+                        <label className={`${styles.inputLabel}`}>
+                          Wanted Sectors
+                        </label>
+                        <Field
+                          className={`${styles.inputField}`}
+                          as='select'
+                          rows={5}
+                          id='wanted_sectors.sectors'
+                          name='wanted_sectors.sectors'
+                          multiple={true}
+                        >
+                          <option value='' selected>
+                            Select wanted sectors
+                          </option>
+                          {sectors.map((s) => (
+                            <option value={s.sector}>{s.sector_name}</option>
+                          ))}
+                        </Field>
+                      </div>
+                    </td>
+                    <td className={styles.visibilityCheckboxContainer}>
+                      <Field name='wanted_sectors.visibility'>
                         {({ field, form, meta }) => {
                           return (
                             <label>
