@@ -25,7 +25,9 @@ const ProfileEditModal = ({ user }) => {
     career_objective,
     high_school,
     basic_info,
+    wanted_sectors,
   } = user
+  // console.log(user)
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
 
@@ -36,6 +38,7 @@ const ProfileEditModal = ({ user }) => {
     location,
     career_objective,
     basic_info,
+    wanted_sectors,
   }
 
   return (
@@ -61,7 +64,7 @@ const ProfileEditModal = ({ user }) => {
           <Modal.Title>Edit Profile</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Accordion defaultActiveKey='2' flush>
+          <Accordion defaultActiveKey='0' flush>
             <Accordion.Item eventKey='0'>
               <Accordion.Header>Personal Information</Accordion.Header>
               <Accordion.Body style={{ overflowY: 'scroll' }}>
