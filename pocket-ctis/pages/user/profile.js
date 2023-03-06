@@ -9,9 +9,9 @@ import NavigationBar from '../../components/navbar/NavigationBar'
 import ProfileEditModal from '../../components/Modals/ProfileEditModal/ProfileEditModal'
 import ProfileWorkSection from '../../components/ProfilePageComponents/ProfileWorkSection/ProfileWorkSection'
 import ProfileInternshipSection from '../../components/ProfilePageComponents/ProfileInternshipSection/ProfileInternshipSection'
-import SkillsSection from '../../components/ProfilePageComponents/SkillsSection/SkillsSection'
-import SocialsSection from '../../components/ProfilePageComponents/SocialsSection/SocialsSection'
-import CertificatesSection from '../../components/ProfilePageComponents/CertificatesSection/CertificatesSection'
+import SkillsSection from '../../components/ProfilePageComponents/ProfileSkillsSection/SkillsSection'
+import SocialsSection from '../../components/ProfilePageComponents/ProfileSocialsSection/SocialsSection'
+import CertificatesSection from '../../components/ProfilePageComponents/ProfileCertificatesSection/CertificatesSection'
 import ProfileErasmusSection from '../../components/ProfilePageComponents/ProfileErasmusSection/ProfileErasmusSection'
 import ProfileEduSection from '../../components/ProfilePageComponents/ProfileEduSection/ProfileEduSection'
 import ProfileHighSchoolSection from '../../components/ProfilePageComponents/ProfileHighSchoolSection/ProfileHighSchoolSection'
@@ -102,7 +102,7 @@ const Profile = ({ user, errors }) => {
                         }}
                       >
                         <GeoAltFill size={18} fill='#f5a425' />
-                        {location[0]?.city_name}, {location[0]?.country_name}
+                        {location[0]?.city_name}{location[0]?.city_name && ","} {location[0]?.country_name}
                       </span>
                     )}
                   </h4>

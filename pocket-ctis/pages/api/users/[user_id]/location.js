@@ -1,4 +1,4 @@
-import {doquery} from "../../../../helpers/dbHelpers";
+import {createPostQueries, createPutQueries, doMultiQueries, doquery} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -21,38 +21,44 @@ export default async function handler(req, res){
             break;
         case "POST":
             try {
-                const {city_id, visibility} = req.body.location;
-                const query = "INSERT INTO userlocation(user_id, city_id, visibility) values (?,?,?)";
-                const data = await doquery({query: query, values: [user_id,city_id, visibility]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
+                const location = JSON.parse(req.body);
+                const base_query = "INSERT INTO userlocation(user_id, country_id ";
+                const base_values = ["user_id", "country_id"];
+                const optional_values = ["city_id", "visibility"];
+                const queries = createPostQueries(location, base_query, base_values, optional_values, user_id);
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
             } catch(error){
                 res.status(500).json({error: error.message});
             }
             break;
         case "PUT":
             try{
-                const {city_id, visibility} = req.body.location;
-                const query = "UPDATE userlocation SET city_id = ?, visibility = ? WHERE user_id = ?";
-                const data = await doquery({query: query,values: [city_id, visibility, user_id]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
+                const location = JSON.parse(req.body);
+                const base_query = "UPDATE userlocation SET country_id = ?, ";
+                const base_values = ["country_id"];
+                const optional_values = ["city_id", "visibility"];
+                const queries = createPutQueries(location, base_query, base_values, optional_values);
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
             break;
         case "DELETE":
             try{
-                const query = "DELETE FROM userlocation WHERE user_id = ?"
-                const data = await doquery({query: query,values: [user_id]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
+                const location = JSON.parse(req.body);
+                let queries = [];
+                const tempQuery = "DELETE FROM userlocation WHERE id = ?";
+                location.forEach((loc) => {
+                   queries.push({
+                       name: loc.id,
+                       query: tempQuery,
+                       values: [loc.id]
+                   });
+                });
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data,errors});
             }catch(error){
                 res.status(500).json({error: error.message});
             }break;

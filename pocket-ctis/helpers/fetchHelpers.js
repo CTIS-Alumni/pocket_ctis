@@ -1,7 +1,6 @@
 import {isEqual} from "lodash";
 
 export const submitChanges = async (url, requestObj) => {
-    console.log(requestObj);
     let responseObj = {POST: {}, PUT: {}, DELETE: {}}
     if (requestObj.hasOwnProperty("POST") && requestObj.POST.length > 0) {
         responseObj.POST = await _submitFetcher("POST", url, requestObj.POST);

@@ -27,9 +27,9 @@ const ProfileEduSection = ({ edu }) => {
                 <div style={{ color: 'black', fontSize: 16 }}>
                   {datum.edu_inst_name}
                 </div>
-                {datum.city_name && <div style={{ color: 'rgb(245,164,37)' }}>
+                {datum.country_name && <div style={{ color: 'rgb(245,164,37)' }}>
                   <GeoAltFill />
-                  {datum.city_name}, {datum.country_name}
+                  {datum.city_name}{datum.city_name && ','} {datum.country_name}
                 </div>}
                 {studyPeriod}
               </Container>

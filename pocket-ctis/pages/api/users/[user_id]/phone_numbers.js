@@ -1,4 +1,4 @@
-import {doquery} from "../../../../helpers/dbHelpers";
+import {createPostQueries, createPutQueries, doMultiQueries, doquery} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -22,15 +22,47 @@ export default async function handler(req, res){
             break;
         case "POST":
             try {
-                const {phone_number,visibility} = req.body.phone;
-                const query = "INSERT INTO userphone(user_id,phone_number, visibility) values (?,?,?)";
-                const data = await doquery({query: query, values: [user_id,phone_number,visibility]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
+                const phones = JSON.parse(req.body);
+                const base_query = "INSERT INTO userphone(user_id, phone_number ";
+                const base_values = ["user_id", "phone_number"];
+                const optional_values = ["visibility"];
+                const queries = createPostQueries(phones,base_query, base_values, optional_values, user_id);
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
             } catch(error){
                 res.status(500).json({error: error.message});
             }
+            break;
+        case "PUT":
+            try{
+                const phones = JSON.parse(req.body);
+                const base_query = "UPDATE userphone SET phone_number = ?, ";
+                const base_values = ["phone_number"];
+                const optional_values = ["visibility"];
+                const queries = createPutQueries(phones,base_query, base_values, optional_values);
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
+            }catch(error){
+                res.status(500).json({error: error.message});
+            }
+            break;
+        case "DELETE":
+            try{
+                const phones = JSON.parse(req.body);
+                let queries = [];
+                const tempQuery = "DELETE FROM userphone WHERE id = ?";
+                phones.forEach((p)=>{
+                   queries.push({
+                      name:  p.id,
+                       query: tempQuery,
+                       values: [p.id]
+                   });
+                });
+                const {data, errors} = await doMultiQueries(queries);
+                res.status(200).json({data, errors});
+            }catch(error){
+                res.status(500).json({error: error.message});
+            }
+            break;
     }
 }

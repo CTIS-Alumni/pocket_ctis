@@ -34,9 +34,9 @@ const ProfileWorkSection = ({ work }) => {
                 {datum.department && <div style={{ color: 'black' }}>
                   {datum.department} Department
                 </div>}
-                {datum.city_name && <div style={{ color: 'rgb(245,164,37)' }}>
+                {datum.country_name && <div style={{ color: 'rgb(245,164,37)' }}>
                   <GeoAltFill />
-                  {datum.city_name}, {datum.country_name}
+                  {datum.city_name}{datum.city_name && ','} {datum.country_name}
                 </div>}
                 <div>{datum.work_type_name}</div>
                 <div>{workPeriod}</div>

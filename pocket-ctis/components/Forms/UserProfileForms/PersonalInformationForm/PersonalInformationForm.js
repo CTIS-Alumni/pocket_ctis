@@ -10,7 +10,7 @@ import {
 } from 'react-bootstrap-icons'
 
 import {Location_data} from '../../../../context/locationContext'
-import {splitFields} from "../../../../helpers/formatHelpers";
+import {replaceWithNull, splitFields} from "../../../../helpers/formatHelpers";
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 import { fetchAllSectors, fetchAllSocialMediaTypes } from '../../../../helpers/searchHelpers'
@@ -59,8 +59,8 @@ const PersonalInformationForm = ({data}) => {
     const transformLocation = (location) => {
         const newLocation = [{city: "", country: ""}];
         if(location.length > 0){
-            newLocation[0].city = `${location[0].city_id}-${location[0].city_name}`;
             newLocation[0].country = `${location[0].country_id}-${location[0].country_name}`;
+            newLocation[0].city = `${location[0].city_id}-${location[0].city_name}`;
         }
         return newLocation;
     }
@@ -70,8 +70,8 @@ const PersonalInformationForm = ({data}) => {
         newData.sectors = data.map(
             (sector) => `${sector.sector_id}-${sector.sector_name}`
         )
-        newData.visibility = data[0].visibility == 1
-        // console.log(newData)
+        if(newData.sectors.length > 0)
+            newData.visibility = data[0].visibility == 1
         return newData
     }
 
@@ -85,10 +85,7 @@ const PersonalInformationForm = ({data}) => {
   }
 
     const onSubmit = async (values) => {
-        console.log("data")
-        console.log(data);
-
-        let newData = cloneDeep(values)
+        let newData = await cloneDeep(values)
 
         newData.socials = newData.socials.map((val) => {
             val.visibility = val.visibility ? 1 : 0;
@@ -106,16 +103,16 @@ const PersonalInformationForm = ({data}) => {
             return val;
         });
 
-        if (newData.location.length > 0) {
-            if (newData.location[0].country = "")
-                newData.location = [];
-            else {
-                newData.location[0].visibility = newData.location[0].visibility ? 1 : 0;
-                ["country", "city"].forEach((field)=>{
-                    if(newData.location[0].hasOwnProperty(field))
-                        delete newData.location[0][field];
-                });
-            }
+        if(newData.location.length > 0){
+            newData.location[0].visibility = newData.location[0].visibility ? 1 : 0;
+            if(data.location.length > 0)
+                newData.location[0].id = data.location[0].id;
+            replaceWithNull(newData.location[0]);
+            if(newData.location[0].city != null)
+                splitFields(newData.location[0],["city"]);
+            if(newData.location[0].country != null)
+                splitFields(newData.location[0],["country"]);
+            else newData.location = [];
         }
         if (data.location.length > newData.location.length)
             deletedData.location.push({name: data.location[0].id, id: data.location[0].id});
@@ -128,47 +125,49 @@ const PersonalInformationForm = ({data}) => {
         if (data.career_objective.length > newData.career_objective.length)
             deletedData.career_objective.push({name: data.career_objective[0].id, id: data.career_objective[0].id});
 
-        const sectors = [];
+        let sectors = [];
+        let flag = false;
         if(newData.wanted_sectors.sectors.length > 0){
             const sector_visibility = newData.wanted_sectors.visibility ? 1 : 0;
             newData.wanted_sectors.sectors.forEach((sector)=>{
-                const split = sector.split("-");
-                sectors.push({sector_id: parseInt(split[0]), sector_name: split[1], visibility: sector_visibility});
+                if(sector){
+                    const split = sector.split("-");
+                    sectors.push({sector_id: parseInt(split[0]), sector_name: split[1], visibility: sector_visibility});
+                }else flag = true;
             });
         }
+        if(flag)
+            sectors = [];
         newData.wanted_sectors = sectors;
+        console.log("wanted sectors ")
+        console.log(newData.wanted_sectors)
         let is_found;
         data.wanted_sectors.forEach((sector)=>{
                 is_found = newData.wanted_sectors.find((s, i) => {
                 if(s.sector_name == sector.sector_name) {
                     newData.wanted_sectors[i].id = sector.id;
                     return true;
-                }
+                }else flag = true;
             });
             if(is_found == undefined)
                 deletedData.wanted_sectors.push({name: sector.id, id: sector.id});
         });
+        if(flag)
+            newData.wanted_sectors = [];
 
-        console.log("deletedData");
-        console.log(deletedData);
+        console.log("here is newData")
+        console.log(newData)
 
-        console.log("newData")
-        console.log(newData);
+        let responseObjArr = {socials: {}, emails: {}, phone_numbers: {}, location: {}, career_objective: {}, wanted_sectors: {}};
 
-        let responseObjArr = [];
-
-        await Promise.all(Object.keys(omit(data, ["basic_info"])).map(async (key) => {
+            await Promise.allSettled(Object.keys(omit(data, ["basic_info"])).map(async (key) => {
             const requestObj = createReqObject(data[key], newData[key], deletedData[key]);
-            console.log(key)
-            //console.log("heres the req obj")
-            console.log(requestObj);
             const url = craftUserUrl(1, key);
             const responseObj = await submitChanges(url ,requestObj);
-            //responseObjArr.push(responseObj);
+            responseObjArr[key] = responseObj;
         }));
 
-        console.log(responseObjArr)
-        deletedData = [];
+        deletedData = {socials: [], emails: [], phone_numbers: [], location: [], career_objective: [], wanted_sectors: []};
     }
 
     const {
