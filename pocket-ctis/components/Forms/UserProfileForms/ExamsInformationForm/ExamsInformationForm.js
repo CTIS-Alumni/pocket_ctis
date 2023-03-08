@@ -11,7 +11,7 @@ import {
 } from 'react-bootstrap-icons'
 import DatePickerField from '../../../DatePickers/DatePicker'
 
-const ExamsInformationForm = ({ data }) => {
+const ExamsInformationForm = ({ data, setIsUpdated }) => {
   const [examTypes, setExamTypes] = useState([])
 
   useEffect(() => {
@@ -28,6 +28,7 @@ const ExamsInformationForm = ({ data }) => {
   }, [])
 
   const onSubmitHandler = (values) => {
+    setIsUpdated(true)
     console.log('here', values)
 
     for (const datum of values.exams) {

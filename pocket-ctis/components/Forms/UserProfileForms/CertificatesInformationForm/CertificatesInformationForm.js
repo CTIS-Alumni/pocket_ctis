@@ -8,7 +8,7 @@ import {
 import { Formik, Field, Form, FieldArray } from 'formik'
 import { cloneDeep } from 'lodash'
 
-const CertificatesInformationForm = ({ data }) => {
+const CertificatesInformationForm = ({ data, setIsUpdated }) => {
   //   console.log('data', data)
 
   const transformData = (data) => {
@@ -21,11 +21,16 @@ const CertificatesInformationForm = ({ data }) => {
     return newData
   }
 
+  const onSubmitHandler = (values) => {
+    setIsUpdated(true)
+    console.log(values)
+  }
+
   return (
     <Formik
       enableReinitialize
       initialValues={{ certificates: transformData(data) }}
-      onSubmit={(values) => console.log(values)}
+      onSubmit={onSubmitHandler}
     >
       {(props) => (
         <Form>

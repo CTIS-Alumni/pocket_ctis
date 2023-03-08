@@ -15,7 +15,7 @@ import {
   fetchAllSocialMediaTypes,
 } from '../../../../helpers/searchHelpers'
 
-const PersonalInformationForm = ({ data }) => {
+const PersonalInformationForm = ({ data, setIsUpdated }) => {
   const { locationData } = useContext(Location_data)
   const [sectors, setSectors] = useState([])
   const [socialMediaTypes, setSocialMediaTypes] = useState([])
@@ -88,6 +88,8 @@ const PersonalInformationForm = ({ data }) => {
   } = data
   // console.log(data)
   const onSubmitHandler = (values) => {
+    setIsUpdated(true)
+
     //transform data
     let newData = cloneDeep(values)
     for (const datum in newData) {

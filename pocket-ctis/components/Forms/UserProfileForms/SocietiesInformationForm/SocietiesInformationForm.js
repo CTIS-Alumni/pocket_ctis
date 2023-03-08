@@ -10,7 +10,7 @@ import { cloneDeep } from 'lodash'
 import { fetchAllSocieties } from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
 
-const SocietiesInformationForm = ({ data }) => {
+const SocietiesInformationForm = ({ data, setIsUpdated }) => {
   const [societies, setSocieties] = useState([])
 
   useEffect(() => {
@@ -27,11 +27,16 @@ const SocietiesInformationForm = ({ data }) => {
     return newData
   }
 
+  const onSubmitHandler = (values) => {
+    setIsUpdated(true)
+    console.log(values)
+  }
+
   return (
     <Formik
       enableReinitialize
       initialValues={{ societies: transformData(data) }}
-      onSubmit={(values) => console.log(values)}
+      onSubmit={onSubmitHandler}
     >
       {(props) => (
         <Form>

@@ -18,7 +18,7 @@ import DatePickerField from '../../../DatePickers/DatePicker'
 
 import { Location_data } from '../../../../context/locationContext'
 
-const EducationInformationForm = ({ data }) => {
+const EducationInformationForm = ({ data, setIsUpdated }) => {
   const [eduInsts, setEduInsts] = useState([])
   const [degreeTypes, setDegreeTypes] = useState([])
   // const { locationData } = useContext(Location_data)
@@ -44,6 +44,7 @@ const EducationInformationForm = ({ data }) => {
   }
 
   const onSubmitHandler = (values) => {
+    setIsUpdated(true)
     //transform data
     let newData = cloneDeep(values)
     console.log(newData)

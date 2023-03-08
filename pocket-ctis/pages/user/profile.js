@@ -17,23 +17,19 @@ import ProfileEduSection from '../../components/ProfilePageComponents/ProfileEdu
 import ProfileHighSchoolSection from '../../components/ProfilePageComponents/ProfileHighSchoolSection/ProfileHighSchoolSection'
 import ProfileStudentSocieties from '../../components/ProfilePageComponents/ProfileStudentSocieties/ProfileStudentSocieties'
 
-import { User_data } from '../../context/userContext'
-import { Location_data } from '../../context/locationContext'
-import { useContext } from 'react'
 import ProfileExamsSection from '../../components/ProfilePageComponents/ProfileExamsSection/ProfileExamsSection'
 import GraduationProjectSection from '../../components/ProfilePageComponents/GraduationProjectSection/GraduationProjectSection'
+import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner'
+import { useState } from 'react'
 /*
 #1F272B = dark green
 #f5a425 = orange
 #8d2729 = red
 */
 
-const Profile = ({ user, errors }) => {
-  const { userData } = useContext(User_data)
-  const { locationData } = useContext(Location_data)
-
-  // console.log('from context location', locationData)
-  // console.log('from context', userData)
+const Profile = ({ userData, errors }) => {
+  const [isLoading, setIsLoading] = useState(false)
+  const [user, setUser] = useState(userData)
 
   const {
     certificates,
@@ -57,13 +53,21 @@ const Profile = ({ user, errors }) => {
   } = user
   // console.log(graduation_project)
 
+  const refreshProfile = () => {
+    setIsLoading(true)
+    fetchProfile(1)
+      .then((res) => console.log(res))
+      .finally((_) => setIsLoading(false))
+  }
+
   return (
     <>
       <div style={{ height: '100vh' }}>
         <NavigationBar />
         <div className='d-flex' style={{ height: '100%' }}>
           <UserInfoSidebar />
-          <Container>
+          <Container style={{ position: 'relative' }}>
+            <LoadingSpinner isLoading={isLoading} />
             <Row>
               <Col md='auto'>
                 <img
@@ -160,7 +164,7 @@ const Profile = ({ user, errors }) => {
         </div>
       </div>
 
-      <ProfileEditModal user={user} />
+      <ProfileEditModal user={user} refreshProfile={refreshProfile} />
     </>
   )
 }
@@ -168,7 +172,7 @@ const Profile = ({ user, errors }) => {
 export async function getServerSideProps() {
   const { data, errors } = await fetchProfile(1)
 
-  return { props: { user: data, errors: errors } }
+  return { props: { userData: data, errors: errors } }
 }
 
 export default Profile

@@ -13,7 +13,7 @@ import {
 } from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
 
-const SkillsInformationForm = ({ data }) => {
+const SkillsInformationForm = ({ data, setIsUpdated }) => {
   const [skillType, setSkillType] = useState([])
   const [skills, setSkills] = useState([])
 
@@ -34,11 +34,16 @@ const SkillsInformationForm = ({ data }) => {
     return newData
   }
 
+  const onSubmitHandler = (values) => {
+    setIsUpdated(true)
+    console.log(values)
+  }
+
   return (
     <Formik
       enableReinitialize
       initialValues={{ skills: transformData(data) }}
-      onSubmit={(values) => console.log(values)}
+      onSubmit={onSubmitHandler}
     >
       {(props) => (
         <Form>

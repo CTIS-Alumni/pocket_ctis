@@ -5,7 +5,7 @@ import { Formik, Field, Form } from 'formik'
 import { cloneDeep } from 'lodash'
 import { fetchAllHighSchool } from '../../../../helpers/searchHelpers'
 
-const HighSchoolInformationForm = ({ data }) => {
+const HighSchoolInformationForm = ({ data, setIsUpdated }) => {
   const [highSchools, setHighSchools] = useState([])
 
   useEffect(() => {
@@ -22,6 +22,11 @@ const HighSchoolInformationForm = ({ data }) => {
     return newData
   }
 
+  const onSubmitHandler = (values) => {
+    setIsUpdated(true)
+    console.log(values)
+  }
+
   return (
     <>
       <Formik
@@ -29,7 +34,7 @@ const HighSchoolInformationForm = ({ data }) => {
         initialValues={{
           high_school: transformData(data),
         }}
-        onSubmit={(values) => console.log(values)}
+        onSubmit={onSubmitHandler}
       >
         {(props) => {
           return (

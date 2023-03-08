@@ -18,7 +18,7 @@ import DatePickerField from '../../../DatePickers/DatePicker'
 
 import { Location_data } from '../../../../context/locationContext'
 
-const WorkInformationForm = ({ data }) => {
+const WorkInformationForm = ({ data, setIsUpdated }) => {
   const [companies, setCompanies] = useState([])
   const [worktypes, setWorktypes] = useState([])
   const { locationData } = useContext(Location_data)
@@ -48,6 +48,7 @@ const WorkInformationForm = ({ data }) => {
   }
 
   const onSubmitHandler = (values) => {
+    setIsUpdated(true)
     //transform data
     let newData = cloneDeep(values)
     newData.work_records = newData.work_records.map((val) => {

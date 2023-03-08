@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PencilSquare } from 'react-bootstrap-icons'
 import { Modal, Button, Accordion } from 'react-bootstrap'
 import styles from './ProfileEditModal.module.css'
@@ -11,7 +11,8 @@ import SkillsInformationForm from '../../Forms/UserProfileForms/SkillsInformatio
 import SocietiesInformationForm from '../../Forms/UserProfileForms/SocietiesInformationForm/SocietiesInformationForm'
 import ExamsInformationForm from '../../Forms/UserProfileForms/ExamsInformationForm/ExamsInformationForm'
 
-const ProfileEditModal = ({ user }) => {
+const ProfileEditModal = ({ user, refreshProfile }) => {
+  const [isUpdated, setIsUpdated] = useState(false)
   const [show, setShow] = useState(false)
   const {
     certificates,
@@ -30,9 +31,6 @@ const ProfileEditModal = ({ user }) => {
     exams,
     graduation_project,
   } = user
-  // console.log(user)
-  const handleClose = () => setShow(false)
-  const handleShow = () => setShow(true)
 
   const personalInfoData = {
     emails,
@@ -44,6 +42,16 @@ const ProfileEditModal = ({ user }) => {
     basic_info,
     wanted_sectors,
   }
+
+  // console.log(user)
+  const handleClose = () => {
+    if (isUpdated) {
+      refreshProfile()
+      setIsUpdated(false)
+    }
+    setShow(false)
+  }
+  const handleShow = () => setShow(true)
 
   return (
     <>
@@ -72,49 +80,73 @@ const ProfileEditModal = ({ user }) => {
             <Accordion.Item eventKey='0'>
               <Accordion.Header>Personal Information</Accordion.Header>
               <Accordion.Body style={{ overflowY: 'scroll' }}>
-                <PersonalInformationForm data={personalInfoData} />
+                <PersonalInformationForm
+                  data={personalInfoData}
+                  setIsUpdated={setIsUpdated}
+                />
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='1'>
               <Accordion.Header>Work Information</Accordion.Header>
               <Accordion.Body>
-                <WorkInformationForm data={work_records} />
+                <WorkInformationForm
+                  data={work_records}
+                  setIsUpdated={setIsUpdated}
+                />
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='2'>
               <Accordion.Header>Education Information</Accordion.Header>
               <Accordion.Body>
-                <EducationInformationForm data={edu_records} />
+                <EducationInformationForm
+                  data={edu_records}
+                  setIsUpdated={setIsUpdated}
+                />
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='3'>
               <Accordion.Header>High School Information</Accordion.Header>
               <Accordion.Body>
-                <HighSchoolInformationForm data={high_school} />
+                <HighSchoolInformationForm
+                  data={high_school}
+                  setIsUpdated={setIsUpdated}
+                />
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='4'>
               <Accordion.Header>Certificates</Accordion.Header>
               <Accordion.Body>
-                <CertificatesInformationForm data={certificates} />
+                <CertificatesInformationForm
+                  data={certificates}
+                  setIsUpdated={setIsUpdated}
+                />
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='5'>
               <Accordion.Header>Skills</Accordion.Header>
               <Accordion.Body>
-                <SkillsInformationForm data={skills} />
+                <SkillsInformationForm
+                  data={skills}
+                  setIsUpdated={setIsUpdated}
+                />
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='6'>
               <Accordion.Header>Socieites</Accordion.Header>
               <Accordion.Body>
-                <SocietiesInformationForm data={societies} />
+                <SocietiesInformationForm
+                  data={societies}
+                  setIsUpdated={setIsUpdated}
+                />
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='7'>
               <Accordion.Header>Exams</Accordion.Header>
               <Accordion.Body>
-                <ExamsInformationForm data={exams} />
+                <ExamsInformationForm
+                  data={exams}
+                  setIsUpdated={setIsUpdated}
+                />
               </Accordion.Body>
             </Accordion.Item>
           </Accordion>
