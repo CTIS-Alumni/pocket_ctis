@@ -93,3 +93,13 @@ export const convertToLastDay = (date) => {
   const splitDate =  tempDate.toISOString().split("-");
   return new Date(parseInt(splitDate[0]), parseInt(splitDate[1])).toISOString();
 }
+
+export const getDateString = (date) => {
+  if (date) {
+    const rawDate = new Date(date)
+    let dateString = `${rawDate.getDate()} ${
+      monthNames[rawDate.getMonth()]
+    } ${rawDate.getFullYear()}`
+    return dateString
+  } else return null
+}

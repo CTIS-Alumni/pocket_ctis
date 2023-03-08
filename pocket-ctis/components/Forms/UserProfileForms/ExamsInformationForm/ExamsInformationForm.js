@@ -9,6 +9,7 @@ import {
   XCircleFill,
   PlusCircleFill,
 } from 'react-bootstrap-icons'
+import DatePickerField from '../../../DatePickers/DatePicker'
 
 const ExamsInformationForm = ({ data }) => {
   const [examTypes, setExamTypes] = useState([])
@@ -30,6 +31,7 @@ const ExamsInformationForm = ({ data }) => {
     console.log('here', values)
 
     for (const datum of values.exams) {
+      //transform fields here if needed
       datum.visibility = datum?.visibility ? 1 : 0
     }
     console.log(values)
@@ -40,6 +42,7 @@ const ExamsInformationForm = ({ data }) => {
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
       datum.exam = `${datum.exam_id}-${datum.exam_name}`
+      datum.exam_date = datum.exam_date ? new Date(datum.exam_date) : null
       return datum
     })
     return newData
@@ -137,16 +140,42 @@ const ExamsInformationForm = ({ data }) => {
                                         </Field>
                                       </div>
 
-                                      <div className={styles.inputContainer}>
-                                        <label className={styles.inputLabel}>
-                                          Exam Score
-                                        </label>
-                                        <Field
-                                          type='number'
-                                          className={styles.inputField}
-                                          id={`exams[${index}]grade`}
-                                          name={`exams[${index}]grade`}
-                                        />
+                                      <div
+                                        style={{
+                                          display: 'flex',
+                                          justifyContent: 'space-between',
+                                          flexWrap: 'wrap',
+                                        }}
+                                      >
+                                        <div
+                                          className={styles.inputContainer}
+                                          style={{ width: '49%' }}
+                                        >
+                                          <label className={styles.inputLabel}>
+                                            Exam Score
+                                          </label>
+                                          <Field
+                                            type='number'
+                                            className={styles.inputField}
+                                            id={`exams[${index}]grade`}
+                                            name={`exams[${index}]grade`}
+                                          />
+                                        </div>
+                                        <div
+                                          className={styles.inputContainer}
+                                          style={{ width: '49%' }}
+                                        >
+                                          <label className={styles.inputLabel}>
+                                            Exam Date
+                                          </label>
+                                          <DatePickerField
+                                            format='dd/MM/y'
+                                            maxDetail='month'
+                                            className={styles.dateInputField}
+                                            id={`exams[${index}]exam_date`}
+                                            name={`exams[${index}]exam_date`}
+                                          />
+                                        </div>
                                       </div>
                                     </div>
                                   </div>

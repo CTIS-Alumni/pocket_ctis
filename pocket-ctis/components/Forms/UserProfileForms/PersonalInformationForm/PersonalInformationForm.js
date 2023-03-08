@@ -176,7 +176,8 @@ const PersonalInformationForm = ({data}) => {
         emails,
         career_objective,
         location,
-        wanted_sectors
+        wanted_sectors,
+        graduation_project
     } = data
 
     return (
@@ -189,7 +190,9 @@ const PersonalInformationForm = ({data}) => {
                 emails: transformData(emails),
                 career_objective: transformData(career_objective),
                 location: transformLocation(location),
-                wanted_sectors: transformWantedSectors(wanted_sectors)
+                wanted_sectors: transformWantedSectors(wanted_sectors),
+              graduation_project: graduation_project
+
             }}
             enableReinitialize
             onSubmit={onSubmit}
@@ -301,28 +304,28 @@ const PersonalInformationForm = ({data}) => {
                                     </td>
                                     <td className={styles.visibilityCheckboxContainer}>
                                         <Field name='wanted_sectors.visibility'>
-                                            {({ field, form, meta }) => {
-                                                return (
-                                                    <label>
-                                                        {field.value ? (
-                                                            <EyeFill
-                                                                size={20}
-                                                                className={`${styles.visibilityUnchecked} ${styles.visibilityCheckbox}`}
-                                                            />
-                                                        ) : (
-                                                            <EyeSlashFill
-                                                                size={20}
-                                                                className={`${styles.visibilityCheckbox}`}
-                                                            />
-                                                        )}
-                                                        <input
-                                                            type='checkbox'
-                                                            {...field}
-                                                            style={{ display: 'none' }}
-                                                        />
-                                                    </label>
-                                                )
-                                            }}
+                                          {({ field, form, meta }) => {
+                                            return (
+                                                <label>
+                                                  {field.value ? (
+                                                      <EyeFill
+                                                          size={20}
+                                                          className={`${styles.visibilityUnchecked} ${styles.visibilityCheckbox}`}
+                                                      />
+                                                  ) : (
+                                                      <EyeSlashFill
+                                                          size={20}
+                                                          className={`${styles.visibilityCheckbox}`}
+                                                      />
+                                                  )}
+                                                  <input
+                                                      type='checkbox'
+                                                      {...field}
+                                                      style={{ display: 'none' }}
+                                                  />
+                                                </label>
+                                            )
+                                          }}
                                         </Field>
                                     </td>
                                 </tr>
@@ -432,6 +435,54 @@ const PersonalInformationForm = ({data}) => {
                                                             type='checkbox'
                                                             {...field}
                                                             style={{display: 'none'}}
+                                                        />
+                                                    </label>
+                                                )
+                                            }}
+                                        </Field>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colSpan={3}>
+                                        <div className={styles.formPartitionHeading}>
+                                            <span>Graduation Project</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div className={`${styles.inputContainer}`}>
+                                            <label className={`${styles.inputLabel}`}>
+                                                Graduation Project
+                                            </label>
+                                            <Field
+                                                className={`${styles.inputField}`}
+                                                disabled
+                                                id='graduation_project[0].project_name'
+                                                name='graduation_project[0].project_name'
+                                            />
+                                        </div>
+                                    </td>
+                                    <td className={styles.visibilityCheckboxContainer}>
+                                        <Field name='graduation_project[0].visibility'>
+                                            {({ field, form, meta }) => {
+                                                return (
+                                                    <label>
+                                                        {field.value ? (
+                                                            <EyeFill
+                                                                size={20}
+                                                                className={`${styles.visibilityUnchecked} ${styles.visibilityCheckbox}`}
+                                                            />
+                                                        ) : (
+                                                            <EyeSlashFill
+                                                                size={20}
+                                                                className={`${styles.visibilityCheckbox}`}
+                                                            />
+                                                        )}
+                                                        <input
+                                                            type='checkbox'
+                                                            {...field}
+                                                            style={{ display: 'none' }}
                                                         />
                                                     </label>
                                                 )

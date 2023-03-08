@@ -28,6 +28,7 @@ const ProfileEditModal = ({ user }) => {
     basic_info,
     wanted_sectors,
     exams,
+    graduation_project,
   } = user
   // console.log(user)
   const handleClose = () => setShow(false)
@@ -35,6 +36,7 @@ const ProfileEditModal = ({ user }) => {
 
   const personalInfoData = {
     emails,
+    graduation_project,
     phone_numbers,
     socials,
     location,

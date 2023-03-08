@@ -21,6 +21,7 @@ import { User_data } from '../../context/userContext'
 import { Location_data } from '../../context/locationContext'
 import { useContext } from 'react'
 import ProfileExamsSection from '../../components/ProfilePageComponents/ProfileExamsSection/ProfileExamsSection'
+import GraduationProjectSection from '../../components/ProfilePageComponents/GraduationProjectSection/GraduationProjectSection'
 /*
 #1F272B = dark green
 #f5a425 = orange
@@ -54,6 +55,7 @@ const Profile = ({ user, errors }) => {
     basic_info,
     exams,
   } = user
+  // console.log(user)
 
   return (
     <>
@@ -142,6 +144,11 @@ const Profile = ({ user, errors }) => {
                   </Tab>
                   <Tab eventKey='internship' title='Internship'>
                     <ProfileInternshipSection internships={internships} />
+                  </Tab>
+                  <Tab eventKey='graduationProject' title='Graduation Project'>
+                    <GraduationProjectSection
+                      graduationProject={graduation_project}
+                    />
                   </Tab>
                 </Tabs>
                 <CertificatesSection certs={certificates} />
