@@ -44,7 +44,7 @@ const UniversitiesList = ({ universities, isLoading, onSearch }) => {
                   href={`/user/universities/${university.id}`}
                   className={`${styles.university_link} link`}
                 >
-                  {university.inst_name}
+                  {university.edu_inst_name}
                 </Link>
               </td>
               <td>

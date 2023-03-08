@@ -1,4 +1,10 @@
-import {createPostQueries, createPutQueries, doMultiQueries, doquery} from "../../../../helpers/dbHelpers";
+import {
+    createPostQueries,
+    createPutQueries,
+    doMultiInsertQueries,
+    doMultiQueries,
+    doquery
+} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -10,7 +16,7 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const query = "SELECT us.id, sk.skill_name, us.skill_level, skt.type_name, us.skill_level, us.visibility " +
+                const query = "SELECT us.id, sk.skill_name, us.skill_level, skt.type_name as 'skill_type_name', us.skill_level, us.visibility " +
                     "FROM userskill us JOIN skill sk ON (us.skill_id = sk.id) " +
                     "JOIN skilltype skt ON (sk.skill_type_id = skt.id) " +
                     "WHERE us.user_id = ? order by sk.skill_type_id asc ";
@@ -31,7 +37,7 @@ export default async function handler(req, res){
                 const base_values = ["user_id", "skill_id", "skill_level"];
                 const optional_values = ["visibility"];
                 const queries = createPostQueries(skills, base_query, base_values, optional_values, user_id);
-                const {data, errors} = await doMultiQueries(queries);
+                const {data, errors} = await doMultiInsertQueries(queries, "userskill");
                 res.status(200).json({data, errors});
 
             } catch(error){

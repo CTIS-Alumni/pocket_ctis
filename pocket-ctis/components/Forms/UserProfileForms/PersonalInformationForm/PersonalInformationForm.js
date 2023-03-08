@@ -139,8 +139,7 @@ const PersonalInformationForm = ({data}) => {
         if(flag)
             sectors = [];
         newData.wanted_sectors = sectors;
-        console.log("wanted sectors ")
-        console.log(newData.wanted_sectors)
+
         let is_found;
         data.wanted_sectors.forEach((sector)=>{
                 is_found = newData.wanted_sectors.find((s, i) => {
@@ -155,12 +154,12 @@ const PersonalInformationForm = ({data}) => {
         if(flag)
             newData.wanted_sectors = [];
 
-        console.log("here is newData")
-        console.log(newData)
+        console.log("data")
+        console.log(data)
 
         let responseObjArr = {socials: {}, emails: {}, phone_numbers: {}, location: {}, career_objective: {}, wanted_sectors: {}};
 
-            await Promise.allSettled(Object.keys(omit(data, ["basic_info"])).map(async (key) => {
+            await Promise.all(Object.keys(omit(data, ["basic_info"])).map(async (key) => {
             const requestObj = createReqObject(data[key], newData[key], deletedData[key]);
             const url = craftUserUrl(1, key);
             const responseObj = await submitChanges(url ,requestObj);

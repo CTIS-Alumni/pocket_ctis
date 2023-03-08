@@ -4,14 +4,14 @@ import CompaniesList from '../../../components/CompaniesList/CompaniesList'
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { fetchAllCompanies, fetchCompany } from '../../../helpers/searchHelpers'
+import {_getFetcherTemp} from "../../../helpers/fetchHelpers";
 
-const CompaniesDashboard = ({ res }) => {
+const CompaniesDashboard = ( res ) => {
   const [companies, setCompanies] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
     setCompanies(res.data)
   }, [])
-
   const onSearch = ({ searchValue }) => {
     setIsLoading(true)
     fetchCompany(searchValue)
@@ -34,8 +34,8 @@ const CompaniesDashboard = ({ res }) => {
 }
 
 export async function getServerSideProps() {
-  const res = await fetchAllCompanies()
-  return { props: { res } }
+  const results = await _getFetcherTemp(["companies"]);
+  return { props:  results.companies  }
 }
 
 export default CompaniesDashboard

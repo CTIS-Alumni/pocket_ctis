@@ -15,6 +15,7 @@ const WorkUpdates = ({work}) => {
             <th className={styles.header_avatar}></th>
             <th className={styles.header_name}>Name</th>
             <th className={styles.header_surname}>Surname</th>
+            <th className={styles.header_surname}>Work Type</th>
             <th className={styles.header_position}>Position</th>
             <th className={styles.header_department}>Department</th>
             <th className={styles.header_company}>Company</th>
@@ -32,6 +33,7 @@ const WorkUpdates = ({work}) => {
                 </td>
                 <td className={styles.data_name}>{record.record_visibility ? record.first_name : "Anonymous"}</td>
                 <td className={styles.data_surname}>{record.record_visibility ? record.last_name : ""}</td>
+                <td className={styles.data_work_type}>{record.record_visibility ? record.type_name : ""}</td>
                 <td className={styles.data_position}>{record.record_visibility ? record.position : ""}</td>
                 <td className={styles.data_department}>{record.record_visibility ? record.department: ""}</td>
                 <td className={styles.data_company}>{record.record_visibility ? record.company_name : ""}</td>

@@ -1,4 +1,10 @@
-import {createPostQueries, createPutQueries, doMultiQueries, doquery} from "../../../../helpers/dbHelpers";
+import {
+    createPostQueries,
+    createPutQueries,
+    doMultiInsertQueries,
+    doMultiQueries,
+    doquery
+} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -30,7 +36,7 @@ export default async function handler(req, res){
                 const base_values = ["user_id", "social_media_id", "link"];
                 const optional_values = ["visibility"];
                 const queries = createPostQueries(socials, base_query, base_values, optional_values, user_id);
-                const {data, errors} = await doMultiQueries(queries);
+                const {data, errors} = await doMultiInsertQueries(queries, "usersocialmedia");
                 res.status(200).json({data, errors});
             } catch(error){
                 res.status(500).json({error: error.message});

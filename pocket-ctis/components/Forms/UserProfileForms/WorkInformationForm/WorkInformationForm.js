@@ -75,7 +75,8 @@ const WorkInformationForm = ({ data }) => {
       splitFields(val, fields_list);
       return val
     });
-
+    console.log("data")
+    console.log(data)
     console.log("newData")
     console.log(newData)
     const requestObj = createReqObject(data, newData.work_records, deletedData);

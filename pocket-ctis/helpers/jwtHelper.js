@@ -1,7 +1,7 @@
 import {SignJWT, jwtVerify} from 'jose';
 import {serialize} from "cookie";
 
-export async function sign(payload, secret, age){
+export const sign = async (payload, secret, age) => {
     const iat = Math.floor(Date.now() / 1000);
     const exp = iat + age;
     return new SignJWT({payload})
@@ -12,12 +12,14 @@ export async function sign(payload, secret, age){
         .sign(new TextEncoder().encode(secret));
 }
 
-export async function verify(token, secret) {
+
+export const verify = async (token, secret) => {
     const {payload} = await jwtVerify(token,new TextEncoder().encode(secret));
     return payload;
+
 }
 
-export async function refreshToken(refresh_token, secret){
+export const refreshToken = async (refresh_token, secret) => {
     try{
         const {payload} = await verify(refresh_token, secret);
         const access_token = await sign({user_id: payload.user_id}, process.env.ACCESS_SECRET, 60*7);

@@ -6,7 +6,7 @@ import {
   XCircleFill,
   PlusCircleFill,
 } from 'react-bootstrap-icons'
-import { cloneDeep } from 'lodash'
+import {cloneDeep, findIndex} from 'lodash'
 import {
   fetchAllSkills,
   fetchAllSkillTypes,
@@ -31,7 +31,7 @@ const SkillsInformationForm = ({ data }) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
-      datum.skill_type = `${datum.skill_type_id}-${datum.type_name}`
+      datum.skill_type = `${datum.skill_type_id}-${datum.skill_type_name}`
       datum.skill = `${datum.skill_id}-${datum.skill_name}`
       return datum
     })
@@ -47,9 +47,58 @@ const SkillsInformationForm = ({ data }) => {
     });
 
     const requestObj = createReqObject(data, newData.skills, deletedData);
-    const url = craftUserUrl(1, "userskills");
+    const url = craftUserUrl(1, "skills");
     const responseObj = await submitChanges(url, requestObj);
+
+
+    requestObj.DELETE.forEach((toDelete)=>{
+      if(!responseObj.DELETE?.data.hasOwnProperty(toDelete.id)){
+        values.skills.push(toDelete.data);
+      }
+    });
+
+    if(requestObj.POST.length > 0){
+      //response objectte request objectteki skill_idsi aynı olan bir data var mı bak
+      requestObj.POST.forEach((toInsert)=>{
+        const index = findIndex(values.skills, (item) => {
+          return item.skill.split("-")[0] == toInsert.skill_id;
+        });
+        if(index != -1){
+          //valueda varsa response objectte o skill_id olan bişe var mı diye bak
+          const found_in_res = responseObj.POST?.data.find(datum => (datum.inserted.skill_id == toInsert.skill_id && datum.inserted.visibility == toInsert.visibility));
+          //eğer varsa onun values'daki id'sini res'deki bulduğun id'ye eşitle
+          //eğer yoksa onu values'dan sil
+          if(found_in_res === undefined)
+            values.skills.splice(index, 1);
+          else values.skills[index].id = found_in_res.inserted.id;
+        }
+      });
+    }
+
+    if(requestObj.PUT.length > 0){
+      requestObj.PUT.forEach((toEdit) => {
+        if(!responseObj.PUT.data.hasOwnProperty(toEdit.id)){
+          const index = findIndex(values.skills, (item) => {
+            return item.skill.split("-")[0] == toEdit.skill_id;
+          });
+          if(index != -1){
+            const found = data.find(datum => datum.id === toEdit.id);
+            values.skills[index] = cloneDeep(found);
+            values.skills[index].skill = found.skill_id + "-" + found.skill_name;
+            values.skills[index].skill_type = found.skill_type_id + "-" + found.skill_type_name;
+          }
+        }
+      });
+    }
     deletedData = [];
+
+    console.log(newData);
+    console.log("newdata")
+    console.log(newData)
+    console.log("final calues")
+    console.log(values.skills);
+
+    console.log(responseObj);
   }
 
   return (
@@ -117,6 +166,10 @@ const SkillsInformationForm = ({ data }) => {
                                           className={styles.inputField}
                                           id={`skills[${index}]skill_type`}
                                           name={`skills[${index}]skill_type`}
+                                          onChange={(event) => {
+                                            props.setFieldValue(`skills[${index}]skill_type`, event.target.value);
+                                            props.setFieldValue(`skills[${index}]skill`, '')
+                                          }}
                                         >
                                           <option disabled selected value=''>
                                             Please Select skill type

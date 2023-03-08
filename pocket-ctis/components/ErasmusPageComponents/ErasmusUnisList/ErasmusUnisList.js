@@ -17,7 +17,7 @@ const ErasmusUnisList = ({ universities }) => {
               </div>
               <div>
                 <span className={styles.erasmus_universities_item_name}>
-                  {university.inst_name}
+                  {university.edu_inst_name}
                 </span>
                 <span className={styles.erasmus_universities_item_location}>
                   {university.country_name && `${university.country_name} - `}

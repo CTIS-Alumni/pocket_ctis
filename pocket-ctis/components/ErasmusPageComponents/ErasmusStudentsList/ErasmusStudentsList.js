@@ -36,7 +36,7 @@ const ErasmusStudentsList = ({ erasmus }) => {
                     {`${record.first_name} ${record.last_name}`}
                   </span>
                   <span className={styles.erasmus_students_item_university}>
-                    {record.inst_name}
+                    {record.edu_inst_name}
                   </span>
                   <span className={styles.erasmus_students_item_semester}>
                     Semester: {semester}

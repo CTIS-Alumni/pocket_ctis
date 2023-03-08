@@ -47,7 +47,7 @@ const HighSchoolList = ({ highSchools, onSearch, isLoading }) => {
                   {highSchool.high_school_name}
                 </Link>
               </td>
-              <td>{`${highSchool.city_name} - ${highSchool.country_name}`}</td>
+              <td>{highSchool.city_name ? `${highSchool.city_name} - ${highSchool.country_name}` : ``}</td>
             </tr>
           ))}
         </tbody>

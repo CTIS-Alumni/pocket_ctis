@@ -1,4 +1,10 @@
-import {createPostQueries, createPutQueries, doMultiQueries, doquery} from "../../../../helpers/dbHelpers";
+import {
+    createPostQueries,
+    createPutQueries,
+    doMultiInsertQueries,
+    doMultiQueries,
+    doquery
+} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -33,7 +39,7 @@ export default async function handler(req, res){
                 const base_values = ["user_id", "work_type_id"];
                 const optional_values = ["company_id","department","position","work_description", "city_id", "country_id", "start_date", "end_date", "visibility", "is_current"];
                 const queries = createPostQueries(work_records, base_query, base_values, optional_values, user_id);
-                const {data, errors} = await doMultiQueries(queries);
+                const {data, errors} = await doMultiInsertQueries(queries, "workrecord");
                 res.status(200).json({data, errors});
 
             }catch(error){
@@ -43,7 +49,7 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const work_records = JSON.parse(req.body);
-                const base_query = "UPDATE workrecord SET work_type_id = ?, ";
+                const base_query = "UPDATE workrecord SET company_id = ?, work_type_id = ?, ";
                 const base_values = ["company_id", "work_type_id"];
                 const optional_values = ["department","position","work_description", "city_id", "country_id","start_date", "end_date", "visibility", "is_current"];
                 const queries = createPutQueries(work_records, base_query, base_values, optional_values);

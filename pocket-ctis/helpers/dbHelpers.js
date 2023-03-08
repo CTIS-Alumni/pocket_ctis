@@ -16,8 +16,36 @@ export async function doMultiQueries(queries){
 
     await Promise.all(queries.map(async(query) => {
         try{
-            const [res] = await connection.execute(query.query, query.values);
+            const [res] = await connection.query(query.query, query.values);
             data[query.name] = res;
+        }catch(error){
+            errors.push({name: query.name, error: error.message});
+        }
+    }));
+    connection.end();
+    return {data, errors};
+}
+
+export async function doMultiInsertQueries(queries, table){
+    let data = [];
+    let errors = [];
+    //queries = [{name: "certificates", query: "asdas" ,values: []}, {name: "skills", query: "asdasda", values: []}]
+    //errors = [{name: "certificates", error: error}];
+    const connection = await mysql.createConnection({
+        host: dbconfig.host,
+        user: dbconfig.user,
+        password: dbconfig.password,
+        database: dbconfig.database,
+    });
+
+    await Promise.all(queries.map(async(query) => {
+        try{
+            const [res] = await connection.execute(query.query, query.values);
+            if(res.hasOwnProperty("insertId") && res.insertId != 0){
+                const select_query = "SELECT * FROM " + table + " WHERE id = ? ";
+                const [inserted] = await connection.execute(select_query, [res.insertId]);
+                data.push({res: res, inserted: inserted[0]});
+            }
         }catch(error){
             errors.push({name: query.name, error: error.message});
         }

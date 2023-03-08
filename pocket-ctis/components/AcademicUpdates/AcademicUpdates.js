@@ -32,9 +32,9 @@ const AcademicUpdates = ({edu}) => {
 
               <td className={styles.data_name}>{record.record_visibility ? record.first_name : "Anonymous"}</td>
               <td className={styles.data_surname}>{record.record_visibility ? record.last_name : ""}</td>
-              <td className={styles.data_degree}>{record.record_visibility ? record.degree_name : ""}</td>
+              <td className={styles.data_degree}>{record.record_visibility ? record.degree_type_name : ""}</td>
               <td className={styles.data_field}>{record.record_visibility ? record.name_of_program : ""}</td>
-              <td className={styles.data_institute}>{record.record_visibility ? record.inst_name : ""}</td>
+              <td className={styles.data_institute}>{record.record_visibility ? record.edu_inst_name : ""}</td>
               <td className={styles.data_date}>{record.record_date.slice(0, -14)}</td>
           </tr>
         )) : ""}

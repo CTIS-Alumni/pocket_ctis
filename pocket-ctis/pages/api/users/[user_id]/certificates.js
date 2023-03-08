@@ -1,4 +1,10 @@
-import {doquery, doMultiQueries, createPostQueries, createPutQueries} from "../../../../helpers/dbHelpers";
+import {
+    doquery,
+    doMultiQueries,
+    createPostQueries,
+    createPutQueries,
+    doMultiInsertQueries
+} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res) {
     const api_key = req.headers['x-api-key'];
@@ -28,7 +34,7 @@ export default async function handler(req, res) {
                 const base_values = ["user_id", "certificate_name", "issuing_authority"];
                 const optional_values = ["visibility"];
                 const queries = createPostQueries(certificates, base_query, base_values, optional_values, user_id);
-                const {data, errors} = await doMultiQueries(queries);
+                const {data, errors} = await doMultiInsertQueries(queries, "usercertificate");
                 res.status(200).json({data, errors});
 
             } catch (error) {

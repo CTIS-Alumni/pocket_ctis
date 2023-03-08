@@ -10,7 +10,7 @@ export default async function handler(req, res){
     switch(method) {
         case "GET":
             try {
-                const query = "SELECT er.id, er.edu_inst_id, ei.inst_name, er.semester, er.start_date, er.end_date, er.rating, er.opinion, er.visibility, " +
+                const query = "SELECT er.id, er.edu_inst_id, ei.inst_name as 'edu_inst_name', er.semester, er.start_date, er.end_date, er.rating, er.opinion, er.visibility, " +
                     "ci.city_name, co.country_name "+
                     "FROM erasmusrecord er JOIN educationinstitute ei ON (er.edu_inst_id = ei.id) "+
                     "LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) "+

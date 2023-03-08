@@ -1,16 +1,16 @@
 import {isEqual} from "lodash";
+import {craftDefaultUrl} from "./urlHelper";
 
 export const submitChanges = async (url, requestObj) => {
     let responseObj = {POST: {}, PUT: {}, DELETE: {}}
-    if (requestObj.hasOwnProperty("POST") && requestObj.POST.length > 0) {
-        responseObj.POST = await _submitFetcher("POST", url, requestObj.POST);
+    if (requestObj.hasOwnProperty("DELETE") && requestObj.DELETE.length > 0) {
+        responseObj.DELETE = await _submitFetcher("DELETE", url, requestObj.DELETE);
     }
     if (requestObj.hasOwnProperty("PUT") && requestObj.PUT.length > 0) {
         responseObj.PUT= await _submitFetcher("PUT", url, requestObj.PUT);
-
     }
-    if (requestObj.hasOwnProperty("DELETE") && requestObj.DELETE.length > 0) {
-        responseObj.DELETE = await _submitFetcher("DELETE", url, requestObj.DELETE);
+    if (requestObj.hasOwnProperty("POST") && requestObj.POST.length > 0) {
+        responseObj.POST = await _submitFetcher("POST", url, requestObj.POST);
     }
 
     return responseObj;
@@ -35,6 +35,26 @@ export const _getFetcher = async (url) => {
     })
     return await res.json()
 }
+
+export const _getFetcherTemp = async (apis) => {
+    let results = {};
+    try{
+        await Promise.all(apis.map(async (api)=>{
+            const res = await fetch(craftDefaultUrl(api), {
+                headers: {
+                    'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
+                },
+            });
+            const resTemp = await res.json();
+            results[api] = resTemp;
+        }));
+        return results;
+    }catch(error){
+        console.log(error);
+        //stuff
+    }
+}
+
 
 export const createReqObject = (originalData, finalData, deletedData) => {
     let requestObj = {POST: [], PUT: [], DELETE: []};

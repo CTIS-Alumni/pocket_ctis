@@ -46,11 +46,11 @@ export default async function handler(req, res){
                 temp = "SELECT id, profile_picture, visibility FROM userprofilepicture WHERE user_id = ?";
                 queries.push({name: "profile_picture", query: temp, values: [user_id]});
 
-                temp = "SELECT ue.id, ex.exam_name, ue.exam_id, ue.grade, ue.year, ue.visibility FROM userexam ue JOIN exam ex ON (ue.exam_id = ex.id) " +
+                temp = "SELECT ue.id, ex.exam_name, ue.exam_id, ue.grade, ue.exam_date, ue.visibility FROM userexam ue JOIN exam ex ON (ue.exam_id = ex.id) " +
                     "WHERE ue.user_id = ? order by ex.exam_name asc";
                 queries.push({name: "exams", query: temp, values: [user_id]});
 
-                temp = "SELECT us.id, us.skill_id, sk.skill_name, sk.skill_type_id, us.skill_level, skt.type_name, us.skill_level, us.visibility " +
+                temp = "SELECT us.id, us.skill_id, sk.skill_name, sk.skill_type_id, us.skill_level, skt.type_name as 'skill_type_name', us.skill_level, us.visibility " +
                     "FROM userskill us JOIN skill sk ON (us.skill_id = sk.id) " +
                     "JOIN skilltype skt ON (sk.skill_type_id = skt.id) " +
                     "WHERE us.user_id = ? order by sk.skill_type_id asc ";
