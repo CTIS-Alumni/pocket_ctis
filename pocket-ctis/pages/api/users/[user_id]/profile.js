@@ -45,7 +45,7 @@ export default async function handler(req, res){
                 temp = "SELECT id, profile_picture, visibility FROM userprofilepicture WHERE user_id = ?";
                 queries.push({name: "profile_picture", query: temp, values: [user_id]});
 
-                temp = "SELECT ue.id, ex.exam_name, ue.exam_id, ue.grade, ue.year, ue.visibility FROM userexam ue JOIN exam ex ON (ue.exam_id = ex.id) " +
+                temp = "SELECT ue.id, ex.exam_name, ue.exam_id, ue.grade, ue.exam_date, ue.visibility FROM userexam ue JOIN exam ex ON (ue.exam_id = ex.id) " +
                     "WHERE ue.user_id = ? order by ex.exam_name asc";
                 queries.push({name: "exams", query: temp, values: [user_id]});
 

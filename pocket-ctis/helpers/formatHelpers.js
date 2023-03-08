@@ -68,3 +68,13 @@ export const getProfilePicturePath = (visibility = 0, fileName = null) => {
     return '/profilepictures/defaultUser.png'
   }
 }
+
+export const getDateString = (date) => {
+  if (date) {
+    const rawDate = new Date(date)
+    let dateString = `${rawDate.getDate()} ${
+      monthNames[rawDate.getMonth()]
+    } ${rawDate.getFullYear()}`
+    return dateString
+  } else return null
+}
