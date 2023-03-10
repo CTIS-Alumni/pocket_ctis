@@ -1,6 +1,6 @@
 import mysql from "mysql2/promise";
 import dbconfig from "../config/dbconfig.js";
-import {convertToLastDay} from "./formatHelpers";
+import {convertToLastDay} from "./submissionHelpers";
 
 export async function doMultiQueries(queries){
     let data = {};

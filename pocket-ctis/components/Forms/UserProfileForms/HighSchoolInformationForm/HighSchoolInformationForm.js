@@ -4,46 +4,72 @@ import { EyeFill, EyeSlashFill } from 'react-bootstrap-icons'
 import { Formik, Field, Form } from 'formik'
 import { cloneDeep } from 'lodash'
 import { fetchAllHighSchool } from '../../../../helpers/searchHelpers'
-import {splitFields} from "../../../../helpers/formatHelpers";
+import {splitFields, submissionHandler} from "../../../../helpers/submissionHelpers";
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 
 const HighSchoolInformationForm = ({ data }) => {
-  const [highSchools, setHighSchools] = useState([])
-
-    let deletedData = [];
+  const [highSchools, setHighSchools] = useState([]);
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
   useEffect(() => {
     fetchAllHighSchool().then((res) => setHighSchools(res.data))
   }, [])
 
+    const applyNewData = (data) => {
+        setDataAfterSubmit(data);
+    }
+
+    let deletedData = [];
+
   const transformData = (data) => {
-    let newData = cloneDeep(data)
+    let newData = cloneDeep(data);
+      if(newData.length > 0 && newData[0].high_school == ''){
+          newData = [];
+      }
     newData = newData.map((datum) => {
         datum.visibility = datum.visibility == 1
         datum.high_school = `${datum.high_school_id}-${datum.high_school_name}`
 
       return datum
     })
+
     return newData
   }
 
-  const onSubmit = async (values) => {
-      let newData = cloneDeep(values);
+  const transformDataForSubmission = (newData) => {
       if(newData.high_school.length > 0){
-          if(newData.high_school[0].high_school =="")
+          if(newData.high_school[0].high_school ==''){
               newData.high_school = [];
+          }
           else{
               newData.high_school[0].visibility = newData.high_school[0].visibility ? 1 : 0;
               splitFields(newData.high_school[0], ["high_school"]);
           }
       }
-      if(data.length > newData.high_school.length)
-          deletedData.push({name: data[0].id, id: data[0].id});
+  }
 
-      const requestObj = createReqObject(data, newData.high_school, deletedData);
+  const onSubmit = async (values) => {
+      console.log("---------------------------------")
+      let newData = cloneDeep(values);
+      transformDataForSubmission(newData);
+      if(dataAfterSubmit.length > newData.high_school.length)
+          deletedData.push({name: dataAfterSubmit[0].id, id: dataAfterSubmit[0].id, data: dataAfterSubmit[0]});
+
+      const requestObj = createReqObject(dataAfterSubmit, newData.high_school, deletedData);
+      console.log("req",requestObj);
       const url = craftUserUrl(1, "highschool");
       const responseObj = await submitChanges(url ,requestObj);
+      console.log("res", responseObj);
+
+      const args = [[], ["high_school"],[], ["id", "user_id"], false]
+      const new_data = submissionHandler(requestObj, responseObj, values, "high_school", args, transformDataForSubmission, transformData, dataAfterSubmit);
+      console.log("this is where the error should be happening this should be normal first", new_data)
+      new_data.high_school = transformData(new_data.high_school);
+      if(new_data.high_school.length == 0)
+          values.high_school = [];
+      applyNewData(new_data.high_school);
+
       deletedData = [];
   }
 

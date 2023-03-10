@@ -45,7 +45,7 @@ const ErasmusList = ({ erasmus }) => {
                               <img alt={erasmus.first_name} className={styles.user_avatar_48} src={'/profilepictures/'+(erasmus.record_visibility ? (erasmus.pic_visibility ? erasmus.profile_picture : "defaultuser") : "defaultuser") +'.png'}/>
                           </div>
                         <div className='d-flex justify-content-between '>
-                          <h5>{erasmus.record_visibility ? (`${erasmus.first_name} ${erasmus.last_name} - ${erasmus.inst_name}`) : "Anonymous"}</h5>
+                          <h5>{erasmus.record_visibility ? (`${erasmus.first_name} ${erasmus.last_name} - ${erasmus.edu_inst_name}`) : "Anonymous"}</h5>
                             <p>{erasmus.record_visibility ? `${erasmus.semester} - ${erasmus.end_date.substring(0,4)}` : ""}</p>
                         </div>
                           <div>

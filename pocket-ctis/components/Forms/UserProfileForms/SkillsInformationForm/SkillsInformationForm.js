@@ -6,30 +6,36 @@ import {
   XCircleFill,
   PlusCircleFill,
 } from 'react-bootstrap-icons'
-import {cloneDeep, findIndex} from 'lodash'
+import {cloneDeep} from 'lodash'
 import {
   fetchAllSkills,
   fetchAllSkillTypes,
 } from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {splitFields} from "../../../../helpers/formatHelpers";
+import {replaceWithNull, splitFields, submissionHandler} from "../../../../helpers/submissionHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 
 const SkillsInformationForm = ({ data }) => {
   const [skillType, setSkillType] = useState([])
   const [skills, setSkills] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
   useEffect(() => {
     fetchAllSkills().then((res) => setSkills(res.data))
     fetchAllSkillTypes().then((res) => setSkillType(res.data))
   }, [])
 
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data);
+  }
+
   let deletedData = [];
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
+      replaceWithNull(datum);
       datum.visibility = datum.visibility == 1
       datum.skill_type = `${datum.skill_type_id}-${datum.skill_type_name}`
       datum.skill = `${datum.skill_id}-${datum.skill_name}`
@@ -38,67 +44,29 @@ const SkillsInformationForm = ({ data }) => {
     return newData
   }
 
-  const onSubmit = async (values) =>{
-    let newData = cloneDeep(values);
+  const transformDataForSubmission = (newData) => {
     newData.skills = newData.skills.map((val) => {
       val.visibility = val.visibility ? 1 : 0
+      replaceWithNull(val);
       splitFields(val, ["skill_type", "skill"]);
       return val;
     });
+  }
 
-    const requestObj = createReqObject(data, newData.skills, deletedData);
+  const onSubmit = async (values) => {
+    let newData = cloneDeep(values);
+    transformDataForSubmission(newData);
+
+    const requestObj = createReqObject(dataAfterSubmit, newData.skills, deletedData);
     const url = craftUserUrl(1, "skills");
     const responseObj = await submitChanges(url, requestObj);
 
+    const args = [["skill_level"], ["skill_type", "skill"], ["skill_type_id"], ["id", "user_id"], false];
+    const new_data = submissionHandler(requestObj, responseObj, values, "skills", args, transformDataForSubmission, transformData, dataAfterSubmit);
+    transformData(new_data.skills);
+    applyNewData(new_data.skills);
 
-    requestObj.DELETE.forEach((toDelete)=>{
-      if(!responseObj.DELETE?.data.hasOwnProperty(toDelete.id)){
-        values.skills.push(toDelete.data);
-      }
-    });
-
-    if(requestObj.POST.length > 0){
-      //response objectte request objectteki skill_idsi aynı olan bir data var mı bak
-      requestObj.POST.forEach((toInsert)=>{
-        const index = findIndex(values.skills, (item) => {
-          return item.skill.split("-")[0] == toInsert.skill_id;
-        });
-        if(index != -1){
-          //valueda varsa response objectte o skill_id olan bişe var mı diye bak
-          const found_in_res = responseObj.POST?.data.find(datum => (datum.inserted.skill_id == toInsert.skill_id && datum.inserted.visibility == toInsert.visibility));
-          //eğer varsa onun values'daki id'sini res'deki bulduğun id'ye eşitle
-          //eğer yoksa onu values'dan sil
-          if(found_in_res === undefined)
-            values.skills.splice(index, 1);
-          else values.skills[index].id = found_in_res.inserted.id;
-        }
-      });
-    }
-
-    if(requestObj.PUT.length > 0){
-      requestObj.PUT.forEach((toEdit) => {
-        if(!responseObj.PUT.data.hasOwnProperty(toEdit.id)){
-          const index = findIndex(values.skills, (item) => {
-            return item.skill.split("-")[0] == toEdit.skill_id;
-          });
-          if(index != -1){
-            const found = data.find(datum => datum.id === toEdit.id);
-            values.skills[index] = cloneDeep(found);
-            values.skills[index].skill = found.skill_id + "-" + found.skill_name;
-            values.skills[index].skill_type = found.skill_type_id + "-" + found.skill_type_name;
-          }
-        }
-      });
-    }
     deletedData = [];
-
-    console.log(newData);
-    console.log("newdata")
-    console.log(newData)
-    console.log("final calues")
-    console.log(values.skills);
-
-    console.log(responseObj);
   }
 
   return (
@@ -146,14 +114,17 @@ const SkillsInformationForm = ({ data }) => {
                                         type='button'
                                         onClick={() =>{
                                           arrayHelpers.remove(index);
-                                          if(skill.hasOwnProperty("id"))
-                                            deletedData.push({name: skill.id, id: skill.id});
+                                          if(skill.hasOwnProperty("id")){
+                                            console.log(skill);
+                                            deletedData.push({name: skill.id, id: skill.id, data: skill});
+                                          }
                                         }}
                                       >
                                         <XCircleFill
                                           size={13}
                                           className={styles.removeIcon}
                                         />
+                                        {skill.id}
                                       </button>
                                     </div>
                                     <div style={{ flexGrow: '1' }}>

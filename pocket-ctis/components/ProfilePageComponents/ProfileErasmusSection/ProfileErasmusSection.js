@@ -17,7 +17,7 @@ const ProfileErasmusSection = ({ erasmus }) => {
             return (
               <div key={eras.id} style={{ borderBottom: '1px solid #ccc' }}>
                 <div className='d-flex justify-content-between align-items-center'>
-                  <p className='m-0'>{eras.inst_name}</p>
+                  <p className='m-0'>{eras.edu_inst_name}</p>
                   <CustomBadge>{semester}</CustomBadge>
                 </div>
                 <Container>

@@ -6,19 +6,25 @@ import {
   XCircleFill,
   PlusCircleFill,
 } from 'react-bootstrap-icons'
-import { cloneDeep } from 'lodash'
+import {cloneDeep} from 'lodash'
 import { fetchAllSocieties } from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
-import {splitFields} from "../../../../helpers/formatHelpers";
+import {splitFields, submissionHandler} from "../../../../helpers/submissionHelpers";
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 
 const SocietiesInformationForm = ({ data }) => {
   const [societies, setSocieties] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
   useEffect(() => {
     fetchAllSocieties().then((res) => setSocieties(res.data))
+    console.log(dataAfterSubmit);
   }, [])
+
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data);
+  }
 
   let deletedData = [];
 
@@ -26,27 +32,69 @@ const SocietiesInformationForm = ({ data }) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
         datum.visibility = datum.visibility == 1;
+        datum.activity_status = datum.activity_status == 1;
       datum.society = `${datum.society_id}-${datum.society_name}`
       return datum
     })
     return newData
   }
 
-  const onSubmit = async (values) => {
-    //transform data
-    let newData = cloneDeep(values);
+  const transformDataForSubmission = (newData) => {
     newData.societies = newData.societies.map((val) => {
       val.visibility = val.visibility ? 1 : 0
-      val.activity_status = parseInt(val.activity_status) ? 1 : 0;
+      val.activity_status = val.activity_status ? 1 : 0;
       splitFields(val, ["society"]);
       return val;
-    })
+    });
+  }
 
-    const requestObj = createReqObject(data, newData.societies, deletedData);
-    const url = craftUserUrl(1, "userstudentsocieties");
+  const onSubmit = async (values) => {
+    console.log("heres the orihinal data it should look like", data);
+    let newData = cloneDeep(values);
+    console.log("heres new data", newData)
+    transformDataForSubmission(newData);
+    console.log("heres the newData, it should have no society_name field", newData);
+
+    const requestObj = createReqObject(dataAfterSubmit, newData.societies, deletedData);
+    const url = craftUserUrl(1, "societies");
     const responseObj = await submitChanges(url ,requestObj);
+    const args = [[], ["society"], [], ["user_id", "id"], false];
+    console.log("req");
+    console.log(requestObj)
+    console.log("res")
+    console.log(responseObj);
+    const new_data = submissionHandler(requestObj, responseObj, values, "societies", args, transformDataForSubmission, transformData, dataAfterSubmit);
+    console.log("heres new_data, this is the that should be sent to the next submission", new_data.societies);
+    transformData(new_data.societies);
+    applyNewData(newData.societies);
+
     console.log(responseObj);
     deletedData = [];
+
+   /* requestObj.DELETE.forEach((toDelete)=>{
+      if(!responseObj.DELETE?.data.hasOwnProperty(toDelete.id)){
+        values.societies.push(toDelete.data);
+      }
+    });
+
+    if(requestObj.POST.length > 0){
+      requestObj.POST.forEach((toInsert)=>{
+        const cloned_values = cloneDeep(values);
+        transformDataForSubmission(cloned_values);
+        const index = findIndex(cloned_values.societies, (item) => {
+          return isEqual(item, toInsert);
+        });
+        if(index != -1){
+          const found_in_res = responseObj.POST?.data.find(datum =>
+              isEqualFields(toInsert, datum.inserted, ["department", "position", "work_description"], ["work_type", "company", "country", "city"], ["id", "record_date", "user_id"], true)
+          );
+          if(found_in_res === undefined)
+            values.work_records.splice(index, 1);
+          else values.work_records[index].id = found_in_res.inserted.id;
+        }
+      });
+    }*/
+
   }
 
   return (
@@ -95,8 +143,11 @@ const SocietiesInformationForm = ({ data }) => {
                                         type='button'
                                         onClick={() => {
                                           arrayHelpers.remove(index);
-                                          if(society.hasOwnProperty("id"))
-                                            deletedData.push({name: society.id, id: society.id});
+                                          if(society.hasOwnProperty("id")){
+                                            console.log(deletedData)
+                                            deletedData.push({name: society.id, id: society.id, data: society});
+                                          }
+
                                         }}
                                       >
                                         <XCircleFill
@@ -104,6 +155,7 @@ const SocietiesInformationForm = ({ data }) => {
                                           className={styles.removeIcon}
                                         />
                                       </button>
+                                      {society.id}
                                     </div>
                                     <div style={{ flexGrow: '1' }}>
                                       <div className={styles.inputContainer}>

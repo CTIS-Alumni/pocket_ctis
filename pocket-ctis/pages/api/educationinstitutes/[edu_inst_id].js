@@ -10,7 +10,7 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const query = "SELECT ei.id, ei.inst_name, ci.city_name, co.country_name, ei.is_erasmus, ei.rating " +
+                const query = "SELECT ei.id, ei.edu_inst_name, ci.city_name, co.country_name, ei.is_erasmus, ei.rating " +
                     "FROM educationinstitute ei LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) " +
                     "LEFT OUTER JOIN country co ON(ci.country_id = co.id) WHERE ei.id = ?"
                 //show that it is an erasmus uni
@@ -29,7 +29,7 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const {inst_name, city_id, is_erasmus} = req.body.educationinstitute;
-                const query = "UPDATE educationinstitute SET inst_name = ?, city_id = ?, is_erasmus = ? WHERE id = ?"
+                const query = "UPDATE educationinstitute SET edu_inst_name = ?, city_id = ?, is_erasmus = ? WHERE id = ?"
                 const data = await doquery({query: query,values: [inst_name, city_id, is_erasmus, edu_inst_id]});
                 if(data.hasOwnProperty("error"))
                     res.status(500).json({error: data.error.message});

@@ -11,7 +11,7 @@ export default async function handler(req, res) {
             try {//For displaying all work records
                 let values = [];
                 let query = "SELECT w.id, w.user_id, GROUP_CONCAT(act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, w.company_id,\n" +
-                    "c.company_name, wt.type_name, w.department, w.position, w.work_description, w.city_id, ci.city_name," +
+                    "c.company_name, wt.work_type_name, w.department, w.position, w.work_description, w.city_id, ci.city_name," +
                     "w.country_id, co.country_name, w.start_date, w.end_date, w.visibility as 'record_visibility', w.is_current, w.record_date " +
                     "FROM workrecord w JOIN users u ON (w.user_id = u.id) " +
                     "JOIN userprofilepicture upp ON (w.user_id = upp.user_id) " +

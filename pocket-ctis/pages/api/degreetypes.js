@@ -9,7 +9,7 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const query = "SELECT id, degree_name as 'degree_type_name' FROM degreetype order by degree_name asc";  //for dropboxes
+                const query = "SELECT id, degree_type_name FROM degreetype order by degree_type_name asc";  //for dropboxes
                 const data = await doquery({query: query});
                 if(data.hasOwnProperty("error"))
                     res.status(500).json({error: data.error.message});
@@ -22,7 +22,7 @@ export default async function handler(req, res){
         case "POST":
             try{
                 const {degree_name} = req.body;
-                const query = "INSERT INTO degreetype(degree_name) values (?)";
+                const query = "INSERT INTO degreetype(degree_type_name) values (?)";
                 const data = await doquery({query: query, values: [degree_name]});
                 if(data.hasOwnProperty("error"))
                     res.status(500).json({error: data.error.message});

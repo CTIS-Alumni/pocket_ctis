@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     switch (method) {
         case "GET":
             try {
-                const query = "SELECT e.id, e.edu_inst_id, ei.inst_name, d.degree_name, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current, " +
+                const query = "SELECT e.id, e.edu_inst_id, ei.edu_inst_name, d.degree_type_name, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current, " +
                     "ci.city_name, co.country_name  " +
                     "FROM educationrecord e " +
                     "JOIN educationinstitute ei ON (e.edu_inst_id = ei.id)  " +

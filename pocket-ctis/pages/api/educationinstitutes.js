@@ -10,7 +10,7 @@ export default async function handler(req, res){
         case "GET":
             try{
                 let values = [];
-                    let query = "SElECT ei.id, ei.inst_name as 'edu_inst_name', ci.city_name, co.country_name, ei.is_erasmus " +
+                    let query = "SElECT ei.id, ei.edu_inst_name, ci.city_name, co.country_name, ei.is_erasmus " +
                     "FROM educationinstitute ei LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) " +
                     "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 
@@ -21,8 +21,8 @@ export default async function handler(req, res){
                 }
                 if(req.query.name){ //for the general search
                     if(query.indexOf("WHERE") !== -1)//if there is "WHERE"
-                        query += "AND ei.inst_name LIKE CONCAT('%', ?, '%') "
-                    else query += "WHERE ei.inst_name LIKE CONCAT('%', ?, '%') ";
+                        query += "AND ei.edu_inst_name LIKE CONCAT('%', ?, '%') "
+                    else query += "WHERE ei.edu_inst_name LIKE CONCAT('%', ?, '%') ";
                     values.push(req.query.name);
                 }
                 if(req.query.location){ //TEST
@@ -32,7 +32,7 @@ export default async function handler(req, res){
                     values.push(req.query.location);
                 }
 
-                query +="order by ei.inst_name asc";
+                query +="order by ei.edu_inst_name asc";
 
                 const data = await doquery({query:query, values: values});
                 if(data.hasOwnProperty("error"))
@@ -47,7 +47,7 @@ export default async function handler(req, res){
         case "POST":{
             try{
                 const {inst_name, city_id, is_erasmus} = req.body.erasmus;
-                const query = "INSERT INTO company(inst_name, city_id, is_erasmus) values(?,?,?)";
+                const query = "INSERT INTO educationinstitute(edu_inst_name, city_id, is_erasmus) values(?,?,?)";
                 const data = await doquery({query: query, values: [inst_name, city_id, is_erasmus]});
                 if(data.hasOwnProperty("error"))
                     res.status(500).json({error: data.error.message});

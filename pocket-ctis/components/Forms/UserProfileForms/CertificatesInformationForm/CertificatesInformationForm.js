@@ -10,28 +10,51 @@ import { cloneDeep } from 'lodash'
 import {createReqObject} from "../../../../helpers/fetchHelpers";
 import {submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
+import {useState} from "react";
+import {replaceWithNull, submissionHandler} from "../../../../helpers/submissionHelpers";
 
 
 const CertificatesInformationForm = ({ data }) => {
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
+
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data);
+  }
+
   let deletedData = [];
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
-      if(typeof datum.visibility == "number")
-        datum.visibility = datum.visibility == 1
-      else datum.visibility = datum.visibility ? 1 : 0;
+      replaceWithNull(datum);
+      datum.visibility = datum.visibility ? 1 : 0;
       return datum
     })
 
     return newData
   }
 
+  const transformDataForSubmission = (newData) => {
+    newData.certificates = newData.certificates.map((val) => {
+      val.visibility = val.visibility ? 1 : 0;
+      replaceWithNull(val);
+      return val;
+    });
+  }
+
   const onSubmit = async (values) => {
-    const requestObj = createReqObject(data, transformData(values.certificates), deletedData);
+    let newData = cloneDeep(values);
+    transformDataForSubmission(newData);
+
+    const requestObj = createReqObject(dataAfterSubmit, transformData(values.certificates), deletedData);
     const url = craftUserUrl(1, "certificates");
     const responseObj = await submitChanges(url ,requestObj);
-    console.log(responseObj);
+    const args = [[], [], [], ["id", "user_id"], false];
+    const new_data = submissionHandler(requestObj, responseObj, values, "certificates", args, transformDataForSubmission, transformData, dataAfterSubmit);
+    console.log("newdata", new_data.certificates);
+    transformData(new_data.certificates);
+    applyNewData(new_data.certificates);
+
     deletedData = [];
   }
 
@@ -82,7 +105,7 @@ const CertificatesInformationForm = ({ data }) => {
                                         onClick={() => {
                                           arrayHelpers.remove(index);
                                           if(certificate.hasOwnProperty("id"))
-                                            deletedData.push({name: certificate.certificate_name, id: certificate.id});
+                                            deletedData.push({name: certificate.certificate_name, id: certificate.id, data: certificate});
                                         }}
                                       >
                                         <XCircleFill

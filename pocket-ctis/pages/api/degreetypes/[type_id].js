@@ -11,7 +11,7 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const {degree_name} = req.body.degreetype;
-                const query = "UPDATE degreetype SET degree_name = ? WHERE id = ?"
+                const query = "UPDATE degreetype SET degree_type_name = ? WHERE id = ?"
                 const data = await doquery({query: query,values: [degree_name,type_id]});
                 if(data.hasOwnProperty("error"))
                     res.status(500).json({error: data.error.message});

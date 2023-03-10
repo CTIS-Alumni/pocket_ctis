@@ -16,7 +16,7 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const query = "SELECT w.id, c.company_name, wt.type_name, w.department, w.position, w.work_description, ci.city_name, co.country_name, w.start_date, w.end_date, w.visibility, w.is_current " +
+                const query = "SELECT w.id, c.company_name, wt.work_type_name, w.department, w.position, w.work_description, ci.city_name, co.country_name, w.start_date, w.end_date, w.visibility, w.is_current " +
                     "FROM workrecord w LEFT OUTER JOIN company c ON (w.company_id = c.id) " +
                     "JOIN worktype wt ON (w.work_type_id = wt.id) " +
                     "LEFT OUTER JOIN city ci ON (w.city_id = ci.id) " +
@@ -49,9 +49,9 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const work_records = JSON.parse(req.body);
-                const base_query = "UPDATE workrecord SET company_id = ?, work_type_id = ?, ";
-                const base_values = ["company_id", "work_type_id"];
-                const optional_values = ["department","position","work_description", "city_id", "country_id","start_date", "end_date", "visibility", "is_current"];
+                const base_query = "UPDATE workrecord SET work_type_id = ?, ";
+                const base_values = ["work_type_id"];
+                const optional_values = ["company_id","department","position","work_description", "city_id", "country_id","start_date", "end_date", "visibility", "is_current"];
                 const queries = createPutQueries(work_records, base_query, base_values, optional_values);
                 const {data, errors} = await doMultiQueries(queries);
                 res.status(200).json({data, errors});

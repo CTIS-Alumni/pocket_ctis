@@ -50,7 +50,7 @@ export default async function handler(req, res){
                     "WHERE ue.user_id = ? order by ex.exam_name asc";
                 queries.push({name: "exams", query: temp, values: [user_id]});
 
-                temp = "SELECT us.id, us.skill_id, sk.skill_name, sk.skill_type_id, us.skill_level, skt.type_name as 'skill_type_name', us.skill_level, us.visibility " +
+                temp = "SELECT us.id, us.skill_id, sk.skill_name, sk.skill_type_id, us.skill_level, skt.skill_type_name, us.skill_level, us.visibility " +
                     "FROM userskill us JOIN skill sk ON (us.skill_id = sk.id) " +
                     "JOIN skilltype skt ON (sk.skill_type_id = skt.id) " +
                     "WHERE us.user_id = ? order by sk.skill_type_id asc ";
@@ -70,7 +70,7 @@ export default async function handler(req, res){
                     "WHERE uws.user_id = ? order by s.sector_name asc";
                 queries.push({name: "wanted_sectors", query: temp, values: [user_id]});
 
-                temp = "SELECT w.id, w.company_id, c.company_name, wt.type_name as 'work_type_name', w.work_type_id, w.department, w.position, w.work_description, w.city_id, ci.city_name, w.country_id, co.country_name, w.start_date, w.end_date, w.visibility, w.is_current " +
+                temp = "SELECT w.id, w.company_id, c.company_name, wt.work_type_name, w.work_type_id, w.department, w.position, w.work_description, w.city_id, ci.city_name, w.country_id, co.country_name, w.start_date, w.end_date, w.visibility, w.is_current " +
                     "FROM workrecord w LEFT OUTER JOIN company c ON (w.company_id = c.id) " +
                     "JOIN worktype wt ON (w.work_type_id = wt.id) " +
                     "LEFT OUTER JOIN city ci ON (w.city_id = ci.id) " +
@@ -83,7 +83,7 @@ export default async function handler(req, res){
                     "WHERE i.user_id = ? order by i.start_date desc";
                 queries.push({name: "internships", query: temp, values: [user_id]});
 
-                temp = "SELECT er.id, er.edu_inst_id, ei.inst_name, er.semester, er.start_date, er.end_date, er.rating, er.opinion, er.visibility, " +
+                temp = "SELECT er.id, er.edu_inst_id, ei.edu_inst_name, er.semester, er.start_date, er.end_date, er.rating, er.opinion, er.visibility, " +
                     "ci.city_name, co.country_name "+
                     "FROM erasmusrecord er JOIN educationinstitute ei ON (er.edu_inst_id = ei.id) "+
                     "LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) "+
@@ -91,7 +91,7 @@ export default async function handler(req, res){
                     "WHERE er.user_id = ?";
                 queries.push({name: "erasmus", query: temp, values: [user_id]});
 
-                temp = "SELECT e.id, e.edu_inst_id, ei.inst_name as 'edu_inst_name', d.id as 'degree_type_id', d.degree_name as 'degree_type_name', e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current, " +
+                temp = "SELECT e.id, e.edu_inst_id, ei.edu_inst_name, e.degree_type_id, d.degree_type_name, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current, " +
                     "ci.city_name, ci.id as 'city_id', co.country_name, co.id as 'country_id'  " +
                     "FROM educationrecord e " +
                     "JOIN educationinstitute ei ON (e.edu_inst_id = ei.id)  " +

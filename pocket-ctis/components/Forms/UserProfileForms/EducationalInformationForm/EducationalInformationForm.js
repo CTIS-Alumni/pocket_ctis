@@ -17,7 +17,7 @@ import {
 import DatePickerField from '../../../DatePickers/DatePicker'
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
-import {replaceWithNull, splitFields} from "../../../../helpers/formatHelpers";
+import {replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const EducationInformationForm = ({ data }) => {
   let deletedData = [];

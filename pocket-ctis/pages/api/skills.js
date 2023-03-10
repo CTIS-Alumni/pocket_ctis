@@ -10,7 +10,7 @@ export default async function handler(req, res){
         case "GET":
             try{
                 let id_params = "";
-                let query = "SELECT s.id, s.skill_name, s.skill_type_id, st.type_name as 'skill_type_name' from skill s LEFT OUTER JOIN skilltype st ON (s.skill_type_id = st.id)";
+                let query = "SELECT s.id, s.skill_name, s.skill_type_id, st.skill_type_name from skill s LEFT OUTER JOIN skilltype st ON (s.skill_type_id = st.id)";
 
                 if(req.query.type_id){
                     query += "WHERE skill_type_id = ? ";

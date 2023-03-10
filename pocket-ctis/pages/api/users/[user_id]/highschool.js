@@ -1,4 +1,10 @@
-import {createPostQueries, createPutQueries, doMultiQueries, doquery} from "../../../../helpers/dbHelpers";
+import {
+    createPostQueries,
+    createPutQueries,
+    doMultiInsertQueries,
+    doMultiQueries,
+    doquery
+} from "../../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -28,7 +34,7 @@ export default async function handler(req, res){
                 const base_values = ["user_id", "high_school_id"];
                 const optional_values = ["visibility"];
                 const queries = createPostQueries(high_schools, base_query, base_values, optional_values, user_id);
-                const {data, errors} = await doMultiQueries(queries);
+                const {data, errors} = await doMultiInsertQueries(queries, "userhighschool");
                 res.status(200).json({data, errors});
 
             }catch(error){
@@ -53,7 +59,7 @@ export default async function handler(req, res){
             try{
                 const high_schools = JSON.parse(req.body);
                 let queries = [];
-                const tempQuery = "DELETE FROM userhighschool WHERE id = ?"
+                const tempQuery = "DELETE ighschool WHERE id = ?"
                 high_schools.forEach((hs) => {
                     queries.push({
                         name: hs.id,

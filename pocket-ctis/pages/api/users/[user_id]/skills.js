@@ -16,7 +16,7 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const query = "SELECT us.id, sk.skill_name, us.skill_level, skt.type_name as 'skill_type_name', us.skill_level, us.visibility " +
+                const query = "SELECT us.id, sk.skill_name, us.skill_level, skt.skill_type_name, us.skill_level, us.visibility " +
                     "FROM userskill us JOIN skill sk ON (us.skill_id = sk.id) " +
                     "JOIN skilltype skt ON (sk.skill_type_id = skt.id) " +
                     "WHERE us.user_id = ? order by sk.skill_type_id asc ";
@@ -33,9 +33,9 @@ export default async function handler(req, res){
         case "POST":
             try {
                 const skills = JSON.parse(req.body);
-                const base_query = "INSERT INTO userskill(user_id,skill_id,skill_level" ;
-                const base_values = ["user_id", "skill_id", "skill_level"];
-                const optional_values = ["visibility"];
+                const base_query = "INSERT INTO userskill(user_id, skill_id " ;
+                const base_values = ["user_id", "skill_id"];
+                const optional_values = ["skill_level", "visibility"];
                 const queries = createPostQueries(skills, base_query, base_values, optional_values, user_id);
                 const {data, errors} = await doMultiInsertQueries(queries, "userskill");
                 res.status(200).json({data, errors});
@@ -47,9 +47,9 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const skills = JSON.parse(req.body);
-                const base_query = "UPDATE userskill SET skill_id = ?, skill_level = ?, ";
-                const base_values = ["skill_id", "skill_level"];
-                const optional_values = ["visibility"];
+                const base_query = "UPDATE userskill SET skill_id = ?, ";
+                const base_values = ["skill_id"];
+                const optional_values = ["skill_level", "visibility"];
                 const queries = createPutQueries(skills, base_query, base_values, optional_values);
                 const {data, errors} = await doMultiQueries(queries);
                 res.status(200).json({data, errors});
@@ -61,7 +61,7 @@ export default async function handler(req, res){
             try{
                 const skills = JSON.parse(req.body);
                 let queries = [];
-                const tempQuery = "DELETE FROM userskill WHERE id = ?";
+                const tempQuery = "DELETE FRill WHERE id = ?";
                 skills.forEach((skill)=>{
                     queries.push({
                         name: skill.id,

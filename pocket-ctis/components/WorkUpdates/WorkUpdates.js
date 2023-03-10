@@ -2,8 +2,9 @@ import React from 'react'
 import { Container } from 'react-bootstrap'
 import styles from './WorkUpdates.module.scss'
 
-
+8
 const WorkUpdates = ({work}) => {
+  console.log("work records ", work)
   return (
     <div className={styles.work_updates}>
       <h3 className='custom_table_title'>
@@ -33,7 +34,7 @@ const WorkUpdates = ({work}) => {
                 </td>
                 <td className={styles.data_name}>{record.record_visibility ? record.first_name : "Anonymous"}</td>
                 <td className={styles.data_surname}>{record.record_visibility ? record.last_name : ""}</td>
-                <td className={styles.data_work_type}>{record.record_visibility ? record.type_name : ""}</td>
+                <td className={styles.data_work_type}>{record.record_visibility ? record.work_type_name : ""}</td>
                 <td className={styles.data_position}>{record.record_visibility ? record.position : ""}</td>
                 <td className={styles.data_department}>{record.record_visibility ? record.department: ""}</td>
                 <td className={styles.data_company}>{record.record_visibility ? record.company_name : ""}</td>

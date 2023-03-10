@@ -21,7 +21,7 @@ const EducationInstitute = ({ edu_inst, users }) => {
             </div>
 
             <div>
-              <h5 className={styles.university_info_title}>{edu_inst.inst_name}</h5>
+              <h5 className={styles.university_info_title}>{edu_inst.edu_inst_name}</h5>
               <span className={styles.university_info_location}>
                 {edu_inst.city_name}{' '}
                 {edu_inst.city_name && edu_inst.country_name && `-`}{' '}
@@ -33,8 +33,8 @@ const EducationInstitute = ({ edu_inst, users }) => {
           <span className={styles.university_info_people}>
             {users.data.length > 0
               ? `
-            People who have studied at ${edu_inst.inst_name}:`
-              : `No one from your department have studied at ${edu_inst.inst_name}.`}
+            People who have studied at ${edu_inst.edu_inst_name}:`
+              : `No one from your department have studied at ${edu_inst.edu_inst_name}.`}
           </span>
         </div>
 
@@ -63,7 +63,7 @@ const EducationInstitute = ({ edu_inst, users }) => {
 
               <div className={styles.university_people_item_info}>
                 <span className={styles.university_people_item_name}>{user.first_name} {user.last_name}</span>
-                <span className={styles.university_people_item_degree}>{user.degree_name}</span>
+                <span className={styles.university_people_item_degree}>{user.degree_type_name}</span>
                 <span className={styles.university_people_item_program}>{user.name_of_program && `${user.name_of_program}`}</span>
                 <span className={styles.university_people_item_study_period}>{studyPeriod}</span>
                 <div className={styles.university_people_item_location}>

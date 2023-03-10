@@ -121,7 +121,7 @@ const SearchDataList = ({ searchData }) => {
                   className='d-flex justify-content-between align-items-start'
                 >
                   <div>
-                    <h5>{eduInst.inst_name}</h5>
+                    <h5>{eduInst.edu_inst_name}</h5>
                     <span style={{ fontSize: 12, color: '#999' }}>
                       {`${eduInst.country_name || ''} ${
                         eduInst.city_name || ''

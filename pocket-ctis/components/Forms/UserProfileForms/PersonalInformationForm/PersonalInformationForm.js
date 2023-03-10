@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from 'react'
 import { FieldArray, Field, Formik, Form } from 'formik'
-import { cloneDeep, omit } from 'lodash'
+import { cloneDeep} from 'lodash'
 import styles from './PersonalInformationForm.module.css'
 import {
     EyeFill,
@@ -10,7 +10,7 @@ import {
 } from 'react-bootstrap-icons'
 
 import {Location_data} from '../../../../context/locationContext'
-import {replaceWithNull, splitFields} from "../../../../helpers/formatHelpers";
+import {omitFields, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 import { fetchAllSectors, fetchAllSocialMediaTypes } from '../../../../helpers/searchHelpers'
@@ -159,7 +159,7 @@ const PersonalInformationForm = ({data}) => {
 
         let responseObjArr = {socials: {}, emails: {}, phone_numbers: {}, location: {}, career_objective: {}, wanted_sectors: {}};
 
-            await Promise.all(Object.keys(omit(data, ["basic_info"])).map(async (key) => {
+            await Promise.all(Object.keys(omitFields(data, ["basic_info"])).map(async (key) => {
             const requestObj = createReqObject(data[key], newData[key], deletedData[key]);
             const url = craftUserUrl(1, key);
             const responseObj = await submitChanges(url ,requestObj);

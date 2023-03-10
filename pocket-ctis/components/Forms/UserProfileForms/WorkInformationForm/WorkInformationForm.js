@@ -5,7 +5,7 @@ import {
 } from '../../../../helpers/searchHelpers'
 import { useEffect, useState, useContext } from 'react'
 import { Formik, Form, FieldArray, Field } from 'formik'
-import { cloneDeep } from 'lodash'
+import {cloneDeep} from 'lodash'
 import {
   EyeFill,
   EyeSlashFill,
@@ -20,12 +20,13 @@ import { Location_data } from '../../../../context/locationContext'
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {
   replaceWithNull,
-  splitFields,
-} from "../../../../helpers/formatHelpers";
+  splitFields, submissionHandler,
+} from "../../../../helpers/submissionHelpers";
 
 const WorkInformationForm = ({ data }) => {
   const [companies, setCompanies] = useState([])
   const [worktypes, setWorktypes] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
   const { locationData } = useContext(Location_data)
 
   let deletedData = [];
@@ -36,6 +37,10 @@ const WorkInformationForm = ({ data }) => {
       .then((res) => setWorktypes(res.data))
       .catch((err) => console.log(err))
   }, [])
+
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data);
+  }
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
@@ -54,9 +59,7 @@ const WorkInformationForm = ({ data }) => {
     return newData
   }
 
-  const onSubmit = async (values) => {
-    //transform data
-    let newData = cloneDeep(values);
+  const transformDataForSubmission = (newData) => {
     newData.work_records = newData.work_records.map((val) => {
       val.visibility = val.visibility ? 1 : 0
       val.is_current = val.is_current ? 1 : 0
@@ -75,14 +78,22 @@ const WorkInformationForm = ({ data }) => {
       splitFields(val, fields_list);
       return val
     });
-    console.log("data")
-    console.log(data)
-    console.log("newData")
-    console.log(newData)
-    const requestObj = createReqObject(data, newData.work_records, deletedData);
+  }
+
+  const onSubmit = async (values) => {
+    let newData = cloneDeep(values);
+    transformDataForSubmission(newData);
+
+    console.log("-------------------------------------------------------------------------------")
+    const requestObj = createReqObject(dataAfterSubmit, newData.work_records, deletedData);
     const url = craftUserUrl(1, "workrecords");
     const responseObj = await submitChanges(url, requestObj);
-    console.log(responseObj)
+    const args = [["department", "position", "work_description"], ["work_type", "company", "country", "city"],[], ["id", "record_date", "user_id"], true]
+    const new_data = submissionHandler(requestObj, responseObj, values, "work_records", args, transformDataForSubmission, transformData, dataAfterSubmit);
+    console.log("newdata", new_data.work_records);
+    transformData(new_data.work_records);
+    applyNewData(new_data.work_records);
+
     deletedData = [];
   }
 
@@ -139,13 +150,13 @@ const WorkInformationForm = ({ data }) => {
                                             onClick={() =>{
                                               arrayHelpers.remove(index);
                                               if(work_record.hasOwnProperty("id"))
-                                                deletedData.push({name: work_record.id, id: work_record.id});
+                                                deletedData.push({name: work_record.id, id: work_record.id, data: work_record});
                                             }}
                                           >
                                             <XCircleFill
                                               size={13}
                                               className={styles.removeIcon}
-                                            />
+                                            />{work_record.id}
                                           </button>
                                         </div>
                                         <div
@@ -169,7 +180,6 @@ const WorkInformationForm = ({ data }) => {
                                             >
                                               <option
                                                 value=''
-                                                disabled
                                                 selected
                                               >
                                                 Select Company
