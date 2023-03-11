@@ -28,7 +28,7 @@ const ProfileWorkSection = ({ work }) => {
                 <p className='m-0' style={{ fontSize: 18, color: 'black' }}>
                   {datum.company_name}
                 </p>
-                <CustomBadge>{datum.position}</CustomBadge>
+                {datum.position && <CustomBadge>{datum.position}</CustomBadge>}
               </div>
               <Container>
                 <div style={{ color: 'black' }}>

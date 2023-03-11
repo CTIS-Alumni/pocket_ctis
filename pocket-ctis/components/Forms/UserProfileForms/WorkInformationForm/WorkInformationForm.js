@@ -41,6 +41,8 @@ const WorkInformationForm = ({ data, setIsUpdated }) => {
       datum.work_type = `${datum.work_type_id}-${datum.type_name}`
       datum.country = `${datum.country_id}-${datum.country_name}`
       datum.city = `${datum.city_id}-${datum.city_name}`
+      datum.department = datum.department ? datum.department : ''
+      datum.position = datum.position ? datum.position : ''
 
       return datum
     })
@@ -93,7 +95,14 @@ const WorkInformationForm = ({ data, setIsUpdated }) => {
                               <button
                                 className={styles.addButton}
                                 type='button'
-                                onClick={() => arrayHelpers.insert(0, '')}
+                                onClick={() =>
+                                  arrayHelpers.insert(0, {
+                                    city: '',
+                                    country: '',
+                                    company: '',
+                                    work_type: '',
+                                  })
+                                }
                               >
                                 <PlusCircleFill size={20} />
                               </button>
