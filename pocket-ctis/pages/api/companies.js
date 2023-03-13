@@ -1,4 +1,4 @@
-import {doquery} from "../../helpers/dbHelpers";
+import {doquery} from "../../helpers/dbconnect.js";
 
 const columns = {
     company_name: "c.company_name",
