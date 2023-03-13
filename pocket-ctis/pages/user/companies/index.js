@@ -8,28 +8,39 @@ import { fetchAllCompanies, fetchCompany } from '../../../helpers/searchHelpers'
 
 const CompaniesDashboard = ({ res }) => {
   const [companies, setCompanies] = useState([])
+  const [total, setTotal] = useState(res.length)
   const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
+    setTotal(res.length)
     setCompanies(res.data)
   }, [])
 
-  const onSearch = ({ searchValue }) => {
-    setIsLoading(true)
-    fetchCompany(searchValue)
-      .then((res) => setCompanies(res.data))
-      .catch((err) => console.log(err))
-      .finally((_) => setIsLoading(false))
-  }
+  // const onSearch = ({ searchValue }) => {
+  //   setIsLoading(true)
+  //   fetchCompany(searchValue)
+  //     .then((res) => setCompanies(res.data))
+  //     .catch((err) => console.log(err))
+  //     .finally((_) => setIsLoading(false))
+  // }
 
   const onQuery = (queryParams) => {
     let queryString = 'http://localhost:3000/api/companies?'
     for (const [key, value] of Object.entries(queryParams)) {
+      if (value == '' || value == null) continue
       queryString += key + '=' + value + '&'
     }
-    console.log(queryString.slice(0, -1))
-    _getFetcher(
-      `http://localhost:3000/api/companies?offset=0&limit=15&order=&column=&search_column=company_name&search=Amazon`
-    ).then((res) => console.log('here', res))
+    // console.log(queryString.slice(0, -1))
+    setIsLoading(true)
+    _getFetcher(queryString.slice(0, -1))
+      .then((res) => {
+        console.log(res.length)
+        setTotal(res.length)
+        setCompanies(res.data)
+      })
+      .finally((_) => setIsLoading(false))
+    // _getFetcher(
+    //   `http://localhost:3000/api/companies?offset=0&limit=15&order=desc&column=company_category&search_column=company_name,company_sector&search=Amazon`
+    // ).then((res) => console.log('here', res))
   }
 
   return (
@@ -39,8 +50,8 @@ const CompaniesDashboard = ({ res }) => {
       <CompaniesList
         companies={companies}
         onQuery={onQuery}
-        onSearch={onSearch}
         isLoading={isLoading}
+        total={total}
       />
     </main>
   )
