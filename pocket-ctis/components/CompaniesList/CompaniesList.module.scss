@@ -98,3 +98,36 @@
         transition: background-color 0.3s linear;
     }
 }
+
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    margin-top: 10px;
+    font-size: 12px;
+
+    span {
+        color: black;
+        float: left;
+        padding: 6px 10px;
+        text-decoration: none;
+        // width: 30px;
+      }
+      
+    span.active {
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 5px;
+      }
+      
+    span:hover:not(.active, .ellipsis) {
+        background-color: #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    select{
+        padding: 0 5px;
+    }
+
+}
