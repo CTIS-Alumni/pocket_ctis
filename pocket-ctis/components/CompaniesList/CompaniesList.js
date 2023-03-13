@@ -37,7 +37,7 @@ const PaginationFooter = ({
   //for initialization
   useEffect(() => {
     setNumPages(Math.ceil(total / limit))
-  }, [limit])
+  }, [limit, total])
   useEffect(() => {
     setCurPage(currentPage)
   }, [currentPage])
