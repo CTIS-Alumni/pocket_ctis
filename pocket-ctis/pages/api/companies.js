@@ -20,7 +20,7 @@ export default async function handler(req, res) {
                 let count_query;
 
 
-                    count_query = "SELECT COUNT(c.id) as count ";
+                    count_query = "SELECT COUNT(*) as count ";
                     query = "SELECT c.id, c.company_name, c.sector_id, s.sector_name, c.is_internship ";
 
                 query += "FROM company c JOIN sector s on (c.sector_id = s.id) ";
@@ -54,15 +54,15 @@ export default async function handler(req, res) {
                         query += "AND ( ";
                     else query += "WHERE ( ";
                     if (count_query.indexOf("WHERE") !== -1)
-                        query += "AND ( ";
-                    else query += "WHERE ( ";
+                        count_query += "AND ( ";
+                    else count_query += "WHERE ( ";
                     searchColumns.forEach(function(column){
                         query += column + " LIKE CONCAT('%', ?, '%') "
                         count_query += column + " LIKE CONCAT('%', ?, '%') ";
                         if(column !== searchColumns[searchColumns.length - 1])
                         {
                             query += "OR ";
-                            count_query += "OR";
+                            count_query += "OR ";
                         }
                         values.push(req.query.search);
                         count_values.push(req.query.search);
@@ -99,7 +99,7 @@ export default async function handler(req, res) {
                 else
                     res.status(200).json({data: data, length: length[0].count});
             }catch(error){
-                res.status(500).json({error: error.message, query: req.query});
+                res.status(500).json({error: error.message});
             }
             break;
         case "POST":
