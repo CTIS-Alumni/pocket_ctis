@@ -37,7 +37,7 @@ const PaginationFooter = ({
   //for initialization
   useEffect(() => {
     setNumPages(Math.ceil(total / limit))
-  }, [limit])
+  }, [limit, total])
   useEffect(() => {
     setCurPage(currentPage)
   }, [currentPage])
@@ -110,7 +110,7 @@ const PaginationFooter = ({
   )
 }
 
-const CompaniesList = ({ companies, onSearch, onQuery, isLoading }) => {
+const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
   const [limit, setLimit] = useState(15)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchString, setSearchString] = useState('')
@@ -118,13 +118,13 @@ const CompaniesList = ({ companies, onSearch, onQuery, isLoading }) => {
 
   const handleSorting = (columnName) => {
     if (sorting.name == columnName) {
-      if (sorting.direction == 'desc') {
-        setSorting({ name: columnName, direction: 'asc' })
+      if (sorting.direction == 'asc') {
+        setSorting({ name: columnName, direction: 'desc' })
       } else {
         setSorting({ name: '', direction: '' })
       }
     } else {
-      setSorting({ name: columnName, direction: 'desc' })
+      setSorting({ name: columnName, direction: 'asc' })
     }
     setCurrentPage(1)
   }
@@ -146,7 +146,8 @@ const CompaniesList = ({ companies, onSearch, onQuery, isLoading }) => {
     queryParams.order = sorting.direction
     queryParams.offset = (currentPage - 1) * limit
     queryParams.limit = limit
-    queryParams.searchString = searchString
+    queryParams.searchcol = 'sector_name,company_name'
+    queryParams.search = searchString
 
     onQuery(queryParams)
   }, [sorting, currentPage, limit, searchString])
@@ -186,7 +187,7 @@ const CompaniesList = ({ companies, onSearch, onQuery, isLoading }) => {
                 <span>Company Name</span>
                 <span style={{ width: 20 }}>
                   {sorting.name == 'company_name' &&
-                    (sorting.direction == 'desc' ? (
+                    (sorting.direction == 'asc' ? (
                       <CaretDownFill />
                     ) : (
                       <CaretUpFill />
@@ -195,14 +196,14 @@ const CompaniesList = ({ companies, onSearch, onQuery, isLoading }) => {
               </div>
             </th>
             <th
-              onClick={() => handleSorting('company_sector')}
+              onClick={() => handleSorting('sector_name')}
               style={{ cursor: 'pointer' }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span>Sector</span>
                 <span style={{ width: 20 }}>
-                  {sorting.name == 'company_sector' &&
-                    (sorting.direction == 'desc' ? (
+                  {sorting.name == 'sector_name' &&
+                    (sorting.direction == 'asc' ? (
                       <CaretDownFill />
                     ) : (
                       <CaretUpFill />
@@ -247,7 +248,7 @@ const CompaniesList = ({ companies, onSearch, onQuery, isLoading }) => {
       </table>
 
       <PaginationFooter
-        total={100}
+        total={total}
         limit={limit}
         changeLimit={handleLimitChange}
         currentPage={currentPage}
