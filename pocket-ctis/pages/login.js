@@ -4,13 +4,12 @@ import { useRouter } from 'next/router'
 import styles from '../styles/login.module.css'
 import { User_data } from '../context/userContext'
 import { useContext } from 'react'
+import {_getFetcher, _submitFetcher} from "../helpers/fetchHelpers";
+import {craftDefaultUrl} from "../helpers/urlHelper";
 
 const requestLogin = async (authCredentials) => {
-  const res = await fetch('http://localhost:3000/api/login', {
-    method: 'POST',
-    body: JSON.stringify(authCredentials),
-  })
-
+  const res = await _submitFetcher("POST", craftDefaultUrl("login"), authCredentials);
+  console.log("this is res", res);
   return res
 }
 
@@ -20,10 +19,9 @@ const Login = () => {
   const router = useRouter()
   const onSubmit = async (values) => {
     const res = await requestLogin(values)
-    if (res.status === 200) {
-      const {data} = await res.json();
-      router.push({ pathname: '/user' })
-
+    if (res.length > 0) {
+      //router.push({ pathname: '/user' })
+      const data = res.data;
       setUserData({
         id: data[0].id,
         first_name: data[0].first_name,

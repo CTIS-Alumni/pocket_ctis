@@ -1,4 +1,16 @@
-import {createPostQueries, createPutQueries, doMultiQueries, doquery} from "../../../../helpers/dbHelpers";
+import {
+    createPostQueries,
+    createPutQueries,
+    doMultiInsertQueries,
+    doMultiQueries,
+    doquery
+} from "../../../../helpers/dbHelpers";
+
+const validation = (data) => {
+    if(data.visibility !== 1 && data.visibility !== 0)
+        return false;
+    return true;
+}
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -26,7 +38,7 @@ export default async function handler(req, res){
                 const base_values = ["user_id", "country_id"];
                 const optional_values = ["city_id", "visibility"];
                 const queries = createPostQueries(location, base_query, base_values, optional_values, user_id);
-                const {data, errors} = await doMultiQueries(queries);
+                const {data, errors} = await doMultiInsertQueries(queries, [], "userlocation", 0, validation);
                 res.status(200).json({data, errors});
             } catch(error){
                 res.status(500).json({error: error.message});
@@ -35,11 +47,11 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const location = JSON.parse(req.body);
-                const base_query = "UPDATE userlocation SET country_id = ?, ";
+                const base_query = "UPDATE userlocation SET country_id = :country_id, ";
                 const base_values = ["country_id"];
                 const optional_values = ["city_id", "visibility"];
                 const queries = createPutQueries(location, base_query, base_values, optional_values);
-                const {data, errors} = await doMultiQueries(queries);
+                const {data, errors} = await doMultiQueries(queries, true);
                 res.status(200).json({data, errors});
             }catch(error){
                 res.status(500).json({error: error.message});

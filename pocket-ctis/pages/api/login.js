@@ -5,7 +5,9 @@ import {compare} from "bcrypt"
 
 
 export default async function (req, res) {
-    const {username, password} = JSON.parse(req.body);
+    //const {username, password} = req.body;
+    const username = "tempusername";
+    const password = "a";
     try {
             const query = "SELECT * FROM usercredential WHERE username = ? ";
             const user = await doquery({query: query, values: [username]});
@@ -18,7 +20,7 @@ export default async function (req, res) {
                             if(err)
                                 res.status(500).json({error: err.message});
                             if(!result)
-                                res.status(401).json({message: "Invalid credentials!"});
+                                res.status(401).json({error: "Invalid credentials!"});
 
                             const access_token = await sign({
                                 user_id: user[0].user_id
@@ -59,7 +61,7 @@ export default async function (req, res) {
                             res.status(200).json({data});
                         });
                     } else {
-                        res.status(401).json({message: "Invalid credentials"});
+                        res.status(401).json({error: "Invalid credentials"});
                     }
                 } catch (error) {
                     res.status(500).json({error: user.error.message});

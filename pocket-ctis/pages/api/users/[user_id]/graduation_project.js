@@ -1,23 +1,8 @@
 import {
-    createGetQueries,
-    createPostQueries,
     createPutQueries,
-    doMultiInsertQueries, doMultiPutQueries,
     doMultiQueries,
     doquery
 } from "../../../../helpers/dbHelpers";
-import  limitPerUser from '../../../../config/moduleConfig.js';
-
-const validation = (data) => {
-    const currentDate = new Date();
-    const examDate = data.start_date ? new Date(data.start_date) : null;
-
-    if(examDate && examDate > currentDate)
-        return false;
-    if(data.visibility !== 0 && data.visibility !== 1)
-        return false;
-    return true;
-}
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -29,9 +14,9 @@ export default async function handler(req, res){
     switch(method){
         case "GET":
             try{
-                const query = "SELECT ue.id, ex.exam_name, ue.grade, ue.visibility " +
-                    "FROM userexam ue JOIN exam ex ON (ue.exam_id = ex.id) " +
-                    "WHERE ue.user_id = ? order by ex.exam_name asc";
+                const query = "SELECT ug.id, ug.graduation_project_id, g.graduation_project_name, ug.project_description, ug.visibility FROM usergraduationproject ug " +
+                "LEFT OUTER JOIN graduationproject g ON (ug.project_id = g.id) " +
+                "WHERE ug.user_id = ? ";
 
                 const data = await doquery({query: query, values: [user_id]});
                 if(data.hasOwnProperty("error"))
@@ -42,35 +27,33 @@ export default async function handler(req, res){
                 res.status(500).json({error: error.message});
             }
             break;
-        case "POST":
+        /*case "POST":
             try{
-                const exams = JSON.parse(req.body);
-                const base_query = "INSERT INTO userexam(user_id, exam_id, grade ";
+                const graduation_project = JSON.parse(req.body);
+                const base_query = "INSERT INTO usergraduationproject(user_id, exam_id, grade ";
                 const base_values = ["user_id", "exam_id", "grade"];
                 const optional_values = ["exam_date","visibility"];
                 const queries = createPostQueries(exams, base_query, base_values, optional_values, user_id);
-                const select_queries = createGetQueries(exams, "userexam", ["exam_id", "exam_date", "grade"], user_id, true);
-                const {data, errors} = await doMultiInsertQueries(queries, select_queries,"userexam", limitPerUser.exams, validation);
+                const {data, errors} = await doMultiInsertQueries(queries, "userexam");
                 res.status(200).json({data, errors});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
-            break;
+            break;*/
         case "PUT":
             try{
-                const exams = JSON.parse(req.body);
-                const base_query = "UPDATE userexam SET exam_id = :exam_id, grade = :grade, ";
-                const base_values = ["exam_id", "grade"];
-                const optional_values = ["exam_date","visibility"];
-                const queries = createPutQueries(exams, base_query, base_values, optional_values);
-                const select_queries = createGetQueries(exams, "userexam", ["exam_id", "exam_date", "grade"], user_id, false);
-                const {data, errors} = await doMultiPutQueries(queries, select_queries, validation);
-                res.status(200).json({data, errors});
+                const graduation_project = JSON.parse(req.body);
+                const base_query = "UPDATE usergraduationproject SET ";
+                const base_values = [];
+                const optional_values = ["graduation_project_description","visibility"];
+                const queries = createPutQueries(graduation_project, base_query, base_values, optional_values);
+                const {data, errors} = await doMultiQueries(queries, true);
+                res.status(200).json({data, errors, queries});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
             break;
-        case "DELETE":
+        /*case "DELETE":
             try{
                 const exams = JSON.parse(req.body);
                 let queries = [];
@@ -87,6 +70,6 @@ export default async function handler(req, res){
             }catch(error){
                 res.status(500).json({error: error.message});
             }
-            break;
+            break;*/
     }
 }

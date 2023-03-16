@@ -1,10 +1,20 @@
 import {
+    createGetQueries,
     createPostQueries,
     createPutQueries,
     doMultiInsertQueries,
     doMultiQueries,
     doquery
 } from "../../../../helpers/dbHelpers";
+import  limitPerUser from '../../../../config/moduleConfig.js';
+
+const validation = async (data) => {
+    if(data.link.trim() == "")
+        return false;
+    if(data.visibility !== 0 && data.visibility !== 1)
+        return false;
+    return true;
+}
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -36,7 +46,8 @@ export default async function handler(req, res){
                 const base_values = ["user_id", "social_media_id", "link"];
                 const optional_values = ["visibility"];
                 const queries = createPostQueries(socials, base_query, base_values, optional_values, user_id);
-                const {data, errors} = await doMultiInsertQueries(queries, "usersocialmedia");
+                const select_queries = createGetQueries(socials, "usersocialmedia", ["social_media_id", "link"], user_id, true, true);
+                const {data, errors} = await doMultiInsertQueries(queries, select_queries,"usersocialmedia", limitPerUser.social_media, validation);
                 res.status(200).json({data, errors});
             } catch(error){
                 res.status(500).json({error: error.message});
@@ -45,11 +56,12 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const socials = JSON.parse(req.body);
-                const base_query = "UPDATE usersocialmedia SET social_media_id = ?, link = ?, ";
+                const base_query = "UPDATE usersocialmedia SET social_media_id = :social_media_id, link = :link, ";
                 const base_values = ["social_media_id", "link"];
                 const optional_values = ["visibility"];
                 const queries = createPutQueries(socials, base_query, base_values, optional_values);
-                const {data, errors} = await doMultiQueries(queries);
+                const select_queries = createGetQueries(socials, "usersocialmedia", ["social_media_id", "link"], user_id, false, true);
+                const {data, errors} = await doMultiQueries(queries, select_queries, validation);
                 res.status(200).json({data, errors});
             }catch(error){
                 res.status(500).json({error: error.message});

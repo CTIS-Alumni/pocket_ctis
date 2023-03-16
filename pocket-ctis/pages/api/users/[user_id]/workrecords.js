@@ -1,10 +1,42 @@
 import {
+    createGetQueries,
     createPostQueries,
     createPutQueries,
-    doMultiInsertQueries,
+    doMultiInsertQueries, doMultiPutQueries,
     doMultiQueries,
     doquery
 } from "../../../../helpers/dbHelpers";
+import  limitPerUser from '../../../../config/moduleConfig.js';
+
+const fields_to_check = [
+    "work_type_id",
+    "company_id",
+    "department",
+    "position",
+    "city_id",
+    "country_id",
+    "start_date",
+    "end_date",
+    "is_current"
+];
+
+const validation = (data) => {
+    const currentDate = new Date();
+    const startDate = data.start_date ? new Date(data.start_date) : null;
+    const endDate = data.end_date ? new Date(data.end_date) : null;
+
+    if (startDate && endDate && startDate > endDate)
+        return false;
+    if((endDate && endDate > currentDate) || (startDate && startDate > currentDate))
+        return false;
+    if(endDate && data.is_current) //if its ongoing it cant have endDate
+        return false;
+    if(data.is_current !== 0 && data.is_current !== 1)
+        return false;
+    if(data.visibility !== 0 && data.visibility !== 1)
+        return false;
+    return true;
+}
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -38,10 +70,10 @@ export default async function handler(req, res){
                 const base_query = "INSERT INTO workrecord(user_id, work_type_id ";
                 const base_values = ["user_id", "work_type_id"];
                 const optional_values = ["company_id","department","position","work_description", "city_id", "country_id", "start_date", "end_date", "visibility", "is_current"];
+                const select_queries = createGetQueries(work_records, "workrecord", fields_to_check, user_id, true);
                 const queries = createPostQueries(work_records, base_query, base_values, optional_values, user_id);
-                const {data, errors} = await doMultiInsertQueries(queries, "workrecord");
-                res.status(200).json({data, errors});
-
+                const {data, errors} = await doMultiInsertQueries(queries, select_queries, "workrecord", limitPerUser.work_records, validation);
+                res.status(200).json({data, errors, queries, select_queries});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
@@ -49,11 +81,12 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const work_records = JSON.parse(req.body);
-                const base_query = "UPDATE workrecord SET work_type_id = ?, ";
+                const base_query = "UPDATE workrecord SET work_type_id = :work_type_id, ";
                 const base_values = ["work_type_id"];
                 const optional_values = ["company_id","department","position","work_description", "city_id", "country_id","start_date", "end_date", "visibility", "is_current"];
                 const queries = createPutQueries(work_records, base_query, base_values, optional_values);
-                const {data, errors} = await doMultiQueries(queries);
+                const select_queries = createGetQueries(work_records, "workrecord", fields_to_check, user_id, false)
+                const {data, errors} = await doMultiPutQueries(queries, select_queries, validation);
                 res.status(200).json({data, errors});
             }catch(error){
                res.status(500).json({error: error.message});

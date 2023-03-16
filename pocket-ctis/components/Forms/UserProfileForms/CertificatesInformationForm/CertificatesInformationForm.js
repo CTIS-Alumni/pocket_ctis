@@ -11,7 +11,7 @@ import {createReqObject} from "../../../../helpers/fetchHelpers";
 import {submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 import {useState} from "react";
-import {replaceWithNull, submissionHandler} from "../../../../helpers/submissionHelpers";
+import {replaceWithNull, submit} from "../../../../helpers/submissionHelpers";
 
 
 const CertificatesInformationForm = ({ data }) => {
@@ -37,6 +37,8 @@ const CertificatesInformationForm = ({ data }) => {
   const transformDataForSubmission = (newData) => {
     newData.certificates = newData.certificates.map((val) => {
       val.visibility = val.visibility ? 1 : 0;
+      val.certificate_name = val.certificate_name ? val.certificate_name : null;
+      val.issuing_authority = val.issuing_authority ? val.issuing_authority : null;
       replaceWithNull(val);
       return val;
     });
@@ -46,14 +48,15 @@ const CertificatesInformationForm = ({ data }) => {
     let newData = cloneDeep(values);
     transformDataForSubmission(newData);
 
-    const requestObj = createReqObject(dataAfterSubmit, transformData(values.certificates), deletedData);
+    const send_to_req = {certificates: cloneDeep(dataAfterSubmit)};
+    transformDataForSubmission(send_to_req);
+    const requestObj = createReqObject(send_to_req.certificates, newData.certificates, deletedData);
     const url = craftUserUrl(1, "certificates");
     const responseObj = await submitChanges(url ,requestObj);
-    const args = [[], [], [], ["id", "user_id"], false];
-    const new_data = submissionHandler(requestObj, responseObj, values, "certificates", args, transformDataForSubmission, transformData, dataAfterSubmit);
-    console.log("newdata", new_data.certificates);
-    transformData(new_data.certificates);
-    applyNewData(new_data.certificates);
+    const args = [[], [], ["id", "user_id"], []];
+    const new_data = submit(requestObj, responseObj, values, "certificates", args, transformDataForSubmission);
+    applyNewData(new_data);
+    console.log("req", requestObj, "res", responseObj);
 
     deletedData = [];
   }
@@ -111,7 +114,7 @@ const CertificatesInformationForm = ({ data }) => {
                                         <XCircleFill
                                           size={13}
                                           className={styles.removeIcon}
-                                        />
+                                        />{certificate.id}
                                       </button>
                                     </div>
                                     <div style={{ flexGrow: '1' }}>

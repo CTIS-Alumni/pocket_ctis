@@ -5,11 +5,12 @@ import styles from './ProfileEditModal.module.css'
 import PersonalInformationForm from '../../Forms/UserProfileForms/PersonalInformationForm/PersonalInformationForm'
 import WorkInformationForm from '../../Forms/UserProfileForms/WorkInformationForm/WorkInformationForm'
 import EducationInformationForm from '../../Forms/UserProfileForms/EducationalInformationForm/EducationalInformationForm'
-import HighSchoolInformationForm from '../../Forms/UserProfileForms/HighSchoolInformationForm/HighSchoolInformationForm'
 import CertificatesInformationForm from '../../Forms/UserProfileForms/CertificatesInformationForm/CertificatesInformationForm'
 import SkillsInformationForm from '../../Forms/UserProfileForms/SkillsInformationForm/SkillsInformationForm'
 import SocietiesInformationForm from '../../Forms/UserProfileForms/SocietiesInformationForm/SocietiesInformationForm'
 import ExamsInformationForm from '../../Forms/UserProfileForms/ExamsInformationForm/ExamsInformationForm'
+import ProjectsInformationForm from "../../Forms/UserProfileForms/ProjectsInformationForm/ProjectsInformationForm";
+import ContactInformationForm from "../../Forms/UserProfileForms/ContactInformationForm/ContactInformationForm";
 
 const ProfileEditModal = ({ user }) => {
   const [show, setShow] = useState(false)
@@ -29,20 +30,29 @@ const ProfileEditModal = ({ user }) => {
     wanted_sectors,
     exams,
     graduation_project,
+    projects
   } = user
   // console.log(user)
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
 
   const personalInfoData = {
-    emails,
-    graduation_project,
-    phone_numbers,
-    socials,
     location,
     career_objective,
     basic_info,
     wanted_sectors,
+    high_school
+  }
+
+  const projectInfoData = {
+    graduation_project,
+    projects
+  }
+
+  const contactInfoData = {
+    emails,
+    phone_numbers,
+    socials
   }
 
   return (
@@ -76,42 +86,48 @@ const ProfileEditModal = ({ user }) => {
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='1'>
+              <Accordion.Header>Contact Information</Accordion.Header>
+              <Accordion.Body style={{ overflowY: 'scroll' }}>
+                <ContactInformationForm data={contactInfoData} />
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey='2'>
               <Accordion.Header>Work Information</Accordion.Header>
               <Accordion.Body>
                 <WorkInformationForm data={work_records} />
               </Accordion.Body>
             </Accordion.Item>
-            <Accordion.Item eventKey='2'>
+            <Accordion.Item eventKey='3'>
               <Accordion.Header>Education Information</Accordion.Header>
               <Accordion.Body>
                 <EducationInformationForm data={edu_records} />
               </Accordion.Body>
             </Accordion.Item>
-            <Accordion.Item eventKey='3'>
-              <Accordion.Header>High School Information</Accordion.Header>
+            <Accordion.Item eventKey='4'>
+              <Accordion.Header>Projects</Accordion.Header>
               <Accordion.Body>
-                <HighSchoolInformationForm data={high_school} />
+                <ProjectsInformationForm data={projectInfoData} />
               </Accordion.Body>
             </Accordion.Item>
-            <Accordion.Item eventKey='4'>
+            <Accordion.Item eventKey='5'>
               <Accordion.Header>Certificates</Accordion.Header>
               <Accordion.Body>
                 <CertificatesInformationForm data={certificates} />
               </Accordion.Body>
             </Accordion.Item>
-            <Accordion.Item eventKey='5'>
+            <Accordion.Item eventKey='6'>
               <Accordion.Header>Skills</Accordion.Header>
               <Accordion.Body>
                 <SkillsInformationForm data={skills} />
               </Accordion.Body>
             </Accordion.Item>
-            <Accordion.Item eventKey='6'>
-              <Accordion.Header>Socieites</Accordion.Header>
+            <Accordion.Item eventKey='7'>
+              <Accordion.Header>Clubs & Societies</Accordion.Header>
               <Accordion.Body>
                 <SocietiesInformationForm data={societies} />
               </Accordion.Body>
             </Accordion.Item>
-            <Accordion.Item eventKey='7'>
+            <Accordion.Item eventKey='8'>
               <Accordion.Header>Exams</Accordion.Header>
               <Accordion.Body>
                 <ExamsInformationForm data={exams} />

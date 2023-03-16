@@ -3,8 +3,8 @@ import { Spinner } from 'react-bootstrap'
 import CompaniesList from '../../../components/CompaniesList/CompaniesList'
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
-import { fetchAllCompanies, fetchCompany } from '../../../helpers/searchHelpers'
-import {_getFetcherTemp} from "../../../helpers/fetchHelpers";
+import {fetchCompany } from '../../../helpers/searchHelpers'
+import {_getFetcherMulti} from "../../../helpers/fetchHelpers";
 
 const CompaniesDashboard = ( res ) => {
   const [companies, setCompanies] = useState([])
@@ -34,7 +34,7 @@ const CompaniesDashboard = ( res ) => {
 }
 
 export async function getServerSideProps() {
-  const results = await _getFetcherTemp(["companies"]);
+  const results = await _getFetcherMulti(["companies"]);
   return { props:  results.companies  }
 }
 

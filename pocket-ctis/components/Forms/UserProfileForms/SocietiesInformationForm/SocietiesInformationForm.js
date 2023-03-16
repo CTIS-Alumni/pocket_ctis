@@ -4,12 +4,12 @@ import {
   EyeFill,
   EyeSlashFill,
   XCircleFill,
-  PlusCircleFill,
+  PlusCircleFill, ToggleOn, ToggleOff,
 } from 'react-bootstrap-icons'
 import {cloneDeep} from 'lodash'
 import { fetchAllSocieties } from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
-import {splitFields, submissionHandler} from "../../../../helpers/submissionHelpers";
+import {replaceWithNull, splitFields, submit} from "../../../../helpers/submissionHelpers";
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 
@@ -19,7 +19,6 @@ const SocietiesInformationForm = ({ data }) => {
 
   useEffect(() => {
     fetchAllSocieties().then((res) => setSocieties(res.data))
-    console.log(dataAfterSubmit);
   }, [])
 
   const applyNewData = (data) => {
@@ -43,57 +42,27 @@ const SocietiesInformationForm = ({ data }) => {
     newData.societies = newData.societies.map((val) => {
       val.visibility = val.visibility ? 1 : 0
       val.activity_status = val.activity_status ? 1 : 0;
+      replaceWithNull(val)
       splitFields(val, ["society"]);
       return val;
     });
   }
 
   const onSubmit = async (values) => {
-    console.log("heres the orihinal data it should look like", data);
     let newData = cloneDeep(values);
-    console.log("heres new data", newData)
     transformDataForSubmission(newData);
-    console.log("heres the newData, it should have no society_name field", newData);
 
-    const requestObj = createReqObject(dataAfterSubmit, newData.societies, deletedData);
+    const send_to_req = {societies: cloneDeep(dataAfterSubmit)};
+    transformDataForSubmission(send_to_req);
+    const requestObj = createReqObject(send_to_req.societies, newData.societies, deletedData);
     const url = craftUserUrl(1, "societies");
     const responseObj = await submitChanges(url ,requestObj);
-    const args = [[], ["society"], [], ["user_id", "id"], false];
-    console.log("req");
-    console.log(requestObj)
-    console.log("res")
-    console.log(responseObj);
-    const new_data = submissionHandler(requestObj, responseObj, values, "societies", args, transformDataForSubmission, transformData, dataAfterSubmit);
-    console.log("heres new_data, this is the that should be sent to the next submission", new_data.societies);
-    transformData(new_data.societies);
-    applyNewData(newData.societies);
+    const args = [["society"], [], ["user_id", "id"], []];
+    const new_data = submit(requestObj, responseObj, values, "societies", args, transformDataForSubmission);
+    applyNewData(new_data);
+    console.log("req,",requestObj, "res", responseObj);
 
-    console.log(responseObj);
     deletedData = [];
-
-   /* requestObj.DELETE.forEach((toDelete)=>{
-      if(!responseObj.DELETE?.data.hasOwnProperty(toDelete.id)){
-        values.societies.push(toDelete.data);
-      }
-    });
-
-    if(requestObj.POST.length > 0){
-      requestObj.POST.forEach((toInsert)=>{
-        const cloned_values = cloneDeep(values);
-        transformDataForSubmission(cloned_values);
-        const index = findIndex(cloned_values.societies, (item) => {
-          return isEqual(item, toInsert);
-        });
-        if(index != -1){
-          const found_in_res = responseObj.POST?.data.find(datum =>
-              isEqualFields(toInsert, datum.inserted, ["department", "position", "work_description"], ["work_type", "company", "country", "city"], ["id", "record_date", "user_id"], true)
-          );
-          if(found_in_res === undefined)
-            values.work_records.splice(index, 1);
-          else values.work_records[index].id = found_in_res.inserted.id;
-        }
-      });
-    }*/
 
   }
 
@@ -175,28 +144,55 @@ const SocietiesInformationForm = ({ data }) => {
                                             <option
                                               value={`${society.id}-${society.society_name}`}
                                             >
-                                              {society.society_name} -{' '}
-                                              {society.description}
+                                              {society.society_name}
                                             </option>
                                           ))}
                                         </Field>
                                       </div>
-                                      <div className={styles.inputContainer}>
-                                        <label className={styles.inputLabel}>
-                                          Activity Status
-                                        </label>
-                                        <Field
-                                          as='select'
-                                          className={styles.inputField}
-                                          id={`societies[${index}]activity_status`}
-                                          name={`societies[${index}]activity_status`}
+                                      <div
+                                          style={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                          }}
+                                      >
+                                        <div
+                                            className={styles.inputContainer}
+                                            style={{ width: '49%' }}
                                         >
-                                          <option disabled selected value=''>
-                                            Please select Activity Status
-                                          </option>
-                                          <option value='1'>Active</option>
-                                          <option value='0'>Inactive</option>
-                                        </Field>
+                                          <Field
+                                              name={`societies[${index}]activity_status`}
+                                              id={`societies[${index}]activity_status`}
+                                          >
+                                            {({ field, form, meta }) => {
+                                              return (
+                                                  <label
+                                                      className={
+                                                        styles.isCurrentCheckbox
+                                                      }
+                                                  >
+                                                    {field.value ? (
+                                                        <ToggleOn
+                                                            size={25}
+                                                            className={
+                                                              styles.isCurrentTrue
+                                                            }
+                                                        />
+                                                    ) : (
+                                                        <ToggleOff size={25} />
+                                                    )}
+                                                    &nbsp; Are you active?
+                                                    <input
+                                                        type='checkbox'
+                                                        {...field}
+                                                        style={{
+                                                          display: 'none',
+                                                        }}
+                                                    />
+                                                  </label>
+                                              )
+                                            }}
+                                          </Field>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>

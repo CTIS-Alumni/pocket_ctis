@@ -17,8 +17,9 @@ export default async function handler(req, res){
                     "JOIN accounttype act ON (act.id = uat.type_id) WHERE u.id = ? GROUP BY u.id";
                 queries.push({name: "basic_info", query: temp, values: [user_id]});
 
-                temp = "SELECT u.graduation_project_id, g.project_name, g.project_year, g.project_description FROM users u " +
-                    "LEFT OUTER JOIN graduationproject g ON (u.graduation_project_id = g.id) WHERE u.id = ?";
+                temp = "SELECT ug.id, ug.graduation_project_id, g.graduation_project_name, g.project_year, g.semester, ug.graduation_project_description, ug.visibility FROM usergraduationproject ug " +
+                    "LEFT OUTER JOIN graduationproject g ON (ug.graduation_project_id = g.id) " +
+                    "WHERE ug.user_id = ? ";
                 queries.push({name: "graduation_project", query: temp, values: [user_id]});
 
                 temp = "SELECT id, career_objective, visibility FROM usercareerobjective WHERE user_id = ?";
@@ -27,6 +28,9 @@ export default async function handler(req, res){
                 temp = "SELECT id, certificate_name, issuing_authority, visibility " +
                     "FROM usercertificate WHERE user_id = ? order by certificate_name asc";
                 queries.push({name: "certificates", query: temp, values: [user_id]});
+
+                temp = "SELECT id, project_name, project_description, visibility FROM userproject WHERE user_id = ? " ;
+                queries.push({name: "projects", query: temp, values: [user_id]});
 
                 temp = "SELECT  id, email_address, visibility FROM useremail WHERE user_id = ? order by email_address asc";
                 queries.push({name: "emails", query: temp, values: [user_id]});
@@ -56,7 +60,7 @@ export default async function handler(req, res){
                     "WHERE us.user_id = ? order by sk.skill_type_id asc ";
                 queries.push({name: "skills", query: temp, values: [user_id]});
 
-                temp = "SELECT usm.id, sm.social_media_name, usm.social_media_id, usm.link, usm.visibility " +
+                temp = "SELECT usm.id, sm.social_media_name, usm.social_media_id, sm.base_link, usm.link, usm.visibility " +
                     "FROM usersocialmedia usm JOIN socialmedia sm ON (usm.social_media_id = sm.id) " +
                     "WHERE usm.user_id = ? order by sm.social_media_name asc ";
                 queries.push({name: "socials", query: temp, values: [user_id]});
@@ -91,7 +95,7 @@ export default async function handler(req, res){
                     "WHERE er.user_id = ?";
                 queries.push({name: "erasmus", query: temp, values: [user_id]});
 
-                temp = "SELECT e.id, e.edu_inst_id, ei.edu_inst_name, e.degree_type_id, d.degree_type_name, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current, " +
+                temp = "SELECT e.id, e.edu_inst_id, ei.edu_inst_name, e.degree_type_id, d.degree_type_name, e.education_description, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current, " +
                     "ci.city_name, ci.id as 'city_id', co.country_name, co.id as 'country_id'  " +
                     "FROM educationrecord e " +
                     "JOIN educationinstitute ei ON (e.edu_inst_id = ei.id)  " +

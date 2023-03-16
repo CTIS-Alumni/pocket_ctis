@@ -19,8 +19,9 @@ import {craftUserUrl} from "../../../../helpers/urlHelper";
 import { Location_data } from '../../../../context/locationContext'
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {
+  convertToIso,
   replaceWithNull,
-  splitFields, submissionHandler,
+  splitFields, submit
 } from "../../../../helpers/submissionHelpers";
 
 const WorkInformationForm = ({ data }) => {
@@ -47,8 +48,8 @@ const WorkInformationForm = ({ data }) => {
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
       datum.is_current = datum.is_current == 1
-      datum.start_date = datum.start_date && new Date(datum.start_date)
-      datum.end_date = datum.end_date && new Date(datum.end_date)
+      datum.start_date = datum.start_date ? new Date(datum.start_date) : null
+      datum.end_date = datum.end_date ? new Date(datum.end_date) : null
       datum.company = `${datum.company_id}-${datum.company_name}`
       datum.work_type = `${datum.work_type_id}-${datum.work_type_name}`
       datum.country = `${datum.country_id}-${datum.country_name}`
@@ -63,19 +64,17 @@ const WorkInformationForm = ({ data }) => {
     newData.work_records = newData.work_records.map((val) => {
       val.visibility = val.visibility ? 1 : 0
       val.is_current = val.is_current ? 1 : 0
+      if(val.is_current && val.end_date)
+        val.end_date = null;
       val.start_date =
-          val.start_date != null ? new Date(val.start_date).toISOString() : null
+          val.start_date != null ? convertToIso(val.start_date) : null;
       val.end_date =
-          (val.end_date != null && val.is_current == 0)  ? new Date(val.end_date).toISOString() : null
-
+          val.end_date != null ? convertToIso(val.end_date) : null;
+      val.department = val.department ? val.department.trim() : null;
+      val.position = val.position ? val.position.trim() : null;
+      val.work_description = val.work_description ? val.work_description.trim() : null;
       replaceWithNull(val);
-      let fields_list = ["work_type"];
-      const splitable_fields = ["company", "city", "country"];
-      splitable_fields.forEach((field) => {
-        if(val.hasOwnProperty(field))
-          fields_list.push(field);
-      });
-      splitFields(val, fields_list);
+      splitFields(val, ["work_type", "company", "city", "country"]);
       return val
     });
   }
@@ -84,15 +83,16 @@ const WorkInformationForm = ({ data }) => {
     let newData = cloneDeep(values);
     transformDataForSubmission(newData);
 
-    console.log("-------------------------------------------------------------------------------")
-    const requestObj = createReqObject(dataAfterSubmit, newData.work_records, deletedData);
+    const args = [["work_type", "company", "country", "city"],[], ["id", "record_date", "user_id"], ["start_date", "end_date"]]
+    const send_to_req = {work_records: cloneDeep(dataAfterSubmit)};
+    transformDataForSubmission(send_to_req);
+    const requestObj = createReqObject(send_to_req.work_records, newData.work_records, deletedData);
     const url = craftUserUrl(1, "workrecords");
     const responseObj = await submitChanges(url, requestObj);
-    const args = [["department", "position", "work_description"], ["work_type", "company", "country", "city"],[], ["id", "record_date", "user_id"], true]
-    const new_data = submissionHandler(requestObj, responseObj, values, "work_records", args, transformDataForSubmission, transformData, dataAfterSubmit);
-    console.log("newdata", new_data.work_records);
-    transformData(new_data.work_records);
-    applyNewData(new_data.work_records);
+
+    const new_data = submit(requestObj, responseObj, values, "work_records", args, transformDataForSubmission);
+    applyNewData(new_data);
+    console.log("req", requestObj, "res", responseObj);
 
     deletedData = [];
   }
@@ -215,24 +215,9 @@ const WorkInformationForm = ({ data }) => {
                                                 id={`work_records[${index}]country`}
                                                 onChange={(event) => {
                                                   props.setFieldValue(`work_records[${index}]city`, '')
-                                                  props.setFieldValue(`work_records[${index}]city_id`, '')
-                                                  props.setFieldValue(`work_records[${index}]city_name`, '')
 
                                                   props.setFieldValue(
-                                                    `work_records[${index}]country_id`,
-                                                    event.target.value.split(
-                                                      '-'
-                                                    )[0]
-                                                  )
-                                                  props.setFieldValue(
-                                                    `work_records[${index}]country_name`,
-                                                    event.target.value.split(
-                                                      '-'
-                                                    )[1]
-                                                  )
-                                                  props.setFieldValue(
-                                                    `work_records[${index}]country`,
-                                                    event.target.value
+                                                    `work_records[${index}]country`, event.target.value
                                                   )
                                                 }}
                                               >
@@ -271,18 +256,6 @@ const WorkInformationForm = ({ data }) => {
                                                   props.setFieldValue(
                                                     `work_records[${index}]city`,
                                                     event.target.value
-                                                  )
-                                                  props.setFieldValue(
-                                                    `work_records[${index}]city_id`,
-                                                    event.target.value.split(
-                                                      '-'
-                                                    )[0]
-                                                  )
-                                                  props.setFieldValue(
-                                                    `work_records[${index}]city_name`,
-                                                    event.target.value.split(
-                                                      '-'
-                                                    )[1]
                                                   )
                                                 }}
                                               >
@@ -354,7 +327,7 @@ const WorkInformationForm = ({ data }) => {
                                               </label>
                                               <Field
                                                 as='select'
-                                                className={styles.inputField}
+                                                 className={styles.inputField}
                                                 name={`work_records[${index}]work_type`}
                                                 id={`work_records[${index}]work_type`}
                                               >

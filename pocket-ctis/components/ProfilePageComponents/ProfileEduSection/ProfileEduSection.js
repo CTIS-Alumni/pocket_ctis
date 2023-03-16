@@ -32,6 +32,7 @@ const ProfileEduSection = ({ edu }) => {
                   {datum.city_name}{datum.city_name && ','} {datum.country_name}
                 </div>}
                 {studyPeriod}
+                <div>{datum.education_description}</div>
               </Container>
             </div>
           )

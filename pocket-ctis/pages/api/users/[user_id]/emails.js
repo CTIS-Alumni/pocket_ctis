@@ -1,10 +1,21 @@
 import {
+    createGetQueries,
     createPostQueries,
     createPutQueries,
-    doMultiInsertQueries,
+    doMultiInsertQueries, doMultiPutQueries,
     doMultiQueries,
     doquery
 } from "../../../../helpers/dbHelpers";
+import  limitPerUser from '../../../../config/moduleConfig.js';
+
+const validation = (data) => {
+    const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!email_regex.test(data.email_address))
+        return false;
+    if(data.visibility !== 0 && data.visibility !== 1)
+        return false;
+    return true;
+}
 
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
@@ -33,7 +44,8 @@ export default async function handler(req, res){
                 const base_values = ["user_id", "email_address"];
                 const optional_values = ["visibility"];
                 const queries = createPostQueries(emails, base_query, base_values, optional_values, user_id);
-                const {data, errors} = await doMultiInsertQueries(queries, "useremail");
+                const select_queries = createGetQueries(emails, "useremail", ["email_address"], user_id, true, true);
+                const {data, errors} = await doMultiInsertQueries(queries, select_queries, "useremail", limitPerUser.emails, validation);
                 res.status(200).json({data, errors});
             }catch(error){
                 res.status(500).json({error: error.message});
@@ -42,11 +54,12 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const emails = JSON.parse(req.body);
-                const base_query = "UPDATE useremail SET email_address = ?, ";
+                const base_query = "UPDATE useremail SET email_address = :email_address, ";
                 const base_values = ["email_address"];
                 const optional_values = ["visibility"];
                 const queries = createPutQueries(emails, base_query, base_values, optional_values);
-                const {data, errors} = await doMultiQueries(queries);
+                const select_queries = createGetQueries(emails, "useremail", ["email_address"] , user_id, false, true);
+                const {data, errors} = await doMultiPutQueries(queries, select_queries, validation);
                 res.status(200).json({data, errors});
             }catch(errors){
                 res.status(500).json({error: error.message});

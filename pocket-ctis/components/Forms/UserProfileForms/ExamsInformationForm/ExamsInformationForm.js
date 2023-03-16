@@ -10,9 +10,20 @@ import {
   PlusCircleFill,
 } from 'react-bootstrap-icons'
 import DatePickerField from '../../../DatePickers/DatePicker'
+import {
+  convertToIso,
+  replaceWithNull,
+  splitFields,
+  submit
+} from "../../../../helpers/submissionHelpers";
+import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUserUrl} from "../../../../helpers/urlHelper";
 
 const ExamsInformationForm = ({ data }) => {
-  const [examTypes, setExamTypes] = useState([])
+  const [examTypes, setExamTypes] = useState([]);
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
+
+  let deletedData = [];
 
   useEffect(() => {
     fetchAllExams().then((res) =>
@@ -27,32 +38,56 @@ const ExamsInformationForm = ({ data }) => {
     )
   }, [])
 
-  const onSubmitHandler = (values) => {
-    console.log('here', values)
-
-    for (const datum of values.exams) {
-      //transform fields here if needed
-      datum.visibility = datum?.visibility ? 1 : 0
-    }
-    console.log(values)
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data);
   }
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
+      replaceWithNull(datum);
       datum.visibility = datum.visibility == 1
       datum.exam = `${datum.exam_id}-${datum.exam_name}`
       datum.exam_date = datum.exam_date ? new Date(datum.exam_date) : null
       return datum
-    })
+    });
     return newData
+  }
+
+  const transformDataForSubmission = (newData) => {
+    newData.exams = newData.exams.map((val) => {
+      val.visibility = val.visibility ? 1 : 0;
+      val.exam_date =
+          val.exam_date != null ? convertToIso(val.exam_date) : null;
+      val.grade = val.grade ? val.grade : null;
+      replaceWithNull(val);
+        splitFields(val, ["exam"]);
+      return val;
+    });
+  }
+
+  const onSubmit = async (values) => {
+    let newData = cloneDeep(values);
+    transformDataForSubmission(newData);
+    const args = [["exam"], [], ["id", "user_id"], ["exam_date"]];
+    const send_to_req = {exams: cloneDeep(dataAfterSubmit)};
+    transformDataForSubmission(send_to_req);
+    const requestObj = createReqObject(send_to_req.exams, newData.exams, deletedData, args[4]);
+    const url = craftUserUrl(1, "exams");
+    const responseObj = await submitChanges(url, requestObj);
+
+    const new_data = submit(requestObj, responseObj, values, "exams", args, transformDataForSubmission);
+    applyNewData(new_data);
+    console.log("req, ",requestObj, "res", responseObj);
+
+    deletedData = [];
   }
 
   return (
     <Formik
       initialValues={{ exams: transformData(data) }}
       enableReinitialize
-      onSubmit={onSubmitHandler}
+      onSubmit={onSubmit}
     >
       {(props) => (
         <Form>
@@ -91,14 +126,16 @@ const ExamsInformationForm = ({ data }) => {
                                       <button
                                         className={styles.removeBtn}
                                         type='button'
-                                        onClick={() =>
-                                          arrayHelpers.remove(index)
-                                        }
+                                        onClick={() =>{
+                                          arrayHelpers.remove(index);
+                                          if(exam.hasOwnProperty("id"))
+                                            deletedData.push({name: exam.id, id: exam.id, data: exam});
+                                        }}
                                       >
                                         <XCircleFill
                                           size={13}
                                           className={styles.removeIcon}
-                                        />
+                                        />{exam.id}
                                       </button>
                                     </div>
                                     <div style={{ flexGrow: '1' }}>
@@ -111,21 +148,6 @@ const ExamsInformationForm = ({ data }) => {
                                           className={styles.inputField}
                                           id={`exams[${index}]exam`}
                                           name={`exams[${index}]exam`}
-                                          onChange={(event) => {
-                                            const val = event.target.value
-                                            props.setFieldValue(
-                                              `exams[${index}]exam`,
-                                              val
-                                            )
-                                            props.setFieldValue(
-                                              `exams[${index}]exam_name`,
-                                              val.split('-')[1]
-                                            )
-                                            props.setFieldValue(
-                                              `exams[${index}]exam_id`,
-                                              val.split('-')[0]
-                                            )
-                                          }}
                                         >
                                           <option disabled selected value=''>
                                             Please Select Exam type
@@ -155,7 +177,6 @@ const ExamsInformationForm = ({ data }) => {
                                             Exam Score
                                           </label>
                                           <Field
-                                            type='number'
                                             className={styles.inputField}
                                             id={`exams[${index}]grade`}
                                             name={`exams[${index}]grade`}

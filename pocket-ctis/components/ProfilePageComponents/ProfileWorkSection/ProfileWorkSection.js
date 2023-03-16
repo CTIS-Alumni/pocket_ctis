@@ -25,9 +25,9 @@ const ProfileWorkSection = ({ work }) => {
               key={i}
             >
               <div className='mb-1 d-flex justify-content-between align-items-center'>
-                <p className='m-0' style={{ fontSize: 18, color: 'black' }}>
+                {datum.company_name && <p className='m-0' style={{ fontSize: 18, color: 'black' }}>
                   {datum.company_name}
-                </p>
+                </p>}
                 {datum.position && <CustomBadge>{datum.position}</CustomBadge>}
               </div>
               <Container>

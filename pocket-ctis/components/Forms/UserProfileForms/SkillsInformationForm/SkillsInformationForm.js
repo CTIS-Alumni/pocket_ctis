@@ -13,7 +13,7 @@ import {
 } from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {replaceWithNull, splitFields, submissionHandler} from "../../../../helpers/submissionHelpers";
+import {replaceWithNull, splitFields, submit} from "../../../../helpers/submissionHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 
 const SkillsInformationForm = ({ data }) => {
@@ -46,7 +46,8 @@ const SkillsInformationForm = ({ data }) => {
 
   const transformDataForSubmission = (newData) => {
     newData.skills = newData.skills.map((val) => {
-      val.visibility = val.visibility ? 1 : 0
+      val.visibility = val.visibility ? 1 : 0;
+      val.skill_level = val.skill_level ? val.skill_level.trim() : null;
       replaceWithNull(val);
       splitFields(val, ["skill_type", "skill"]);
       return val;
@@ -57,14 +58,15 @@ const SkillsInformationForm = ({ data }) => {
     let newData = cloneDeep(values);
     transformDataForSubmission(newData);
 
-    const requestObj = createReqObject(dataAfterSubmit, newData.skills, deletedData);
+    const send_to_req = {skills: cloneDeep(dataAfterSubmit)};
+    transformDataForSubmission(send_to_req);
+    const requestObj = createReqObject(send_to_req.skills, newData.skills, deletedData);
     const url = craftUserUrl(1, "skills");
     const responseObj = await submitChanges(url, requestObj);
-
-    const args = [["skill_level"], ["skill_type", "skill"], ["skill_type_id"], ["id", "user_id"], false];
-    const new_data = submissionHandler(requestObj, responseObj, values, "skills", args, transformDataForSubmission, transformData, dataAfterSubmit);
-    transformData(new_data.skills);
-    applyNewData(new_data.skills);
+    const args = [["skill_type", "skill"], ["skill_type_id"], ["id", "user_id"], []];
+    const new_data = submit(requestObj, responseObj, values, "skills", args, transformDataForSubmission);
+    applyNewData(new_data);
+    console.log("req",requestObj, "res",responseObj);
 
     deletedData = [];
   }

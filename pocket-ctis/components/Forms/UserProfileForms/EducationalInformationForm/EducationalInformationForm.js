@@ -9,7 +9,7 @@ import {
   ToggleOn,
   XCircleFill,
 } from 'react-bootstrap-icons'
-import { useEffect, useState, useContext } from 'react'
+import { useEffect, useState } from 'react'
 import {
   fetchAllDegreeTypes,
   fetchAllEducationInstitutes,
@@ -17,25 +17,31 @@ import {
 import DatePickerField from '../../../DatePickers/DatePicker'
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
-import {replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
+import {convertToIso, replaceWithNull, splitFields, submit} from "../../../../helpers/submissionHelpers";
 
 const EducationInformationForm = ({ data }) => {
-  let deletedData = [];
   const [eduInsts, setEduInsts] = useState([])
   const [degreeTypes, setDegreeTypes] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
   useEffect(() => {
     fetchAllEducationInstitutes().then((res) => setEduInsts(res.data))
     fetchAllDegreeTypes().then((res) => setDegreeTypes(res.data))
   }, [])
 
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data);
+  }
+
+  let deletedData = [];
+
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
       datum.edu_inst = `${datum.edu_inst_id}-${datum.edu_inst_name}`
-      datum.start_date = datum.start_date && new Date(datum.start_date)
-      datum.end_date = datum.end_date && new Date(datum.end_date)
+      datum.start_date = datum.start_date ? new Date(datum.start_date) : null
+      datum.end_date = datum.end_date ? new Date(datum.end_date) : null
       datum.degree_type = `${datum.degree_type_id}-${datum.degree_type_name}`
       datum.is_current = datum.is_current == 1
 
@@ -44,25 +50,38 @@ const EducationInformationForm = ({ data }) => {
     return newData
   }
 
-  const onSubmit = async (values) => {
-    //transform data
-    let newData = cloneDeep(values)
+  const transformDataForSubmission = (newData) => {
     newData.edu_records = newData.edu_records.map((val) => {
       val.visibility = val.visibility ? 1 : 0
       val.is_current = val.is_current ? 1 : 0
+      if(val.is_current && val.end_date)
+        val.end_date = null;
       val.start_date =
-        val.start_date != null ? new Date(val.start_date).toISOString() : null
+          val.start_date != null ? convertToIso(val.start_date) : null;
       val.end_date =
-          (val.end_date != null && val.is_current == 0) ? new Date(val.end_date).toISOString() : null
+          val.end_date != null ? convertToIso(val.end_date) : null;
+      val.name_of_program = val.name_of_program ? val.name_of_program : null;
+      val.education_description = val.education_description ? val.education_description : null;
       replaceWithNull(val);
       splitFields(val, ["edu_inst", "degree_type"])
       return val
     });
+  }
 
-    const requestObj = createReqObject(data, newData.edu_records, deletedData);
+  const onSubmit = async (values) => {
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData);
+
+    const args = [["edu_inst", "degree_type"], [], ["id", "record_date", "user_id"], ["start_date", "end_date"]];
+    const send_to_req = {edu_records : cloneDeep(dataAfterSubmit)};
+    transformDataForSubmission(send_to_req);
+    const requestObj = createReqObject(send_to_req.edu_records, newData.edu_records, deletedData);
     const url = craftUserUrl(1, "educationrecords");
     const responseObj = await submitChanges(url ,requestObj);
-    console.log(responseObj);
+    const new_data = submit(requestObj, responseObj, values, "edu_records", args, transformDataForSubmission);
+    applyNewData(new_data);
+    console.log("req:", requestObj, "res", responseObj);
+
     deletedData = [];
   }
 
@@ -124,7 +143,7 @@ const EducationInformationForm = ({ data }) => {
                                           <XCircleFill
                                             size={13}
                                             className={styles.removeIcon}
-                                          />
+                                          />{edu_record.id}
                                         </button>
                                       </div>
                                       <div style={{ flexGrow: '1' }}>
@@ -288,6 +307,22 @@ const EducationInformationForm = ({ data }) => {
                                               }}
                                             </Field>
                                           </div>
+                                        </div>
+                                        <div
+                                            className={styles.inputContainer}
+                                        >
+                                          <label
+                                              className={styles.inputLabel}
+                                          >
+                                            Education description
+                                          </label>
+                                          <Field
+                                              as='textarea'
+                                              rows={5}
+                                              className={styles.inputField}
+                                              name={`edu_records[${index}]education_description`}
+                                              id={`edu_records[${index}]education_description`}
+                                          />
                                         </div>
                                       </div>
                                     </div>

@@ -6,6 +6,12 @@ import {
     doquery
 } from "../../../../helpers/dbHelpers";
 
+const validation = (data) => {
+    if(data.visibility !== 1 && data.visibility !== 0)
+        return false;
+    return true;
+}
+
 export default async function handler(req, res){
     const api_key = req.headers['x-api-key'];
     if(api_key === undefined || api_key !== process.env.API_KEY){
@@ -34,7 +40,7 @@ export default async function handler(req, res){
                 const base_values = ["user_id", "high_school_id"];
                 const optional_values = ["visibility"];
                 const queries = createPostQueries(high_schools, base_query, base_values, optional_values, user_id);
-                const {data, errors} = await doMultiInsertQueries(queries, "userhighschool");
+                const {data, errors} = await doMultiInsertQueries(queries, [], "userhighschool", 0, validation );
                 res.status(200).json({data, errors});
 
             }catch(error){
@@ -44,11 +50,11 @@ export default async function handler(req, res){
         case "PUT":
             try{
                 const high_schools = JSON.parse(req.body);
-                const base_query = "UPDATE userhighschool SET high_school_id = ?, "
+                const base_query = "UPDATE userhighschool SET high_school_id = :high_school_id, "
                 const base_values = ["high_school_id"];
                 const optional_values = ["visibility"];
                 const queries = createPutQueries(high_schools, base_query, base_values, optional_values);
-               const {data, errors} = await doMultiQueries(queries);
+               const {data, errors} = await doMultiQueries(queries, true);
                res.status(200).json({data, errors});
 
             }catch(error){
@@ -59,7 +65,7 @@ export default async function handler(req, res){
             try{
                 const high_schools = JSON.parse(req.body);
                 let queries = [];
-                const tempQuery = "DELETE ighschool WHERE id = ?"
+                const tempQuery = "DELETE FROM userhighschool WHERE id = ?"
                 high_schools.forEach((hs) => {
                     queries.push({
                         name: hs.id,

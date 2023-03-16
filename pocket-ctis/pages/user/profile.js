@@ -52,6 +52,7 @@ const Profile = ({ user, errors }) => {
     career_objective,
     high_school,
     graduation_project,
+    projects,
     basic_info,
     exams,
   } = user
@@ -145,7 +146,7 @@ const Profile = ({ user, errors }) => {
                   <Tab eventKey='internship' title='Internship'>
                     <ProfileInternshipSection internships={internships} />
                   </Tab>
-                  <Tab eventKey='graduationProject' title='Graduation Project'>
+                  <Tab eventKey='graduation_project' title='Graduation Project'>
                     <GraduationProjectSection
                       graduationProject={graduation_project}
                     />
