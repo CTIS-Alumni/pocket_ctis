@@ -24,7 +24,7 @@ export const refreshToken = async (refresh_token, secret) => {
         const {payload} = await verify(refresh_token, secret);
         const access_token = await sign({user_id: payload.user_id}, process.env.ACCESS_SECRET, 60*7);
 
-        const serialCookie = serialize("PocketCTISJWT", access_token, {
+        const serialCookie = serialize("AccessJWT", access_token, {
             httpOnly: true,
             secure: process.env.NODE_ENV !== "development",
             sameSite: "strict",

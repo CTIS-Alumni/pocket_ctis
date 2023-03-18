@@ -1,17 +1,14 @@
 import {doquery} from "../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
-    const api_key = req.headers['x-api-key'];
-    if(api_key === undefined || api_key !== process.env.API_KEY){
-        res.status(401).json({message: "Unauthorized user!"});
-    }
+    
     const { user_id } = req.query;
     const method = req.method;
     switch(method){
         case "GET":
             try{
                 const query = "SELECT u.id, GROUP_CONCAT(act.type_name) as 'user_types', u.first_name, u.nee, u.last_name, u.gender," +
-                    "u.is_retired, u.profile_completion, u.graduation_project_id, g.project_name, g.project_year, g.project_description, u.is_active FROM users u " +
+                    "u.is_retired, u.graduation_project_id, g.project_name, g.project_year, g.project_description, u.is_active FROM users u " +
                     "JOIN useraccounttype uat ON (uat.user_id = u.id) " +
                     "JOIN accounttype act ON (act.id = uat.type_id) " +
                     "LEFT OUTER JOIN graduationproject g ON (u.graduation_project_id = g.id) " +

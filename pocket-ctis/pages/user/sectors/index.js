@@ -2,19 +2,20 @@ import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import SectorsList from '../../../components/SectorsList/SectorsList'
 import { useEffect, useState } from 'react'
-import { fetchAllSectors, fetchSectors } from '../../../helpers/searchHelpers'
+import {_getFetcher} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
-const SectorsDashboard = ({ data }) => {
+const SectorsDashboard = ({ res }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [sectors, setSectors] = useState([])
 
   useEffect(() => {
-    setSectors(data.data)
+    setSectors(res.data)
   }, [])
 
   const onSearch = ({ searchValue }) => {
     setIsLoading(true)
-    fetchSectors(searchValue)
+    _getFetcher(craftUrl("sectors", [{name: "name", value: searchValue}]))
       .then((res) => setSectors(res.data))
       .catch((err) => console.log(err))
       .finally((_) => setIsLoading(false))
@@ -33,9 +34,11 @@ const SectorsDashboard = ({ data }) => {
   )
 }
 
-export async function getServerSideProps() {
-  const res = await fetchAllSectors()
-  return { props: { data: res } }
+export async function getServerSideProps(context) {
+    const {cookies} = context.req;
+    const token = cookies.AccessJWT;
+  const res = await _getFetcher(craftUrl("sectors"), token);
+  return { props: { res: res } }
 }
 
 export default SectorsDashboard

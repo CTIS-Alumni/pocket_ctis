@@ -6,7 +6,6 @@ import { GeoAltFill } from 'react-bootstrap-icons'
 const ProfileWorkSection = ({ work }) => {
   return (
     <div>
-      {/* <SectionHeading title='Work' /> */}
         {work.length > 0 && <Container style={{ height: 300, oveflowY: 'scroll' }}>
         {work.map((datum, i) => {
           const workPeriod = getTimePeriod(
@@ -25,9 +24,12 @@ const ProfileWorkSection = ({ work }) => {
               key={i}
             >
               <div className='mb-1 d-flex justify-content-between align-items-center'>
-                {datum.company_name && <p className='m-0' style={{ fontSize: 18, color: 'black' }}>
+                {datum.company_name ? <p className='m-0' style={{ fontSize: 18, color: 'black' }}>
                   {datum.company_name}
-                </p>}
+                </p> : datum.work_type_name === "Freelance" ?
+                    <p className='m-0' style={{ fontSize: 18, color: 'black' }}>
+                  Freelance
+                </p> : ""}
                 {datum.position && <CustomBadge>{datum.position}</CustomBadge>}
               </div>
               <Container>
@@ -38,7 +40,7 @@ const ProfileWorkSection = ({ work }) => {
                   <GeoAltFill />
                   {datum.city_name}{datum.city_name && ','} {datum.country_name}
                 </div>}
-                <div>{datum.work_type_name}</div>
+                <div>{datum.work_type_name === "Freelance" && !datum.company_name ? "" : datum.work_type_name}</div>
                 <div>{workPeriod}</div>
                 <div>{datum.work_description}</div>
               </Container>

@@ -8,7 +8,7 @@ export default async function middleware(req){
     let jwt;
     let refresh;
     all_cookies.forEach((cookie)=>{
-        if(cookie.name === "PocketCTISJWT"){
+        if(cookie.name === "AccessJWT"){
             jwt = cookie.value.split(";")[0];
         }
 
@@ -44,4 +44,12 @@ export default async function middleware(req){
         }
 
     }
+}
+
+export function setCORS(req, res, next){
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept');
+    next();
 }

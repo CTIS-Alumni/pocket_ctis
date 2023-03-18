@@ -13,10 +13,10 @@ import {
 } from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {replaceWithNull, splitFields, submit} from "../../../../helpers/submissionHelpers";
+import {replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 
-const SkillsInformationForm = ({ data }) => {
+const SkillsInformationForm = ({ data , user_id}) => {
   const [skillType, setSkillType] = useState([])
   const [skills, setSkills] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
@@ -61,10 +61,10 @@ const SkillsInformationForm = ({ data }) => {
     const send_to_req = {skills: cloneDeep(dataAfterSubmit)};
     transformDataForSubmission(send_to_req);
     const requestObj = createReqObject(send_to_req.skills, newData.skills, deletedData);
-    const url = craftUserUrl(1, "skills");
+    const url = craftUserUrl(user_id, "skills");
     const responseObj = await submitChanges(url, requestObj);
     const args = [["skill_type", "skill"], ["skill_type_id"], ["id", "user_id"], []];
-    const new_data = submit(requestObj, responseObj, values, "skills", args, transformDataForSubmission);
+    const new_data = handleResponse(requestObj, responseObj, values, "skills", args, transformDataForSubmission);
     applyNewData(new_data);
     console.log("req",requestObj, "res",responseObj);
 
@@ -203,11 +203,31 @@ const SkillsInformationForm = ({ data }) => {
                                             Skill Level
                                           </label>
                                           <Field
-                                            type='number'
-                                            className={styles.inputField}
-                                            id={`skills[${index}]skill_level`}
-                                            name={`skills[${index}]skill_level`}
-                                          />
+                                              as='select'
+                                              className={styles.inputField}
+                                              id={`skills[${index}]skill_level`}
+                                              name={`skills[${index}]skill_level`}
+                                              disabled={!skill.skill_type || !skill.skill}
+                                          >
+                                            <option selected disabled value=''>
+                                              Please select your skill level
+                                            </option>
+                                            <option value={1}>
+                                              Beginner
+                                            </option>
+                                            <option value={2}>
+                                              Intermediate
+                                            </option>
+                                            <option value={3}>
+                                              Competent
+                                            </option>
+                                            <option value={4}>
+                                              Proficient
+                                            </option>
+                                            <option value={5}>
+                                              Expert
+                                            </option>
+                                          </Field>
                                         </div>
                                       </div>
                                     </div>

@@ -11,10 +11,10 @@ import {createReqObject} from "../../../../helpers/fetchHelpers";
 import {submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 import {useState} from "react";
-import {replaceWithNull, submit} from "../../../../helpers/submissionHelpers";
+import {replaceWithNull, handleResponse} from "../../../../helpers/submissionHelpers";
 
 
-const CertificatesInformationForm = ({ data }) => {
+const CertificatesInformationForm = ({ data ,user_id}) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
   const applyNewData = (data) => {
@@ -51,10 +51,10 @@ const CertificatesInformationForm = ({ data }) => {
     const send_to_req = {certificates: cloneDeep(dataAfterSubmit)};
     transformDataForSubmission(send_to_req);
     const requestObj = createReqObject(send_to_req.certificates, newData.certificates, deletedData);
-    const url = craftUserUrl(1, "certificates");
+    const url = craftUserUrl(user_id, "certificates");
     const responseObj = await submitChanges(url ,requestObj);
     const args = [[], [], ["id", "user_id"], []];
-    const new_data = submit(requestObj, responseObj, values, "certificates", args, transformDataForSubmission);
+    const new_data = handleResponse(requestObj, responseObj, values, "certificates", args, transformDataForSubmission);
     applyNewData(new_data);
     console.log("req", requestObj, "res", responseObj);
 

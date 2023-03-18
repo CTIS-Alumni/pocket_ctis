@@ -47,7 +47,7 @@ const UserInfoSidebar = () => {
       <UserImage />
       <UserInfo />
       <div className={styles.sidebar_buttons}>
-        <Button text='Profile' href='/user/profile' icon={<PersonFill />} />
+        <Button text='Profile' href='/user/1' icon={<PersonFill />} />
         <hr className={styles.sidebar_divider} />
         <Button text='Users' icon={<PersonLinesFill />} />
         <hr className={styles.sidebar_divider} />

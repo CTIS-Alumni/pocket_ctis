@@ -5,7 +5,7 @@ const SkillsSection = ({ skills }) => {
   return (
     <div>
       <SectionHeading title='Skills' />
-      <Container>
+        {skills.length > 0 && <Container>
         {skills.map((skill, i) => {
           return (
             <div className='my-1' key={i}>
@@ -16,7 +16,15 @@ const SkillsSection = ({ skills }) => {
             </div>
           )
         })}
-      </Container>
+      </Container>}
+        {skills.length == 0 &&
+            <Container
+                className='px-0'
+                style={{ height: 50, width: 350, color: '#999' }}
+            >
+                No data available
+            </Container>
+        }
     </div>
   )
 }

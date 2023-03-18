@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from 'react'
-import { fetchAllCities } from '../helpers/searchHelpers'
+import {_getFetcher} from "../helpers/fetchHelpers";
+import {craftUrl} from "../helpers/urlHelper";
 
 export const Location_data = createContext(null)
 
@@ -8,7 +9,7 @@ function LocationContext({ children }) {
 
   useEffect(() => {
     let data = {}
-    fetchAllCities().then((res) => {
+    _getFetcher(craftUrl("cities")).then((res) => {
       res.data.forEach((city) => {
         if (`${city.country_id}-${city.country_name}` in data) {
           data[`${city.country_id}-${city.country_name}`].push(

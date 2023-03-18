@@ -213,11 +213,6 @@ export const fetchErasmusRecords = async () => {
 export const fetchProfile = async (id) => {
   const res = await fetch(
     'http://localhost:3000/api/users/' + id + '/profile',
-    {
-      headers: {
-        'x-api-key': 'SOMESECRETKEYWENEEDTOPUTHERE',
-      },
-    }
   )
   const { data, errors } = await res.json()
   return { data, errors }

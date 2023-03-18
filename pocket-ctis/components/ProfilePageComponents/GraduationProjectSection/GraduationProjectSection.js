@@ -3,6 +3,16 @@ import React from 'react'
 import { Container } from 'react-bootstrap'
 
 const GraduationProjectSection = ({ graduationProject }) => {
+    if (graduationProject.length == 0) {
+        return (
+            <Container
+                className='px-0'
+                style={{ height: 50, width: 350, color: '#999' }}
+            >
+                No data available
+            </Container>
+        )
+    }
   return (
     <div>
       <Container

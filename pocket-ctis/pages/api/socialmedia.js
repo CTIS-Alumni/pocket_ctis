@@ -1,24 +1,26 @@
 import {doquery} from "../../helpers/dbHelpers";
+import {checkAuth} from "../../helpers/authHelper";
 
 export default async function handler(req, res){
-    const api_key = req.headers['x-api-key'];
-    if(api_key === undefined || api_key !== process.env.API_KEY){
-        res.status(401).json({message: "Unauthorized user!"});
-    }
-    const method = req.method;
-    switch(method){
-        case "GET":
-            try{
-                const query = "SELECT * FROM socialmedia order by social_media_name asc";
+    const auth_success = await checkAuth(req.headers, req.query);
+    if (auth_success.user) {
+        const method = req.method;
+        switch (method) {
+            case "GET":
+                try {
+                    const query = "SELECT * FROM socialmedia order by social_media_name asc";
 
-                const data = await doquery({query: query});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
-            }catch(error){
-                res.status(500).json({error: error.message});
-            }
-            break;
+                    const data = await doquery({query: query});
+                    if (data.hasOwnProperty("error"))
+                        res.status(500).json({error: data.error.message});
+                    else
+                        res.status(200).json({data});
+                } catch (error) {
+                    res.status(500).json({error: error.message});
+                }
+                break;
+        }
+    }else {
+        res.status(500).json({error: auth_success.error});
     }
 }

@@ -1,10 +1,7 @@
-import {doquery} from "../../helpers/dbHelpers";
+import {addCondition, doquery} from "../../helpers/dbHelpers";
 
 export default async function handler(req, res){
-    const api_key = req.headers['x-api-key'];
-    if(api_key === undefined || api_key !== process.env.API_KEY){
-        res.status(401).json({message: "Unauthorized user!"});
-    }
+    
     const method = req.method;
     switch(method){
         case "GET":
@@ -20,19 +17,15 @@ export default async function handler(req, res){
                     values.push(req.query.erasmus);
                 }
                 if(req.query.name){ //for the general search
-                    if(query.indexOf("WHERE") !== -1)//if there is "WHERE"
-                        query += "AND ei.edu_inst_name LIKE CONCAT('%', ?, '%') "
-                    else query += "WHERE ei.edu_inst_name LIKE CONCAT('%', ?, '%') ";
+                    query += addCondition(query, " ei.edu_inst_name LIKE CONCAT('%', ?, '%') ")
                     values.push(req.query.name);
                 }
                 if(req.query.location){ //TEST
-                    if(query.indexOf("WHERE") !== -1)//if there is "WHERE"
-                        query += "AND ci.id = ? "
-                    else query += "WHERE ci.id = ? ";
+                    query += addCondition(query, " ci.id = ? ");
                     values.push(req.query.location);
                 }
 
-                query +="order by ei.edu_inst_name asc";
+                query +="ORDER BY ei.edu_inst_name ASC";
 
                 const data = await doquery({query:query, values: values});
                 if(data.hasOwnProperty("error"))

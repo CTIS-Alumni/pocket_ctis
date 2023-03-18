@@ -13,28 +13,32 @@ import {
   fetchGraduationproject,
 } from '../../../helpers/searchHelpers'
 import styles from "../../../components/UserInfoSidebar/UserInfoSidebar.module.scss";
+import {_getFetcherMultiple} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const getData = async (search) => {
-  const [companies, eduInsts, gradProjects, users, highSchools] =
-    await Promise.all([
-      fetchCompany(search),
-      fetchEducationInstitutes(search),
-      fetchGraduationproject(search),
-      fetchUsers(search),
-      fetchHighSchools(search),
-    ])
+  const {companies, eduInsts, gradProjects, users, highSchools} = await _getFetcherMultiple({
+    companies: craftUrl("companies", [{name: "name", value: search}]),
+    eduInsts: craftUrl("educationinstitutes", [{name: "name", value: search}]),
+    gradProjects: craftUrl("graduationprojects", [{name: "name", value: search}]),
+    users: craftUrl("users", [{name: "name", value: search}]),
+    highSchools: craftUrl("highschools", [{name: "name", value: search}]),
+  });
+
+  console.log(companies, eduInsts, gradProjects, users, highSchools);
   return { companies, eduInsts, gradProjects, users, highSchools }
 }
+
 
 const SearchDataList = ({ searchData }) => {
   const { users, companies, eduInsts, gradProjects, highSchools } = searchData
   return (
     <div className='mt-2'>
-      {users.length > 0 && (
+      {users.data.length > 0 && (
         <div>
           <h5>Users</h5>
           <ListGroup>
-            {users.map((user) => (
+            {users.data.map((user) => (
               <ListGroupItem key={user.id}>
                 <Link
                   href={`/user`}
@@ -57,11 +61,11 @@ const SearchDataList = ({ searchData }) => {
           <hr style={{ width: '80%' }} className='mx-auto' />
         </div>
       )}
-      {companies.length > 0 && (
+      {companies.data.length > 0 && (
         <div>
           <h5>Companies</h5>
           <ListGroup>
-            {companies.map((company) => (
+            {companies.data.map((company) => (
               <ListGroupItem key={company.id}>
                 <Link
                   href={`/user/companies/${company.id}`}
@@ -85,11 +89,11 @@ const SearchDataList = ({ searchData }) => {
           <hr style={{ width: '80%' }} className='mx-auto' />
         </div>
       )}
-      {highSchools.length > 0 && (
+      {highSchools.data.length > 0 && (
         <div>
           <h5>High Schools</h5>
           <ListGroup>
-            {highSchools.map((highSchool) => (
+            {highSchools.data.map((highSchool) => (
               <ListGroupItem key={highSchool.id}>
                 <Link
                   href={`/user/hishSchools/${highSchool.id}`}
@@ -110,11 +114,11 @@ const SearchDataList = ({ searchData }) => {
           <hr style={{ width: '80%' }} className='mx-auto' />
         </div>
       )}
-      {eduInsts.length > 0 && (
+      {eduInsts.data.length > 0 && (
         <div>
           <h5>Universities</h5>
           <ListGroup>
-            {eduInsts.map((eduInst) => (
+            {eduInsts.data.map((eduInst) => (
               <ListGroupItem key={eduInst.id}>
                 <Link
                   href={`/user/universities/${eduInst.id}`}
@@ -140,11 +144,11 @@ const SearchDataList = ({ searchData }) => {
           <hr style={{ width: '80%' }} className='mx-auto' />
         </div>
       )}
-      {gradProjects.length > 0 && (
+      {gradProjects.data.length > 0 && (
         <div>
           <h5>Graduation Projects</h5>
           <ListGroup>
-            {gradProjects.map((graduationProject) => (
+            {gradProjects.data.map((graduationProject) => (
               <ListGroupItem key={graduationProject.id}>
                 <Link
                   href={`/user/graduationProjects/${graduationProject.id}`}

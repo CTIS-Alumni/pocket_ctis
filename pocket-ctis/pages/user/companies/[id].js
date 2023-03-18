@@ -5,7 +5,8 @@ import { getTimePeriod } from '../../../helpers/formatHelpers'
 import styles from '../../../styles/companies.module.scss'
 import React from 'react'
 import { BuildingFill } from 'react-bootstrap-icons'
-import { fetchCompanyById, fetchUsersInCompany } from '../../../helpers/searchHelpers'
+import {_getFetcherMultiple} from "../../../helpers/fetchHelpers";
+import {craftPathUrl, craftUrl} from "../../../helpers/urlHelper";
 
 const Company = ({ company, users }) => {
   return (
@@ -82,8 +83,12 @@ const Company = ({ company, users }) => {
 }
 
 export async function getServerSideProps(context) {
-    const company = await fetchCompanyById(context.params.id)
-    const users = await fetchUsersInCompany(context.params.id)
+    const {cookies} = context.req;
+    const token = cookies.AccessJWT;
+    const {company, users} = await _getFetcherMultiple({
+        company: craftPathUrl(["companies", context.params.id]),
+        users: craftUrl("workrecords", [{name: "company_id", value: context.params.id}])
+    }, token);
 
     return {props: {company, users}}
 }

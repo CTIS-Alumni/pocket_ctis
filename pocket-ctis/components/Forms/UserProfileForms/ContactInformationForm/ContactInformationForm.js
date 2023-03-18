@@ -9,12 +9,12 @@ import {
     XCircleFill,
 } from 'react-bootstrap-icons'
 
-import {replaceWithNull, splitFields, submit} from "../../../../helpers/submissionHelpers";
+import {replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 import {fetchAllSocialMediaTypes} from "../../../../helpers/searchHelpers";
 
-const ContactInformationForm = ({data}) => {
+const ContactInformationForm = ({data, user_id}) => {
     const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
     const [socialMediaTypes, setSocialMediaTypes] = useState([]);
 
@@ -127,9 +127,9 @@ const ContactInformationForm = ({data}) => {
             send_to_req[key] = cloneDeep(dataAfterSubmit[key]);
             transformFuncs[key](send_to_req);
             requestObj[key] = createReqObject(send_to_req[key], newData[key], deletedData[key]);
-            const url = craftUserUrl(1, key);
+            const url = craftUserUrl(user_id, key);
             responseObj[key] = await submitChanges(url, requestObj[key]);
-            final_data[key] = submit(requestObj[key], responseObj[key], values, key, args[key], transformFuncs[key]);
+            final_data[key] = handleResponse(requestObj[key], responseObj[key], values, key, args[key], transformFuncs[key]);
         }));
         console.log("req", requestObj, "res", responseObj)
 

@@ -4,9 +4,18 @@ import ReactStars from 'react-stars'
 import { getTimePeriod, getSemester } from '../../../helpers/formatHelpers'
 
 const ProfileInternshipSection = ({ internships }) => {
+    if (internships.length == 0) {
+        return (
+            <Container
+                className='px-0'
+                style={{ height: 50, width: 350, color: '#999' }}
+            >
+                No data available
+            </Container>
+        )
+    }
   return (
     <div>
-      {/* <SectionHeading title='Internship' /> */}
       <Container style={{ height: 300, oveflowY: 'scroll' }}>
         {internships.map((internship, i) => {
           const workPeriod = getTimePeriod(
@@ -43,7 +52,7 @@ const ProfileInternshipSection = ({ internships }) => {
                   {internship.department} Department
                 </div>
                 <div>{workPeriod}</div>
-                {internship.opinion.length > 1 && (
+                {internship.opinion && (
                   <div className='mt-2'>{internship.opinion}</div>
                 )}
               </Container>

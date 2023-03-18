@@ -2,17 +2,19 @@ import {serialize} from "cookie";
 
 export default async function(req,res){
     const {cookies} = req;
-    const jwt = cookies.PocketCTISJWT;
+    let remove_cookies = [];
 
-    if(jwt){
-        const serialCookie = serialize("PocketCTISJWT", null, {
+    if(cookies.AccessJWT) {
+        const serialCookie = serialize("AccessJWT", null, {
             httpOnly: true,
             secure: process.env.NODE_ENV !== "development",
             sameSite: "strict",
             maxAge: -1,
             path: "/"
         });
-
+        remove_cookies.push(serialCookie);
+    }
+    if(cookies.RefreshJWT) {
         const refreshCookie = serialize("RefreshJWT", null, {
             httpOnly: true,
             secure: process.env.NODE_ENV !== "development",
@@ -20,7 +22,8 @@ export default async function(req,res){
             maxAge: -1,
             path: "/"
         });
-        res.setHeader("Set-Cookie", [serialCookie, refreshCookie]);
-        res.status(200).json({message: "Logged out"})
+        remove_cookies.push(refreshCookie);
     }
+        res.setHeader("Set-Cookie", remove_cookies);
+        res.status(200).json({message: "Logged out"})
 }

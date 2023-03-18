@@ -64,7 +64,7 @@ export const omitFields = (obj, fields) => {
 }
 
 //checks
-export const submit = (req, res, values, name, args, transformForSubCallback) => {
+export const handleResponse = (req, res, values, name, args, transformForSubCallback) => {
     req.DELETE.forEach((toDelete)=>{
         if(!res.DELETE.data?.hasOwnProperty(toDelete.id)){
             values[name].push(toDelete.data);

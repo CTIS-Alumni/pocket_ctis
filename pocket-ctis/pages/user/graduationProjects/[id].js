@@ -1,4 +1,6 @@
 import React from 'react'
+import {_getFetcher} from "../../../helpers/fetchHelpers";
+import {craftPathUrl} from "../../../helpers/urlHelper";
 
 const GraduationProject = ({ graduationproject }) => {
   console.log('Graduation project: ', graduationproject)
@@ -6,13 +8,9 @@ const GraduationProject = ({ graduationproject }) => {
 }
 
 export async function getServerSideProps(context) {
-  const res = await fetch(
-    process.env.NEXT_PUBLIC_BACKEND_PATH+"/graduationprojects/" + context.params.id,{
-        headers: {
-          'x-api-key': process.env.API_KEY
-        }
-      });
-  const graduationproject = await res.json()
-  return { props: { graduationproject } }
+  const {cookies} = context.req;
+  const token = cookies.AccessJWT;
+  const res = await _getFetcher(craftPathUrl(["graduation_project", context.params.id]),token);
+  return { props: { graduationproject: res } }
 }
 export default GraduationProject

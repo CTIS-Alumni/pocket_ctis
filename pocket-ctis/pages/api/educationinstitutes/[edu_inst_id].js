@@ -1,10 +1,7 @@
 import {doquery} from "../../../helpers/dbHelpers";
 
 export default async function handler(req, res){
-    const api_key = req.headers['x-api-key'];
-    if(api_key === undefined || api_key !== process.env.API_KEY){
-        res.status(401).json({message: "Unauthorized user!"});
-    }
+    
     const { edu_inst_id } = req.query;
     const method = req.method;
     switch(method){

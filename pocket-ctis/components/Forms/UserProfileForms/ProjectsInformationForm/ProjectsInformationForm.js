@@ -9,11 +9,11 @@ import {
     XCircleFill,
 } from 'react-bootstrap-icons'
 
-import {replaceWithNull, submit} from "../../../../helpers/submissionHelpers";
+import {replaceWithNull, handleResponse} from "../../../../helpers/submissionHelpers";
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 
-const ProjectsInformationForm = ({data}) => {
+const ProjectsInformationForm = ({data, user_id}) => {
     const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
     const applyNewData = (data) => {
@@ -75,9 +75,9 @@ const ProjectsInformationForm = ({data}) => {
             send_to_req[key] = cloneDeep(dataAfterSubmit[key]);
             transformFuncs[key](send_to_req);
             requestObj[key] = createReqObject(send_to_req[key], newData[key], deletedData[key]);
-            const url = craftUserUrl(1, key);
+            const url = craftUserUrl(user_id, key);
             responseObj[key] = await submitChanges(url, requestObj[key]);
-            final_data[key]  = submit(requestObj[key], responseObj[key], values, key, args[key], transformFuncs[key]);
+            final_data[key]  = handleResponse(requestObj[key], responseObj[key], values, key, args[key], transformFuncs[key]);
         }));
         console.log("req", requestObj, "res", responseObj)
 

@@ -3,10 +3,10 @@ import { Spinner } from 'react-bootstrap'
 import CompaniesList from '../../../components/CompaniesList/CompaniesList'
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
-import {fetchCompany } from '../../../helpers/searchHelpers'
-import {_getFetcherMulti} from "../../../helpers/fetchHelpers";
+import {_getFetcher} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
-const CompaniesDashboard = ( res ) => {
+const CompaniesDashboard = ( {res} ) => {
   const [companies, setCompanies] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
@@ -14,7 +14,7 @@ const CompaniesDashboard = ( res ) => {
   }, [])
   const onSearch = ({ searchValue }) => {
     setIsLoading(true)
-    fetchCompany(searchValue)
+      _getFetcher(craftUrl("companies", [{name: "name", value: searchValue}]))
       .then((res) => setCompanies(res.data))
       .catch((err) => console.log(err))
       .finally((_) => setIsLoading(false))
@@ -33,9 +33,11 @@ const CompaniesDashboard = ( res ) => {
   )
 }
 
-export async function getServerSideProps() {
-  const results = await _getFetcherMulti(["companies"]);
-  return { props:  results.companies  }
+export async function getServerSideProps(context) {
+    const {cookies} = context.req;
+    const token = cookies.AccessJWT;
+    const res = await _getFetcher(craftUrl("companies"), token);
+    return { props: { res: res } }
 }
 
 export default CompaniesDashboard

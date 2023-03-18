@@ -9,11 +9,11 @@ import {
 import {cloneDeep} from 'lodash'
 import { fetchAllSocieties } from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
-import {replaceWithNull, splitFields, submit} from "../../../../helpers/submissionHelpers";
+import {replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 
-const SocietiesInformationForm = ({ data }) => {
+const SocietiesInformationForm = ({ data , user_id}) => {
   const [societies, setSocieties] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
@@ -55,10 +55,10 @@ const SocietiesInformationForm = ({ data }) => {
     const send_to_req = {societies: cloneDeep(dataAfterSubmit)};
     transformDataForSubmission(send_to_req);
     const requestObj = createReqObject(send_to_req.societies, newData.societies, deletedData);
-    const url = craftUserUrl(1, "societies");
+    const url = craftUserUrl(user_id, "societies");
     const responseObj = await submitChanges(url ,requestObj);
     const args = [["society"], [], ["user_id", "id"], []];
-    const new_data = submit(requestObj, responseObj, values, "societies", args, transformDataForSubmission);
+    const new_data = handleResponse(requestObj, responseObj, values, "societies", args, transformDataForSubmission);
     applyNewData(new_data);
     console.log("req,",requestObj, "res", responseObj);
 

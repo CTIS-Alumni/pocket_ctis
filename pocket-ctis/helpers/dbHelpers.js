@@ -1,8 +1,18 @@
 import mysql from "mysql2/promise";
 import dbconfig from "../config/dbconfig.js";
 
-export async function doMultiQueries(queries, namedplaceholders) {
-    namedplaceholders = namedplaceholders || false;
+export function addCondition(query, condition){
+    let full_condition;
+    if (query.includes(" WHERE ")) {
+        full_condition =  " AND ";
+    } else {
+        full_condition = " WHERE ";
+    }
+    full_condition += condition + " ";
+    return full_condition;
+}
+
+export async function doMultiQueries(queries, namedplaceholders = false) {
     let data = {};
     let errors = [];
     //queries = [{name: "certificates", query: "asdas" ,values: []}, {name: "skills", query: "asdasda", values: []}]

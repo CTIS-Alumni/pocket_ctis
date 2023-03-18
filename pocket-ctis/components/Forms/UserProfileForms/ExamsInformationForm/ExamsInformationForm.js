@@ -14,12 +14,12 @@ import {
   convertToIso,
   replaceWithNull,
   splitFields,
-  submit
+  handleResponse
 } from "../../../../helpers/submissionHelpers";
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 
-const ExamsInformationForm = ({ data }) => {
+const ExamsInformationForm = ({ data , user_id}) => {
   const [examTypes, setExamTypes] = useState([]);
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
@@ -73,10 +73,10 @@ const ExamsInformationForm = ({ data }) => {
     const send_to_req = {exams: cloneDeep(dataAfterSubmit)};
     transformDataForSubmission(send_to_req);
     const requestObj = createReqObject(send_to_req.exams, newData.exams, deletedData, args[4]);
-    const url = craftUserUrl(1, "exams");
+    const url = craftUserUrl(user_id, "exams");
     const responseObj = await submitChanges(url, requestObj);
 
-    const new_data = submit(requestObj, responseObj, values, "exams", args, transformDataForSubmission);
+    const new_data = handleResponse(requestObj, responseObj, values, "exams", args, transformDataForSubmission);
     applyNewData(new_data);
     console.log("req, ",requestObj, "res", responseObj);
 

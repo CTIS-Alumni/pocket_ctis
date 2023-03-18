@@ -9,12 +9,12 @@ import {
 } from 'react-bootstrap-icons'
 
 import {Location_data} from '../../../../context/locationContext'
-import {omitFields, replaceWithNull, splitFields, submit} from "../../../../helpers/submissionHelpers";
+import {omitFields, replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 import {fetchAllHighSchool, fetchAllSectors} from '../../../../helpers/searchHelpers'
 
-const PersonalInformationForm = ({data}) => {
+const PersonalInformationForm = ({data, user_id}) => {
     const {locationData} = useContext(Location_data)
     // const [sectors, setSectors] = useState([]);
     const [highSchools, setHighSchools] = useState([]);
@@ -204,19 +204,16 @@ const PersonalInformationForm = ({data}) => {
             career_objective: [[], [], ["id", "user_id"], []],
             high_school: [["high_school"], [], ["user_id", "id"], []]
         };
-        console.log("heres values", values);
-        console.log("heres deleted data", deletedData);
+
         const final_data = {location: [], career_objective: [], high_school: []};
         await Promise.all(Object.keys(omitFields(dataAfterSubmit, ["basic_info", "wanted_sectors"])).map(async (key) => {
             const send_to_req = {};
             send_to_req[key] = cloneDeep(dataAfterSubmit[key]);
             transformFuncs[key](send_to_req);
             requestObj[key] = createReqObject(send_to_req[key], newData[key], deletedData[key]);
-            const url = craftUserUrl(1, key);
+            const url = craftUserUrl(user_id, key);
             responseObj[key] = await submitChanges(url, requestObj[key]);
-            console.log("response", responseObj)
-
-            final_data[key] = submit(requestObj[key], responseObj[key], values, key, args[key], transformFuncs[key]);
+            final_data[key] = handleResponse(requestObj[key], responseObj[key], values, key, args[key], transformFuncs[key]);
         }));
 
         applyNewData(final_data);

@@ -3,13 +3,9 @@ import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import ErasmusStudentsList from '../../../components/ErasmusPageComponents/ErasmusStudentsList/ErasmusStudentsList'
 import ErasmusUnisList from '../../../components/ErasmusPageComponents/ErasmusUnisList/ErasmusUnisList'
-
-import {
-  fetchErasmusRecords,
-  fetchErasmusUniversities,
-} from '../../../helpers/searchHelpers'
-
 import styles from '../../../styles/erasmus.module.scss'
+import {_getFetcherMultiple} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const ErasmusDashboard = ({ erasmus, eduInsts }) => {
   return (
@@ -31,11 +27,14 @@ const ErasmusDashboard = ({ erasmus, eduInsts }) => {
   )
 }
 
-export async function getServerSideProps() {
-  const [erasmus, eduInsts] = await Promise.all([
-    fetchErasmusRecords(),
-    fetchErasmusUniversities(),
-  ])
+export async function getServerSideProps(context) {
+  console.log(craftUrl("educationinstitutes", [{name: "erasmus", value: 1}]));
+  const {cookies} = context.req;
+  const token = cookies.AccessJWT;
+  const {erasmus, eduInsts} = await _getFetcherMultiple({
+    erasmus: craftUrl("erasmus"),
+    eduInsts: craftUrl("educationinstitutes", [{name: "erasmus", value: 1}])
+  }, token);
 
   return { props: { erasmus, eduInsts } }
 }

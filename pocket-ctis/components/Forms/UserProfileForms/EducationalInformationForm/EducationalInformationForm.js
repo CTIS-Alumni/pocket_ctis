@@ -17,9 +17,9 @@ import {
 import DatePickerField from '../../../DatePickers/DatePicker'
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
-import {convertToIso, replaceWithNull, splitFields, submit} from "../../../../helpers/submissionHelpers";
+import {convertToIso, replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
 
-const EducationInformationForm = ({ data }) => {
+const EducationInformationForm = ({ data , user_id}) => {
   const [eduInsts, setEduInsts] = useState([])
   const [degreeTypes, setDegreeTypes] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
@@ -76,9 +76,9 @@ const EducationInformationForm = ({ data }) => {
     const send_to_req = {edu_records : cloneDeep(dataAfterSubmit)};
     transformDataForSubmission(send_to_req);
     const requestObj = createReqObject(send_to_req.edu_records, newData.edu_records, deletedData);
-    const url = craftUserUrl(1, "educationrecords");
+    const url = craftUserUrl(user_id, "educationrecords");
     const responseObj = await submitChanges(url ,requestObj);
-    const new_data = submit(requestObj, responseObj, values, "edu_records", args, transformDataForSubmission);
+    const new_data = handleResponse(requestObj, responseObj, values, "edu_records", args, transformDataForSubmission);
     applyNewData(new_data);
     console.log("req:", requestObj, "res", responseObj);
 

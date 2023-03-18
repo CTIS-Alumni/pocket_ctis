@@ -5,7 +5,7 @@ const ProfileHighSchoolSection = ({ highSchool }) => {
     return (
       <Container
         className='px-0'
-        style={{ height: 200, width: 350, color: '#999' }}
+        style={{ height: 50, width: 350, color: '#999' }}
       >
         No data available
       </Container>

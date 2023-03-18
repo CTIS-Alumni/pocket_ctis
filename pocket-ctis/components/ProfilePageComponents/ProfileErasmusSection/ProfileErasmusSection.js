@@ -4,7 +4,16 @@ import CustomBadge from '../CustomBadge/CustomBadge'
 import { getTimePeriod, getSemester } from '../../../helpers/formatHelpers'
 
 const ProfileErasmusSection = ({ erasmus }) => {
-  if (erasmus.length > 0) {
+    if (erasmus.length == 0) {
+        return (
+            <Container
+                className='px-0'
+                style={{ height: 200, width: 350, color: '#999' }}
+            >
+                No data available
+            </Container>
+        )
+    }
     return (
       <div>
         <Container
@@ -36,9 +45,6 @@ const ProfileErasmusSection = ({ erasmus }) => {
         </Container>
       </div>
     )
-  } else {
-    return null
-  }
 }
 
 export default ProfileErasmusSection

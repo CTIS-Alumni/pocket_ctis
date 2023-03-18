@@ -21,10 +21,10 @@ import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {
   convertToIso,
   replaceWithNull,
-  splitFields, submit
+  splitFields, handleResponse
 } from "../../../../helpers/submissionHelpers";
 
-const WorkInformationForm = ({ data }) => {
+const WorkInformationForm = ({ data , user_id}) => {
   const [companies, setCompanies] = useState([])
   const [worktypes, setWorktypes] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
@@ -87,10 +87,10 @@ const WorkInformationForm = ({ data }) => {
     const send_to_req = {work_records: cloneDeep(dataAfterSubmit)};
     transformDataForSubmission(send_to_req);
     const requestObj = createReqObject(send_to_req.work_records, newData.work_records, deletedData);
-    const url = craftUserUrl(1, "workrecords");
+    const url = craftUserUrl(user_id, "workrecords");
     const responseObj = await submitChanges(url, requestObj);
 
-    const new_data = submit(requestObj, responseObj, values, "work_records", args, transformDataForSubmission);
+    const new_data = handleResponse(requestObj, responseObj, values, "work_records", args, transformDataForSubmission);
     applyNewData(new_data);
     console.log("req", requestObj, "res", responseObj);
 
