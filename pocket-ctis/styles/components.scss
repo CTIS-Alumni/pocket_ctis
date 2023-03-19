@@ -20,6 +20,8 @@
 
     th, td { padding: 0.8em 1.2em; }
 
+    th.sortable {cursor: pointer}
+
     tr {
         &.hoverable {
             background-color: inherit;

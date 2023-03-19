@@ -4,34 +4,49 @@ import styles from './ErasmusUnisList.module.scss'
 
 const ErasmusUnisList = ({ universities }) => {
   return (
-    <div className={styles.erasmus_universities}>
+    <table className='custom_table'>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>City</th>
+          <th>Country</th>
+          <th> </th>
+        </tr>
+      </thead>
+      <tbody>
       {universities.map((university) => (
-        <div className={styles.erasmus_universities_item} key={university.id}>
+        <>
+        <tr>
           <Link
             className={styles.university_link}
             href={'/user/universities/' + university.id}
           >
-            <div className={styles.erasmus_universities_item_info}>
-              <div>
-                <MortarboardFill />
-              </div>
-              <div>
-                <span className={styles.erasmus_universities_item_name}>
+            <td>
+            <span className={styles.erasmus_universities_item_name}>
                   {university.inst_name}
                 </span>
-                <span className={styles.erasmus_universities_item_location}>
-                  {university.country_name && `${university.country_name} - `}
+            </td>
+          </Link>
+          <td>
+          <span className={styles.erasmus_universities_item_location}>
                   {university.city_name}
                 </span>
-              </div>
-            </div>
-            <div className={styles.erasmus_universities_item_badge}>
+          </td>
+          <td>
+          <span className={styles.erasmus_universities_item_location}>
+                  {university.country_name && `${university.country_name}`}
+                </span>
+          </td>
+          <td>
+          <div className={styles.erasmus_universities_item_badge}>
               <span>ERASMUS</span>
             </div>
-          </Link>
-        </div>
+          </td>
+        </tr></>
+        
       ))}
-    </div>
+      </tbody>
+    </table>
   )
 }
 

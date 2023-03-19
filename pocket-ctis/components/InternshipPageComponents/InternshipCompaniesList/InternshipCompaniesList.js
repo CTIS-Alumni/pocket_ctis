@@ -4,33 +4,40 @@ import styles from './InternshipCompaniesList.module.scss'
 
 const InternshipCompaniesList = ({ companies }) => {
   return (
-    <div className={styles.internship_companies}>
+    <table className='custom_table'>
+              <thead>
+                <tr>
+                <th>Name</th>
+                <th>Sector</th>
+                <th> </th>
+                </tr>
+              </thead>
       {companies.map((company) => (
-        <div className={styles.internship_companies_item} key={company.id}>
+        <tbody>
+          <tr>
           <Link
-            className={styles.company_link}
             href={`companies/${company.id}`}
           >
-            <div className={styles.internship_companies_item_info}>
-              <div>
-                <BuildingFill />
-              </div>
-              <div>
-                <span className={styles.internship_companies_item_name}>
+            <td>
+              <span>
                   {company.company_name}
                 </span>
-                <span className={styles.internship_companies_item_sector}>
+            </td>
+          </Link>
+          <td>
+              <span>
                   {company.sector_name}
                 </span>
-              </div>
-            </div>
-            <div className={styles.internship_companies_item_badge}>
+          </td>
+          <td>
+          <div className={styles.internship_companies_item_badge}>
               <span>Accepts CTIS Interns</span>
             </div>
-          </Link>
-        </div>
+          </td>
+          </tr>
+        </tbody>
       ))}
-    </div>
+    </table>
   )
 }
 
