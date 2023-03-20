@@ -10,6 +10,8 @@ import CertificatesInformationForm from '../../Forms/UserProfileForms/Certificat
 import SkillsInformationForm from '../../Forms/UserProfileForms/SkillsInformationForm/SkillsInformationForm'
 import SocietiesInformationForm from '../../Forms/UserProfileForms/SocietiesInformationForm/SocietiesInformationForm'
 import ExamsInformationForm from '../../Forms/UserProfileForms/ExamsInformationForm/ExamsInformationForm'
+import ErasmusInformationForm from '../../Forms/UserProfileForms/ErasmusInformationForm/ErasmusInformationForm'
+import InternshipInformationForm from '../../Forms/UserProfileForms/InternshipInformationForm/InternshipInformationForm'
 
 const ProfileEditModal = ({ user, refreshProfile }) => {
   const [isUpdated, setIsUpdated] = useState(false)
@@ -30,6 +32,8 @@ const ProfileEditModal = ({ user, refreshProfile }) => {
     wanted_sectors,
     exams,
     graduation_project,
+    internships,
+    erasmus,
   } = user
 
   const personalInfoData = {
@@ -43,7 +47,6 @@ const ProfileEditModal = ({ user, refreshProfile }) => {
     wanted_sectors,
   }
 
-  // console.log(user)
   const handleClose = () => {
     if (isUpdated) {
       refreshProfile()
@@ -105,6 +108,24 @@ const ProfileEditModal = ({ user, refreshProfile }) => {
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='3'>
+              <Accordion.Header>Erasmus</Accordion.Header>
+              <Accordion.Body>
+                <ErasmusInformationForm
+                  data={erasmus}
+                  setIsUpdated={setIsUpdated}
+                />
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey='4'>
+              <Accordion.Header>Internships Information</Accordion.Header>
+              <Accordion.Body>
+                <InternshipInformationForm
+                  data={internships}
+                  setIsUpdated={setIsUpdated}
+                />
+              </Accordion.Body>
+            </Accordion.Item>
+            <Accordion.Item eventKey='5'>
               <Accordion.Header>High School Information</Accordion.Header>
               <Accordion.Body>
                 <HighSchoolInformationForm
@@ -113,7 +134,7 @@ const ProfileEditModal = ({ user, refreshProfile }) => {
                 />
               </Accordion.Body>
             </Accordion.Item>
-            <Accordion.Item eventKey='4'>
+            <Accordion.Item eventKey='6'>
               <Accordion.Header>Certificates</Accordion.Header>
               <Accordion.Body>
                 <CertificatesInformationForm
@@ -122,7 +143,7 @@ const ProfileEditModal = ({ user, refreshProfile }) => {
                 />
               </Accordion.Body>
             </Accordion.Item>
-            <Accordion.Item eventKey='5'>
+            <Accordion.Item eventKey='7'>
               <Accordion.Header>Skills</Accordion.Header>
               <Accordion.Body>
                 <SkillsInformationForm
@@ -131,7 +152,7 @@ const ProfileEditModal = ({ user, refreshProfile }) => {
                 />
               </Accordion.Body>
             </Accordion.Item>
-            <Accordion.Item eventKey='6'>
+            <Accordion.Item eventKey='8'>
               <Accordion.Header>Socieites</Accordion.Header>
               <Accordion.Body>
                 <SocietiesInformationForm
@@ -140,7 +161,7 @@ const ProfileEditModal = ({ user, refreshProfile }) => {
                 />
               </Accordion.Body>
             </Accordion.Item>
-            <Accordion.Item eventKey='7'>
+            <Accordion.Item eventKey='9'>
               <Accordion.Header>Exams</Accordion.Header>
               <Accordion.Body>
                 <ExamsInformationForm
