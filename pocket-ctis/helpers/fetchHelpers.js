@@ -26,23 +26,8 @@ export const _submitFetcher = async (method, url, body) => {
     return await res.json()
 }
 
-export const _getFetcher = async (url, token = false) => { // when you need to fetch a single api
-    let headers = {};
-    if(token)
-        headers['Authorization'] =  `Bearer ${token}`;
 
-    try{
-        const res = await fetch(url, {
-            headers: headers,
-            credentials: "include"
-        })
-        return await res.json();
-    }catch(error){
-        return {errors: error.message, data: []}
-    }
-}
-
-export const _getFetcherMultiple = async (apis,  token = false) => { // [{name: url}, {name: url}]
+export const _getFetcher = async (apis,  token = false) => { // [{name: url}, {name: url}]
     let results = {}
     let headers = {};
     if(token)
@@ -59,22 +44,6 @@ export const _getFetcherMultiple = async (apis,  token = false) => { // [{name: 
         return results;
     }catch(error){
         console.log(error.message);
-        //stuff
-    }
-}
-
-export const _getFetcherMulti = async (apis) => {
-    let results = {};
-    try{
-        await Promise.all(apis.map(async (api)=>{
-            const res = await fetch(craftUrl(api), { //send api's instead of full url's to create a results object with api names as keys
-                credentials: 'include'
-            });
-            results[api] = await res.json();
-        }));
-        return results;
-    }catch(error){
-        console.log(error);
         //stuff
     }
 }

@@ -25,8 +25,8 @@ import {useContext} from 'react'
 import ProfileExamsSection from '../../components/ProfilePageComponents/ProfileExamsSection/ProfileExamsSection'
 import GraduationProjectSection
     from '../../components/ProfilePageComponents/GraduationProjectSection/GraduationProjectSection'
-import {_getFetcher} from "../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../helpers/urlHelper";
+import {_getFetcher} from "../../helpers/fetchHelpers";
 
 const Profile = ({user, session}) => {
     const {userData} = useContext(User_data)
@@ -175,9 +175,9 @@ const Profile = ({user, session}) => {
 export async function getServerSideProps(context) {
     const {cookies} = context.req;
     const token = cookies.AccessJWT;
-    const {data, session, errors} = await _getFetcher(craftUserUrl(context.params.id, "profile"), token);
+    const {res} = await _getFetcher({res: craftUserUrl(context.params.id, "profile")}, token);
 
-    return {props: {user: data, session: session, errors: errors}}
+    return {props: {user: res.data, session: res.session, errors: res.errors}}
 }
 
 export default Profile

@@ -1,7 +1,8 @@
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import GraduationProjectsList from '../../../components/GraduationProjectsList/GraduationProjectsList'
-import { fetchAllGraduationProjects } from '../../../helpers/searchHelpers'
+import {_getFetcher} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const GraduationProjectsDashboard = ({ gradprojects }) => {
   return (
@@ -13,9 +14,13 @@ const GraduationProjectsDashboard = ({ gradprojects }) => {
   )
 }
 
-export async function getServerSideProps() {
-  const gradprojects = await fetchAllGraduationProjects()
-  return { props: { gradprojects } }
+export async function getServerSideProps(context) {
+    const {cookies} = context.req;
+    const token = cookies.AccessJWT;
+    const {gradprojects} = await _getFetcher({
+        gradprojects: craftUrl("graduationprojects")
+    }, token);
+    return { props: { gradprojects } }
 }
 
 export default GraduationProjectsDashboard

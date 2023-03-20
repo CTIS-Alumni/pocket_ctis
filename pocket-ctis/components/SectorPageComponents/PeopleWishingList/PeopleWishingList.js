@@ -17,11 +17,9 @@ const PeopleWishingList = ({ peopleWishing }) => {
                     backgroundImage:
                       'url(' +
                       '/profilepictures/' +
-                      (person.record_visibility
-                        ? person.pic_visibility
+                      (person.pic_visibility
                           ? person.profile_picture
-                          : 'defaultuser'
-                        : 'defaultuser') +
+                          : 'defaultuser') +
                       '.png' +
                       ')',
                   }}

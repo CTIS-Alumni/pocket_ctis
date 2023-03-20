@@ -14,8 +14,8 @@ const CompaniesDashboard = ( {res} ) => {
   }, [])
   const onSearch = ({ searchValue }) => {
     setIsLoading(true)
-      _getFetcher(craftUrl("companies", [{name: "name", value: searchValue}]))
-      .then((res) => setCompanies(res.data))
+      _getFetcher({companies: craftUrl("companies", [{name: "name", value: searchValue}])})
+      .then(({companies}) => setCompanies(companies.data))
       .catch((err) => console.log(err))
       .finally((_) => setIsLoading(false))
   }
@@ -36,8 +36,8 @@ const CompaniesDashboard = ( {res} ) => {
 export async function getServerSideProps(context) {
     const {cookies} = context.req;
     const token = cookies.AccessJWT;
-    const res = await _getFetcher(craftUrl("companies"), token);
-    return { props: { res: res } }
+    const {companies} = await _getFetcher({companies: craftUrl("companies")}, token);
+    return { props: { res: companies } }
 }
 
 export default CompaniesDashboard

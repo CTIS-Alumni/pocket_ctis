@@ -77,7 +77,7 @@ const ProjectsInformationForm = ({data, user_id}) => {
             requestObj[key] = createReqObject(send_to_req[key], newData[key], deletedData[key]);
             const url = craftUserUrl(user_id, key);
             responseObj[key] = await submitChanges(url, requestObj[key]);
-            final_data[key]  = handleResponse(requestObj[key], responseObj[key], values, key, args[key], transformFuncs[key]);
+            final_data[key]  = handleResponse(send_to_req[key], requestObj[key], responseObj[key], values, key, args[key], transformFuncs[key]);
         }));
         console.log("req", requestObj, "res", responseObj)
 

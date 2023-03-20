@@ -22,19 +22,19 @@ const AcademicUpdates = ({edu}) => {
         </thead>
         <tbody>
         {edu ? edu.map((record, i)=>(
-            <tr key={i} className={record.record_visibility ? (record.is_current ? 'current' : ""):'anonymous'}>
+            <tr key={i} className={record.is_current ? 'current' : ""}>
             <td className={styles.data_avatar}>
               <div
                   className='user_avatar_36'
-                  style={{backgroundImage: "url(" + '/profilepictures/' + (record.record_visibility ? (record.pic_visibility ? record.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
+                  style={{backgroundImage: "url(" + '/profilepictures/' + (record.pic_visibility ? record.profile_picture  : "defaultuser") + '.png' + ")"}}
                 />
             </td>
 
-              <td className={styles.data_name}>{record.record_visibility ? record.first_name : "Anonymous"}</td>
-              <td className={styles.data_surname}>{record.record_visibility ? record.last_name : ""}</td>
-              <td className={styles.data_degree}>{record.record_visibility ? record.degree_type_name : ""}</td>
-              <td className={styles.data_field}>{record.record_visibility ? record.name_of_program : ""}</td>
-              <td className={styles.data_institute}>{record.record_visibility ? record.edu_inst_name : ""}</td>
+              <td className={styles.data_name}>{record.first_name}</td>
+              <td className={styles.data_surname}>{record.last_name}</td>
+              <td className={styles.data_degree}>{record.degree_type_name}</td>
+              <td className={styles.data_field}>{record.name_of_program}</td>
+              <td className={styles.data_institute}>{record.edu_inst_name}</td>
               <td className={styles.data_date}>{record.record_date.slice(0, -14)}</td>
           </tr>
         )) : ""}

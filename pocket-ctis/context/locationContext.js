@@ -9,8 +9,8 @@ function LocationContext({ children }) {
 
   useEffect(() => {
     let data = {}
-    _getFetcher(craftUrl("cities")).then((res) => {
-      res.data.forEach((city) => {
+    _getFetcher({cities: craftUrl("cities")}).then(({cities}) => {
+      cities.data.forEach((city) => {
         if (`${city.country_id}-${city.country_name}` in data) {
           data[`${city.country_id}-${city.country_name}`].push(
             `${city.id}-${city.city_name}`

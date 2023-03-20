@@ -10,9 +10,8 @@ import {
 } from 'react-bootstrap-icons'
 
 import {replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
-import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {craftUserUrl} from "../../../../helpers/urlHelper";
-import {fetchAllSocialMediaTypes} from "../../../../helpers/searchHelpers";
+import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
 
 const ContactInformationForm = ({data, user_id}) => {
     const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
@@ -20,9 +19,9 @@ const ContactInformationForm = ({data, user_id}) => {
 
     useEffect
     (() => {
-        fetchAllSocialMediaTypes().then((res) =>
+        _getFetcher({socials: craftUrl("socialmedia")}).then(({socials}) =>
             setSocialMediaTypes(
-                res.data.map((social) => {
+                socials.data.map((social) => {
                     return {
                         ...social,
                         social_media: `${social.id}-${social.social_media_name}`,
@@ -129,7 +128,7 @@ const ContactInformationForm = ({data, user_id}) => {
             requestObj[key] = createReqObject(send_to_req[key], newData[key], deletedData[key]);
             const url = craftUserUrl(user_id, key);
             responseObj[key] = await submitChanges(url, requestObj[key]);
-            final_data[key] = handleResponse(requestObj[key], responseObj[key], values, key, args[key], transformFuncs[key]);
+            final_data[key] = handleResponse(send_to_req[key], requestObj[key], responseObj[key], values, key, args[key], transformFuncs[key]);
         }));
         console.log("req", requestObj, "res", responseObj)
 

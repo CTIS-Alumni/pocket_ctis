@@ -1,7 +1,9 @@
 import {doquery} from "../../../helpers/dbHelpers";
+import {checkAuth} from "../../../helpers/authHelper";
 
 export default async function handler(req, res){
-    
+    const session = await checkAuth(req.headers, res);
+    if (session) {
     const { high_school_id } = req.query;
     const method = req.method;
     switch(method){
@@ -15,7 +17,7 @@ export default async function handler(req, res){
                 if(data.hasOwnProperty("error"))
                     res.status(500).json({error: data.error.message});
                 else
-                    res.status(200).json({data});
+                    res.status(200).json({data: data[0]});
             }catch(error){
                 res.status(500).json({error: error.message});
             }
@@ -39,5 +41,8 @@ export default async function handler(req, res){
                 res.status(500).json({error: error.message});
             }
             break;
+    }
+    }else{
+        res.status(500).json({error: "Unauthorized"});
     }
 }

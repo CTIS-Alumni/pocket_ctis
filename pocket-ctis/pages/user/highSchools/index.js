@@ -2,23 +2,21 @@ import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import HighSchoolList from '../../../components/HighSchoolsList/HighSchoolsList'
 import { useEffect, useState } from 'react'
-import {
-  fetchAllHighSchool,
-  fetchHighSchools,
-} from '../../../helpers/searchHelpers'
+import {_getFetcher} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
-const HighSchoolDashboard = ({ data }) => {
+const HighSchoolDashboard = ({ res }) => {
   const [highschools, setHighschools] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
-    setHighschools(data.data)
+    setHighschools(res.data)
     setIsLoading(false)
   }, [])
 
   const onSearch = ({ searchValue }) => {
     setIsLoading(true)
-    fetchHighSchools(searchValue)
-      .then((res) => setHighschools(res.data))
+    _getFetcher({highschools: craftUrl("highschools", [{name: "name", value: searchValue}])})
+      .then(({highschools}) => setHighschools(highschools.data))
       .catch((err) => console.log(err))
       .finally((_) => setIsLoading(false))
   }
@@ -36,9 +34,11 @@ const HighSchoolDashboard = ({ data }) => {
   )
 }
 
-export async function getServerSideProps() {
-  const res = await fetchAllHighSchool()
-  return { props: { data: res } }
+export async function getServerSideProps(context) {
+  const {cookies} = context.req;
+  const token = cookies.AccessJWT;
+  const {highschools} = await _getFetcher({highschools: craftUrl("highschools")}, token);
+  return { props: { res: highschools } }
 }
 
 export default HighSchoolDashboard

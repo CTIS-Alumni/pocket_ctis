@@ -54,7 +54,7 @@ const CertificatesInformationForm = ({ data ,user_id}) => {
     const url = craftUserUrl(user_id, "certificates");
     const responseObj = await submitChanges(url ,requestObj);
     const args = [[], [], ["id", "user_id"], []];
-    const new_data = handleResponse(requestObj, responseObj, values, "certificates", args, transformDataForSubmission);
+    const new_data = handleResponse(send_to_req.certificates, requestObj, responseObj, values, "certificates", args, transformDataForSubmission);
     applyNewData(new_data);
     console.log("req", requestObj, "res", responseObj);
 

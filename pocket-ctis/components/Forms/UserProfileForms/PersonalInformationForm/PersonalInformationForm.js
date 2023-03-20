@@ -10,9 +10,8 @@ import {
 
 import {Location_data} from '../../../../context/locationContext'
 import {omitFields, replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
-import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {craftUserUrl} from "../../../../helpers/urlHelper";
-import {fetchAllHighSchool, fetchAllSectors} from '../../../../helpers/searchHelpers'
+import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
 
 const PersonalInformationForm = ({data, user_id}) => {
     const {locationData} = useContext(Location_data)
@@ -32,7 +31,7 @@ const PersonalInformationForm = ({data, user_id}) => {
                 })
             )
         })*/
-        fetchAllHighSchool().then((res) => setHighSchools(res.data))
+        _getFetcher({high_school: craftUrl("highschools")}).then(({high_school}) => setHighSchools(high_school.data))
     }, [])
 
 
@@ -213,7 +212,7 @@ const PersonalInformationForm = ({data, user_id}) => {
             requestObj[key] = createReqObject(send_to_req[key], newData[key], deletedData[key]);
             const url = craftUserUrl(user_id, key);
             responseObj[key] = await submitChanges(url, requestObj[key]);
-            final_data[key] = handleResponse(requestObj[key], responseObj[key], values, key, args[key], transformFuncs[key]);
+            final_data[key] = handleResponse(send_to_req[key], requestObj[key], responseObj[key], values, key, args[key], transformFuncs[key]);
         }));
 
         applyNewData(final_data);

@@ -60,18 +60,8 @@ const InternshipsList = ({ internships }) => {
                 />
                 <div>
                   <span
-                    className={`${
-                      internship.record_visibility
-                        ? ''
-                        : styles.internship_students_item_name_anonymous
-                    } ${styles.internship_students_item_name}`}
-                  >{`${
-                    internship.record_visibility
-                      ? internship.first_name
-                      : 'Anonymous'
-                  } ${
-                    internship.record_visibility ? internship.last_name : ''
-                  }`}</span>
+                    className={`${styles.internship_students_item_name}`}
+                  >{`${internship.first_name} ${internship.last_name}`}</span>
                   <span className={styles.internship_students_item_company}>
                     {internship.record_visibility
                       ? internship.company_name

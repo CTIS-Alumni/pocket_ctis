@@ -4,7 +4,7 @@ import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar
 import ErasmusStudentsList from '../../../components/ErasmusPageComponents/ErasmusStudentsList/ErasmusStudentsList'
 import ErasmusUnisList from '../../../components/ErasmusPageComponents/ErasmusUnisList/ErasmusUnisList'
 import styles from '../../../styles/erasmus.module.scss'
-import {_getFetcherMultiple} from "../../../helpers/fetchHelpers";
+import {_getFetcher} from "../../../helpers/fetchHelpers";
 import {craftUrl} from "../../../helpers/urlHelper";
 
 const ErasmusDashboard = ({ erasmus, eduInsts }) => {
@@ -31,7 +31,7 @@ export async function getServerSideProps(context) {
   console.log(craftUrl("educationinstitutes", [{name: "erasmus", value: 1}]));
   const {cookies} = context.req;
   const token = cookies.AccessJWT;
-  const {erasmus, eduInsts} = await _getFetcherMultiple({
+  const {erasmus, eduInsts} = await _getFetcher({
     erasmus: craftUrl("erasmus"),
     eduInsts: craftUrl("educationinstitutes", [{name: "erasmus", value: 1}])
   }, token);

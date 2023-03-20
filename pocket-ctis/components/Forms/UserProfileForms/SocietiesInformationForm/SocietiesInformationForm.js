@@ -7,18 +7,17 @@ import {
   PlusCircleFill, ToggleOn, ToggleOff,
 } from 'react-bootstrap-icons'
 import {cloneDeep} from 'lodash'
-import { fetchAllSocieties } from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
 import {replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
-import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {craftUserUrl} from "../../../../helpers/urlHelper";
+import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
 
 const SocietiesInformationForm = ({ data , user_id}) => {
   const [societies, setSocieties] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
   useEffect(() => {
-    fetchAllSocieties().then((res) => setSocieties(res.data))
+    _getFetcher({societies: craftUrl("studentsocieties")}).then(({societies}) => setSocieties(societies.data))
   }, [])
 
   const applyNewData = (data) => {
@@ -58,7 +57,7 @@ const SocietiesInformationForm = ({ data , user_id}) => {
     const url = craftUserUrl(user_id, "societies");
     const responseObj = await submitChanges(url ,requestObj);
     const args = [["society"], [], ["user_id", "id"], []];
-    const new_data = handleResponse(requestObj, responseObj, values, "societies", args, transformDataForSubmission);
+    const new_data = handleResponse(send_to_req.societies, requestObj, responseObj, values, "societies", args, transformDataForSubmission);
     applyNewData(new_data);
     console.log("req,",requestObj, "res", responseObj);
 

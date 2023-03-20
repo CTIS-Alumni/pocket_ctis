@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { PencilSquare } from 'react-bootstrap-icons'
-import { Modal, Button, Accordion } from 'react-bootstrap'
+import { PencilSquare} from 'react-bootstrap-icons'
+import { Modal, Button, Accordion} from 'react-bootstrap'
 import styles from './ProfileEditModal.module.css'
 import PersonalInformationForm from '../../Forms/UserProfileForms/PersonalInformationForm/PersonalInformationForm'
 import WorkInformationForm from '../../Forms/UserProfileForms/WorkInformationForm/WorkInformationForm'

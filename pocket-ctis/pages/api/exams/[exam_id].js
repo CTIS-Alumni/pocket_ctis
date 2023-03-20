@@ -1,7 +1,9 @@
 import {doquery} from "../../../helpers/dbHelpers";
+import {checkAuth} from "../../../helpers/authHelper";
 
 export default async function handler(req, res){
-    
+    const session = await checkAuth(req.headers, res);
+    if (session) {
     const { exam_id } = req.query;
     const method = req.method;
     switch(method){
@@ -43,5 +45,7 @@ export default async function handler(req, res){
             }
             break;
     }
-
+    }else{
+        res.status(500).json({error: "Unauthorized"});
+    }
 }

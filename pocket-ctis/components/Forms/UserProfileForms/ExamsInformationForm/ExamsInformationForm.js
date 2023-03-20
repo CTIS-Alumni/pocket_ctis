@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Formik, Field, FieldArray, Form } from 'formik'
-import { fetchAllExams } from '../../../../helpers/searchHelpers'
 import { cloneDeep } from 'lodash'
 import styles from '../UserProfileFormStyles.module.css'
 import {
@@ -16,8 +15,8 @@ import {
   splitFields,
   handleResponse
 } from "../../../../helpers/submissionHelpers";
-import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {craftUserUrl} from "../../../../helpers/urlHelper";
+import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
 
 const ExamsInformationForm = ({ data , user_id}) => {
   const [examTypes, setExamTypes] = useState([]);
@@ -26,9 +25,9 @@ const ExamsInformationForm = ({ data , user_id}) => {
   let deletedData = [];
 
   useEffect(() => {
-    fetchAllExams().then((res) =>
+    _getFetcher({exams: craftUrl("exams")}).then(({exams}) =>
       setExamTypes(
-        res.data.map((datum) => {
+        exams.data.map((datum) => {
           return {
             ...datum,
             exam: `${datum.id}-${datum.exam_name}`,
@@ -76,7 +75,7 @@ const ExamsInformationForm = ({ data , user_id}) => {
     const url = craftUserUrl(user_id, "exams");
     const responseObj = await submitChanges(url, requestObj);
 
-    const new_data = handleResponse(requestObj, responseObj, values, "exams", args, transformDataForSubmission);
+    const new_data = handleResponse(send_to_req.exams, requestObj, responseObj, values, "exams", args, transformDataForSubmission);
     applyNewData(new_data);
     console.log("req, ",requestObj, "res", responseObj);
 

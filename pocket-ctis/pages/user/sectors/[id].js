@@ -1,9 +1,3 @@
-import {
-  fetchCompaniesInSector,
-  fetchPeopleWantingToWorkInSector,
-  fetchPeoplWorkingInSector,
-  fetchSector,
-} from '../../../helpers/searchHelpers'
 import { Easel2Fill } from 'react-bootstrap-icons'
 
 import { Tab, Tabs } from 'react-bootstrap'
@@ -14,6 +8,8 @@ import PeopleWishingList from '../../../components/SectorPageComponents/PeopleWi
 import CompaniesList from '../../../components/SectorPageComponents/CompaniesList/CompaniesList'
 
 import styles from '../../../styles/sectors.module.scss'
+import {_getFetcher} from "../../../helpers/fetchHelpers";
+import {craftPathUrl, craftUrl} from "../../../helpers/urlHelper";
 
 const Sector = ({ sector, companies, work, users }) => {
   return (
@@ -25,7 +21,7 @@ const Sector = ({ sector, companies, work, users }) => {
           <div className={styles.sector_icon}>
             <Easel2Fill />
           </div>
-          <h4 className={styles.sector_name}>{sector.data[0].sector_name}</h4>
+          <h4 className={styles.sector_name}>{sector.data.sector_name}</h4>
         </div>
         <Tabs defaultActiveKey='people' className='mb-3'>
           <Tab eventKey='people' title='People'>
@@ -44,15 +40,15 @@ const Sector = ({ sector, companies, work, users }) => {
 }
 
 export async function getServerSideProps(context) {
-  const sector = await fetchSector(context.params.id)
-
-  const data = await Promise.all([
-    fetchCompaniesInSector(context.params.id),
-    fetchPeoplWorkingInSector(context.params.id),
-    fetchPeopleWantingToWorkInSector(context.params.id),
-  ])
-
-  const [companies, work, users] = data
+  const {cookies} = context.req;
+  const token = cookies.AccessJWT;
+  console.log(craftPathUrl(["sectors", context.params.id]));
+  const {companies, work, users, sector} = await _getFetcher({
+    companies: craftUrl("companies", [{name: "sector_id", value: context.params.id}]),
+    work: craftUrl("workrecords", [{name: "sector_id", value: context.params.id}]),
+    users: craftUrl("users", [{name: "wantsector_id", value: context.params.id}]),
+    sector: craftPathUrl(["sectors", context.params.id])
+  }, token);
 
   return {
     props: {

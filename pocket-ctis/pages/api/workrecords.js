@@ -1,10 +1,10 @@
-import {addCondition, doquery} from "../../helpers/dbHelpers";
-import {checkAuth} from "../../helpers/authHelper";
+import {addAndOrWhere, doquery} from "../../helpers/dbHelpers";
+import {checkAuth, checkUserType} from "../../helpers/authHelper";
 
 export default async function handler(req, res) {
-    const auth_success = await checkAuth(req.headers, req.query);
-    if (auth_success.user) {
-        const session = auth_success.user
+    const session = await checkAuth(req.headers, res);
+    const payload = await checkUserType(session, req.query);
+    if (session) {
         const method = req.method;
         switch (method) {
             case "GET":
@@ -28,12 +28,12 @@ export default async function handler(req, res) {
                     }
 
                     if (req.query.sector_id) {
-                        query += addCondition(query, " c.sector_id = ? ");
+                        query += addAndOrWhere(query, " c.sector_id = ? ");
                         values.push(req.query.sector_id);
                     }
-                    if(session !== "admin"){
-                        query += addCondition(query, " (w.visibility = 1 OR w.user_id = ?) ");
-                        values.push(auth_success.user_id);
+                    if(payload.user !== "admin"){
+                        query += addAndOrWhere(query, " (w.visibility = 1 OR w.user_id = ?) ");
+                        values.push(payload.user_id);
                    }
                     query += " GROUP BY w.id ORDER BY record_date DESC";
 
@@ -49,6 +49,6 @@ export default async function handler(req, res) {
                 break;
         }
     }else{
-        res.status(500).json({error: auth_success.error});
+        res.status(500).json({error: "Unauthorized"});
     }
 }

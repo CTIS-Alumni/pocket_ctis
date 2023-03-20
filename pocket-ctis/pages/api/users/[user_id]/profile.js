@@ -1,10 +1,10 @@
 import {doMultiQueries} from "../../../../helpers/dbHelpers";
-import {checkAuth} from "../../../../helpers/authHelper";
+import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 
 export default async function handler(req, res) {
-    const auth_success = await checkAuth(req.headers, req.query);
-       if (auth_success.user) {
-        const session = auth_success.user
+    const session = await checkAuth(req.headers, res);
+    const payload = await checkUserType(session, req.query);
+    if (session) {
         const {user_id} = req.query;
         const method = req.method;
         switch (method) {
@@ -20,59 +20,59 @@ export default async function handler(req, res) {
                     temp = "SELECT ug.id, ug.graduation_project_id, g.graduation_project_name, g.project_year, g.semester, ug.graduation_project_description, ug.visibility FROM usergraduationproject ug " +
                         "LEFT OUTER JOIN graduationproject g ON (ug.graduation_project_id = g.id) " +
                         "WHERE ug.user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND ug.visibility = 1 ";
                     queries.push({name: "graduation_project", query: temp, values: [user_id]});
 
                     temp = "SELECT id, career_objective, visibility FROM usercareerobjective WHERE user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND visibility = 1 ";
                     queries.push({name: "career_objective", query: temp, values: [user_id]});
 
                     temp = "SELECT id, certificate_name, issuing_authority, visibility " +
                         "FROM usercertificate WHERE user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND visibility = 1 ";
                     temp += "ORDER BY certificate_name ASC ";
                     queries.push({name: "certificates", query: temp, values: [user_id]});
 
                     temp = "SELECT id, project_name, project_description, visibility FROM userproject WHERE user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND visibility = 1 ";
                     queries.push({name: "projects", query: temp, values: [user_id]});
 
                     temp = "SELECT  id, email_address, visibility FROM useremail WHERE user_id = ? "
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND visibility = 1 ";
                     temp += "ORDER BY email_address ASC";
                     queries.push({name: "emails", query: temp, values: [user_id]});
 
                     temp = "SELECT uhs.id, hs.high_school_name, uhs.high_school_id, uhs.visibility FROM userhighschool uhs JOIN highschool hs ON (uhs.high_school_id = hs.id) " +
                         "WHERE uhs.user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND uhs.visibility = 1 ";
                     queries.push({name: "high_school", query: temp, values: [user_id]});
 
                     temp = "SELECT ul.id, ul.city_id, ci.city_name, ul.country_id, co.country_name, ul.visibility FROM userlocation ul " +
                         "LEFT OUTER JOIN city ci ON (ul.city_id = ci.id) " +
                         "LEFT OUTER JOIN country co ON (ul.country_id = co.id) WHERE ul.user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND ul.visibility = 1 ";
                     queries.push({name: "location", query: temp, values: [user_id]});
 
                     temp = "SELECT id, phone_number, visibility FROM userphone WHERE user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND visibility = 1 ";
                     queries.push({name: "phone_numbers", query: temp, values: [user_id]});
 
                     temp = "SELECT id, profile_picture, visibility FROM userprofilepicture WHERE user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND visibility = 1 ";
                     queries.push({name: "profile_picture", query: temp, values: [user_id]});
 
                     temp = "SELECT ue.id, ex.exam_name, ue.exam_id, ue.grade, ue.exam_date, ue.visibility FROM userexam ue JOIN exam ex ON (ue.exam_id = ex.id) " +
                         "WHERE ue.user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND ue.visibility = 1 ";
                     temp += "ORDER BY ex.exam_name ASC ";
                     queries.push({name: "exams", query: temp, values: [user_id]});
@@ -81,7 +81,7 @@ export default async function handler(req, res) {
                         "FROM userskill us JOIN skill sk ON (us.skill_id = sk.id) " +
                         "JOIN skilltype skt ON (sk.skill_type_id = skt.id) " +
                         "WHERE us.user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND us.visibility = 1 ";
                     temp += "ORDER BY sk.skill_type_id ASC ";
                     queries.push({name: "skills", query: temp, values: [user_id]});
@@ -89,7 +89,7 @@ export default async function handler(req, res) {
                     temp = "SELECT usm.id, sm.social_media_name, usm.social_media_id, sm.base_link, usm.link, usm.visibility " +
                         "FROM usersocialmedia usm JOIN socialmedia sm ON (usm.social_media_id = sm.id) " +
                         "WHERE usm.user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND usm.visibility = 1 ";
                     temp += "ORDER BY sm.social_media_name ASC ";
                     queries.push({name: "socials", query: temp, values: [user_id]});
@@ -97,14 +97,14 @@ export default async function handler(req, res) {
                     temp = "SELECT uss.id, uss.society_id, ss.society_name, uss.activity_status, uss.visibility " +
                         "FROM userstudentsociety uss JOIN studentsociety ss ON (uss.society_id = ss.id) " +
                         "WHERE uss.user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND uss.visibility = 1 ";
                     temp += "ORDER BY ss.society_name ASC";
                     queries.push({name: "societies", query: temp, values: [user_id]});
 
                     temp = "SELECT uws.id, uws.sector_id, s.sector_name, uws.visibility FROM userwantsector uws JOIN sector s ON (uws.sector_id = s.id) " +
                         "WHERE uws.user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND uws.visibility = 1 ";
                     temp += "ORDER BY s.sector_name ASC";
                     queries.push({name: "wanted_sectors", query: temp, values: [user_id]});
@@ -115,7 +115,7 @@ export default async function handler(req, res) {
                         "LEFT OUTER JOIN city ci ON (w.city_id = ci.id) " +
                         "LEFT OUTER JOIN country co ON (w.country_id = co.id) " +
                         "WHERE w.user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND w.visibility = 1 ";
                     temp += "ORDER BY w.start_date DESC"
                     queries.push({name: "work_records", query: temp, values: [user_id]});
@@ -123,7 +123,7 @@ export default async function handler(req, res) {
                     temp = "SELECT i.id, c.company_name, i.company_id, i.semester, i.department, i.start_date, i.end_date, i.rating, i.opinion, i.visibility " +
                         "FROM internshiprecord i JOIN company c ON (i.company_id = c.id) " +
                         "WHERE i.user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND i.visibility = 1 ";
                     temp += "ORDER BY i.start_date DESC";
                     queries.push({name: "internships", query: temp, values: [user_id]});
@@ -134,7 +134,7 @@ export default async function handler(req, res) {
                         "LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) " +
                         "LEFT OUTER JOIN country co ON (ci.country_id = co.id) " +
                         "WHERE er.user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND er.visibility = 1 ";
                     queries.push({name: "erasmus", query: temp, values: [user_id]});
 
@@ -146,7 +146,7 @@ export default async function handler(req, res) {
                         "LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) " +
                         "LEFT OUTER JOIN country co ON (ci.country_id = co.id) " +
                         "WHERE e.user_id = ? ";
-                    if (session === "visitor")
+                    if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND e.visibility = 1 ";
                     temp += "ORDER BY e.start_date DESC";
                     queries.push({name: "edu_records", query: temp, values: [user_id]});
@@ -159,7 +159,7 @@ export default async function handler(req, res) {
                 }
                 break;
             case "PUT":
-                if(session !== "visitor"){
+                if (payload.user === "admin" || payload.user === "owner") {
                     let put_queries = [];
                     try {
                         const {visibility} = JSON.parse(req.body);
@@ -224,10 +224,12 @@ export default async function handler(req, res) {
                     } catch (error) {
                         res.status(500).json({error: error.message});
                     }
+                }else{
+                    res.status(500).json({errors: "Unauthorized"});
                 }
                 break;
         }
-    }else{
-        res.status(500).json({errors: auth_success});
+    } else {
+        res.status(500).json({errors: "Unauthorized"});
     }
 }

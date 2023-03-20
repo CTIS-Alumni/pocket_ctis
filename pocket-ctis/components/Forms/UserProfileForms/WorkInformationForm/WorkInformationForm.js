@@ -1,8 +1,4 @@
 import styles from '../UserProfileFormStyles.module.css'
-import {
-  fetchAllCompanies,
-  fetchAllWorkTypes,
-} from '../../../../helpers/searchHelpers'
 import { useEffect, useState, useContext } from 'react'
 import { Formik, Form, FieldArray, Field } from 'formik'
 import {cloneDeep} from 'lodash'
@@ -15,9 +11,9 @@ import {
   XCircleFill,
 } from 'react-bootstrap-icons'
 import DatePickerField from '../../../DatePickers/DatePicker'
-import {craftUserUrl} from "../../../../helpers/urlHelper";
+import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
 import { Location_data } from '../../../../context/locationContext'
-import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {
   convertToIso,
   replaceWithNull,
@@ -33,10 +29,13 @@ const WorkInformationForm = ({ data , user_id}) => {
   let deletedData = [];
 
   useEffect(() => {
-    fetchAllCompanies().then((res) => setCompanies(res.data))
-    fetchAllWorkTypes()
-      .then((res) => setWorktypes(res.data))
-      .catch((err) => console.log(err))
+    _getFetcher({
+      companies: craftUrl("companies"),
+      work_types: craftUrl("worktypes")
+    }).then(({companies, work_types}) => {
+      setCompanies(companies.data);
+      setWorktypes(work_types.data);
+    }).catch((err) => console.log(err))
   }, [])
 
   const applyNewData = (data) => {
@@ -90,7 +89,7 @@ const WorkInformationForm = ({ data , user_id}) => {
     const url = craftUserUrl(user_id, "workrecords");
     const responseObj = await submitChanges(url, requestObj);
 
-    const new_data = handleResponse(requestObj, responseObj, values, "work_records", args, transformDataForSubmission);
+    const new_data = handleResponse(send_to_req.work_records, requestObj, responseObj, values, "work_records", args, transformDataForSubmission);
     applyNewData(new_data);
     console.log("req", requestObj, "res", responseObj);
 

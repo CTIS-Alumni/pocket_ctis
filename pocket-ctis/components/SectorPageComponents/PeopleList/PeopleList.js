@@ -22,11 +22,9 @@ const PeopleList = ({ people }) => {
                       backgroundImage:
                         'url(' +
                         '/profilepictures/' +
-                        (person.record_visibility
-                          ? person.pic_visibility
+                        (person.pic_visibility
                             ? person.profile_picture
-                            : 'defaultuser'
-                          : 'defaultuser') +
+                            : 'defaultuser') +
                         '.png' +
                         ')',
                     }}
@@ -35,11 +33,17 @@ const PeopleList = ({ people }) => {
                     <span className={styles.people_item_name}>
                       {person.first_name} {person.last_name}
                     </span>
+                      <span className={styles.people_item_position}>
+                      {person.company_name}
+                    </span>
                     <span className={styles.people_item_position}>
-                      {person.position || 'Developer'}
+                      {person.position}
+                    </span>
+                      <span className={styles.people_item_work_period}>
+                      {person.work_type_name}
                     </span>
                     <span className={styles.people_item_department}>
-                      {person.department && `${person.department}`}
+                      {person.department}
                     </span>
                     <span className={styles.people_item_work_period}>
                       {workPeriod}

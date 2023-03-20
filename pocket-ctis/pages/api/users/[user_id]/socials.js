@@ -1,13 +1,27 @@
 import {
-    createGetQueries,
-    createPostQueries,
-    createPutQueries,
-    doMultiInsertQueries,
+    buildSelectQueries, buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
+    InsertToUser,
     doMultiQueries,
-    doquery
+    doquery, insertToUser
 } from "../../../../helpers/dbHelpers";
 import  limitPerUser from '../../../../config/moduleConfig.js';
-import {checkAuth} from "../../../../helpers/authHelper";
+import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
+
+const field_conditions = {
+    must_be_different: ["social_media_id", "link"],
+    date_fields: [],
+    user: {
+        check_user_only: false,
+        user_id: null
+    }
+}
+
+const fields = {
+    basic: ["social_media_id", "link","visibility"],
+    date: []
+};
+
+const table_name = "usersocialmedia";
 
 const validation = async (data) => {
     if(data.link.trim() == "")
@@ -18,38 +32,19 @@ const validation = async (data) => {
 }
 
 export default async function handler(req, res){
-    const auth_success = await checkAuth(req.headers, req.query);
-    if(auth_success.user && (auth_success.user === "admin" || auth_success.user === "owner")) {
+    const session = await checkAuth(req.headers, res);
+    const payload = await checkUserType(session, req.query);
+    if(payload.user === "admin" || payload.user === "owner") {
+        const socials = JSON.parse(req.body);
         const {user_id} = req.query;
+        field_conditions.user.user_id = user_id;
         const method = req.method;
         switch (method) {
-            case "GET":
-                try {
-                    const query = "SELECT usm.id, sm.social_media_name, usm.link, usm.visibility " +
-                        "FROM usersocialmedia usm JOIN socialmedia sm ON (usm.social_media_id = sm.id) " +
-                        "WHERE usm.user_id = ? order by sm.social_media_name asc ";
-
-                    const data = await doquery({query: query, values: [user_id]});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
-                } catch (error) {
-                    res.status(500).json({error: error.message});
-                }
-                break;
             case "POST":
                 try {
-                    const socials = JSON.parse(req.body);
-                    const base_query = "INSERT INTO usersocialmedia(user_id, social_media_id, link ";
-                    const base_values = ["user_id", "social_media_id", "link"];
-                    const optional_values = ["visibility"];
-                    const queries = createPostQueries(socials, base_query, base_values, optional_values, user_id);
-                    const select_queries = createGetQueries(socials, "usersocialmedia", ["social_media_id", "link"], user_id, true, true);
-                    const {
-                        data,
-                        errors
-                    } = await doMultiInsertQueries(queries, select_queries, "usersocialmedia", limitPerUser.social_media, validation);
+                    const queries = buildInsertQueries(socials, table_name, fields, user_id);
+                    const select_queries = buildSelectQueries(socials, table_name, field_conditions);
+                    const {data, errors} = await insertToUser(queries, table_name, validation, select_queries, limitPerUser.social_media);
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
@@ -57,12 +52,8 @@ export default async function handler(req, res){
                 break;
             case "PUT":
                 try {
-                    const socials = JSON.parse(req.body);
-                    const base_query = "UPDATE usersocialmedia SET social_media_id = :social_media_id, link = :link, ";
-                    const base_values = ["social_media_id", "link"];
-                    const optional_values = ["visibility"];
-                    const queries = createPutQueries(socials, base_query, base_values, optional_values);
-                    const select_queries = createGetQueries(socials, "usersocialmedia", ["social_media_id", "link"], user_id, false, true);
+                    const queries = buildUpdateQueries(socials, table_name, fields);
+                    const select_queries = buildSelectQueries(socials, table_name, field_conditions);
                     const {data, errors} = await doMultiQueries(queries, select_queries, validation);
                     res.status(200).json({data, errors});
                 } catch (error) {
@@ -71,17 +62,7 @@ export default async function handler(req, res){
                 break;
             case "DELETE":
                 try {
-                    const socials = JSON.parse(req.body);
-                    let queries = [];
-                    const tempQuery = "DELETE FROM usersocialmedia WHERE id = ?";
-                    socials.forEach((s) => {
-                        queries.push({
-                            name: s.id,
-                            query: tempQuery,
-                            values: [s.id]
-                        });
-                    });
-                    const {data, errors} = await doMultiQueries(queries);
+                    const {data, errors} = await doMultiDeleteQueries(socials, table_name);
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
@@ -89,6 +70,6 @@ export default async function handler(req, res){
                 break;
         }
     }else{
-        res.status(500).json({errors: auth_success});
+        res.status(500).json({errors: "Unauthorized"});
     }
 }

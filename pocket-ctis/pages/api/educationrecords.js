@@ -1,10 +1,10 @@
-import {addCondition, doquery} from "../../helpers/dbHelpers";
-import {checkAuth} from "../../helpers/authHelper";
+import {addAndOrWhere, doquery} from "../../helpers/dbHelpers";
+import {checkAuth, checkUserType} from "../../helpers/authHelper";
 
 export default async function handler(req, res){
-    const auth_success = await checkAuth(req.headers, req.query);
-    if (auth_success.user) {
-        const session = auth_success.user
+    const session = await checkAuth(req.headers, res);
+    const payload = await checkUserType(session, req.query);
+    if (session) {
         const method = req.method;
         switch (method) {
             case "GET":
@@ -26,9 +26,9 @@ export default async function handler(req, res){
                         values.push(req.query.edu_inst_id);
                     }
 
-                    if (session !== "admin") {
-                        query += addCondition(query, " (e.visibility = 1 OR e.user_id = ?) ");
-                        values.push(auth_success.user_id);
+                    if (payload.user !== "admin") {
+                        query += addAndOrWhere(query, " (e.visibility = 1 OR e.user_id = ?) ");
+                        values.push(payload.user_id);
                     }
 
                     query += "GROUP BY e.id ORDER BY e.record_date DESC";
@@ -43,6 +43,6 @@ export default async function handler(req, res){
                 break;
         }
     }else{
-        res.status(500).json({error: auth_success.error});
+        res.status(500).json({error: "Unauthorized"});
     }
 }

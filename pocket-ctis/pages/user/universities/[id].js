@@ -5,7 +5,8 @@ import { getTimePeriod } from '../../../helpers/formatHelpers'
 import React from 'react'
 import { MortarboardFill } from 'react-bootstrap-icons'
 import styles from '../../../styles/universities.module.scss'
-import { fetchEducationalRecordsByInstitute, fetchEducationInstituteById } from '../../../helpers/searchHelpers'
+import {_getFetcher} from "../../../helpers/fetchHelpers";
+import {craftPathUrl, craftUrl} from "../../../helpers/urlHelper";
 
 const EducationInstitute = ({ edu_inst, users }) => {
   return (
@@ -21,11 +22,11 @@ const EducationInstitute = ({ edu_inst, users }) => {
             </div>
 
             <div>
-              <h5 className={styles.university_info_title}>{edu_inst.edu_inst_name}</h5>
+              <h5 className={styles.university_info_title}>{edu_inst.data.edu_inst_name}</h5>
               <span className={styles.university_info_location}>
-                {edu_inst.city_name}{' '}
-                {edu_inst.city_name && edu_inst.country_name && `-`}{' '}
-                {edu_inst.country_name}
+                {edu_inst.data.city_name}{' '}
+                {edu_inst.data.city_name && edu_inst.data.country_name && `-`}{' '}
+                {edu_inst.data.country_name}
               </span>
             </div>
           </div>
@@ -33,12 +34,12 @@ const EducationInstitute = ({ edu_inst, users }) => {
           <span className={styles.university_info_people}>
             {users.data.length > 0
               ? `
-            People who have studied at ${edu_inst.edu_inst_name}:`
-              : `No one from your department have studied at ${edu_inst.edu_inst_name}.`}
+            People who have studied at ${edu_inst.data.edu_inst_name}:`
+              : `No one from your department have studied at ${edu_inst.data.edu_inst_name}.`}
           </span>
         </div>
 
-        {edu_inst.is_erasmus == 1 && (
+        {edu_inst.data.is_erasmus == 1 && (
           <div className={styles.university_erasmus_badge}>
             <span>ERASMUS</span>
           </div>
@@ -58,7 +59,7 @@ const EducationInstitute = ({ edu_inst, users }) => {
             <div>
               <div
                 className='user_avatar_48'
-                style={{backgroundImage: "url(" + '/profilepictures/' + (user.record_visibility ? (user.pic_visibility ? user.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
+                style={{backgroundImage: "url(" + '/profilepictures/' + (user.pic_visibility ? user.profile_picture : "defaultuser") + '.png' + ")"}}
               />
 
               <div className={styles.university_people_item_info}>
@@ -90,9 +91,14 @@ const EducationInstitute = ({ edu_inst, users }) => {
 }
 
 export async function getServerSideProps(context) {
-  const educationinstitute = await fetchEducationInstituteById(context.params.id)
-  const users = await fetchEducationalRecordsByInstitute(context.params.id)
-  return { props: { edu_inst: educationinstitute , users } }
+  const {cookies} = context.req;
+  const token = cookies.AccessJWT;
+  const {edu_inst, users} = await _getFetcher({
+    edu_inst: craftPathUrl(["educationinstitutes", context.params.id]),
+    users: craftUrl("educationrecords", [{name: "edu_inst_id", value: context.params.id}])
+  }, token);
+
+  return { props: { edu_inst, users } }
 }
 
 export default EducationInstitute

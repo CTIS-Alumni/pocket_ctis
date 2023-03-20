@@ -2,7 +2,8 @@ import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import UniversitiesList from '../../../components/UniversitiesList/UniversitiesList'
 import { useState, useEffect } from 'react'
-import { fetchAllEducationInstitutes, fetchEducationInstitutes } from '../../../helpers/searchHelpers'
+import {_getFetcher} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const UniversitiesDashboard = ({ educationinstitutes }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -14,8 +15,10 @@ const UniversitiesDashboard = ({ educationinstitutes }) => {
 
   const onSearch = ({ searchValue }) => {
     setIsLoading(true)
-    fetchEducationInstitutes(searchValue)
-      .then((res) => setUniversities(res.data))
+    _getFetcher({
+        educationinstitutes: craftUrl("educationinstitutes", [{name: "name", value: searchValue}])
+    })
+      .then(({educationinstitutes}) => setUniversities(educationinstitutes.data))
       .catch((err) => console.log(err))
       .finally((_) => setIsLoading(false))
   }
@@ -33,8 +36,11 @@ const UniversitiesDashboard = ({ educationinstitutes }) => {
   )
 }
 
-export async function getServerSideProps() {
-  const educationinstitutes = await fetchAllEducationInstitutes()
+export async function getServerSideProps(context) {
+    const {cookies} = context.req;
+    const token = cookies.AccessJWT;
+    const {educationinstitutes} = await _getFetcher({
+        educationinstitutes: craftUrl("educationinstitutes")}, token);
   return { props: { educationinstitutes } }
 }
 export default UniversitiesDashboard

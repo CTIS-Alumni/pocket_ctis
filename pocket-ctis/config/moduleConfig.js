@@ -9,7 +9,10 @@ const limitPerUser = {
     education_records: 3,
     emails: 2,
     exams: 3,
-    phone_numbers: 2
+    phone_numbers: 2,
+    internships: 2,
+    erasmus: 2,
+    graduation_projects: 1
 }
 
 module.exports = limitPerUser

@@ -2,7 +2,7 @@ import React from 'react'
 import NavigationBar from '../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../components/UserInfoSidebar/UserInfoSidebar'
 import UsersInfoPanel from '../../components/UsersInfoPanel/UsersInfoPanel'
-import {_getFetcherMultiple} from "../../helpers/fetchHelpers";
+import {_getFetcher} from "../../helpers/fetchHelpers";
 import {craftUrl} from "../../helpers/urlHelper";
 
 const UsersRoute = ({work, edu}) => {
@@ -20,12 +20,11 @@ const UsersRoute = ({work, edu}) => {
 export async function getServerSideProps(context) {
     const {cookies} = context.req;
     const token = cookies.AccessJWT;
-    const {work, edu} = await _getFetcherMultiple(
+    const {work, edu} = await _getFetcher(
         {
             work: craftUrl("workrecords"),
             edu: craftUrl("educationrecords")
-        }, token
-    );
+        }, token);
 
     return {props: {work, edu}}
 }

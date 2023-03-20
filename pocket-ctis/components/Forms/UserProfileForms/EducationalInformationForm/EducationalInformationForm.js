@@ -10,13 +10,9 @@ import {
   XCircleFill,
 } from 'react-bootstrap-icons'
 import { useEffect, useState } from 'react'
-import {
-  fetchAllDegreeTypes,
-  fetchAllEducationInstitutes,
-} from '../../../../helpers/searchHelpers'
 import DatePickerField from '../../../DatePickers/DatePicker'
-import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {craftUserUrl} from "../../../../helpers/urlHelper";
+import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
 import {convertToIso, replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
 
 const EducationInformationForm = ({ data , user_id}) => {
@@ -25,8 +21,13 @@ const EducationInformationForm = ({ data , user_id}) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
   useEffect(() => {
-    fetchAllEducationInstitutes().then((res) => setEduInsts(res.data))
-    fetchAllDegreeTypes().then((res) => setDegreeTypes(res.data))
+    _getFetcher({
+      edu_insts: craftUrl("educationinstitutes"),
+      degree_types: craftUrl("degreetypes")
+    }).then(({edu_insts, degree_types}) => {
+      setEduInsts(edu_insts.data);
+      setDegreeTypes(degree_types.data)
+    });
   }, [])
 
   const applyNewData = (data) => {
@@ -78,7 +79,7 @@ const EducationInformationForm = ({ data , user_id}) => {
     const requestObj = createReqObject(send_to_req.edu_records, newData.edu_records, deletedData);
     const url = craftUserUrl(user_id, "educationrecords");
     const responseObj = await submitChanges(url ,requestObj);
-    const new_data = handleResponse(requestObj, responseObj, values, "edu_records", args, transformDataForSubmission);
+    const new_data = handleResponse(send_to_req.edu_records, requestObj, responseObj, values, "edu_records", args, transformDataForSubmission);
     applyNewData(new_data);
     console.log("req:", requestObj, "res", responseObj);
 

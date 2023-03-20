@@ -22,11 +22,9 @@ const ErasmusStudentsList = ({ erasmus }) => {
                     backgroundImage:
                       'url(' +
                       '/profilepictures/' +
-                      (record.record_visibility
-                        ? record.pic_visibility
+                      (record.pic_visibility
                           ? record.profile_picture
-                          : 'defaultuser'
-                        : 'defaultuser') +
+                          : 'defaultuser') +
                       '.png' +
                       ')',
                   }}

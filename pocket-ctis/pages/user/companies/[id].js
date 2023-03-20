@@ -5,7 +5,7 @@ import { getTimePeriod } from '../../../helpers/formatHelpers'
 import styles from '../../../styles/companies.module.scss'
 import React from 'react'
 import { BuildingFill } from 'react-bootstrap-icons'
-import {_getFetcherMultiple} from "../../../helpers/fetchHelpers";
+import {_getFetcher} from "../../../helpers/fetchHelpers";
 import {craftPathUrl, craftUrl} from "../../../helpers/urlHelper";
 
 const Company = ({ company, users }) => {
@@ -22,19 +22,19 @@ const Company = ({ company, users }) => {
                   <BuildingFill/>
                 </div>
                 <div>
-                  <h5 className={styles.company_info_title}>{company.company_name}</h5>
-                  <span className={styles.company_info_sector}>{company.sector_name}</span>
+                  <h5 className={styles.company_info_title}>{company.data.company_name}</h5>
+                  <span className={styles.company_info_sector}>{company.data.sector_name}</span>
                 </div>
               </div>
 
               <span className={styles.company_info_people}>
                 {users.data.length > 0
-                  ? `People who have worked at ${company.company_name}:`
-                  : `No one from your department have worked at ${company.company_name}.`}
+                  ? `People who have worked at ${company.data.company_name}:`
+                  : `No one from your department have worked at ${company.data.company_name}.`}
               </span>
             </div>
 
-            {company.is_internship == 1 && (
+            {company.data.is_internship == 1 && (
               <div className={styles.company_internship_badge}>
                 <span>Accepts CTIS Internships</span>
               </div>
@@ -53,12 +53,13 @@ const Company = ({ company, users }) => {
                 <div>
                   <div
                     className='user_avatar_48'
-                    style={{backgroundImage: "url(" + '/profilepictures/' + (user.record_visibility ? (user.pic_visibility ? user.profile_picture : "defaultuser") : "defaultuser") + '.png' + ")"}}
+                    style={{backgroundImage: "url(" + '/profilepictures/' + (user.pic_visibility ? user.profile_picture : "defaultuser") + '.png' + ")"}}
                   />
 
                   <div className={styles.company_people_item_info}>
                     <span className={styles.company_people_item_name}>{user.first_name} {user.last_name}</span>
                     <span className={styles.company_people_item_position}>{user.position}</span>
+                      <span className={styles.company_people_item_department}>{user.work_type_name}</span>
                     <span className={styles.company_people_item_department}>{user.department && `${user.department}`}</span>
                     <span className={styles.company_people_item_type}>{user.type_name}</span>
                     <span className={styles.company_people_item_work_period}>{workPeriod}</span>
@@ -85,7 +86,7 @@ const Company = ({ company, users }) => {
 export async function getServerSideProps(context) {
     const {cookies} = context.req;
     const token = cookies.AccessJWT;
-    const {company, users} = await _getFetcherMultiple({
+    const {company, users} = await _getFetcher({
         company: craftPathUrl(["companies", context.params.id]),
         users: craftUrl("workrecords", [{name: "company_id", value: context.params.id}])
     }, token);

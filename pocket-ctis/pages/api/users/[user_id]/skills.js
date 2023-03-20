@@ -1,13 +1,27 @@
 import {
-    createGetQueries,
-    createPostQueries,
-    createPutQueries,
-    doMultiInsertQueries, doMultiPutQueries,
+    buildSelectQueries, buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
+    InsertToUser, updateTable,
     doMultiQueries,
-    doquery
+    doquery, insertToUser
 } from "../../../../helpers/dbHelpers";
 import limitPerUser from '../../../../config/moduleConfig.js';
-import {checkAuth} from "../../../../helpers/authHelper";
+import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
+
+const field_conditions = {
+    must_be_different: ["skill_id"],
+    date_fields: [],
+    user: {
+        check_user_only: true,
+        user_id: null
+    }
+}
+
+const fields = {
+    basic: ["skill_id", "skill_level", "visibility"],
+    date: []
+};
+
+const table_name = "userskill";
 
 const validation = (data) => {
     if (data.skill_level != null && (data.skill_level < 1 || data.skill_level > 5))
@@ -19,39 +33,19 @@ const validation = (data) => {
 }
 
 export default async function handler(req, res){
-    const auth_success = await checkAuth(req.headers, req.query);
-    if(auth_success.user && (auth_success.user === "admin" || auth_success.user === "owner")) {
+    const session = await checkAuth(req.headers, res);
+    const payload = await checkUserType(session, req.query);
+    if(payload.user === "admin" || payload.user === "owner") {
+        const skills = JSON.parse(req.body);
         const {user_id} = req.query;
+        field_conditions.user.user_id = user_id;
         const method = req.method;
         switch (method) {
-            case "GET":
-                try {
-                    const query = "SELECT us.id, sk.skill_name, us.skill_level, skt.skill_type_name, us.skill_level, us.visibility " +
-                        "FROM userskill us JOIN skill sk ON (us.skill_id = sk.id) " +
-                        "JOIN skilltype skt ON (sk.skill_type_id = skt.id) " +
-                        "WHERE us.user_id = ? order by sk.skill_type_id asc ";
-
-                    const data = await doquery({query: query, values: [user_id]});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
-                } catch (error) {
-                    res.status(500).json({error: error.message});
-                }
-                break;
             case "POST":
                 try {
-                    const skills = JSON.parse(req.body);
-                    const base_query = "INSERT INTO userskill(user_id, skill_id ";
-                    const base_values = ["user_id", "skill_id"];
-                    const optional_values = ["skill_level", "visibility"];
-                    const queries = createPostQueries(skills, base_query, base_values, optional_values, user_id);
-                    const select_queries = createGetQueries(skills, "userskill", ["skill_id"], user_id, true);
-                    const {
-                        data,
-                        errors
-                    } = await doMultiInsertQueries(queries, select_queries, "userskill", limitPerUser.skills, validation);
+                    const queries = buildInsertQueries(skills, table_name, fields, user_id);
+                    const select_queries = buildSelectQueries(skills, table_name, field_conditions);
+                    const {data, errors} = await insertToUser(queries, table_name, validation, select_queries, limitPerUser.skills);
                     res.status(200).json({data, errors});
 
                 } catch (error) {
@@ -60,13 +54,9 @@ export default async function handler(req, res){
                 break;
             case "PUT":
                 try {
-                    const skills = JSON.parse(req.body);
-                    const base_query = "UPDATE userskill SET skill_id = :skill_id, ";
-                    const base_values = ["skill_id"];
-                    const optional_values = ["skill_level", "visibility"];
-                    const queries = createPutQueries(skills, base_query, base_values, optional_values);
-                    const select_queries = createGetQueries(skills, "userskill", ["skill_id"], user_id, false);
-                    const {data, errors} = await doMultiPutQueries(queries, select_queries, validation);
+                    const queries = buildUpdateQueries(skills, table_name, fields);
+                    const select_queries = buildSelectQueries(skills, table_name, field_conditions);
+                    const {data, errors} = await updateTable(queries, validation, select_queries);
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
@@ -74,17 +64,7 @@ export default async function handler(req, res){
                 break;
             case "DELETE":
                 try {
-                    const skills = JSON.parse(req.body);
-                    let queries = [];
-                    const tempQuery = "DELETE FROM userskill WHERE id = ?";
-                    skills.forEach((skill) => {
-                        queries.push({
-                            name: skill.id,
-                            query: tempQuery,
-                            values: [skill.id]
-                        })
-                    });
-                    const {data, errors} = await doMultiQueries(queries);
+                    const {data, errors} = await doMultiDeleteQueries(skills, table_name);
                     res.status(200).json({data, errors});
                 } catch (errors) {
                     res.status(500).json({error: error.message});
@@ -92,6 +72,6 @@ export default async function handler(req, res){
                 break;
         }
     }else{
-        res.status(500).json({errors: auth_success});
+        res.status(500).json({errors: "Unauthorized"});
     }
 }

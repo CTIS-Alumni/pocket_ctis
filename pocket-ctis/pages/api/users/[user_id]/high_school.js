@@ -1,11 +1,17 @@
 import {
-    createPostQueries,
-    createPutQueries,
-    doMultiInsertQueries,
+    buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
+    InsertToUser,
     doMultiQueries,
-    doquery
+    doquery, insertToUser
 } from "../../../../helpers/dbHelpers";
-import {checkAuth} from "../../../../helpers/authHelper";
+import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
+
+const table_name = "userhighschool";
+
+const fields = {
+    basic: ["high_school_id", "visibility"],
+    date: []
+};
 
 const validation = (data) => {
     if(data.visibility !== 1 && data.visibility !== 0)
@@ -14,32 +20,17 @@ const validation = (data) => {
 }
 
 export default async function handler(req, res){
-    const auth_success = await checkAuth(req.headers, req.query);
-    if(auth_success.user && (auth_success.user === "admin" || auth_success.user === "owner")){
+    const session = await checkAuth(req.headers, res);
+    const payload = await checkUserType(session, req.query);
+    if(payload.user === "admin" || payload.user === "owner") {
+        const high_schools = JSON.parse(req.body);
         const {user_id} = req.query;
         const method = req.method;
         switch (method) {
-            case "GET":
-                try {
-                    const query = "SELECT uhs.id, hs.high_school_name, uhs.visibility FROM userhighschool uhs JOIN highschool hs ON (uhs.high_school_id = hs.id) " +
-                        "WHERE uhs.user_id = ?";
-                    const data = await doquery({query: query, values: [user_id]});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
-                } catch (error) {
-                    res.status(500).json({error: error.message});
-                }
-                break;
             case "POST":
                 try {
-                    const high_schools = JSON.parse(req.body);
-                    const base_query = "INSERT INTO userhighschool(user_id, high_school_id ";
-                    const base_values = ["user_id", "high_school_id"];
-                    const optional_values = ["visibility"];
-                    const queries = createPostQueries(high_schools, base_query, base_values, optional_values, user_id);
-                    const {data, errors} = await doMultiInsertQueries(queries, [], "userhighschool", 0, validation);
+                    const queries = buildInsertQueries(high_schools, table_name, fields, user_id);
+                    const {data, errors} = await insertToUser(queries, table_name, validation);
                     res.status(200).json({data, errors});
 
                 } catch (error) {
@@ -48,11 +39,7 @@ export default async function handler(req, res){
                 break;
             case "PUT":
                 try {
-                    const high_schools = JSON.parse(req.body);
-                    const base_query = "UPDATE userhighschool SET high_school_id = :high_school_id, "
-                    const base_values = ["high_school_id"];
-                    const optional_values = ["visibility"];
-                    const queries = createPutQueries(high_schools, base_query, base_values, optional_values);
+                    const queries = buildUpdateQueries(high_schools, table_name, fields);
                     const {data, errors} = await doMultiQueries(queries, true);
                     res.status(200).json({data, errors});
 
@@ -62,17 +49,7 @@ export default async function handler(req, res){
                 break;
             case "DELETE":
                 try {
-                    const high_schools = JSON.parse(req.body);
-                    let queries = [];
-                    const tempQuery = "DELETE FROM userhighschool WHERE id = ?"
-                    high_schools.forEach((hs) => {
-                        queries.push({
-                            name: hs.id,
-                            query: tempQuery,
-                            values: [hs.id]
-                        });
-                    });
-                    const {data, errors} = await doMultiQueries(queries);
+                    const {data, errors} = await doMultiDeleteQueries(high_schools, table_name);
                     res.status(200).json({data, errors});
 
                 } catch (error) {
@@ -81,6 +58,6 @@ export default async function handler(req, res){
                 break;
         }
     }else{
-        res.status(500).json({errors: auth_success});
+        res.status(500).json({errors: "Unauthorized"});
     }
 }

@@ -2,8 +2,8 @@ import {doquery} from "../../helpers/dbHelpers";
 import {checkAuth} from "../../helpers/authHelper";
 
 export default async function handler(req, res){
-    const auth_success = await checkAuth(req.headers, req.query);
-    if (auth_success.user) {
+    const session = await checkAuth(req.headers, res);
+    if (session) {
         const method = req.method;
         switch (method) {
             case "GET":
@@ -20,6 +20,6 @@ export default async function handler(req, res){
                 break;
         }
     }else {
-        res.status(500).json({error: auth_success.error});
+        res.status(500).json({error: "Unauthorized"});
     }
 }

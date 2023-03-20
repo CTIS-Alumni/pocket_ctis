@@ -1,11 +1,17 @@
 import {
-    createPostQueries,
-    createPutQueries,
-    doMultiInsertQueries,
+    buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
+    InsertToUser,
     doMultiQueries,
-    doquery
+    doquery, insertToUser
 } from "../../../../helpers/dbHelpers";
-import {checkAuth} from "../../../../helpers/authHelper";
+import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
+
+const table_name = "userlocation";
+
+const fields = {
+    basic: ["country_id", "city_id", "visibility"],
+    date: []
+};
 
 const validation = (data) => {
     if(data.visibility !== 1 && data.visibility !== 0)
@@ -14,30 +20,17 @@ const validation = (data) => {
 }
 
 export default async function handler(req, res){
-    const auth_success = await checkAuth(req.headers, req.query);
-    if(auth_success.user && (auth_success.user === "admin" || auth_success.user === "owner")){
+    const session = await checkAuth(req.headers, res);
+    const payload = await checkUserType(session, req.query);
+    if(payload.user === "admin" || payload.user === "owner") {
+        const location = JSON.parse(req.body);
         const {user_id} = req.query;
         const method = req.method;
         switch (method) {
-            case "GET":
-                try {
-                    const query = "SELECT ul.id, ul.city_id, ci.city_name, ul.country_id, co.country_name, ul.visibility FROM userlocation ul " +
-                        "LEFT OUTER JOIN city ci ON (ul.city_id = ci.id) " +
-                        "LEFT OUTER JOIN country co ON (w.country_id = co.id) WHERE ul.user_id = ?";
-                    const data = await doquery({query: query, values: [user_id]});
-                    res.status(200).json({data});
-                } catch (error) {
-                    res.status(500).json({error: error.message});
-                }
-                break;
             case "POST":
                 try {
-                    const location = JSON.parse(req.body);
-                    const base_query = "INSERT INTO userlocation(user_id, country_id ";
-                    const base_values = ["user_id", "country_id"];
-                    const optional_values = ["city_id", "visibility"];
-                    const queries = createPostQueries(location, base_query, base_values, optional_values, user_id);
-                    const {data, errors} = await doMultiInsertQueries(queries, [], "userlocation", 0, validation);
+                    const queries = buildInsertQueries(location, table_name, fields, user_id);
+                    const {data, errors} = await insertToUser(queries, table_name, validation);
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
@@ -45,11 +38,7 @@ export default async function handler(req, res){
                 break;
             case "PUT":
                 try {
-                    const location = JSON.parse(req.body);
-                    const base_query = "UPDATE userlocation SET country_id = :country_id, ";
-                    const base_values = ["country_id"];
-                    const optional_values = ["city_id", "visibility"];
-                    const queries = createPutQueries(location, base_query, base_values, optional_values);
+                    const queries = buildUpdateQueries(location, table_name, fields);
                     const {data, errors} = await doMultiQueries(queries, true);
                     res.status(200).json({data, errors});
                 } catch (error) {
@@ -58,17 +47,7 @@ export default async function handler(req, res){
                 break;
             case "DELETE":
                 try {
-                    const location = JSON.parse(req.body);
-                    let queries = [];
-                    const tempQuery = "DELETE FROM userlocation WHERE id = ?";
-                    location.forEach((loc) => {
-                        queries.push({
-                            name: loc.id,
-                            query: tempQuery,
-                            values: [loc.id]
-                        });
-                    });
-                    const {data, errors} = await doMultiQueries(queries);
+                    const {data, errors} = await doMultiDeleteQueries(location, table_name);
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
@@ -76,6 +55,6 @@ export default async function handler(req, res){
                 break;
         }
     }else{
-        res.status(500).json({errors: auth_success});
+        res.status(500).json({errors: "Unauthorized"});
     }
 }

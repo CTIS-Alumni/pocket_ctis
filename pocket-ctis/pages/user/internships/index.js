@@ -1,8 +1,3 @@
-import {
-  fetchAllInternshipRecords,
-  fetchInternshipCompanies,
-} from '../../../helpers/searchHelpers'
-
 import { Tab, Tabs } from 'react-bootstrap'
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
@@ -10,6 +5,8 @@ import InternshipsList from '../../../components/InternshipPageComponents/Intern
 import InternshipCompaniesList from '../../../components/InternshipPageComponents/InternshipCompaniesList/InternshipCompaniesList'
 
 import styles from '../../../styles/internships.module.scss'
+import {_getFetcher} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const InternshipsDashboard = ({ internships, companies }) => {
   return (
@@ -31,9 +28,13 @@ const InternshipsDashboard = ({ internships, companies }) => {
   )
 }
 
-export async function getServerSideProps() {
-  const internships = await fetchAllInternshipRecords()
-  const companies = await fetchInternshipCompanies()
+export async function getServerSideProps(context) {
+  const {cookies} = context.req;
+  const token = cookies.AccessJWT;
+  const {internships, companies} = await _getFetcher({
+    internships: craftUrl("internships"),
+    companies: craftUrl("companies", [{name: "is_internship", value: 1}])
+  }, token);
   return { props: { internships, companies } }
 }
 export default InternshipsDashboard

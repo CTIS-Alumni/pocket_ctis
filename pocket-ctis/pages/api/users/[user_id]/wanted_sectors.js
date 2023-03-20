@@ -1,40 +1,24 @@
 import {
-    createPostQueries,
-    createPutQueries,
-    doMultiInsertQueries,
+    InsertToUser,
     doMultiQueries,
     doquery
 } from "../../../../helpers/dbHelpers";
-import {checkAuth} from "../../../../helpers/authHelper";
+import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 
 export default async function handler(req, res){
-    const auth_success = await checkAuth(req.headers, req.query);
-    if(auth_success.user && (auth_success.user === "admin" || auth_success.user === "owner")) {
+    const session = await checkAuth(req.headers, res);
+    const payload = await checkUserType(session, req.query);
+    if(payload.user === "admin" || payload.user === "owner") {
         const {user_id} = req.query;
         const method = req.method;
         switch (method) {
-            case "GET":
-                try {
-                    const query = "SELECT uws.id, s.sector_name, uws.visibility " +
-                        "FROM userwantsector uws JOIN sector s ON (uws.sector_id = s.id) " +
-                        "WHERE uws.user_id = ? order by s.sector_name asc";
-                    const data = await doquery({query: query, values: [user_id]});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
-                } catch (error) {
-                    res.status(500).json({error: error.message});
-                }
-                break;
             case "POST":
                 try {
                     const sectors = JSON.parse(req.body);
-                    const base_query = "INSERT INTO userwantsector(user_id, sector_id ";
-                    const base_values = ["user_id", "sector_id"];
-                    const optional_values = ["visibility"];
-                    const queries = createPostQueries(sectors, base_query, base_values, optional_values, user_id);
-                    const {data, errors} = await doMultiInsertQueries(queries, "userwantsector");
+                    const base_query = "INSERT INTO userwantsector( ";
+                    const fields = ["sector_id", "visibility"];
+                    const queries = buildInsertQueries(sectors, fields, base_query, user_id);
+                    const {data, errors} = await insertToUser(queries, "userwantsector");
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
@@ -46,7 +30,7 @@ export default async function handler(req, res){
                     const base_query = "UPDATE userwantsector SET sector_id = ?, ";
                     const base_values = ["sector_id"];
                     const optional_values = ["visibility"];
-                    const queries = createPutQueries(sectors, base_query, base_values, optional_values);
+                    const queries = (sectors, base_query, base_values, optional_values);
                     const {data, errors} = await doMultiQueries(queries);
                     res.status(200).json({data, errors});
                 } catch (error) {
@@ -73,6 +57,6 @@ export default async function handler(req, res){
                 break;
         }
     }else{
-        res.status(500).json({errors: auth_success});
+        res.status(500).json({errors: "Unauthorized"});
     }
 }

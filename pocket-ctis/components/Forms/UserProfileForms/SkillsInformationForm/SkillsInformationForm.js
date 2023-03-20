@@ -7,14 +7,10 @@ import {
   PlusCircleFill,
 } from 'react-bootstrap-icons'
 import {cloneDeep} from 'lodash'
-import {
-  fetchAllSkills,
-  fetchAllSkillTypes,
-} from '../../../../helpers/searchHelpers'
 import { useState, useEffect } from 'react'
-import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
-import {craftUserUrl} from "../../../../helpers/urlHelper";
+import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
 
 const SkillsInformationForm = ({ data , user_id}) => {
   const [skillType, setSkillType] = useState([])
@@ -22,8 +18,13 @@ const SkillsInformationForm = ({ data , user_id}) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
   useEffect(() => {
-    fetchAllSkills().then((res) => setSkills(res.data))
-    fetchAllSkillTypes().then((res) => setSkillType(res.data))
+    _getFetcher({
+      skills: craftUrl("skills"),
+      skill_types: craftUrl("skilltypes")
+    }).then(({skills, skill_types}) => {
+      setSkills(skills.data);
+      setSkillType(skill_types.data)
+    });
   }, [])
 
   const applyNewData = (data) => {
@@ -47,7 +48,7 @@ const SkillsInformationForm = ({ data , user_id}) => {
   const transformDataForSubmission = (newData) => {
     newData.skills = newData.skills.map((val) => {
       val.visibility = val.visibility ? 1 : 0;
-      val.skill_level = val.skill_level ? val.skill_level.trim() : null;
+      val.skill_level = val.skill_level ? parseInt(val.skill_level) : null;
       replaceWithNull(val);
       splitFields(val, ["skill_type", "skill"]);
       return val;
@@ -64,7 +65,7 @@ const SkillsInformationForm = ({ data , user_id}) => {
     const url = craftUserUrl(user_id, "skills");
     const responseObj = await submitChanges(url, requestObj);
     const args = [["skill_type", "skill"], ["skill_type_id"], ["id", "user_id"], []];
-    const new_data = handleResponse(requestObj, responseObj, values, "skills", args, transformDataForSubmission);
+    const new_data = handleResponse(send_to_req.skills, requestObj, responseObj, values, "skills", args, transformDataForSubmission);
     applyNewData(new_data);
     console.log("req",requestObj, "res",responseObj);
 

@@ -1,16 +1,30 @@
 import {
-    createGetQueries,
-    createPostQueries,
-    createPutQueries,
-    doMultiInsertQueries,
+    buildSelectQueries, buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
+    InsertToUser,
     doMultiQueries,
-    doquery
+    doquery, insertToUser
 } from "../../../../helpers/dbHelpers";
 import  limitPerUser from '../../../../config/moduleConfig.js';
-import {checkAuth} from "../../../../helpers/authHelper";
+import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
+
+const field_conditions = {
+    must_be_different: ["project_name"],
+    date_fields: [],
+    user: {
+        check_user_only: true,
+        user_id: null
+    }
+}
+
+const fields = {
+    basic: ["project_name", "project_description", "visibility"],
+    date: []
+};
+
+const table_name = "userproject";
 
 const validation = (data) => {
-    if(data.project_name.trim() == "" || data.project_description.trim() == "")
+    if(data.project_description !== null && data.project_description.trim() === "")
         return false;
     if(data.visibility !== 1 && data.visibility !== 0)
         return false;
@@ -18,35 +32,19 @@ const validation = (data) => {
 }
 
 export default async function handler(req, res){
-    const auth_success = await checkAuth(req.headers, req.query);
-    if(auth_success.user && (auth_success.user === "admin" || auth_success.user === "owner")) {
+    const session = await checkAuth(req.headers, res);
+    const payload = await checkUserType(session, req.query);
+    if(payload.user === "admin" || payload.user === "owner") {
+        const projects = JSON.parse(req.body);
         const {user_id} = req.query;
+        field_conditions.user.user_id = user_id;
         const method = req.method;
         switch (method) {
-            case "GET":
-                try {
-                    const query = "SELECT id, project_name, project_description, visibility FROM userproject WHERE user_id = ? "
-                    const data = await doquery({query: query, values: [user_id]});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
-                } catch (error) {
-                    res.status(500).json({error: error.message});
-                }
-                break;
             case "POST":
                 try {
-                    const projects = JSON.parse(req.body);
-                    const base_query = "INSERT INTO userproject(user_id, project_name ";
-                    const base_values = ["user_id", "project_name"];
-                    const optional_values = ["project_description", "visibility"];
-                    const queries = createPostQueries(projects, base_query, base_values, optional_values, user_id);
-                    const select_queries = createGetQueries(projects, "userproject", ["project_name", "project_description"], user_id, true);
-                    const {
-                        data,
-                        errors
-                    } = await doMultiInsertQueries(queries, select_queries, "userproject", limitPerUser.projects, validation);
+                    const queries = buildInsertQueries(projects, table_name, fields, user_id);
+                    const select_queries = buildSelectQueries(projects, table_name,field_conditions);
+                    const {data, errors} = await insertToUser(queries, table_name, validation,  select_queries, limitPerUser.projects);
                     res.status(200).json({data, errors, queries});
                 } catch (error) {
                     res.status(500).json({error: error.message});
@@ -54,12 +52,8 @@ export default async function handler(req, res){
                 break;
             case "PUT":
                 try {
-                    const projects = JSON.parse(req.body);
-                    const base_query = "UPDATE userproject SET project_name = :project_name, ";
-                    const base_values = ["project_name"];
-                    const optional_values = ["project_description", "visibility"];
-                    const queries = createPutQueries(projects, base_query, base_values, optional_values);
-                    const select_queries = createGetQueries(projects, "userproject", ["project_name", "project_description"], user_id, false);
+                    const queries = buildUpdateQueries(projects, table_name, fields);
+                    const select_queries = buildSelectQueries(projects, table_name, field_conditions);
                     const {data, errors} = await doMultiQueries(queries, select_queries, validation);
                     res.status(200).json({data, errors});
                 } catch (error) {
@@ -68,17 +62,7 @@ export default async function handler(req, res){
                 break;
             case "DELETE":
                 try {
-                    const projects = JSON.parse(req.body);
-                    let queries = [];
-                    const tempQuery = "DELETE FROM userproject WHERE id = ?";
-                    projects.forEach((record) => {
-                        queries.push({
-                            name: record.id,
-                            query: tempQuery,
-                            values: [record.id]
-                        });
-                    });
-                    const {data, errors} = await doMultiQueries(queries);
+                    const {data, errors} = await doMultiDeleteQueries(projects, table_name);
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
@@ -86,6 +70,6 @@ export default async function handler(req, res){
                 break;
         }
     }else{
-        res.status(500).json({errors: auth_success});
+        res.status(500).json({errors: "Unauthorized"});
     }
 }

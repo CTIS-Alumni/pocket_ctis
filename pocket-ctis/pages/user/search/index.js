@@ -5,19 +5,12 @@ import SearchBar from '../../../components/SearchBar/SearchBar'
 import { Container, ListGroup, ListGroupItem, Badge } from 'react-bootstrap'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import {
-  fetchUsers,
-  fetchHighSchools,
-  fetchCompany,
-  fetchEducationInstitutes,
-  fetchGraduationproject,
-} from '../../../helpers/searchHelpers'
 import styles from "../../../components/UserInfoSidebar/UserInfoSidebar.module.scss";
-import {_getFetcherMultiple} from "../../../helpers/fetchHelpers";
+import {_getFetcher} from "../../../helpers/fetchHelpers";
 import {craftUrl} from "../../../helpers/urlHelper";
 
 const getData = async (search) => {
-  const {companies, eduInsts, gradProjects, users, highSchools} = await _getFetcherMultiple({
+  const {companies, eduInsts, gradProjects, users, highSchools} = await _getFetcher({
     companies: craftUrl("companies", [{name: "name", value: search}]),
     eduInsts: craftUrl("educationinstitutes", [{name: "name", value: search}]),
     gradProjects: craftUrl("graduationprojects", [{name: "name", value: search}]),
@@ -156,7 +149,7 @@ const SearchDataList = ({ searchData }) => {
                 >
                   <div style={{ width: '100%' }}>
                     <div className='d-flex justify-content-between '>
-                      <h5>{graduationProject.project_name}</h5>
+                      <h5>{graduationProject.graduation_project_name}</h5>
                       <p>{`${graduationProject.project_year} - ${graduationProject.semester}`}</p>
                     </div>
                     <span style={{ fontSize: 12, color: '#999' }}>
