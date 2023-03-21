@@ -47,8 +47,20 @@ const PaginationFooter = ({
   const nextPage = () => setCurPage((curPage % numPages) + 1)
   const prevPage = () => setCurPage(curPage == 1 ? numPages : curPage - 1)
 
+  let pagesNums = []
   let pages = []
-  for (let i = 1; i <= numPages; i++) {
+  pages.push(
+    <span
+      key={1}
+      className={1 == currentPage ? styles.active : ''}
+      onClick={() => setCurPage(1)}
+    >
+      {1}
+    </span>
+  )
+
+  for (let i = 2; i < numPages; i++) {
+    pagesNums.push(<option value={i}>{i}</option>)
     if (Math.abs(currentPage - i) < 2) {
       pages.push(
         <span
@@ -59,15 +71,42 @@ const PaginationFooter = ({
           {i}
         </span>
       )
-    }
-    if (Math.abs(currentPage - i) == 2) {
+    } else if (currentPage - i == 2) {
       pages.push(
-        <span key={i} className={styles.ellipsis}>
-          <ThreeDots />
+        <>
+          <span
+            key={i}
+            className={styles.ellipsis}
+            onClick={() => setCurPage(curPage - 5)}
+          >
+            <ThreeDots className={styles.ellipsisIcon} />
+            <ChevronDoubleLeft className={styles.hide} />
+          </span>
+        </>
+      )
+    } else if (currentPage - i == -2) {
+      pages.push(
+        <span
+          key={i}
+          className={styles.ellipsis}
+          onClick={() => setCurPage(curPage + 5)}
+        >
+          <ThreeDots className={styles.ellipsisIcon} />
+          <ChevronDoubleRight className={styles.hide} />
         </span>
       )
     }
   }
+
+  pages.push(
+    <span
+      key={numPages}
+      className={numPages == currentPage ? styles.active : ''}
+      onClick={() => setCurPage(numPages)}
+    >
+      {numPages}
+    </span>
+  )
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -78,34 +117,53 @@ const PaginationFooter = ({
 
   return (
     <div className={styles.pagination}>
-      <span onClick={firstPage}>
-        <ChevronDoubleLeft />
-      </span>
-      <span onClick={prevPage}>
-        <ChevronLeft />
-      </span>
-      {pages}
-      <span onClick={nextPage}>
-        <ChevronRight />
-      </span>
-      <span onClick={lastPage}>
-        <ChevronDoubleRight />
-      </span>
-      <form>
-        <select
-          name='pageLimit'
-          id='pageLimit'
-          value={formik.values.pageLimit}
-          onChange={(event) => {
-            formik.setValues(event.target.value)
-            changeLimit(event.target.value)
-            setNumPages(Math.ceil(total / event.target.value))
-          }}
-        >
-          <option value={15}>15 / pages</option>
-          <option value={30}>30 / pages</option>
-        </select>
-      </form>
+      <div>
+        {numPages > 10 && (
+          <>
+            <label htmlFor='jumpTo' style={{ marginRight: 10 }}>
+              Jump To
+            </label>
+            <select
+              name='jumpTo'
+              id='jumpTo'
+              onChange={(event) => {
+                setCurPage(event.target.value)
+              }}
+              placeholder='Jump to'
+              defaultValue='Jump to'
+            >
+              <option value='' selected disabled>
+                Jump to
+              </option>
+              {pagesNums}
+            </select>
+          </>
+        )}
+      </div>
+      <div>
+        <span onClick={prevPage}>
+          <ChevronLeft />
+        </span>
+        {pages}
+        <span onClick={nextPage}>
+          <ChevronRight />
+        </span>
+        <form style={{ display: 'inline' }}>
+          <select
+            name='pageLimit'
+            id='pageLimit'
+            value={formik.values.pageLimit}
+            onChange={(event) => {
+              formik.setValues(event.target.value)
+              changeLimit(event.target.value)
+              // setNumPages(Math.ceil(total / event.target.value))
+            }}
+          >
+            <option value={15}>15 / pages</option>
+            <option value={30}>30 / pages</option>
+          </select>
+        </form>
+      </div>
     </div>
   )
 }

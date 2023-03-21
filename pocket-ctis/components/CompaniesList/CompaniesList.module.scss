@@ -101,10 +101,15 @@
 
 .pagination {
     display: flex;
-    justify-content: flex-end;
-    align-items: baseline;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 10px;
     font-size: 12px;
+
+    div{
+        display: flex;
+        align-items: center;
+    }
 
     span {
         color: black;
@@ -120,10 +125,27 @@
         border-radius: 5px;
       }
       
-    span:hover:not(.active, .ellipsis) {
+    span:hover:not(.active) {
         background-color: #ddd;
         border-radius: 5px;
         cursor: pointer;
+    }
+    .hide{
+        visibility: hidden;
+        position: absolute;
+        left: 30%;
+        top: 30%
+    }
+    .ellipsis{
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s;
+        &:hover > .hide{
+            visibility: visible;
+        }
+        &:hover > .ellipsisIcon{
+            visibility: hidden;
+        }
     }
 
     select{
