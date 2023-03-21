@@ -18,7 +18,8 @@ import {
 import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
 
-const ExamsInformationForm = ({ data , user_id}) => {
+const ExamsInformationForm = ({ data , user_id, setIsUpdated}) => {
+
   const [examTypes, setExamTypes] = useState([]);
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
@@ -66,6 +67,7 @@ const ExamsInformationForm = ({ data , user_id}) => {
   }
 
   const onSubmit = async (values) => {
+    setIsUpdated(true)
     let newData = cloneDeep(values);
     transformDataForSubmission(newData);
     const args = [["exam"], [], ["id", "user_id"], ["exam_date"]];

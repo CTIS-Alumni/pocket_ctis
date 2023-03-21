@@ -44,5 +44,18 @@
             transition: background-color 0.3s linear;
         }
     }
+
+    svg {
+        width: 2em;
+        height: 2em;
+        color: $medium-grey;
+        transition: color 0.3s linear;
+        cursor: pointer;
+
+        &:hover {
+            color: $dark-grey;
+            transition: color 0.3s linear;
+        }
+    }
 }
 

@@ -20,7 +20,7 @@ import {
   splitFields, handleResponse
 } from "../../../../helpers/submissionHelpers";
 
-const WorkInformationForm = ({ data , user_id}) => {
+const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
   const [companies, setCompanies] = useState([])
   const [worktypes, setWorktypes] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
@@ -53,6 +53,8 @@ const WorkInformationForm = ({ data , user_id}) => {
       datum.work_type = `${datum.work_type_id}-${datum.work_type_name}`
       datum.country = `${datum.country_id}-${datum.country_name}`
       datum.city = `${datum.city_id}-${datum.city_name}`
+      datum.department = datum.department ? datum.department : ''
+      datum.position = datum.position ? datum.position : ''
 
       return datum
     })
@@ -79,6 +81,7 @@ const WorkInformationForm = ({ data , user_id}) => {
   }
 
   const onSubmit = async (values) => {
+    setIsUpdated(true)
     let newData = cloneDeep(values);
     transformDataForSubmission(newData);
 
@@ -124,7 +127,14 @@ const WorkInformationForm = ({ data , user_id}) => {
                               <button
                                 className={styles.addButton}
                                 type='button'
-                                onClick={() => arrayHelpers.insert(0, '')}
+                                onClick={() =>
+                                  arrayHelpers.insert(0, {
+                                    city: '',
+                                    country: '',
+                                    company: '',
+                                    work_type: '',
+                                  })
+                                }
                               >
                                 <PlusCircleFill size={20} />
                               </button>

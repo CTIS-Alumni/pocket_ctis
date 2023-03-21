@@ -13,7 +13,7 @@ import {omitFields, replaceWithNull, splitFields, handleResponse} from "../../..
 import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
 
-const PersonalInformationForm = ({data, user_id}) => {
+const PersonalInformationForm = ({data, user_id, setIsUpdated}) => {
     const {locationData} = useContext(Location_data)
     // const [sectors, setSectors] = useState([]);
     const [highSchools, setHighSchools] = useState([]);
@@ -136,7 +136,8 @@ const PersonalInformationForm = ({data, user_id}) => {
        },*/
 
     const onSubmit = async (values) => {
-        let newData = await cloneDeep(values)
+      setIsUpdated(true)
+      let newData = await cloneDeep(values)
 
         transformFuncs.location(newData);
         if (dataAfterSubmit.location.length > newData.location.length && dataAfterSubmit.location[0].id != "") {

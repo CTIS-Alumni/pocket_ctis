@@ -15,7 +15,7 @@ import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/f
 import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
 import {convertToIso, replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
 
-const EducationInformationForm = ({ data , user_id}) => {
+const EducationInformationForm = ({ data , user_id, setIsUpdated}) => {
   const [eduInsts, setEduInsts] = useState([])
   const [degreeTypes, setDegreeTypes] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
@@ -70,6 +70,7 @@ const EducationInformationForm = ({ data , user_id}) => {
   }
 
   const onSubmit = async (values) => {
+    setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData);
 

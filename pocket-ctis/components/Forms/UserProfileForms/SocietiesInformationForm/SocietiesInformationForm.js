@@ -12,7 +12,7 @@ import {replaceWithNull, splitFields, handleResponse} from "../../../../helpers/
 import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
 
-const SocietiesInformationForm = ({ data , user_id}) => {
+const SocietiesInformationForm = ({ data , user_id, setIsUpdated}) => {
   const [societies, setSocieties] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
@@ -48,6 +48,7 @@ const SocietiesInformationForm = ({ data , user_id}) => {
   }
 
   const onSubmit = async (values) => {
+    setIsUpdated(true)
     let newData = cloneDeep(values);
     transformDataForSubmission(newData);
 

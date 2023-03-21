@@ -14,6 +14,7 @@ import {useState} from "react";
 import {replaceWithNull, handleResponse} from "../../../../helpers/submissionHelpers";
 
 
+const CertificatesInformationForm = ({ data, setIsUpdated }) => {
 const CertificatesInformationForm = ({ data ,user_id}) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
@@ -27,7 +28,7 @@ const CertificatesInformationForm = ({ data ,user_id}) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       replaceWithNull(datum);
-      datum.visibility = datum.visibility ? 1 : 0;
+      datum.visibility = datum.visibility == 1
       return datum
     })
 
@@ -45,6 +46,7 @@ const CertificatesInformationForm = ({ data ,user_id}) => {
   }
 
   const onSubmit = async (values) => {
+    setIsUpdated(true)
     let newData = cloneDeep(values);
     transformDataForSubmission(newData);
 
