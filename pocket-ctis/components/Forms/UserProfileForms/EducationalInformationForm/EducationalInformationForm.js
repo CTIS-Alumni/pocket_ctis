@@ -63,6 +63,7 @@ const EducationInformationForm = ({ data , user_id, setIsUpdated}) => {
           val.end_date != null ? convertToIso(val.end_date) : null;
       val.name_of_program = val.name_of_program ? val.name_of_program : null;
       val.education_description = val.education_description ? val.education_description : null;
+      val.gpa = val.gpa ? val.gpa : null
       replaceWithNull(val);
       splitFields(val, ["edu_inst", "degree_type"])
       return val
@@ -115,7 +116,15 @@ const EducationInformationForm = ({ data , user_id, setIsUpdated}) => {
                               <button
                                 className={styles.addButton}
                                 type='button'
-                                onClick={() => arrayHelpers.insert(0, '')}
+                                onClick={() => arrayHelpers.insert(0, {
+                                  edu_inst: '',
+                                  start_date: null,
+                                  end_date: null,
+                                  education_description: '',
+                                  degree_type: '',
+                                  name_of_program: '',
+                                  gpa: ''
+                                })}
                               >
                                 <PlusCircleFill size={20} />
                               </button>
@@ -192,8 +201,9 @@ const EducationInformationForm = ({ data , user_id, setIsUpdated}) => {
                                               className={styles.inputField}
                                               name={`edu_records[${index}]degree_type`}
                                               id={`edu_records[${index}]degree_type`}
+                                              disabled={!edu_record.edu_inst}
                                             >
-                                              <option selected value=''>
+                                              <option selected disabled value=''>
                                                 Please select a Degree
                                               </option>
                                               {degreeTypes.map((degree) => (
@@ -218,6 +228,7 @@ const EducationInformationForm = ({ data , user_id, setIsUpdated}) => {
                                               className={styles.inputField}
                                               name={`edu_records[${index}]name_of_program`}
                                               id={`edu_records[${index}]name_of_program`}
+                                              disabled={!edu_record.edu_inst}
                                             />
                                           </div>
                                         </div>
@@ -243,6 +254,7 @@ const EducationInformationForm = ({ data , user_id, setIsUpdated}) => {
                                               className={styles.dateInputField}
                                               name={`edu_records[${index}]start_date`}
                                               id={`edu_records[${index}]start_date`}
+                                              disabled={!edu_record.name_of_program || !edu_record.degree_type}
                                             />
                                           </div>
 
@@ -256,7 +268,7 @@ const EducationInformationForm = ({ data , user_id, setIsUpdated}) => {
                                               End Date
                                             </label>
                                             <DatePickerField
-                                              disabled={edu_record.is_current}
+                                              disabled={edu_record.is_current || !edu_record.name_of_program || !edu_record.degree_type}
                                               format='MMM/y'
                                               maxDetail='year'
                                               className={styles.dateInputField}
@@ -265,6 +277,25 @@ const EducationInformationForm = ({ data , user_id, setIsUpdated}) => {
                                             />
                                           </div>
                                         </div>
+
+                                        <div
+                                            className={styles.inputContainer}
+                                            style={{ width: '20%' }}
+                                        >
+                                          <label
+                                              className={styles.inputLabel}
+                                          >
+                                            {edu_record.end_date < new Date() && !edu_record.is_current ? "GPA" : "CGPA"}
+                                          </label>
+                                          <Field
+                                              type='number' step='0.01'
+                                              className={styles.inputField}
+                                              name={`edu_records[${index}]gpa`}
+                                              id={`edu_records[${index}]gpa`}
+                                              disabled={!edu_record.name_of_program}
+                                          />
+                                        </div>
+
                                         <div
                                           style={{
                                             display: 'flex',
@@ -324,6 +355,7 @@ const EducationInformationForm = ({ data , user_id, setIsUpdated}) => {
                                               className={styles.inputField}
                                               name={`edu_records[${index}]education_description`}
                                               id={`edu_records[${index}]education_description`}
+                                              disabled={!edu_record.name_of_program}
                                           />
                                         </div>
                                       </div>

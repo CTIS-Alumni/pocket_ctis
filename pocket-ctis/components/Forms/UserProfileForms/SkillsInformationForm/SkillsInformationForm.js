@@ -98,7 +98,7 @@ const SkillsInformationForm = ({ data , user_id, setIsUpdated}) => {
                             <button
                               className={styles.addButton}
                               type='button'
-                              onClick={() => arrayHelpers.insert(0, '')}
+                              onClick={() => arrayHelpers.insert(0, {skill_type: '', skill_level: '', skill: ''})}
                             >
                               <PlusCircleFill size={20} />
                             </button>

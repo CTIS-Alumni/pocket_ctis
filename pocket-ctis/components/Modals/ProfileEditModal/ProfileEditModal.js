@@ -63,7 +63,7 @@ const ProfileEditModal = ({user, refreshProfile}) => {
 
     const handleClose = () => {
         if (isUpdated) {
-            refreshProfile()
+            refreshProfile();
             setIsUpdated(false)
         }
         setShow(false)
@@ -137,7 +137,7 @@ const ProfileEditModal = ({user, refreshProfile}) => {
                             </Accordion.Body>
                         </Accordion.Item>
                         <Accordion.Item eventKey='5'>
-                            <Accordion.Header>Internships Information</Accordion.Header>
+                            <Accordion.Header>Internships</Accordion.Header>
                             <Accordion.Body>
                                 <InternshipInformationForm
                                     data={internships}

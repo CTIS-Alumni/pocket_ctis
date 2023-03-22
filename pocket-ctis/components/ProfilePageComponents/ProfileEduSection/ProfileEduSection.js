@@ -33,6 +33,7 @@ const ProfileEduSection = ({ edu }) => {
                 </div>}
                 {studyPeriod}
                 <div>{datum.education_description}</div>
+                {datum.gpa && <div>{`${(datum.end_date < new Date && !datum.is_current ? "GPA:" : "CGPA:")} ${datum.gpa}` }</div>}
               </Container>
             </div>
           )

@@ -1,8 +1,7 @@
 import {
     buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
-    InsertToUser,
+    insertToUserTable,
     doMultiQueries,
-    doquery, insertToUser
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 
@@ -30,7 +29,7 @@ export default async function handler(req, res){
             case "POST":
                 try {
                     const queries = buildInsertQueries(high_schools, table_name, fields, user_id);
-                    const {data, errors} = await insertToUser(queries, table_name, validation);
+                    const {data, errors} = await insertToUserTable(queries, table_name, validation);
                     res.status(200).json({data, errors});
 
                 } catch (error) {

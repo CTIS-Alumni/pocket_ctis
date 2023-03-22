@@ -169,7 +169,9 @@ const ContactInformationForm = ({data, user_id}) => {
                                                         <button
                                                             className={styles.addButton}
                                                             type='button'
-                                                            onClick={() => arrayHelpers.push('')} // insert an empty string at a position
+                                                            onClick={() => arrayHelpers.insert(0,
+                                                                {social_media: '', link: ''}
+                                                            )} // insert an empty string at a position
                                                         >
                                                             <PlusCircleFill size={20}/>
                                                         </button>
@@ -320,7 +322,7 @@ const ContactInformationForm = ({data, user_id}) => {
                                                         <button
                                                             className={styles.addButton}
                                                             type='button'
-                                                            onClick={() => arrayHelpers.push('')} // insert an empty string at a position
+                                                            onClick={() => arrayHelpers.insert(0, {phone_number: ''})} // insert an empty string at a position
                                                         >
                                                             <PlusCircleFill size={20}/>
                                                         </button>
@@ -423,7 +425,7 @@ const ContactInformationForm = ({data, user_id}) => {
                                                         <button
                                                             className={styles.addButton}
                                                             type='button'
-                                                            onClick={() => arrayHelpers.push('')} // insert an empty string at a position
+                                                            onClick={() => arrayHelpers.insert(0, {email_address: ''})} // insert an empty string at a position
                                                         >
                                                             <PlusCircleFill size={20}/>
                                                         </button>

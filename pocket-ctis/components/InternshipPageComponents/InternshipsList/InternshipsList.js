@@ -3,7 +3,7 @@ import styles from './InternshipsList.module.scss'
 import React from 'react'
 import {
   getProfilePicturePath,
-  getSemester,
+  getSemester, getTimePeriod,
 } from '../../../helpers/formatHelpers'
 
 const Anonymous = () => {
@@ -27,17 +27,13 @@ const Anonymous = () => {
 }
 
 const InternshipsList = ({ internships }) => {
+  console.log("hers internships", internships)
   return (
     <div className={styles.internship_students}>
       {internships.map((internship) => {
-        const profilePicture = getProfilePicturePath(
-          internship.pic_visibility,
-          internship.profile_picture
-        )
-        const internshipSemester = getSemester(
-          internship.semester,
-          internship.start_date
-        )
+        const profilePicture = getProfilePicturePath(internship.pic_visibility, internship.profile_picture)
+        const internshipSemester = getSemester(internship.semester, internship.start_date)
+        const timePeriod = getTimePeriod(internship.start_date, internship.end_date)
         return (
           <div className={styles.internship_students_item} key={internship.id}>
             {/* This will become a link in the future maybe */}
@@ -61,23 +57,22 @@ const InternshipsList = ({ internships }) => {
                     className={`${styles.internship_students_item_name}`}
                   >{`${internship.first_name} ${internship.last_name}`}</span>
                   <span className={styles.internship_students_item_company}>
-                    {internship.record_visibility
-                      ? internship.company_name
-                      : ''}
+                    {internship.company_name}
                   </span>
                   <span className={styles.internship_students_item_semester}>
-                    {internship.record_visibility ? internshipSemester : ''}
+                    {internshipSemester}
+                  </span>
+                  <span className={styles.internship_students_item_time_period}>
+                    {timePeriod}
                   </span>
                 </div>
               </div>
               <div className={styles.internship_students_item_badge}>
-                {internship.record_visibility
-                  ? internship.user_types
+                {internship.user_types
                       .split(',')
                       .map((type, i) => (
                         <span key={i}>{type.toLocaleUpperCase()}</span>
-                      ))
-                  : null}
+                      ))}
               </div>
             </div>
           </div>

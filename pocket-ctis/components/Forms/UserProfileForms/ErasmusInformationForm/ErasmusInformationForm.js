@@ -4,32 +4,66 @@ import styles from '../UserProfileFormStyles.module.css'
 import { cloneDeep } from 'lodash'
 import { EyeFill, EyeSlashFill } from 'react-bootstrap-icons'
 import DatePickerField from '../../../DatePickers/DatePicker'
+import {useState} from "react";
+import {convertToIso, handleResponse, replaceWithNull} from "../../../../helpers/submissionHelpers";
+import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUserUrl} from "../../../../helpers/urlHelper";
 
-const ErasmusInformationForm = ({ data, setIsUpdated }) => {
+const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
+
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data);
+  }
+
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
       datum.start_date = datum.start_date ? new Date(datum.start_date) : null
       datum.end_date = datum.end_date ? new Date(datum.end_date) : null
-      datum.university = datum.edu_inst_id + '-' + datum.inst_name
       return datum
     })
     return newData
   }
 
-  const onSubmitHandler = (values) => {
+  const transformDataForSubmission = (newData) => {
+    newData.erasmus = newData.erasmus.map((val) => {
+      val.visibility = val.visibility ? 1 : 0;
+      val.start_date =
+          val.start_date != null ? convertToIso(val.start_date) : null;
+      val.end_date =
+          val.end_date != null ? convertToIso(val.end_date) : null;
+      val.rating = val.rating ? val.rating : null;
+      val.opinion = val.opinion ? val.opinion.trim() : null;
+      replaceWithNull(val);
+      return val;
+    });
+  }
+
+  const onSubmit = async (values) => {
     setIsUpdated(true)
-    let newData = cloneDeep(values.erasmus)
-    newData[0].visibility = values.erasmus[0].visibility ? 1 : 0
-    console.log(newData)
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData);
+
+    const args = [[], [], ["id", "user_id", "record_date"], ["start_date", "end_date"]]
+    const send_to_req = {erasmus: cloneDeep(dataAfterSubmit)};
+    transformDataForSubmission(send_to_req);
+    const requestObj = createReqObject(send_to_req.erasmus, newData.erasmus, []);
+    const url = craftUserUrl(user_id, "erasmus");
+    const responseObj = await submitChanges(url, requestObj);
+
+    const new_data = handleResponse(send_to_req.erasmus, requestObj, responseObj, values, "erasmus", args, transformDataForSubmission);
+    applyNewData(new_data);
+    console.log("req,", requestObj, "res", responseObj);
+
   }
 
   return (
     <Formik
       initialValues={{ erasmus: transformData(data) }}
       enableReinitialize
-      onSubmit={onSubmitHandler}
+      onSubmit={onSubmit}
     >
       {(props) => (
         <Form>
@@ -41,8 +75,8 @@ const ErasmusInformationForm = ({ data, setIsUpdated }) => {
                     <label className={styles.inputLabel}>University</label>
                     <Field
                       className={styles.inputField}
-                      name='erasmus[0].university'
-                      id='erasmus[0].university'
+                      name='erasmus[0].edu_inst_name'
+                      id='erasmus[0].edu_inst_name'
                       disabled
                     />
                   </div>
@@ -102,8 +136,8 @@ const ErasmusInformationForm = ({ data, setIsUpdated }) => {
                         id={`erasmus[0]semester`}
                       >
                         <option value='spring'>Spring</option>
-                        <option value='summer'>Summer</option>
                         <option value='fall'>Fall</option>
+                        <option value='fullyear'>Fall & Spring</option>
                       </Field>
                     </div>
                   </div>

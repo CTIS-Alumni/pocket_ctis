@@ -1,7 +1,6 @@
 import {
-    InsertToUser,
+    insertToUserTable,
     doMultiQueries,
-    doquery
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 
@@ -18,7 +17,7 @@ export default async function handler(req, res){
                     const base_query = "INSERT INTO userwantsector( ";
                     const fields = ["sector_id", "visibility"];
                     const queries = buildInsertQueries(sectors, fields, base_query, user_id);
-                    const {data, errors} = await insertToUser(queries, "userwantsector");
+                    const {data, errors} = await insertToUserTable(queries, "userwantsector");
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});

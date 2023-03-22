@@ -91,7 +91,7 @@ const SocietiesInformationForm = ({ data , user_id, setIsUpdated}) => {
                             <button
                               className={styles.addButton}
                               type='button'
-                              onClick={() => arrayHelpers.insert(0, '')}
+                              onClick={() => arrayHelpers.insert(0, {society: ''})}
                             >
                               <PlusCircleFill size={20} />
                             </button>
@@ -187,6 +187,7 @@ const SocietiesInformationForm = ({ data , user_id, setIsUpdated}) => {
                                                         style={{
                                                           display: 'none',
                                                         }}
+                                                        disabled={!society.society}
                                                     />
                                                   </label>
                                               )

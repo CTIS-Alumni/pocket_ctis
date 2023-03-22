@@ -1,15 +1,14 @@
 import {
     buildSelectQueries, buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
-    InsertToUser, updateTable,
-    doMultiQueries,
-    doquery, insertToUser
+    updateTable,
+    insertToUserTable
 } from "../../../../helpers/dbHelpers";
 import  limitPerUser from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 
 
 const field_conditions = {
-    must_be_different: ["edu_inst_id", "degree_type_id", "name_of_program", "start_date", "end_date", "is_current",],
+    must_be_different: ["edu_inst_id", "degree_type_id", "name_of_program", "start_date", "end_date", "is_current", "gpa"],
     date_fields: ["start_date", "end_date"],
     user: {
         check_user_only: true,
@@ -24,7 +23,8 @@ const fields = {
         "name_of_program",
         "education_description",
         "visibility",
-        "is_current"
+        "is_current",
+        "gpa"
     ],
     date: ["start_date", "end_date"]
 };
@@ -48,6 +48,8 @@ const validation = (data) => {
         return false;
     if(data.name_of_program.trim() == "")
         return false;
+    if(data.gpa < 0 || data.gpa > 4)
+        return false;
     return true;
 }
 
@@ -64,7 +66,7 @@ export default async function handler(req, res) {
                 try {
                     const queries = buildInsertQueries(edu_records, table_name, fields ,user_id);
                     const select_queries = buildSelectQueries(edu_records, table_name,field_conditions);
-                    const {data, errors} = await insertToUser(queries, table_name, validation, select_queries, limitPerUser.education_records);
+                    const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, limitPerUser.education_records);
                     res.status(200).json({data, errors});
 
                 } catch (error) {

@@ -1,13 +1,21 @@
 import { Field, FieldArray, Form, Formik } from 'formik'
 import { cloneDeep } from 'lodash'
-import React from 'react'
-import { EyeSlashFill, EyeFill } from 'react-bootstrap-icons'
+import React, {useState} from 'react'
+import {EyeSlashFill, EyeFill, XCircleFill} from 'react-bootstrap-icons'
 import { Rating } from 'react-simple-star-rating'
 import DatePickerField from '../../../DatePickers/DatePicker'
 import styles from '../UserProfileFormStyles.module.css'
+import {convertToIso, handleResponse, replaceWithNull} from "../../../../helpers/submissionHelpers";
+import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUserUrl} from "../../../../helpers/urlHelper";
 
-const InternshipInformationForm = ({ data, setIsUpdated }) => {
-  console.log(data)
+const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
+
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data);
+  }
+
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
@@ -20,22 +28,43 @@ const InternshipInformationForm = ({ data, setIsUpdated }) => {
     return newData
   }
 
-  const onSubmitHandler = (values) => {
-    let newData = cloneDeep(values.internships)
+  const transformDataForSubmission = (newData) => {
+    newData.internships = newData.internships.map((val) => {
+      val.visibility = val.visibility ? 1 : 0;
+      val.start_date =
+          val.start_date != null ? convertToIso(val.start_date) : null;
+      val.end_date =
+          val.end_date != null ? convertToIso(val.end_date) : null;
+      val.rating = val.rating ? val.rating : null;
+      val.opinion = val.opinion ? val.opinion.trim() : null;
+      replaceWithNull(val);
+      return val;
+    });
+  }
 
-    newData = newData.map((datum) => {
-      datum.visibility = datum.visibility ? 1 : 0
-      return datum
-    })
+  const onSubmit = async (values) => {
+    setIsUpdated(true);
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData);
 
-    console.log(newData)
+    const args = [[], [], ["id", "user_id", "record_date"], ["start_date", "end_date"]]
+    const send_to_req = {internships: cloneDeep(dataAfterSubmit)};
+    transformDataForSubmission(send_to_req);
+    const requestObj = createReqObject(send_to_req.internships, newData.internships, []);
+    const url = craftUserUrl(user_id, "internships");
+    const responseObj = await submitChanges(url, requestObj);
+
+    const new_data = handleResponse(send_to_req.internships, requestObj, responseObj, values, "internships", args, transformDataForSubmission);
+    applyNewData(new_data);
+    console.log("req,", requestObj, "res", responseObj);
+
   }
 
   return (
     <Formik
       enableReinitialize
       initialValues={{ internships: transformData(data) }}
-      onSubmit={onSubmitHandler}
+      onSubmit={onSubmit}
     >
       {(props) => (
         <Form>
@@ -48,7 +77,7 @@ const InternshipInformationForm = ({ data, setIsUpdated }) => {
                     <>
                       {props.values.internships &&
                         props.values.internships.length > 0 &&
-                        props.values.internships.map((internships, index) => {
+                        props.values.internships.map((internship, index) => {
                           return (
                             <>
                               <tr>
@@ -115,16 +144,21 @@ const InternshipInformationForm = ({ data, setIsUpdated }) => {
                                     </div>
                                   </div>
 
-                                  <div className={styles.inputContainer}>
+                                  <div className={styles.inputContainer}
+                                  style={{width: '%49'}}>
                                     <label className={styles.inputLabel}>
                                       Semester
                                     </label>
                                     <Field
                                       disabled
                                       className={styles.inputField}
+                                      as='select'
                                       name={`internships[${index}]semester`}
                                       id={`internships[${index}]semester`}
-                                    />
+                                    >
+                                    <option value='spring'>Spring</option>
+                                    <option value='fall'>Fall</option>
+                                    </Field>
                                   </div>
 
                                   <div className={styles.inputContainer}>

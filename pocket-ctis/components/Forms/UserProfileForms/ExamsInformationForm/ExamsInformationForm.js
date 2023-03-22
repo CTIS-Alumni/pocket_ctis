@@ -109,7 +109,9 @@ const ExamsInformationForm = ({ data , user_id, setIsUpdated}) => {
                             <button
                               className={styles.addButton}
                               type='button'
-                              onClick={() => arrayHelpers.insert(0, '')}
+                              onClick={() => arrayHelpers.insert(0, {
+                                exam: '', grade: '', date: null
+                              })}
                             >
                               <PlusCircleFill size={20} />
                             </button>
@@ -181,6 +183,7 @@ const ExamsInformationForm = ({ data , user_id, setIsUpdated}) => {
                                             className={styles.inputField}
                                             id={`exams[${index}]grade`}
                                             name={`exams[${index}]grade`}
+                                            disabled={!exam.exam}
                                           />
                                         </div>
                                         <div
@@ -196,6 +199,7 @@ const ExamsInformationForm = ({ data , user_id, setIsUpdated}) => {
                                             className={styles.dateInputField}
                                             id={`exams[${index}]exam_date`}
                                             name={`exams[${index}]exam_date`}
+                                            disabled={!exam.grade}
                                           />
                                         </div>
                                       </div>

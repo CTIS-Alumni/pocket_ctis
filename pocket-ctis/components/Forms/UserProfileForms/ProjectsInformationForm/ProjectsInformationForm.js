@@ -242,7 +242,10 @@ const ProjectsInformationForm = ({data, user_id, setIsUpdated}) => {
                                                             <button
                                                                 className={styles.addButton}
                                                                 type='button'
-                                                                onClick={() => arrayHelpers.insert(0, '')}
+                                                                onClick={() => arrayHelpers.insert(0, {
+                                                                    project_name: '',
+                                                                    project_description: ''
+                                                                })}
                                                             >
                                                                 <PlusCircleFill size={20}/>
                                                             </button>

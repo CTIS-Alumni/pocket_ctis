@@ -87,7 +87,10 @@ const CertificatesInformationForm = ({ data ,user_id, setIsUpdated}) => {
                             <button
                               className={styles.addButton}
                               type='button'
-                              onClick={() => arrayHelpers.insert(0, '')}
+                              onClick={() => arrayHelpers.insert(0, {
+                                certificate_name: '',
+                                issuing_authority: ''
+                              })}
                             >
                               <PlusCircleFill size={20} />
                             </button>

@@ -131,8 +131,8 @@ export const buildInsertQueries = (data, table, fields, user_id = null) => {
 export function buildUpdateQueries(data, table, fields){
     let queries = [];
 
-    let query = `UPDATE ${table} SET ` + fields.basic.map(field => `${field} = :${field}`).join(", ") + ", ";
     data.forEach((datum) => {
+        let query = `UPDATE ${table} SET ` + fields.basic.map(field => `${field} = :${field}`).join(", ") + ", ";
         fields.date.forEach((field) => {
             if(datum[field] !== null)
                 query += `${field} = STR_TO_DATE(:${field}, '%Y-%m-%dT%H:%i:%s.000Z'), `;
@@ -238,7 +238,7 @@ export async function updateTable(queries, validation, get_queries = []) {
     return {data, errors};
 }
 
-export const insertToUser = async (queries, table, validation, select_queries = [], limit = null) => {
+export const insertToUserTable = async (queries, table, validation, select_queries = [], limit = null) => {
     let data = [];
     let errors = [];
     let count = 0;

@@ -53,8 +53,6 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
       datum.work_type = `${datum.work_type_id}-${datum.work_type_name}`
       datum.country = `${datum.country_id}-${datum.country_name}`
       datum.city = `${datum.city_id}-${datum.city_name}`
-      datum.department = datum.department ? datum.department : ''
-      datum.position = datum.position ? datum.position : ''
 
       return datum
     })
@@ -63,8 +61,8 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
 
   const transformDataForSubmission = (newData) => {
     newData.work_records = newData.work_records.map((val) => {
-      val.visibility = val.visibility ? 1 : 0
-      val.is_current = val.is_current ? 1 : 0
+      val.visibility = val.visibility ? 1 : 0;
+      val.is_current = val.is_current ? 1 : 0;
       if(val.is_current && val.end_date)
         val.end_date = null;
       val.start_date =
@@ -128,7 +126,17 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                 className={styles.addButton}
                                 type='button'
                                 onClick={() =>
-                                  arrayHelpers.insert(0, '')
+                                  arrayHelpers.insert(0, {
+                                    company: '',
+                                    work_type: '',
+                                    city: '',
+                                    country: '',
+                                    start_date: null,
+                                    end_date: null,
+                                    department: '',
+                                    position: '',
+                                    work_description: ''
+                                  })
                                 }
                               >
                                 <PlusCircleFill size={20} />
@@ -303,6 +311,7 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                                 className={styles.inputField}
                                                 name={`work_records[${index}]department`}
                                                 id={`work_records[${index}]department`}
+                                                disabled={!work_record.company}
                                               />
                                             </div>
                                             <div
@@ -318,6 +327,7 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                                 className={styles.inputField}
                                                 name={`work_records[${index}]position`}
                                                 id={`work_records[${index}]position`}
+                                                disabled={!work_record.company}
                                               />
                                             </div>
                                             <div
@@ -371,6 +381,7 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                                 }
                                                 name={`work_records[${index}]start_date`}
                                                 id={`work_records[${index}]start_date`}
+                                                disabled={!work_record.work_type}
                                               />
                                             </div>
                                             <div
@@ -383,9 +394,7 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                                 End Date
                                               </label>
                                               <DatePickerField
-                                                disabled={
-                                                  work_record.is_current
-                                                }
+                                                disabled={work_record.is_current || !work_record.work_type}
                                                 format='MMM/y'
                                                 maxDetail='year'
                                                 className={
@@ -455,6 +464,7 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                               className={styles.inputField}
                                               name={`work_records[${index}]work_description`}
                                               id={`work_records[${index}]work_description`}
+                                              disabled={!work_record.work_type}
                                             />
                                           </div>
                                         </div>
