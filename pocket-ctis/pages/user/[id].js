@@ -53,7 +53,6 @@ const Profile = ({user, session}) => {
         exams,
     } = user
     // console.log(user)
-    console.log(session)
 
     return (
         <>

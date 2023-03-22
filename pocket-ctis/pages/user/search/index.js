@@ -18,7 +18,6 @@ const getData = async (search) => {
     highSchools: craftUrl("highschools", [{name: "name", value: search}]),
   });
 
-  console.log(companies, eduInsts, gradProjects, users, highSchools);
   return { companies, eduInsts, gradProjects, users, highSchools }
 }
 

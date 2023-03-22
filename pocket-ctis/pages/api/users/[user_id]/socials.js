@@ -1,8 +1,7 @@
 import {
     buildSelectQueries, buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
-    InsertToUser,
     doMultiQueries,
-    doquery, insertToUser
+    insertToUser
 } from "../../../../helpers/dbHelpers";
 import  limitPerUser from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";

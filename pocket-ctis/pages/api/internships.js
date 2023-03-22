@@ -1,12 +1,15 @@
 import {
     addAndOrWhere,
-    createGetQueries,
-    createPostQueries,
     insertToTable,
-    doquery, buildInsertQueries, buildSelectQueries
+    buildInsertQueries, buildSelectQueries, buildSearchQuery, doMultiQueries
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
-import  limitPerUser from '../../../../config/moduleConfig.js';
+import limitPerUser from "../../config/moduleConfig";
+
+const columns = {
+    user: "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
+    company: "c.company_name"
+}
 
 const field_conditions = {
     must_be_different: ["company_id", "semester"],
@@ -47,27 +50,33 @@ export default async function handler(req, res) {
         switch (method) {
             case "GET":
                 try {
-                    let values = [];
+                    let values = [], length_values = [];
                     let query = "SELECT i.id, i.user_id, GROUP_CONCAT(act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, " +
-                        "i.company_id, i.department, c.company_name, i.semester, i.start_date, i.end_date, i.rating, i.opinion, i.visibility as 'record_visibility' " +
+                        "i.company_id, i.department, c.company_name, i.semester, i.start_date, i.end_date, i.rating, i.opinion " +
                         "FROM internshiprecord i JOIN users u on (i.user_id = u.id) " +
                         "JOIN userprofilepicture upp ON (i.user_id = upp.user_id) " +
                         "JOIN useraccounttype uat ON (uat.user_id = i.user_id)  " +
                         "JOIN accounttype act ON (act.id = uat.type_id) " +
                         "JOIN company c ON (i.company_id = c.id) ";
 
+                    let length_query = "SELECT COUNT(*) as count FROM internshiprecord i JOIN users u ON (i.user_id = u.id) JOIN company c ON (c.id = i.company_id) ";
+
                     if(payload.user !== "admin"){
-                        query += addAndOrWhere(query, " (i.visibility = 1 OR i.user_id = ?)");
+                        query += addAndOrWhere(query, " (i.visibility = 1 OR i.user_id = ?) ");
+                        length_query += addAndOrWhere(length_query, " (i.visibility = 1 OR i.user_id = ?) ");
                         values.push(payload.user_id);
+                        length_values.push(payload.user_id);
                     }
 
-                    query += "GROUP BY i.id ORDER BY i.record_date DESC";
+                    ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
 
-                    const data = await doquery({query: query, values});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
+                    query += " GROUP BY i.id ";
+
+                    const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
+                        {name: "length", query: length_query, values: length_values}]);
+
+                    res.status(200).json({data:data.data, length: data.data.length, errors: errors});
+
                 } catch (error) {
                     res.status(500).json({error: error.message});
                 }

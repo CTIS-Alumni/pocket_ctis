@@ -28,7 +28,6 @@ const ErasmusDashboard = ({ erasmus, eduInsts }) => {
 }
 
 export async function getServerSideProps(context) {
-  console.log(craftUrl("educationinstitutes", [{name: "erasmus", value: 1}]));
   const {cookies} = context.req;
   const token = cookies.AccessJWT;
   const {erasmus, eduInsts} = await _getFetcher({

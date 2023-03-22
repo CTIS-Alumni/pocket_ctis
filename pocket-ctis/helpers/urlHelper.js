@@ -30,3 +30,14 @@ export const craftUrl = (api, conditions = []) => {
     return url;
 }
 
+
+export const buildCondition = (queryParams) => {
+    let conditions = [];
+    for(const [key, value] of Object.entries(queryParams)){
+        if(value !== "")
+            conditions.push({name: key, value: value});
+
+    }
+    return conditions;
+}
+

@@ -14,8 +14,7 @@ import {useState} from "react";
 import {replaceWithNull, handleResponse} from "../../../../helpers/submissionHelpers";
 
 
-const CertificatesInformationForm = ({ data, setIsUpdated }) => {
-const CertificatesInformationForm = ({ data ,user_id}) => {
+const CertificatesInformationForm = ({ data ,user_id, setIsUpdated}) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
   const applyNewData = (data) => {

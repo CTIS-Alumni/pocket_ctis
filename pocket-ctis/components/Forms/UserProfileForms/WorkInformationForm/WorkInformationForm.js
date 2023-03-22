@@ -128,12 +128,7 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                 className={styles.addButton}
                                 type='button'
                                 onClick={() =>
-                                  arrayHelpers.insert(0, {
-                                    city: '',
-                                    country: '',
-                                    company: '',
-                                    work_type: '',
-                                  })
+                                  arrayHelpers.insert(0, '')
                                 }
                               >
                                 <PlusCircleFill size={20} />

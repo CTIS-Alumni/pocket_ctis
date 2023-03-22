@@ -13,8 +13,10 @@ export const createDBConnection = async (namedPlaceholders = false) => {
 }
 
 export const addAndOrWhere = (query, condition) => {
+    console.log("query that comes to andOr", query);
     let full_condition;
     if (query.includes(" WHERE ")) {
+        console.log("it aooarently includes where")
         full_condition =  " AND ";
     } else {
         full_condition = " WHERE ";
@@ -22,6 +24,43 @@ export const addAndOrWhere = (query, condition) => {
     full_condition += condition + " ";
     return full_condition;
 }
+
+export const buildSearchQuery = async (req, query, values, length_query, length_values, columns) => {
+    if(req.query.searchcol && req.query.search){
+        const cols = req.query.searchcol.split(",");
+        let searchColumns = [];
+        cols.forEach((column)=>{
+            if(columns.hasOwnProperty(column))
+                searchColumns.push(columns[column]);
+        });
+
+        query += addAndOrWhere(query, "(");
+        length_query += addAndOrWhere(length_query, "(");
+        searchColumns.forEach(function(column){
+            query += column + " LIKE CONCAT('%', ?, '%') OR "
+            length_query += column + " LIKE CONCAT('%', ?, '%') OR ";
+            values.push(req.query.search);
+            length_values.push(req.query.search);
+        });
+
+        query = query.slice(0,-3) + ") ";
+        length_query = length_query.slice(0,-3) + ") ";
+    }
+
+    if (req.query.column && columns.hasOwnProperty(req.query.column) && req.query.order && (req.query.order === "asc" ||req.query.order === "desc")) {
+        query += "ORDER BY " + columns[req.query.column] + " " + req.query.order + " ";
+    }
+
+    if (req.query.offset && req.query.limit) {
+        query += "LIMIT ? OFFSET ? ";
+        values.push(req.query.limit);
+        values.push(req.query.offset);
+    }
+
+    return {query, length_query};
+
+}
+
 
 export const buildConditionForComparison = (data, field_conditions) => {
     let query = " ";
@@ -134,11 +173,11 @@ export const doMultiQueries = async (queries, namedplaceholders = false) => {
     let errors = [];
     //queries = [{name: "certificates", query: "asdas" ,values: []}, {name: "skills", query: "asdasda", values: []}]
     //errors = [{name: "certificates", error: error}];
-    const connection = createDBConnection(namedplaceholders);
+    const connection = await createDBConnection(namedplaceholders);
 
     await Promise.all(queries.map(async (query) => {
         try {
-            const [res] = await connection.query(query.query, query.values);
+            const [res] = await connection.execute(query.query, query.values);
             data[query.name] = res;
         } catch (error) {
             errors.push({name: query.name, error: error.message});

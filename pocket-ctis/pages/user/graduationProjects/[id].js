@@ -3,7 +3,6 @@ import {craftPathUrl} from "../../../helpers/urlHelper";
 import {_getFetcher} from "../../../helpers/fetchHelpers";
 
 const GraduationProject = ({ graduationproject }) => {
-  console.log('Graduation project: ', graduationproject)
   return <div>GraduationProject</div>
 }
 

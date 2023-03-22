@@ -49,11 +49,9 @@ const InternshipsList = ({ internships }) => {
                     backgroundImage:
                       'url(' +
                       '/profilepictures/' +
-                      (internship.record_visibility
-                        ? internship.pic_visibility
+                      ( internship.pic_visibility
                           ? internship.profile_picture
-                          : 'defaultuser'
-                        : 'defaultuser') +
+                          : 'defaultuser') +
                       '.png' +
                       ')',
                   }}

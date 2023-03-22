@@ -3,7 +3,7 @@ import CompaniesList from '../../../components/CompaniesList/CompaniesList'
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import {_getFetcher} from "../../../helpers/fetchHelpers";
-import {craftUrl} from "../../../helpers/urlHelper";
+import {craftUrl, buildCondition} from "../../../helpers/urlHelper";
 
 const CompaniesDashboard = ( {res} ) => {
   const [companies, setCompanies] = useState([])
@@ -13,31 +13,16 @@ const CompaniesDashboard = ( {res} ) => {
     setTotal(res.length)
     setCompanies(res.data)
   }, [])
-  const onSearch = ({ searchValue }) => {
-    setIsLoading(true)
-      _getFetcher({companies: craftUrl("companies", [{name: "name", value: searchValue}])})
-      .then(({companies}) => setCompanies(companies.data))
-      .catch((err) => console.log(err))
-      .finally((_) => setIsLoading(false))
-  }
 
     const onQuery = (queryParams) => {
-        let queryString = 'http://localhost:3000/api/companies?'
-        for (const [key, value] of Object.entries(queryParams)) {
-            if (value === '') {
-                continue
-            }
-            queryString += key + '=' + value + '&'
-        }
-        queryString = queryString.slice(0, -1)
-
-        setIsLoading(true)
-        _getFetcher(queryString)
-            .then((res) => {
-                setTotal(res.length)
-                setCompanies(res.data)
-            })
-            .finally((_) => setIsLoading(false))
+      const conditions = buildCondition(queryParams);
+      setIsLoading(true);
+      _getFetcher({companies: craftUrl("companies", conditions)})
+          .then(({companies}) => {
+              setTotal(companies.length)
+              setCompanies(companies.data)
+          })
+          .finally((_) => setIsLoading(false))
     }
 
   return (
@@ -57,7 +42,7 @@ const CompaniesDashboard = ( {res} ) => {
 export async function getServerSideProps(context) {
     const {cookies} = context.req;
     const token = cookies.AccessJWT;
-    const {companies} = await _getFetcher({companies: craftUrl("companies")}, token);
+    const {companies} = await _getFetcher({companies: craftUrl("companies", [{name: "limit", value:15}, {name:"offset", value:0}])}, token);
     return { props: { res: companies } }
 }
 

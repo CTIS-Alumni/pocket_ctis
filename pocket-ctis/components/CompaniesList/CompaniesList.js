@@ -193,8 +193,9 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
   }
   const handlePageChange = (newPage) => setCurrentPage(newPage)
   const handleSearch = (search) => {
-    setSearchString(search.searchValue)
-    setCurrentPage(1)
+    search.searchValue = search.searchValue.trim();
+      setSearchString(search.searchValue.trim())
+      setCurrentPage(1)
   }
 
   useEffect(() => {

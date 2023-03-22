@@ -13,7 +13,7 @@ import {replaceWithNull, handleResponse} from "../../../../helpers/submissionHel
 import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
 import {craftUserUrl} from "../../../../helpers/urlHelper";
 
-const ProjectsInformationForm = ({data, user_id}) => {
+const ProjectsInformationForm = ({data, user_id, setIsUpdated}) => {
     const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
 
     const applyNewData = (data) => {
@@ -53,6 +53,7 @@ const ProjectsInformationForm = ({data, user_id}) => {
 
 
     const onSubmit = async (values) => {
+        setIsUpdated(true)
         let newData = cloneDeep(values);
         transformFuncs.projects(newData);
         transformFuncs.graduation_project(newData);

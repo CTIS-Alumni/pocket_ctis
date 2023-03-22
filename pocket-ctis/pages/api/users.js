@@ -58,7 +58,7 @@ export default async function handler(req, res){
                 }
 
                 if(req.query.name){ //for general search
-                    query += addAndOrWhere(query,"(u.first_name LIKE CONCAT('%', ?, '%') OR u.last_name LIKE CONCAT('%', ?, '%'))");
+                    query += addAndOrWhere(query," CONCAT(u.first_name, ' ', u.nee, ' ', u.last_name) LIKE CONCAT('%',?,'%')");
                     values.push(req.query.name);
                     values.push(req.query.name);
                 }

@@ -4,7 +4,6 @@ import {cloneDeep, findIndex, isEqual, pick} from "lodash";
 export const splitFields = (data, fields) => {
     //splits field into name and id values
     //data usually comes in this form: university: 19-Bilkent (id-name)
-    //we want to split it to university_id = 19 and university_name = Bilkent
     fields.forEach((field) => {
         if (data.hasOwnProperty(field) && data[field] != null && data[field] != "null-null") {
             const splitData = data[field].split("-");
