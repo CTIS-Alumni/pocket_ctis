@@ -2,6 +2,7 @@ import { Container } from 'react-bootstrap'
 import ReactStars from 'react-stars'
 import CustomBadge from '../CustomBadge/CustomBadge'
 import { getTimePeriod, getSemester } from '../../../helpers/formatHelpers'
+import {GeoAltFill} from "react-bootstrap-icons";
 
 const ProfileErasmusSection = ({ erasmus }) => {
     if (erasmus.length == 0) {
@@ -29,6 +30,10 @@ const ProfileErasmusSection = ({ erasmus }) => {
                   <p className='m-0'>{eras.edu_inst_name}</p>
                   <CustomBadge>{semester}</CustomBadge>
                 </div>
+                  {eras.country_name && <div style={{ color: 'rgb(245,164,37)' }}>
+                      <GeoAltFill />
+                      {eras.city_name}, {eras.country_name}
+                  </div>}
                 <Container>
                   <ReactStars
                     count={5}
@@ -37,7 +42,8 @@ const ProfileErasmusSection = ({ erasmus }) => {
                     color2={'#8d2729'}
                     edit={false}
                   />
-                  <p style={{ color: '#999', fontSize: 14 }}>{eras.opinion}</p>
+                    <div>{studyPeriod}</div>
+                    {eras.opinion && <p style={{ color: '#999', fontSize: 14 }}>{eras.opinion}</p>}
                 </Container>
               </div>
             )

@@ -19,18 +19,18 @@ import ProfileHighSchoolSection
 import ProfileStudentSocieties
     from '../../components/ProfilePageComponents/ProfileStudentSocieties/ProfileStudentSocieties'
 
-import {User_data} from '../../context/userContext'
-import {Location_data} from '../../context/locationContext'
-import {useContext} from 'react'
+import {useContext, useState} from 'react'
 import ProfileExamsSection from '../../components/ProfilePageComponents/ProfileExamsSection/ProfileExamsSection'
 import GraduationProjectSection
     from '../../components/ProfilePageComponents/GraduationProjectSection/GraduationProjectSection'
 import {craftUserUrl} from "../../helpers/urlHelper";
 import {_getFetcher} from "../../helpers/fetchHelpers";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 
-const Profile = ({user, session}) => {
-    const {userData} = useContext(User_data)
-    const {locationData} = useContext(Location_data)
+const Profile = ({userData, session, errors}) => {
+    const [isLoading, setIsLoading] = useState(false)
+    const [user, setUser] = useState(userData)
+
     const {
         certificates,
         edu_records,
@@ -52,15 +52,22 @@ const Profile = ({user, session}) => {
         basic_info,
         exams,
     } = user
-    // console.log(user)
+
+    const refreshProfile = () => {
+        setIsLoading(true)
+        _getFetcher({res: craftUserUrl(user.basic_info[0].id, "profile")})
+            .then(({res}) => setUser(res.data))
+            .finally(() => {setIsLoading(false);})
+    }
 
     return (
         <>
             <div style={{height: '100vh'}}>
                 <NavigationBar/>
                 <div className='d-flex' style={{height: '100%'}}>
-                    <UserInfoSidebar/>
-                    <Container>
+                    <UserInfoSidebar />
+                    <Container style={{ position: 'relative' }}>
+                        <LoadingSpinner isLoading={isLoading} />
                         <Row>
                             <Col md='auto'>
                                 <img
@@ -90,7 +97,7 @@ const Profile = ({user, session}) => {
                             <Col>
                                 <div className='d-flex justify-content-between align-items-center'>
                                     <h4 style={{display: 'flex', alignItems: 'baseline'}}>
-                                        {basic_info[0].first_name} {basic_info[0].last_name}
+                                        {basic_info[0].first_name} {basic_info[0].nee} {basic_info[0].last_name}
                                         {location.length > 0 && (
                                             <span
                                                 className='ms-4'
@@ -166,7 +173,7 @@ const Profile = ({user, session}) => {
                 </div>
             </div>
 
-            {session !== "visitor" && <ProfileEditModal user={user}/>}
+            {session !== "visitor" && <ProfileEditModal user={userData} refreshProfile={refreshProfile}/>}
         </>
     )
 }
@@ -176,7 +183,7 @@ export async function getServerSideProps(context) {
     const token = cookies.AccessJWT;
     const {res} = await _getFetcher({res: craftUserUrl(context.params.id, "profile")}, token);
 
-    return {props: {user: res.data, session: res.session, errors: res.errors}}
+    return {props: {userData: res.data, session: res.session, errors: res.errors}}
 }
 
 export default Profile

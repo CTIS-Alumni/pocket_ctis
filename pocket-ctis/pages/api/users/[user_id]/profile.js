@@ -17,8 +17,10 @@ export default async function handler(req, res) {
                         "JOIN accounttype act ON (act.id = uat.type_id) WHERE u.id = ? GROUP BY u.id";
                     queries.push({name: "basic_info", query: temp, values: [user_id]});
 
-                    temp = "SELECT ug.id, ug.graduation_project_id, g.graduation_project_name, g.project_year, g.semester, ug.graduation_project_description, ug.visibility FROM usergraduationproject ug " +
+                    temp = "SELECT ug.id, ug.graduation_project_id, c.company_name, g.product_name, CONCAT(u.first_name,' ' ,u.last_name) as advisor, g.project_type, g.graduation_project_name, g.project_year, g.semester, g.project_description, ug.graduation_project_description, ug.visibility FROM usergraduationproject ug " +
                         "LEFT OUTER JOIN graduationproject g ON (ug.graduation_project_id = g.id) " +
+                        "JOIN users u ON (u.id = g.advisor_id) " +
+                        "LEFT OUTER JOIN company c ON (c.id = g.company_id) " +
                         "WHERE ug.user_id = ? ";
                     if (payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND ug.visibility = 1 ";
