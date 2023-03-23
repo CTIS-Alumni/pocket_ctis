@@ -13,10 +13,8 @@ export const createDBConnection = async (namedPlaceholders = false) => {
 }
 
 export const addAndOrWhere = (query, condition) => {
-    console.log("query that comes to andOr", query);
     let full_condition;
     if (query.includes(" WHERE ")) {
-        console.log("it aooarently includes where")
         full_condition =  " AND ";
     } else {
         full_condition = " WHERE ";
@@ -118,9 +116,10 @@ export const buildInsertQueries = (data, table, fields, user_id = null) => {
                 query += `STR_TO_DATE(:${field}, '%Y-%m-%dT%H:%i:%s.000Z'), `;
             else query += `:${field}, `;
         });
+        datum.user_id = user_id;
         queries.push({
             name: datum.id,
-            user_id: data?.user_id || user_id,
+            user_id: user_id,
             query: query.slice(0, -2) + ")",
             values: datum
         });
@@ -153,7 +152,7 @@ export function buildUpdateQueries(data, table, fields){
 
 export const getCountForUser = async (connection, table, user_id) => {
     const query = "SELECT COUNT(id) as count FROM " + table + " WHERE user_id = ? ";
-    const [count_res] = await connection.execute(query, user_id);
+    const [count_res] = await connection.execute(query, [user_id]);
     return count_res[0].count;
 }
 
