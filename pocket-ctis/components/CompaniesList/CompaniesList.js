@@ -98,15 +98,17 @@ const PaginationFooter = ({
     }
   }
 
-  pages.push(
-    <span
-      key={numPages}
-      className={numPages == currentPage ? styles.active : ''}
-      onClick={() => setCurPage(numPages)}
-    >
-      {numPages}
-    </span>
-  )
+  if (numPages > 1) {
+    pages.push(
+      <span
+        key={numPages}
+        className={numPages == currentPage ? styles.active : ''}
+        onClick={() => setCurPage(numPages)}
+      >
+        {numPages}
+      </span>
+    )
+  }
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -118,27 +120,24 @@ const PaginationFooter = ({
   return (
     <div className={styles.pagination}>
       <div>
-        {numPages > 10 && (
-          <>
-            <label htmlFor='jumpTo' style={{ marginRight: 10 }}>
-              Jump To
-            </label>
-            <select
-              name='jumpTo'
-              id='jumpTo'
-              onChange={(event) => {
-                setCurPage(event.target.value)
-              }}
-              placeholder='Jump to'
-              defaultValue='Jump to'
-            >
-              <option value='' selected disabled>
-                Jump to
-              </option>
-              {pagesNums}
-            </select>
-          </>
-        )}
+        <label htmlFor='jumpTo' style={{ marginRight: 10 }}>
+          Jump To
+        </label>
+        <select
+          name='jumpTo'
+          id='jumpTo'
+          onChange={(event) => {
+            setCurPage(event.target.value)
+          }}
+          placeholder='Jump to'
+          defaultValue=''
+          initialValue=''
+        >
+          <option value='' selected disabled>
+            Jump to
+          </option>
+          {pagesNums}
+        </select>
       </div>
       <div>
         <span onClick={prevPage}>
@@ -174,6 +173,7 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
   const [searchString, setSearchString] = useState('')
   const [sorting, setSorting] = useState({ name: '', direction: '' })
 
+  console.log(total)
   const handleSorting = (columnName) => {
     if (sorting.name == columnName) {
       if (sorting.direction == 'asc') {
@@ -193,9 +193,9 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
   }
   const handlePageChange = (newPage) => setCurrentPage(newPage)
   const handleSearch = (search) => {
-    search.searchValue = search.searchValue.trim();
-      setSearchString(search.searchValue.trim())
-      setCurrentPage(1)
+    search.searchValue = search.searchValue.trim()
+    setSearchString(search.searchValue.trim())
+    setCurrentPage(1)
   }
 
   useEffect(() => {
