@@ -15,7 +15,7 @@ export default async function handler(req, res){
                 try {
                     let values = [], length_values = [];
                     let query = "SELECT * FROM sector ";
-                    let length_query = "SELECT * FROM sector ";
+                    let length_query = "SELECT COUNT(*) as count FROM sector ";
 
                     if (req.query.name) { // for general search
                         query += " WHERE sector_name LIKE CONCAT('%', ?, '%') ";
@@ -29,7 +29,7 @@ export default async function handler(req, res){
                     const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
                         {name: "length", query: length_query, values: length_values}]);
 
-                    res.status(200).json({data:data.data, length: data.data.length, errors: errors});
+                    res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
                 }
