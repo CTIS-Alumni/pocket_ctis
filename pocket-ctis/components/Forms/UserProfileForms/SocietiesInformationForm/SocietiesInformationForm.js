@@ -4,33 +4,45 @@ import {
   EyeFill,
   EyeSlashFill,
   XCircleFill,
-  PlusCircleFill, ToggleOn, ToggleOff,
+  PlusCircleFill,
+  ToggleOn,
+  ToggleOff,
 } from 'react-bootstrap-icons'
-import {cloneDeep} from 'lodash'
+import { cloneDeep } from 'lodash'
 import { useState, useEffect } from 'react'
-import {replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
-import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
+import {
+  replaceWithNull,
+  splitFields,
+  handleResponse,
+} from '../../../../helpers/submissionHelpers'
+import {
+  _getFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
 
-const SocietiesInformationForm = ({ data , user_id, setIsUpdated}) => {
+const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [societies, setSocieties] = useState([])
-  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
   useEffect(() => {
-    _getFetcher({societies: craftUrl("studentsocieties")}).then(({societies}) => setSocieties(societies.data))
+    _getFetcher({ societies: craftUrl('studentsocieties') }).then(
+      ({ societies }) => setSocieties(societies.data)
+    )
   }, [])
 
   const applyNewData = (data) => {
-    setDataAfterSubmit(data);
+    setDataAfterSubmit(data)
   }
 
-  let deletedData = [];
+  let deletedData = []
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
-        datum.visibility = datum.visibility == 1;
-        datum.activity_status = datum.activity_status == 1;
+      datum.visibility = datum.visibility == 1
+      datum.activity_status = datum.activity_status == 1
       datum.society = `${datum.society_id}-${datum.society_name}`
       return datum
     })
@@ -40,30 +52,41 @@ const SocietiesInformationForm = ({ data , user_id, setIsUpdated}) => {
   const transformDataForSubmission = (newData) => {
     newData.societies = newData.societies.map((val) => {
       val.visibility = val.visibility ? 1 : 0
-      val.activity_status = val.activity_status ? 1 : 0;
+      val.activity_status = val.activity_status ? 1 : 0
       replaceWithNull(val)
-      splitFields(val, ["society"]);
-      return val;
-    });
+      splitFields(val, ['society'])
+      return val
+    })
   }
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
-    let newData = cloneDeep(values);
-    transformDataForSubmission(newData);
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData)
 
-    const send_to_req = {societies: cloneDeep(dataAfterSubmit)};
-    transformDataForSubmission(send_to_req);
-    const requestObj = createReqObject(send_to_req.societies, newData.societies, deletedData);
-    const url = craftUserUrl(user_id, "societies");
-    const responseObj = await submitChanges(url ,requestObj);
-    const args = [["society"], [], ["user_id", "id"], []];
-    const new_data = handleResponse(send_to_req.societies, requestObj, responseObj, values, "societies", args, transformDataForSubmission);
-    applyNewData(new_data);
-    console.log("req,",requestObj, "res", responseObj);
+    const send_to_req = { societies: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(
+      send_to_req.societies,
+      newData.societies,
+      deletedData
+    )
+    const url = craftUserUrl(user_id, 'societies')
+    const responseObj = await submitChanges(url, requestObj)
+    const args = [['society'], [], ['user_id', 'id'], []]
+    const new_data = handleResponse(
+      send_to_req.societies,
+      requestObj,
+      responseObj,
+      values,
+      'societies',
+      args,
+      transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req,', requestObj, 'res', responseObj)
 
-    deletedData = [];
-
+    deletedData = []
   }
 
   return (
@@ -91,7 +114,9 @@ const SocietiesInformationForm = ({ data , user_id, setIsUpdated}) => {
                             <button
                               className={styles.addButton}
                               type='button'
-                              onClick={() => arrayHelpers.insert(0, {society: ''})}
+                              onClick={() =>
+                                arrayHelpers.insert(0, { society: '' })
+                              }
                             >
                               <PlusCircleFill size={20} />
                             </button>
@@ -111,12 +136,15 @@ const SocietiesInformationForm = ({ data , user_id, setIsUpdated}) => {
                                         className={styles.removeBtn}
                                         type='button'
                                         onClick={() => {
-                                          arrayHelpers.remove(index);
-                                          if(society.hasOwnProperty("id")){
+                                          arrayHelpers.remove(index)
+                                          if (society.hasOwnProperty('id')) {
                                             console.log(deletedData)
-                                            deletedData.push({name: society.id, id: society.id, data: society});
+                                            deletedData.push({
+                                              name: society.id,
+                                              id: society.id,
+                                              data: society,
+                                            })
                                           }
-
                                         }}
                                       >
                                         <XCircleFill
@@ -124,7 +152,6 @@ const SocietiesInformationForm = ({ data , user_id, setIsUpdated}) => {
                                           className={styles.removeIcon}
                                         />
                                       </button>
-                                      {society.id}
                                     </div>
                                     <div style={{ flexGrow: '1' }}>
                                       <div className={styles.inputContainer}>
@@ -150,46 +177,46 @@ const SocietiesInformationForm = ({ data , user_id, setIsUpdated}) => {
                                         </Field>
                                       </div>
                                       <div
-                                          style={{
-                                            display: 'flex',
-                                            justifyContent: 'flex-end',
-                                          }}
+                                        style={{
+                                          display: 'flex',
+                                          justifyContent: 'flex-end',
+                                        }}
                                       >
                                         <div
-                                            className={styles.inputContainer}
-                                            style={{ width: '49%' }}
+                                          className={styles.inputContainer}
+                                          style={{ width: '49%' }}
                                         >
                                           <Field
-                                              name={`societies[${index}]activity_status`}
-                                              id={`societies[${index}]activity_status`}
+                                            name={`societies[${index}]activity_status`}
+                                            id={`societies[${index}]activity_status`}
                                           >
                                             {({ field, form, meta }) => {
                                               return (
-                                                  <label
+                                                <label
+                                                  className={
+                                                    styles.isCurrentCheckbox
+                                                  }
+                                                >
+                                                  {field.value ? (
+                                                    <ToggleOn
+                                                      size={25}
                                                       className={
-                                                        styles.isCurrentCheckbox
+                                                        styles.isCurrentTrue
                                                       }
-                                                  >
-                                                    {field.value ? (
-                                                        <ToggleOn
-                                                            size={25}
-                                                            className={
-                                                              styles.isCurrentTrue
-                                                            }
-                                                        />
-                                                    ) : (
-                                                        <ToggleOff size={25} />
-                                                    )}
-                                                    &nbsp; Are you active?
-                                                    <input
-                                                        type='checkbox'
-                                                        {...field}
-                                                        style={{
-                                                          display: 'none',
-                                                        }}
-                                                        disabled={!society.society}
                                                     />
-                                                  </label>
+                                                  ) : (
+                                                    <ToggleOff size={25} />
+                                                  )}
+                                                  &nbsp; Are you active?
+                                                  <input
+                                                    type='checkbox'
+                                                    {...field}
+                                                    style={{
+                                                      display: 'none',
+                                                    }}
+                                                    disabled={!society.society}
+                                                  />
+                                                </label>
                                               )
                                             }}
                                           </Field>

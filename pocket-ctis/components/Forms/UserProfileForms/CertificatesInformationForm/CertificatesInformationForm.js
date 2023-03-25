@@ -7,26 +7,28 @@ import {
 } from 'react-bootstrap-icons'
 import { Formik, Field, Form, FieldArray } from 'formik'
 import { cloneDeep } from 'lodash'
-import {createReqObject} from "../../../../helpers/fetchHelpers";
-import {submitChanges} from "../../../../helpers/fetchHelpers";
-import {craftUserUrl} from "../../../../helpers/urlHelper";
-import {useState} from "react";
-import {replaceWithNull, handleResponse} from "../../../../helpers/submissionHelpers";
+import { createReqObject } from '../../../../helpers/fetchHelpers'
+import { submitChanges } from '../../../../helpers/fetchHelpers'
+import { craftUserUrl } from '../../../../helpers/urlHelper'
+import { useState } from 'react'
+import {
+  replaceWithNull,
+  handleResponse,
+} from '../../../../helpers/submissionHelpers'
 
-
-const CertificatesInformationForm = ({ data ,user_id, setIsUpdated}) => {
-  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
+const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
   const applyNewData = (data) => {
-    setDataAfterSubmit(data);
+    setDataAfterSubmit(data)
   }
 
-  let deletedData = [];
+  let deletedData = []
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
-      replaceWithNull(datum);
+      replaceWithNull(datum)
       datum.visibility = datum.visibility == 1
       return datum
     })
@@ -36,30 +38,44 @@ const CertificatesInformationForm = ({ data ,user_id, setIsUpdated}) => {
 
   const transformDataForSubmission = (newData) => {
     newData.certificates = newData.certificates.map((val) => {
-      val.visibility = val.visibility ? 1 : 0;
-      val.certificate_name = val.certificate_name ? val.certificate_name : null;
-      val.issuing_authority = val.issuing_authority ? val.issuing_authority : null;
-      replaceWithNull(val);
-      return val;
-    });
+      val.visibility = val.visibility ? 1 : 0
+      val.certificate_name = val.certificate_name ? val.certificate_name : null
+      val.issuing_authority = val.issuing_authority
+        ? val.issuing_authority
+        : null
+      replaceWithNull(val)
+      return val
+    })
   }
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
-    let newData = cloneDeep(values);
-    transformDataForSubmission(newData);
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData)
 
-    const send_to_req = {certificates: cloneDeep(dataAfterSubmit)};
-    transformDataForSubmission(send_to_req);
-    const requestObj = createReqObject(send_to_req.certificates, newData.certificates, deletedData);
-    const url = craftUserUrl(user_id, "certificates");
-    const responseObj = await submitChanges(url ,requestObj);
-    const args = [[], [], ["id", "user_id"], []];
-    const new_data = handleResponse(send_to_req.certificates, requestObj, responseObj, values, "certificates", args, transformDataForSubmission);
-    applyNewData(new_data);
-    console.log("req", requestObj, "res", responseObj);
+    const send_to_req = { certificates: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(
+      send_to_req.certificates,
+      newData.certificates,
+      deletedData
+    )
+    const url = craftUserUrl(user_id, 'certificates')
+    const responseObj = await submitChanges(url, requestObj)
+    const args = [[], [], ['id', 'user_id'], []]
+    const new_data = handleResponse(
+      send_to_req.certificates,
+      requestObj,
+      responseObj,
+      values,
+      'certificates',
+      args,
+      transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req', requestObj, 'res', responseObj)
 
-    deletedData = [];
+    deletedData = []
   }
 
   return (
@@ -87,10 +103,12 @@ const CertificatesInformationForm = ({ data ,user_id, setIsUpdated}) => {
                             <button
                               className={styles.addButton}
                               type='button'
-                              onClick={() => arrayHelpers.insert(0, {
-                                certificate_name: '',
-                                issuing_authority: ''
-                              })}
+                              onClick={() =>
+                                arrayHelpers.insert(0, {
+                                  certificate_name: '',
+                                  issuing_authority: '',
+                                })
+                              }
                             >
                               <PlusCircleFill size={20} />
                             </button>
@@ -110,15 +128,19 @@ const CertificatesInformationForm = ({ data ,user_id, setIsUpdated}) => {
                                         className={styles.removeBtn}
                                         type='button'
                                         onClick={() => {
-                                          arrayHelpers.remove(index);
-                                          if(certificate.hasOwnProperty("id"))
-                                            deletedData.push({name: certificate.certificate_name, id: certificate.id, data: certificate});
+                                          arrayHelpers.remove(index)
+                                          if (certificate.hasOwnProperty('id'))
+                                            deletedData.push({
+                                              name: certificate.certificate_name,
+                                              id: certificate.id,
+                                              data: certificate,
+                                            })
                                         }}
                                       >
                                         <XCircleFill
                                           size={13}
                                           className={styles.removeIcon}
-                                        />{certificate.id}
+                                        />
                                       </button>
                                     </div>
                                     <div style={{ flexGrow: '1' }}>

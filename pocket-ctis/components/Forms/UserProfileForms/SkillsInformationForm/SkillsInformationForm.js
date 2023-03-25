@@ -6,37 +6,45 @@ import {
   XCircleFill,
   PlusCircleFill,
 } from 'react-bootstrap-icons'
-import {cloneDeep} from 'lodash'
+import { cloneDeep } from 'lodash'
 import { useState, useEffect } from 'react'
-import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {replaceWithNull, splitFields, handleResponse} from "../../../../helpers/submissionHelpers";
-import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
+import {
+  _getFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import {
+  replaceWithNull,
+  splitFields,
+  handleResponse,
+} from '../../../../helpers/submissionHelpers'
+import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
 
-const SkillsInformationForm = ({ data , user_id, setIsUpdated}) => {
+const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [skillType, setSkillType] = useState([])
   const [skills, setSkills] = useState([])
-  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
   useEffect(() => {
     _getFetcher({
-      skills: craftUrl("skills"),
-      skill_types: craftUrl("skilltypes")
-    }).then(({skills, skill_types}) => {
-      setSkills(skills.data);
+      skills: craftUrl('skills'),
+      skill_types: craftUrl('skilltypes'),
+    }).then(({ skills, skill_types }) => {
+      setSkills(skills.data)
       setSkillType(skill_types.data)
-    });
+    })
   }, [])
 
   const applyNewData = (data) => {
-    setDataAfterSubmit(data);
+    setDataAfterSubmit(data)
   }
 
-  let deletedData = [];
+  let deletedData = []
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
-      replaceWithNull(datum);
+      replaceWithNull(datum)
       datum.visibility = datum.visibility == 1
       datum.skill_type = `${datum.skill_type_id}-${datum.skill_type_name}`
       datum.skill = `${datum.skill_id}-${datum.skill_name}`
@@ -47,30 +55,47 @@ const SkillsInformationForm = ({ data , user_id, setIsUpdated}) => {
 
   const transformDataForSubmission = (newData) => {
     newData.skills = newData.skills.map((val) => {
-      val.visibility = val.visibility ? 1 : 0;
-      val.skill_level = val.skill_level ? parseInt(val.skill_level) : null;
-      replaceWithNull(val);
-      splitFields(val, ["skill_type", "skill"]);
-      return val;
-    });
+      val.visibility = val.visibility ? 1 : 0
+      val.skill_level = val.skill_level ? parseInt(val.skill_level) : null
+      replaceWithNull(val)
+      splitFields(val, ['skill_type', 'skill'])
+      return val
+    })
   }
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
-    let newData = cloneDeep(values);
-    transformDataForSubmission(newData);
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData)
 
-    const send_to_req = {skills: cloneDeep(dataAfterSubmit)};
-    transformDataForSubmission(send_to_req);
-    const requestObj = createReqObject(send_to_req.skills, newData.skills, deletedData);
-    const url = craftUserUrl(user_id, "skills");
-    const responseObj = await submitChanges(url, requestObj);
-    const args = [["skill_type", "skill"], ["skill_type_id"], ["id", "user_id"], []];
-    const new_data = handleResponse(send_to_req.skills, requestObj, responseObj, values, "skills", args, transformDataForSubmission);
-    applyNewData(new_data);
-    console.log("req",requestObj, "res",responseObj);
+    const send_to_req = { skills: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(
+      send_to_req.skills,
+      newData.skills,
+      deletedData
+    )
+    const url = craftUserUrl(user_id, 'skills')
+    const responseObj = await submitChanges(url, requestObj)
+    const args = [
+      ['skill_type', 'skill'],
+      ['skill_type_id'],
+      ['id', 'user_id'],
+      [],
+    ]
+    const new_data = handleResponse(
+      send_to_req.skills,
+      requestObj,
+      responseObj,
+      values,
+      'skills',
+      args,
+      transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req', requestObj, 'res', responseObj)
 
-    deletedData = [];
+    deletedData = []
   }
 
   return (
@@ -98,7 +123,13 @@ const SkillsInformationForm = ({ data , user_id, setIsUpdated}) => {
                             <button
                               className={styles.addButton}
                               type='button'
-                              onClick={() => arrayHelpers.insert(0, {skill_type: '', skill_level: '', skill: ''})}
+                              onClick={() =>
+                                arrayHelpers.insert(0, {
+                                  skill_type: '',
+                                  skill_level: '',
+                                  skill: '',
+                                })
+                              }
                             >
                               <PlusCircleFill size={20} />
                             </button>
@@ -116,11 +147,15 @@ const SkillsInformationForm = ({ data , user_id, setIsUpdated}) => {
                                       <button
                                         className={styles.removeBtn}
                                         type='button'
-                                        onClick={() =>{
-                                          arrayHelpers.remove(index);
-                                          if(skill.hasOwnProperty("id")){
-                                            console.log(skill);
-                                            deletedData.push({name: skill.id, id: skill.id, data: skill});
+                                        onClick={() => {
+                                          arrayHelpers.remove(index)
+                                          if (skill.hasOwnProperty('id')) {
+                                            console.log(skill)
+                                            deletedData.push({
+                                              name: skill.id,
+                                              id: skill.id,
+                                              data: skill,
+                                            })
                                           }
                                         }}
                                       >
@@ -128,7 +163,6 @@ const SkillsInformationForm = ({ data , user_id, setIsUpdated}) => {
                                           size={13}
                                           className={styles.removeIcon}
                                         />
-                                        {skill.id}
                                       </button>
                                     </div>
                                     <div style={{ flexGrow: '1' }}>
@@ -142,8 +176,14 @@ const SkillsInformationForm = ({ data , user_id, setIsUpdated}) => {
                                           id={`skills[${index}]skill_type`}
                                           name={`skills[${index}]skill_type`}
                                           onChange={(event) => {
-                                            props.setFieldValue(`skills[${index}]skill_type`, event.target.value);
-                                            props.setFieldValue(`skills[${index}]skill`, '')
+                                            props.setFieldValue(
+                                              `skills[${index}]skill_type`,
+                                              event.target.value
+                                            )
+                                            props.setFieldValue(
+                                              `skills[${index}]skill`,
+                                              ''
+                                            )
                                           }}
                                         >
                                           <option disabled selected value=''>
@@ -205,30 +245,26 @@ const SkillsInformationForm = ({ data , user_id, setIsUpdated}) => {
                                             Skill Level
                                           </label>
                                           <Field
-                                              as='select'
-                                              className={styles.inputField}
-                                              id={`skills[${index}]skill_level`}
-                                              name={`skills[${index}]skill_level`}
-                                              disabled={!skill.skill_type || !skill.skill}
+                                            as='select'
+                                            className={styles.inputField}
+                                            id={`skills[${index}]skill_level`}
+                                            name={`skills[${index}]skill_level`}
+                                            disabled={
+                                              !skill.skill_type || !skill.skill
+                                            }
                                           >
                                             <option selected disabled value=''>
                                               Please select your skill level
                                             </option>
-                                            <option value={1}>
-                                              Beginner
-                                            </option>
+                                            <option value={1}>Beginner</option>
                                             <option value={2}>
                                               Intermediate
                                             </option>
-                                            <option value={3}>
-                                              Competent
-                                            </option>
+                                            <option value={3}>Competent</option>
                                             <option value={4}>
                                               Proficient
                                             </option>
-                                            <option value={5}>
-                                              Expert
-                                            </option>
+                                            <option value={5}>Expert</option>
                                           </Field>
                                         </div>
                                       </div>

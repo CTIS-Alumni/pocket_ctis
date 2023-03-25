@@ -291,7 +291,7 @@ const PersonalInformationForm = ({data, user_id, setIsUpdated}) => {
                                         <div className={`${styles.inputContainer}`}>
                                             <label className={`${styles.inputLabel}`}>
                                                 Career Objectives
-                                            </label>{props.values.career_objective[0]?.id}
+                                            </label>
                                             <Field
                                                 className={`${styles.inputField}`}
                                                 as='textarea'
@@ -344,7 +344,7 @@ const PersonalInformationForm = ({data, user_id, setIsUpdated}) => {
                                                     <XCircleFill
                                                         size={13}
                                                         className={styles.removeIcon}
-                                                    />{props.values.high_school[0]?.id}
+                                                    />
                                                 </button>
                                             </div>
                                             <div style={{flexGrow: '1'}}>
@@ -475,7 +475,7 @@ const PersonalInformationForm = ({data, user_id, setIsUpdated}) => {
                                                     <XCircleFill
                                                         size={13}
                                                         className={styles.removeIcon}
-                                                    />{props.values.location[0]?.id}
+                                                    />
                                                 </button>
                                             </div>
                                             <div style={{flexGrow: '1'}}>

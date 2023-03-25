@@ -13,20 +13,23 @@ import {
   convertToIso,
   replaceWithNull,
   splitFields,
-  handleResponse
-} from "../../../../helpers/submissionHelpers";
-import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
+  handleResponse,
+} from '../../../../helpers/submissionHelpers'
+import {
+  _getFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
 
-const ExamsInformationForm = ({ data , user_id, setIsUpdated}) => {
+const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
+  const [examTypes, setExamTypes] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
-  const [examTypes, setExamTypes] = useState([]);
-  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
-
-  let deletedData = [];
+  let deletedData = []
 
   useEffect(() => {
-    _getFetcher({exams: craftUrl("exams")}).then(({exams}) =>
+    _getFetcher({ exams: craftUrl('exams') }).then(({ exams }) =>
       setExamTypes(
         exams.data.map((datum) => {
           return {
@@ -39,49 +42,61 @@ const ExamsInformationForm = ({ data , user_id, setIsUpdated}) => {
   }, [])
 
   const applyNewData = (data) => {
-    setDataAfterSubmit(data);
+    setDataAfterSubmit(data)
   }
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
-      replaceWithNull(datum);
+      replaceWithNull(datum)
       datum.visibility = datum.visibility == 1
       datum.exam = `${datum.exam_id}-${datum.exam_name}`
       datum.exam_date = datum.exam_date ? new Date(datum.exam_date) : null
       return datum
-    });
+    })
     return newData
   }
 
   const transformDataForSubmission = (newData) => {
     newData.exams = newData.exams.map((val) => {
-      val.visibility = val.visibility ? 1 : 0;
-      val.exam_date =
-          val.exam_date != null ? convertToIso(val.exam_date) : null;
-      val.grade = val.grade ? val.grade : null;
-      replaceWithNull(val);
-        splitFields(val, ["exam"]);
-      return val;
-    });
+      val.visibility = val.visibility ? 1 : 0
+      val.exam_date = val.exam_date != null ? convertToIso(val.exam_date) : null
+      val.grade = val.grade ? val.grade : null
+      replaceWithNull(val)
+      splitFields(val, ['exam'])
+      return val
+    })
   }
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
-    let newData = cloneDeep(values);
-    transformDataForSubmission(newData);
-    const args = [["exam"], [], ["id", "user_id"], ["exam_date"]];
-    const send_to_req = {exams: cloneDeep(dataAfterSubmit)};
-    transformDataForSubmission(send_to_req);
-    const requestObj = createReqObject(send_to_req.exams, newData.exams, deletedData, args[4]);
-    const url = craftUserUrl(user_id, "exams");
-    const responseObj = await submitChanges(url, requestObj);
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData)
+    const args = [['exam'], [], ['id', 'user_id'], ['exam_date']]
+    const send_to_req = { exams: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(
+      send_to_req.exams,
+      newData.exams,
+      deletedData,
+      args[4]
+    )
+    const url = craftUserUrl(user_id, 'exams')
+    const responseObj = await submitChanges(url, requestObj)
 
-    const new_data = handleResponse(send_to_req.exams, requestObj, responseObj, values, "exams", args, transformDataForSubmission);
-    applyNewData(new_data);
-    console.log("req, ",requestObj, "res", responseObj);
+    const new_data = handleResponse(
+      send_to_req.exams,
+      requestObj,
+      responseObj,
+      values,
+      'exams',
+      args,
+      transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req, ', requestObj, 'res', responseObj)
 
-    deletedData = [];
+    deletedData = []
   }
 
   return (
@@ -109,9 +124,13 @@ const ExamsInformationForm = ({ data , user_id, setIsUpdated}) => {
                             <button
                               className={styles.addButton}
                               type='button'
-                              onClick={() => arrayHelpers.insert(0, {
-                                exam: '', grade: '', date: null
-                              })}
+                              onClick={() =>
+                                arrayHelpers.insert(0, {
+                                  exam: '',
+                                  grade: '',
+                                  date: null,
+                                })
+                              }
                             >
                               <PlusCircleFill size={20} />
                             </button>
@@ -129,16 +148,20 @@ const ExamsInformationForm = ({ data , user_id, setIsUpdated}) => {
                                       <button
                                         className={styles.removeBtn}
                                         type='button'
-                                        onClick={() =>{
-                                          arrayHelpers.remove(index);
-                                          if(exam.hasOwnProperty("id"))
-                                            deletedData.push({name: exam.id, id: exam.id, data: exam});
+                                        onClick={() => {
+                                          arrayHelpers.remove(index)
+                                          if (exam.hasOwnProperty('id'))
+                                            deletedData.push({
+                                              name: exam.id,
+                                              id: exam.id,
+                                              data: exam,
+                                            })
                                         }}
                                       >
                                         <XCircleFill
                                           size={13}
                                           className={styles.removeIcon}
-                                        />{exam.id}
+                                        />
                                       </button>
                                     </div>
                                     <div style={{ flexGrow: '1' }}>
