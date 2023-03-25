@@ -1,19 +1,26 @@
 import { Field, FieldArray, Form, Formik } from 'formik'
 import { cloneDeep } from 'lodash'
-import React, {useState} from 'react'
-import {EyeSlashFill, EyeFill, XCircleFill} from 'react-bootstrap-icons'
+import React, { useState } from 'react'
+import { EyeSlashFill, EyeFill, XCircleFill } from 'react-bootstrap-icons'
 import { Rating } from 'react-simple-star-rating'
 import DatePickerField from '../../../DatePickers/DatePicker'
 import styles from '../UserProfileFormStyles.module.css'
-import {convertToIso, handleResponse, replaceWithNull} from "../../../../helpers/submissionHelpers";
-import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {craftUserUrl} from "../../../../helpers/urlHelper";
+import {
+  convertToIso,
+  handleResponse,
+  replaceWithNull,
+} from '../../../../helpers/submissionHelpers'
+import {
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import { craftUserUrl } from '../../../../helpers/urlHelper'
 
 const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
-  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
   const applyNewData = (data) => {
-    setDataAfterSubmit(data);
+    setDataAfterSubmit(data)
   }
 
   const transformData = (data) => {
@@ -30,34 +37,49 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   const transformDataForSubmission = (newData) => {
     newData.internships = newData.internships.map((val) => {
-      val.visibility = val.visibility ? 1 : 0;
+      val.visibility = val.visibility ? 1 : 0
       val.start_date =
-          val.start_date != null ? convertToIso(val.start_date) : null;
-      val.end_date =
-          val.end_date != null ? convertToIso(val.end_date) : null;
-      val.rating = val.rating ? val.rating : null;
-      val.opinion = val.opinion ? val.opinion.trim() : null;
-      replaceWithNull(val);
-      return val;
-    });
+        val.start_date != null ? convertToIso(val.start_date) : null
+      val.end_date = val.end_date != null ? convertToIso(val.end_date) : null
+      val.rating = val.rating ? val.rating : null
+      val.opinion = val.opinion ? val.opinion.trim() : null
+      replaceWithNull(val)
+      return val
+    })
   }
 
   const onSubmit = async (values) => {
-    setIsUpdated(true);
+    setIsUpdated(true)
     let newData = cloneDeep(values)
-    transformDataForSubmission(newData);
+    transformDataForSubmission(newData)
 
-    const args = [[], [], ["id", "user_id", "record_date"], ["start_date", "end_date"]]
-    const send_to_req = {internships: cloneDeep(dataAfterSubmit)};
-    transformDataForSubmission(send_to_req);
-    const requestObj = createReqObject(send_to_req.internships, newData.internships, []);
-    const url = craftUserUrl(user_id, "internships");
-    const responseObj = await submitChanges(url, requestObj);
+    const args = [
+      [],
+      [],
+      ['id', 'user_id', 'record_date'],
+      ['start_date', 'end_date'],
+    ]
+    const send_to_req = { internships: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(
+      send_to_req.internships,
+      newData.internships,
+      []
+    )
+    const url = craftUserUrl(user_id, 'internships')
+    const responseObj = await submitChanges(url, requestObj)
 
-    const new_data = handleResponse(send_to_req.internships, requestObj, responseObj, values, "internships", args, transformDataForSubmission);
-    applyNewData(new_data);
-    console.log("req,", requestObj, "res", responseObj);
-
+    const new_data = handleResponse(
+      send_to_req.internships,
+      requestObj,
+      responseObj,
+      values,
+      'internships',
+      args,
+      transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req,', requestObj, 'res', responseObj)
   }
 
   return (
@@ -144,8 +166,10 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                     </div>
                                   </div>
 
-                                  <div className={styles.inputContainer}
-                                  style={{width: '%49'}}>
+                                  <div
+                                    className={styles.inputContainer}
+                                    style={{ width: '%49' }}
+                                  >
                                     <label className={styles.inputLabel}>
                                       Semester
                                     </label>
@@ -156,8 +180,8 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                       name={`internships[${index}]semester`}
                                       id={`internships[${index}]semester`}
                                     >
-                                    <option value='spring'>Spring</option>
-                                    <option value='fall'>Fall</option>
+                                      <option value='spring'>Spring</option>
+                                      <option value='fall'>Fall</option>
                                     </Field>
                                   </div>
 
@@ -180,6 +204,24 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                       fillColor={'#8d2729'}
                                       style={{ marginTop: 5 }}
                                     />
+                                    <span
+                                      onClick={() => {
+                                        props.setFieldValue(
+                                          'erasmus[0].rating',
+                                          0
+                                        )
+                                      }}
+                                      style={{
+                                        backgroundColor: '#333',
+                                        borderRadius: '5px',
+                                        color: '#fff',
+                                        display: 'inline-block',
+                                        padding: '5px 15px',
+                                        verticalAlign: 'middle',
+                                      }}
+                                    >
+                                      Reset
+                                    </span>
                                   </div>
 
                                   <div className={styles.inputContainer}>

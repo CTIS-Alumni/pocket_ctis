@@ -21,7 +21,7 @@ import {
 } from '../../../../helpers/fetchHelpers'
 import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
 
-const ContactInformationForm = ({ data, user_id }) => {
+const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
   const [socialMediaTypes, setSocialMediaTypes] = useState([])
 
@@ -152,6 +152,7 @@ const ContactInformationForm = ({ data, user_id }) => {
     )
     console.log('req', requestObj, 'res', responseObj)
 
+    setIsUpdated(true)
     applyNewData(final_data)
     deletedData = { phone_numbers: [], emails: [], socials: [] }
   }

@@ -4,16 +4,23 @@ import styles from '../UserProfileFormStyles.module.css'
 import { cloneDeep } from 'lodash'
 import { EyeFill, EyeSlashFill } from 'react-bootstrap-icons'
 import DatePickerField from '../../../DatePickers/DatePicker'
-import {useState} from "react";
-import {convertToIso, handleResponse, replaceWithNull} from "../../../../helpers/submissionHelpers";
-import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {craftUserUrl} from "../../../../helpers/urlHelper";
+import { useState } from 'react'
+import {
+  convertToIso,
+  handleResponse,
+  replaceWithNull,
+} from '../../../../helpers/submissionHelpers'
+import {
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import { craftUserUrl } from '../../../../helpers/urlHelper'
 
 const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
-  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
   const applyNewData = (data) => {
-    setDataAfterSubmit(data);
+    setDataAfterSubmit(data)
   }
 
   const transformData = (data) => {
@@ -29,34 +36,45 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   const transformDataForSubmission = (newData) => {
     newData.erasmus = newData.erasmus.map((val) => {
-      val.visibility = val.visibility ? 1 : 0;
+      val.visibility = val.visibility ? 1 : 0
       val.start_date =
-          val.start_date != null ? convertToIso(val.start_date) : null;
-      val.end_date =
-          val.end_date != null ? convertToIso(val.end_date) : null;
-      val.rating = val.rating ? val.rating : null;
-      val.opinion = val.opinion ? val.opinion.trim() : null;
-      replaceWithNull(val);
-      return val;
-    });
+        val.start_date != null ? convertToIso(val.start_date) : null
+      val.end_date = val.end_date != null ? convertToIso(val.end_date) : null
+      val.rating = val.rating ? val.rating : null
+      val.opinion = val.opinion ? val.opinion.trim() : null
+      replaceWithNull(val)
+      return val
+    })
   }
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
     let newData = cloneDeep(values)
-    transformDataForSubmission(newData);
+    transformDataForSubmission(newData)
 
-    const args = [[], [], ["id", "user_id", "record_date"], ["start_date", "end_date"]]
-    const send_to_req = {erasmus: cloneDeep(dataAfterSubmit)};
-    transformDataForSubmission(send_to_req);
-    const requestObj = createReqObject(send_to_req.erasmus, newData.erasmus, []);
-    const url = craftUserUrl(user_id, "erasmus");
-    const responseObj = await submitChanges(url, requestObj);
+    const args = [
+      [],
+      [],
+      ['id', 'user_id', 'record_date'],
+      ['start_date', 'end_date'],
+    ]
+    const send_to_req = { erasmus: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(send_to_req.erasmus, newData.erasmus, [])
+    const url = craftUserUrl(user_id, 'erasmus')
+    const responseObj = await submitChanges(url, requestObj)
 
-    const new_data = handleResponse(send_to_req.erasmus, requestObj, responseObj, values, "erasmus", args, transformDataForSubmission);
-    applyNewData(new_data);
-    console.log("req,", requestObj, "res", responseObj);
-
+    const new_data = handleResponse(
+      send_to_req.erasmus,
+      requestObj,
+      responseObj,
+      values,
+      'erasmus',
+      args,
+      transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req,', requestObj, 'res', responseObj)
   }
 
   return (
@@ -153,6 +171,21 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                       fillColor={'#8d2729'}
                       style={{ marginTop: 5 }}
                     />
+                    <span
+                      onClick={() => {
+                        props.setFieldValue('erasmus[0].rating', 0)
+                      }}
+                      style={{
+                        backgroundColor: '#333',
+                        borderRadius: '5px',
+                        color: '#fff',
+                        display: 'inline-block',
+                        padding: '5px 15px',
+                        verticalAlign: 'middle',
+                      }}
+                    >
+                      Reset
+                    </span>
                   </div>
                   <div className={`${styles.inputContainer}`}>
                     <label className={`${styles.inputLabel}`}>Opinion</label>

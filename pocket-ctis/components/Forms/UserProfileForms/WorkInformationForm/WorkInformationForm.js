@@ -1,7 +1,7 @@
 import styles from '../UserProfileFormStyles.module.css'
 import { useEffect, useState, useContext } from 'react'
 import { Formik, Form, FieldArray, Field } from 'formik'
-import {cloneDeep} from 'lodash'
+import { cloneDeep } from 'lodash'
 import {
   EyeFill,
   EyeSlashFill,
@@ -11,35 +11,42 @@ import {
   XCircleFill,
 } from 'react-bootstrap-icons'
 import DatePickerField from '../../../DatePickers/DatePicker'
-import {craftUrl, craftUserUrl} from "../../../../helpers/urlHelper";
+import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
 import { Location_data } from '../../../../context/locationContext'
-import {_getFetcher, createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {
+  _getFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
 import {
   convertToIso,
   replaceWithNull,
-  splitFields, handleResponse
-} from "../../../../helpers/submissionHelpers";
+  splitFields,
+  handleResponse,
+} from '../../../../helpers/submissionHelpers'
 
-const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
+const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [companies, setCompanies] = useState([])
   const [worktypes, setWorktypes] = useState([])
-  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
   const { locationData } = useContext(Location_data)
 
-  let deletedData = [];
+  let deletedData = []
 
   useEffect(() => {
     _getFetcher({
-      companies: craftUrl("companies"),
-      work_types: craftUrl("worktypes")
-    }).then(({companies, work_types}) => {
-      setCompanies(companies.data);
-      setWorktypes(work_types.data);
-    }).catch((err) => console.log(err))
+      companies: craftUrl('companies'),
+      work_types: craftUrl('worktypes'),
+    })
+      .then(({ companies, work_types }) => {
+        setCompanies(companies.data)
+        setWorktypes(work_types.data)
+      })
+      .catch((err) => console.log(err))
   }, [])
 
   const applyNewData = (data) => {
-    setDataAfterSubmit(data);
+    setDataAfterSubmit(data)
   }
 
   const transformData = (data) => {
@@ -61,40 +68,57 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
 
   const transformDataForSubmission = (newData) => {
     newData.work_records = newData.work_records.map((val) => {
-      val.visibility = val.visibility ? 1 : 0;
-      val.is_current = val.is_current ? 1 : 0;
-      if(val.is_current && val.end_date)
-        val.end_date = null;
+      val.visibility = val.visibility ? 1 : 0
+      val.is_current = val.is_current ? 1 : 0
+      if (val.is_current && val.end_date) val.end_date = null
       val.start_date =
-          val.start_date != null ? convertToIso(val.start_date) : null;
-      val.end_date =
-          val.end_date != null ? convertToIso(val.end_date) : null;
-      val.department = val.department ? val.department.trim() : null;
-      val.position = val.position ? val.position.trim() : null;
-      val.work_description = val.work_description ? val.work_description.trim() : null;
-      replaceWithNull(val);
-      splitFields(val, ["work_type", "company", "city", "country"]);
+        val.start_date != null ? convertToIso(val.start_date) : null
+      val.end_date = val.end_date != null ? convertToIso(val.end_date) : null
+      val.department = val.department ? val.department.trim() : null
+      val.position = val.position ? val.position.trim() : null
+      val.work_description = val.work_description
+        ? val.work_description.trim()
+        : null
+      replaceWithNull(val)
+      splitFields(val, ['work_type', 'company', 'city', 'country'])
       return val
-    });
+    })
   }
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
-    let newData = cloneDeep(values);
-    transformDataForSubmission(newData);
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData)
 
-    const args = [["work_type", "company", "country", "city"],[], ["id", "record_date", "user_id"], ["start_date", "end_date"]]
-    const send_to_req = {work_records: cloneDeep(dataAfterSubmit)};
-    transformDataForSubmission(send_to_req);
-    const requestObj = createReqObject(send_to_req.work_records, newData.work_records, deletedData);
-    const url = craftUserUrl(user_id, "workrecords");
-    const responseObj = await submitChanges(url, requestObj);
+    const args = [
+      ['work_type', 'company', 'country', 'city'],
+      [],
+      ['id', 'record_date', 'user_id'],
+      ['start_date', 'end_date'],
+    ]
+    const send_to_req = { work_records: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(
+      send_to_req.work_records,
+      newData.work_records,
+      deletedData
+    )
+    const url = craftUserUrl(user_id, 'workrecords')
+    const responseObj = await submitChanges(url, requestObj)
 
-    const new_data = handleResponse(send_to_req.work_records, requestObj, responseObj, values, "work_records", args, transformDataForSubmission);
-    applyNewData(new_data);
-    console.log("req", requestObj, "res", responseObj);
+    const new_data = handleResponse(
+      send_to_req.work_records,
+      requestObj,
+      responseObj,
+      values,
+      'work_records',
+      args,
+      transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req', requestObj, 'res', responseObj)
 
-    deletedData = [];
+    deletedData = []
   }
 
   return (
@@ -135,7 +159,7 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                     end_date: null,
                                     department: '',
                                     position: '',
-                                    work_description: ''
+                                    work_description: '',
                                   })
                                 }
                               >
@@ -159,16 +183,22 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                           <button
                                             className={styles.removeBtn}
                                             type='button'
-                                            onClick={() =>{
-                                              arrayHelpers.remove(index);
-                                              if(work_record.hasOwnProperty("id"))
-                                                deletedData.push({name: work_record.id, id: work_record.id, data: work_record});
+                                            onClick={() => {
+                                              arrayHelpers.remove(index)
+                                              if (
+                                                work_record.hasOwnProperty('id')
+                                              )
+                                                deletedData.push({
+                                                  name: work_record.id,
+                                                  id: work_record.id,
+                                                  data: work_record,
+                                                })
                                             }}
                                           >
                                             <XCircleFill
                                               size={13}
                                               className={styles.removeIcon}
-                                            />{work_record.id}
+                                            />
                                           </button>
                                         </div>
                                         <div
@@ -190,10 +220,7 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                               name={`work_records[${index}]company`}
                                               id={`work_records[${index}]company`}
                                             >
-                                              <option
-                                                value=''
-                                                selected
-                                              >
+                                              <option value='' selected>
                                                 Select Company
                                               </option>
                                               {companies.map((company) => (
@@ -226,10 +253,14 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                                 name={`work_records[${index}]country`}
                                                 id={`work_records[${index}]country`}
                                                 onChange={(event) => {
-                                                  props.setFieldValue(`work_records[${index}]city`, '')
+                                                  props.setFieldValue(
+                                                    `work_records[${index}]city`,
+                                                    ''
+                                                  )
 
                                                   props.setFieldValue(
-                                                    `work_records[${index}]country`, event.target.value
+                                                    `work_records[${index}]country`,
+                                                    event.target.value
                                                   )
                                                 }}
                                               >
@@ -341,11 +372,15 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                               </label>
                                               <Field
                                                 as='select'
-                                                 className={styles.inputField}
+                                                className={styles.inputField}
                                                 name={`work_records[${index}]work_type`}
                                                 id={`work_records[${index}]work_type`}
                                               >
-                                                <option value='' disabled selected>
+                                                <option
+                                                  value=''
+                                                  disabled
+                                                  selected
+                                                >
                                                   Select Work Type
                                                 </option>
                                                 {worktypes.map((workType) => (
@@ -381,7 +416,9 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                                 }
                                                 name={`work_records[${index}]start_date`}
                                                 id={`work_records[${index}]start_date`}
-                                                disabled={!work_record.work_type}
+                                                disabled={
+                                                  !work_record.work_type
+                                                }
                                               />
                                             </div>
                                             <div
@@ -394,7 +431,10 @@ const WorkInformationForm = ({ data , user_id, setIsUpdated}) => {
                                                 End Date
                                               </label>
                                               <DatePickerField
-                                                disabled={work_record.is_current || !work_record.work_type}
+                                                disabled={
+                                                  work_record.is_current ||
+                                                  !work_record.work_type
+                                                }
                                                 format='MMM/y'
                                                 maxDetail='year'
                                                 className={
