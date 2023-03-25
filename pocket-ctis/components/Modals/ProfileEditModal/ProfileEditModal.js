@@ -38,11 +38,6 @@ const ProfileEditModal = ({ user, refreshProfile }) => {
     erasmus,
   } = user
 
-  useEffect(() => {
-    console.log('upon update', user)
-    console.log('Erasmus', erasmus)
-  }, [user])
-
   const personalInfoData = {
     location,
     career_objective,

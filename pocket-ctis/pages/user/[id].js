@@ -58,10 +58,6 @@ const Profile = ({ userData, session, errors }) => {
       })
   }
 
-  useEffect(() => {
-    console.log('from [id]', user)
-  }, [user])
-
   return (
     <>
       <div style={{ height: '100vh' }}>
