@@ -19,7 +19,7 @@
     /* opacity: 50%; */
 }
 .inputField:disabled{
-    background-color: white;
+    background-color: #f3f3f3;
     cursor: not-allowed;
 }
 .inputField{

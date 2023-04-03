@@ -182,6 +182,7 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                         display: 'inline-block',
                         padding: '5px 15px',
                         verticalAlign: 'middle',
+                        cursor: 'pointer',
                       }}
                     >
                       Reset

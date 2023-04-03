@@ -13,6 +13,7 @@ import ProjectsInformationForm from '../../Forms/UserProfileForms/ProjectsInform
 import ContactInformationForm from '../../Forms/UserProfileForms/ContactInformationForm/ContactInformationForm'
 import ErasmusInformationForm from '../../Forms/UserProfileForms/ErasmusInformationForm/ErasmusInformationForm'
 import InternshipInformationForm from '../../Forms/UserProfileForms/InternshipInformationForm/InternshipInformationForm'
+import { ToastContainer } from 'react-toastify'
 
 const ProfileEditModal = ({ user, refreshProfile }) => {
   const [isUpdated, setIsUpdated] = useState(false)
@@ -209,6 +210,16 @@ const ProfileEditModal = ({ user, refreshProfile }) => {
             Close
           </Button>
         </Modal.Footer>
+        <ToastContainer
+          position='top-right'
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          draggable
+          pauseOnHover
+          theme='light'
+        />
       </Modal>
     </>
   )

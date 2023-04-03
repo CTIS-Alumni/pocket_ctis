@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
+import 'react-toastify/dist/ReactToastify.css'
 import '../styles/globals.scss'
 import '../styles/DatePicker.css'
 import '../styles/components.scss'

@@ -24,12 +24,14 @@ import {
   splitFields,
   handleResponse,
 } from '../../../../helpers/submissionHelpers'
+import { toast } from 'react-toastify'
 
 const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [companies, setCompanies] = useState([])
   const [worktypes, setWorktypes] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
   const { locationData } = useContext(Location_data)
+  const [loading, setLoading] = useState(false)
 
   let deletedData = []
 
@@ -117,6 +119,21 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
     )
     applyNewData(new_data)
     console.log('req', requestObj, 'res', responseObj)
+
+    let errors = []
+    for (const [key, value] of Object.entries(responseObj)) {
+      if (value.errors?.length > 0) {
+        errors = [...errors, ...value.errors.map((error) => error)]
+      }
+    }
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else {
+      toast.success('Data successfully saved')
+    }
 
     deletedData = []
   }

@@ -207,7 +207,7 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                     <span
                                       onClick={() => {
                                         props.setFieldValue(
-                                          'erasmus[0].rating',
+                                          `internships[${index}]rating`,
                                           0
                                         )
                                       }}
@@ -218,6 +218,7 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                         display: 'inline-block',
                                         padding: '5px 15px',
                                         verticalAlign: 'middle',
+                                        cursor: 'pointer',
                                       }}
                                     >
                                       Reset
