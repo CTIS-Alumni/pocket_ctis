@@ -1,0 +1,30 @@
+@import '../../../styles/variables.scss';
+
+.sidebar {
+    max-width: 320px;
+    min-width: 310px;
+    height: 100%;
+    padding: 10px;
+    color: $dark-grey;
+}
+.sidebarBtn{
+    display: flex;
+    padding: 0.8em 1.5em;
+    border-radius: 5px;
+    padding: 5px;
+    width: 100%;
+    border-radius: 5px;
+    background-color: $light-grey;
+    transition: background-color 0.3s linear;
+
+    svg{
+        width: 1.2em;
+        height: 1.2em;
+        margin-right: 1em;
+    }
+}
+.sidebarBtn:hover{
+    transition: background-color 0.3s linear;
+    background-color: $medium-grey;
+    color: $white;           
+}
