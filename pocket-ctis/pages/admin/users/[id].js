@@ -12,8 +12,14 @@ import {
   getTimePeriod,
 } from '../../../helpers/formatHelpers'
 import CustomBadge from '../../../components/ProfilePageComponents/CustomBadge/CustomBadge'
+import ProfileEditModal from '../../../components/Modals/ProfileEditModal/ProfileEditModal'
+import { useState } from 'react'
+import AdminUserEditModal from '../../../components/AdminPanelComponents/AdminUserEditModal/AdminUserEditModal'
 
 const AdminUserView = ({ user }) => {
+  const [isLoading, setIsLoading] = useState(false)
+  const [userData, setUserData] = useState(user.userInfo)
+
   const {
     basic_info,
     emails,
@@ -31,7 +37,7 @@ const AdminUserView = ({ user }) => {
     societies,
     skills,
     certificates,
-  } = user.userInfo.data
+  } = userData.data
 
   const classifySkills = () => {
     const classifiedSkill = {}
@@ -46,6 +52,15 @@ const AdminUserView = ({ user }) => {
     return classifiedSkill
   }
   const classifiedSkills = classifySkills(skills)
+
+  const refreshProfile = () => {
+    setIsLoading(true)
+    _getFetcher({ res: craftUserUrl(user.basic_info[0].id, 'profile') })
+      .then(({ res }) => setUser(res.data))
+      .finally(() => {
+        setIsLoading(false)
+      })
+  }
 
   return (
     <AdminPageContainer>
@@ -449,6 +464,10 @@ const AdminUserView = ({ user }) => {
           </Tabs>
         </Card>
       </div>
+      <AdminUserEditModal
+        user={userData.data}
+        refreshProfile={refreshProfile}
+      />
     </AdminPageContainer>
   )
 }

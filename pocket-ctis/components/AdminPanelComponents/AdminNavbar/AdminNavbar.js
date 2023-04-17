@@ -5,7 +5,7 @@ const AdminNavbar = () => {
   return (
     <>
       <Navbar className={styles.navbar} fixed='top'>
-        <Navbar.Brand href='/user' className={styles.navbar_logo}>
+        <Navbar.Brand href='/admin' className={styles.navbar_logo}>
           PocketCTIS
         </Navbar.Brand>
         <Nav className='d-flex justify-content-end'>
