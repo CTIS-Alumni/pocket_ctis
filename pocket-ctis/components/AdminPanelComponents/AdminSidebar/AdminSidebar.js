@@ -15,6 +15,8 @@ const Button = ({ children, href, icon }) => {
 const AdminSidebar = () => {
   return (
     <div className={styles.sidebar}>
+      <img src='/test.jpeg' className={styles.sidebarImg} />
+      <div className={styles.userTitle}>Admin User</div>
       <Button href='/admin/users' icon={<PeopleFill />}>
         Users
       </Button>

@@ -5,7 +5,26 @@
     min-width: 310px;
     height: 100%;
     padding: 10px;
+    padding-top: 50px;
     color: $dark-grey;
+    background-color: #fff;
+    text-align: center;
+    -webkit-box-shadow: 9px 0px 10px 1px rgba(229,229,229,1);
+    -moz-box-shadow: 9px 0px 10px 1px rgba(229,229,229,1);
+    box-shadow: 9px 0px 10px 1px rgba(229,229,229,1);
+
+    &Img{
+        height: 200px;
+        width: 200px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin: 0px auto 20px auto;
+    }
+
+    .userTitle{
+        margin-bottom: 30px;
+        text-transform: uppercase;
+    }
 }
 .sidebarBtn{
     display: flex;

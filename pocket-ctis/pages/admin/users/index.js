@@ -37,19 +37,26 @@ const AdminUsersList = () => {
             {users.map((user) => {
               return (
                 <ListGroupItem style={{ width: '100%' }}>
-                  <Link href='\admin\users'>
+                  <Link href={`/admin/users/${user.id}`}>
                     <div style={{ display: 'flex' }}>
                       <img
                         //   src={getProfilePicturePath(user.profile_picture)}
                         width={80}
                         height={80}
-                        style={{ objectFit: 'contain' }}
+                        style={{ objectFit: 'contain', borderRadius: '50%' }}
                         src={getProfilePicturePath(
                           user.pic_visibility,
                           user.profile_picture
                         )}
                       />
-                      <div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          flexFlow: 'column',
+                          paddingLeft: '0.8em',
+                        }}
+                      >
                         <div>
                           {user.id} - {user.first_name} {user.last_name}
                         </div>
