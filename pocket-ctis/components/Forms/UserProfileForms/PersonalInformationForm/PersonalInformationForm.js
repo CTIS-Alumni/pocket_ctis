@@ -149,117 +149,117 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
   const onSubmit = async (values) => {
     setIsUpdated(true)
     let newData = await cloneDeep(values)
-    console.log('new', newData)
-    // transformFuncs.location(newData)
-    // if (
-    //   dataAfterSubmit.location.length > newData.location.length &&
-    //   dataAfterSubmit.location[0].id != ''
-    // ) {
-    //   deletedData.location.push({
-    //     name: dataAfterSubmit.location[0].id,
-    //     id: dataAfterSubmit.location[0].id,
-    //     data: dataAfterSubmit.location[0],
-    //   })
-    //   values.location = []
-    // }
 
-    // transformFuncs.high_school(newData)
-    // if (
-    //   dataAfterSubmit.high_school.length > newData.high_school.length &&
-    //   dataAfterSubmit.high_school[0].id
-    // ) {
-    //   deletedData.high_school.push({
-    //     name: dataAfterSubmit.high_school[0].id,
-    //     id: dataAfterSubmit.high_school[0].id,
-    //     data: dataAfterSubmit.high_school[0],
-    //   })
-    //   values.high_school = []
-    // }
+    transformFuncs.location(newData)
+    if (
+      dataAfterSubmit.location.length > newData.location.length &&
+      dataAfterSubmit.location[0].id != ''
+    ) {
+      deletedData.location.push({
+        name: dataAfterSubmit.location[0].id,
+        id: dataAfterSubmit.location[0].id,
+        data: dataAfterSubmit.location[0],
+      })
+      values.location = []
+    }
 
-    // transformFuncs.career_objective(newData)
-    // if (
-    //   dataAfterSubmit.career_objective.length >
-    //     newData.career_objective.length &&
-    //   dataAfterSubmit.career_objective[0].id
-    // ) {
-    //   deletedData.career_objective.push({
-    //     name: dataAfterSubmit.career_objective[0].id,
-    //     id: dataAfterSubmit.career_objective[0].id,
-    //     data: dataAfterSubmit.career_objective[0],
-    //   })
-    //   values.career_objective = []
-    // }
+    transformFuncs.high_school(newData)
+    if (
+      dataAfterSubmit.high_school.length > newData.high_school.length &&
+      dataAfterSubmit.high_school[0].id
+    ) {
+      deletedData.high_school.push({
+        name: dataAfterSubmit.high_school[0].id,
+        id: dataAfterSubmit.high_school[0].id,
+        data: dataAfterSubmit.high_school[0],
+      })
+      values.high_school = []
+    }
 
-    // /*transformFuncs.wanted_sectors(newData); //special case
-    //     let flag = false;
-    //     let is_found;
-    //     if(dataAfterSubmit.wanted_sectors.length > 0){
-    //         dataAfterSubmit.wanted_sectors.forEach((sector) => {
-    //             is_found = newData.wanted_sectors.find((s, i) => {
-    //                 if (s.sector_name == sector.sector_name) {
-    //                     newData.wanted_sectors[i].id = sector.id;
-    //                     return true;
-    //                 } else flag = true;
-    //             });
-    //             if (is_found == undefined)
-    //                 deletedData.wanted_sectors.push({name: sector.id, id: sector.id, data: sector});
-    //         });
-    //         if (flag)
-    //             newData.wanted_sectors = [];
-    //     }*/
+    transformFuncs.career_objective(newData)
+    if (
+      dataAfterSubmit.career_objective.length >
+        newData.career_objective.length &&
+      dataAfterSubmit.career_objective[0].id
+    ) {
+      deletedData.career_objective.push({
+        name: dataAfterSubmit.career_objective[0].id,
+        id: dataAfterSubmit.career_objective[0].id,
+        data: dataAfterSubmit.career_objective[0],
+      })
+      values.career_objective = []
+    }
 
-    // let requestObj = {
-    //   location: {},
-    //   career_objective: {},
-    //   high_school: {},
-    // }
-    // let responseObj = {
-    //   location: {},
-    //   career_objective: {},
-    //   high_school: {},
-    // }
+    /*transformFuncs.wanted_sectors(newData); //special case
+        let flag = false;
+        let is_found;
+        if(dataAfterSubmit.wanted_sectors.length > 0){
+            dataAfterSubmit.wanted_sectors.forEach((sector) => {
+                is_found = newData.wanted_sectors.find((s, i) => {
+                    if (s.sector_name == sector.sector_name) {
+                        newData.wanted_sectors[i].id = sector.id;
+                        return true;
+                    } else flag = true;
+                });
+                if (is_found == undefined)
+                    deletedData.wanted_sectors.push({name: sector.id, id: sector.id, data: sector});
+            });
+            if (flag)
+                newData.wanted_sectors = [];
+        }*/
 
-    // const args = {
-    //   location: [['country', 'city'], [], ['id', 'user_id'], []],
-    //   career_objective: [[], [], ['id', 'user_id'], []],
-    //   high_school: [['high_school'], [], ['user_id', 'id'], []],
-    // }
+    let requestObj = {
+      location: {},
+      career_objective: {},
+      high_school: {},
+    }
+    let responseObj = {
+      location: {},
+      career_objective: {},
+      high_school: {},
+    }
 
-    // const final_data = { location: [], career_objective: [], high_school: [] }
-    // await Promise.all(
-    //   Object.keys(
-    //     omitFields(dataAfterSubmit, ['basic_info', 'wanted_sectors'])
-    //   ).map(async (key) => {
-    //     const send_to_req = {}
-    //     send_to_req[key] = cloneDeep(dataAfterSubmit[key])
-    //     transformFuncs[key](send_to_req)
-    //     requestObj[key] = createReqObject(
-    //       send_to_req[key],
-    //       newData[key],
-    //       deletedData[key]
-    //     )
-    //     const url = craftUserUrl(user_id, key)
-    //     responseObj[key] = await submitChanges(url, requestObj[key])
-    //     final_data[key] = handleResponse(
-    //       send_to_req[key],
-    //       requestObj[key],
-    //       responseObj[key],
-    //       values,
-    //       key,
-    //       args[key],
-    //       transformFuncs[key]
-    //     )
-    //   })
-    // )
+    const args = {
+      location: [['country', 'city'], [], ['id', 'user_id'], []],
+      career_objective: [[], [], ['id', 'user_id'], []],
+      high_school: [['high_school'], [], ['user_id', 'id'], []],
+    }
 
-    // applyNewData(final_data)
-    // console.log('req', requestObj, 'res', responseObj)
+    const final_data = { location: [], career_objective: [], high_school: [] }
+    await Promise.all(
+      Object.keys(
+        omitFields(dataAfterSubmit, ['basic_info', 'wanted_sectors'])
+      ).map(async (key) => {
+        const send_to_req = {}
+        send_to_req[key] = cloneDeep(dataAfterSubmit[key])
+        transformFuncs[key](send_to_req)
+        requestObj[key] = createReqObject(
+          send_to_req[key],
+          newData[key],
+          deletedData[key]
+        )
+        const url = craftUserUrl(user_id, key)
+        responseObj[key] = await submitChanges(url, requestObj[key])
+        final_data[key] = handleResponse(
+          send_to_req[key],
+          requestObj[key],
+          responseObj[key],
+          values,
+          key,
+          args[key],
+          transformFuncs[key]
+        )
+      })
+    )
 
-    // deletedData = {
-    //   location: [],
-    //   career_objective: [],
-    //   high_school: [],
-    // }
+    applyNewData(final_data)
+    console.log('req', requestObj, 'res', responseObj)
+
+    deletedData = {
+      location: [],
+      career_objective: [],
+      high_school: [],
+    }
   }
 
   const {
@@ -504,56 +504,6 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                       </Field>
                     </td>
                   </tr>
-                  {/*<tr>
-                                    <td>
-                                        <div className={`${styles.inputContainer}`}>
-                                            <label className={`${styles.inputLabel}`}>
-                                                Sectors I want to work in
-                                            </label>
-                                            <Field
-                                                className={`${styles.inputField}`}
-                                                as='select'
-                                                rows={5}
-                                                id='wanted_sectors.sectors'
-                                                name='wanted_sectors.sectors'
-                                                multiple={true}
-                                            >
-                                                <option value='' selected>
-                                                    None
-                                                </option>
-                                                {sectors.map((s) => (
-                                                    <option value={s.sector}>{s.sector_name}</option>
-                                                ))}
-                                            </Field>
-                                        </div>
-                                    </td>
-                                    <td className={styles.visibilityCheckboxContainer}>
-                                        <Field name='wanted_sectors.visibility'>
-                                            {({field, form, meta}) => {
-                                                return (
-                                                    <label>
-                                                        {field.value ? (
-                                                            <EyeFill
-                                                                size={20}
-                                                                className={`${styles.visibilityUnchecked} ${styles.visibilityCheckbox}`}
-                                                            />
-                                                        ) : (
-                                                            <EyeSlashFill
-                                                                size={20}
-                                                                className={`${styles.visibilityCheckbox}`}
-                                                            />
-                                                        )}
-                                                        <input
-                                                            type='checkbox'
-                                                            {...field}
-                                                            style={{display: 'none'}}
-                                                        />
-                                                    </label>
-                                                )
-                                            }}
-                                        </Field>
-                                    </td>
-                                </tr>*/}
                   <tr>
                     <td colSpan={3}>
                       <div className={styles.formPartitionHeading}>
