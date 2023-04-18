@@ -23,7 +23,6 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
-      datum.visibility = datum.visibility == 1
       datum.activity_status = datum.activity_status == 1
       datum.society = `${datum.society_id}-${datum.society_name}`
       return datum

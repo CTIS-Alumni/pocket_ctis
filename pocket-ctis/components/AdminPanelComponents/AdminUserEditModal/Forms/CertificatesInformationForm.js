@@ -13,7 +13,6 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       replaceWithNull(datum)
-      datum.visibility = datum.visibility == 1
       return datum
     })
 

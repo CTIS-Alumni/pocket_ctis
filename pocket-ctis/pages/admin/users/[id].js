@@ -37,6 +37,7 @@ const AdminUserView = ({ user }) => {
     societies,
     skills,
     certificates,
+    wanted_sectors,
   } = userData.data
 
   const classifySkills = () => {
@@ -101,6 +102,12 @@ const AdminUserView = ({ user }) => {
               ))}
             </div>
           </div>
+          <p>
+            Wanted Sectors:{' '}
+            <span style={{ color: '#999' }}>
+              {wanted_sectors.map((sector) => sector.sector_name).join(', ')}
+            </span>
+          </p>
           <div>{career_objective[0]?.career_objective}</div>
         </Card>
         <Card

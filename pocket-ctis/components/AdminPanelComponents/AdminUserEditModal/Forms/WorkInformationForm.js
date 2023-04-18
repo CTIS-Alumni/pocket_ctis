@@ -38,7 +38,6 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
-      datum.visibility = datum.visibility == 1
       datum.is_current = datum.is_current == 1
       datum.start_date = datum.start_date ? new Date(datum.start_date) : null
       datum.end_date = datum.end_date ? new Date(datum.end_date) : null
