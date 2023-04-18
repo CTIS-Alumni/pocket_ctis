@@ -93,7 +93,6 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                     <Field
                       className={`${styles.inputField}`}
                       style={{ width: '100%' }}
-                      disabled
                       id='first_name'
                       name='first_name'
                       placeholder='First Name'
@@ -107,7 +106,6 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                     <label className={`${styles.inputLabel}`}>last Name</label>
                     <Field
                       className={`${styles.inputField}`}
-                      disabled
                       id='last_name'
                       name='last_name'
                       placeholder='Last Name'

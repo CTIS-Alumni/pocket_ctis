@@ -13,18 +13,8 @@ import {
 import styles from './AdminUserFormStyles.module.css'
 
 import { cloneDeep } from 'lodash'
-import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
-import {
-  _getFetcher,
-  createReqObject,
-  submitChanges,
-} from '../../../../helpers/fetchHelpers'
-import {
-  convertToIso,
-  replaceWithNull,
-  splitFields,
-  handleResponse,
-} from '../../../../helpers/submissionHelpers'
+import { craftUrl } from '../../../../helpers/urlHelper'
+import { _getFetcher } from '../../../../helpers/fetchHelpers'
 
 const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [companies, setCompanies] = useState([])
