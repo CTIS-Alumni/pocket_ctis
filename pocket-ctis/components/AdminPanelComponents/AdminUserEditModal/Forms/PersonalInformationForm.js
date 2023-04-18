@@ -1,11 +1,14 @@
 import { useState, useContext, useEffect } from 'react'
 import { Location_data } from '../../../../context/locationContext'
+
 import { Field, Formik, Form } from 'formik'
-import styles from './AdminUserFormStyles.module.css'
+import { XCircleFill } from 'react-bootstrap-icons'
 import Select from 'react-select'
+
+import styles from './AdminUserFormStyles.module.css'
+
 import { _getFetcher } from '../../../../helpers/fetchHelpers'
 import { craftUrl } from '../../../../helpers/urlHelper'
-import { XCircleFill } from 'react-bootstrap-icons'
 import { cloneDeep } from 'lodash'
 
 const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {

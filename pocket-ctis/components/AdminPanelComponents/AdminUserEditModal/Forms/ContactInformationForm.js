@@ -1,20 +1,12 @@
 import { useState, useEffect } from 'react'
-import { FieldArray, Field, Formik, Form } from 'formik'
-import { cloneDeep } from 'lodash'
 import styles from './AdminUserFormStyles.module.css'
+
+import { FieldArray, Field, Formik, Form } from 'formik'
 import { PlusCircleFill, XCircleFill } from 'react-bootstrap-icons'
 
-import {
-  replaceWithNull,
-  splitFields,
-  handleResponse,
-} from '../../../../helpers/submissionHelpers'
-import {
-  _getFetcher,
-  createReqObject,
-  submitChanges,
-} from '../../../../helpers/fetchHelpers'
-import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
+import { cloneDeep } from 'lodash'
+import { _getFetcher } from '../../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../../helpers/urlHelper'
 
 const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [socialMediaTypes, setSocialMediaTypes] = useState([])
@@ -70,7 +62,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
       {(props) => {
         return (
           <Form>
-            <table style={{ width: '100%' }}>
+            <table className={styles.formTable}>
               <tbody>
                 <FieldArray
                   name='socials'
