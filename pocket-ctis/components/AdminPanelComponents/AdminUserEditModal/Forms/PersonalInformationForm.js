@@ -61,6 +61,9 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   const onSubmitHandler = (values) => {
     console.log(values)
+
+    //after submission
+    setIsUpdated(true)
   }
 
   return (
