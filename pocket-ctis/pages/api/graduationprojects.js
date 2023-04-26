@@ -53,7 +53,7 @@ export default async function handler(req, res) {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT g.id, g.graduation_project_name, g.team_number, g.project_year, g.semester, CONCAT(u.first_name, ' ' ,u.last_name) as advisor, g.project_type, g.company_id, c.company_name " +
+                    let query = "SELECT g.id, g.graduation_project_name, g.team_number, g.project_year, g.semester, g.team_pic, g.poster_pic, CONCAT(u.first_name, ' ' ,u.last_name) as advisor, g.project_type, g.company_id, c.company_name " +
                         "FROM graduationproject g LEFT OUTER JOIN company c ON (g.company_id = c.id) JOIN users u ON (u.id = g.advisor_id)";
                     let length_query = "SELECT COUNT(*) as count from graduationproject g LEFT OUTER JOIN company c ON (g.company_id = c.id) " +
                         "JOIN users u ON (u.id = g.advisor_id) ";

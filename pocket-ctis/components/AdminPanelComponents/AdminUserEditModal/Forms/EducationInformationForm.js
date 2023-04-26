@@ -12,12 +12,14 @@ import DatePickerField from '../../../DatePickers/DatePicker'
 import styles from './AdminUserFormStyles.module.css'
 
 import { cloneDeep } from 'lodash'
-import { _getFetcher } from '../../../../helpers/fetchHelpers'
-import { craftUrl } from '../../../../helpers/urlHelper'
+import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
+import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [eduInsts, setEduInsts] = useState([])
   const [degreeTypes, setDegreeTypes] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
   useEffect(() => {
     _getFetcher({
@@ -29,9 +31,16 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
     })
   }, [])
 
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data)
+  }
+
+  let deletedData = []
+
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
+      datum.visibility = datum.visibility == 1
       datum.edu_inst = `${datum.edu_inst_id}-${datum.edu_inst_name}`
       datum.start_date = datum.start_date ? new Date(datum.start_date) : null
       datum.end_date = datum.end_date ? new Date(datum.end_date) : null
@@ -43,17 +52,64 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
     return newData
   }
 
-  const onSubmitHandler = (values) => {
-    console.log(values)
+  const transformDataForSubmission = (newData) => {
+    newData.edu_records = newData.edu_records.map((val) => {
+      val.visibility = val.visibility ? 1 : 0
+      val.is_current = val.is_current ? 1 : 0
+      if (val.is_current && val.end_date) val.end_date = null
+      val.start_date =
+          val.start_date != null ? convertToIso(val.start_date) : null
+      val.end_date = val.end_date != null ? convertToIso(val.end_date) : null
+      val.name_of_program = val.name_of_program ? val.name_of_program : null
+      val.education_description = val.education_description
+          ? val.education_description
+          : null
+      val.gpa = val.gpa ? val.gpa : null
+      replaceWithNull(val)
+      splitFields(val, ['edu_inst', 'degree_type'])
+      return val
+    })
+  }
 
-    //after submission
+  const onSubmit = async (values) => {
     setIsUpdated(true)
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData)
+
+    const args = [
+      ['edu_inst', 'degree_type'],
+      [],
+      ['id', 'record_date', 'user_id'],
+      ['start_date', 'end_date'],
+    ]
+    const send_to_req = { edu_records: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(
+        send_to_req.edu_records,
+        newData.edu_records,
+        deletedData
+    )
+    const url = craftUserUrl(user_id, 'educationrecords')
+    const responseObj = await submitChanges(url, requestObj)
+    const new_data = handleResponse(
+        send_to_req.edu_records,
+        requestObj,
+        responseObj,
+        values,
+        'edu_records',
+        args,
+        transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req:', requestObj, 'res', responseObj)
+
+    deletedData = []
   }
 
   return (
     <Formik
       enableReinitialize
-      onSubmit={onSubmitHandler}
+      onSubmit={onSubmit}
       initialValues={{
         edu_records: transformData(data),
       }}

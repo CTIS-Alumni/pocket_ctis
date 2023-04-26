@@ -6,16 +6,6 @@ import { Formik, Field, Form } from 'formik'
 import { Rating } from 'react-simple-star-rating'
 import { cloneDeep } from 'lodash'
 import DatePickerField from '../../../DatePickers/DatePicker'
-import {
-  convertToIso,
-  handleResponse,
-  replaceWithNull,
-} from '../../../../helpers/submissionHelpers'
-import {
-  createReqObject,
-  submitChanges,
-} from '../../../../helpers/fetchHelpers'
-import { craftUserUrl } from '../../../../helpers/urlHelper'
 
 const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
   const transformData = (data) => {

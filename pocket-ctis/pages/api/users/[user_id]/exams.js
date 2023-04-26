@@ -16,7 +16,7 @@ const field_conditions = {
 
 const fields = {
     basic: ["exam_id", "grade", "visibility"],
-    date: []
+    date: ["exam_date"]
 };
 
 const table_name = "userexam";

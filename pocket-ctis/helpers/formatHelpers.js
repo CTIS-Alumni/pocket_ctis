@@ -69,6 +69,13 @@ export const getProfilePicturePath = (visibility = 0, fileName = null) => {
     }
 }
 
+export const getGraduationProjectPicturePath = (filename = null, teamOrPoster = "team") => {
+    console.log("heres filename", filename)
+        if(filename)
+            return '/graduationprojects/' + teamOrPoster + "/" + filename + '.png';
+        else return '/graduationprojects/' + teamOrPoster + '/defaultTeam.png';
+}
+
 export const getDateString = (date) => {
     if (date) {
         const rawDate = new Date(date)

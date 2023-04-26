@@ -8,21 +8,30 @@ import {
 } from 'react-bootstrap-icons'
 import { cloneDeep } from 'lodash'
 import { useState, useEffect } from 'react'
-import { _getFetcher } from '../../../../helpers/fetchHelpers'
-import { craftUrl } from '../../../../helpers/urlHelper'
+import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
+import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [societies, setSocieties] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
   useEffect(() => {
     _getFetcher({ societies: craftUrl('studentsocieties') }).then(
-      ({ societies }) => setSocieties(societies.data)
+        ({ societies }) => setSocieties(societies.data)
     )
   }, [])
+
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data)
+  }
+
+  let deletedData = []
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
+      datum.visibility = datum.visibility == 1
       datum.activity_status = datum.activity_status == 1
       datum.society = `${datum.society_id}-${datum.society_name}`
       return datum
@@ -30,18 +39,51 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
     return newData
   }
 
-  const onSubmitHandler = (values) => {
-    console.log(values)
+  const transformDataForSubmission = (newData) => {
+    newData.societies = newData.societies.map((val) => {
+      val.visibility = val.visibility ? 1 : 0
+      val.activity_status = val.activity_status ? 1 : 0
+      replaceWithNull(val)
+      splitFields(val, ['society'])
+      return val
+    })
+  }
 
-    //after form submission
+  const onSubmit = async (values) => {
     setIsUpdated(true)
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData)
+
+    const send_to_req = { societies: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(
+        send_to_req.societies,
+        newData.societies,
+        deletedData
+    )
+    const url = craftUserUrl(user_id, 'societies')
+    const responseObj = await submitChanges(url, requestObj)
+    const args = [['society'], [], ['user_id', 'id'], []]
+    const new_data = handleResponse(
+        send_to_req.societies,
+        requestObj,
+        responseObj,
+        values,
+        'societies',
+        args,
+        transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req,', requestObj, 'res', responseObj)
+
+    deletedData = []
   }
 
   return (
-    <Formik
-      enableReinitialize
-      initialValues={{ societies: transformData(data) }}
-      onSubmit={onSubmitHandler}
+      <Formik
+          enableReinitialize
+          initialValues={{ societies: transformData(data) }}
+          onSubmit={onSubmit}
     >
       {(props) => (
         <Form>

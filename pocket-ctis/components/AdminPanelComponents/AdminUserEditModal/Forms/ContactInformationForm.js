@@ -5,10 +5,12 @@ import { FieldArray, Field, Formik, Form } from 'formik'
 import { PlusCircleFill, XCircleFill } from 'react-bootstrap-icons'
 
 import { cloneDeep } from 'lodash'
-import { _getFetcher } from '../../../../helpers/fetchHelpers'
-import { craftUrl } from '../../../../helpers/urlHelper'
+import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
+import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
   const [socialMediaTypes, setSocialMediaTypes] = useState([])
 
   useEffect(() => {
@@ -24,10 +26,26 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
     )
   }, [])
 
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data)
+  }
+
+  let deletedData = { phone_numbers: [], emails: [], socials: [] }
+
   const transformSocials = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
+      datum.visibility = datum.visibility == 1
       datum.social_media = `${datum.social_media_id}-${datum.social_media_name}`
+      return datum
+    })
+    return newData
+  }
+
+  const transformPhones = (data) => {
+    let newData = cloneDeep(data)
+    newData = newData.map((datum) => {
+      datum.visibility = datum.visibility == 1
       return datum
     })
     return newData
@@ -36,28 +54,108 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
   const transformEmails = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
+      datum.visibility = datum.visibility == 1
       datum.is_default = datum.is_default == 1
       return datum
     })
     return newData
   }
 
-  const onSubmitHandler = (values) => {
-    console.log(values)
-
-    //after submission
-    setIsUpdated(true)
+  const transformFuncs = {
+    emails: (newData) => {
+      newData.emails = newData.emails.map((val) => {
+        val.visibility = val.visibility ? 1 : 0
+        val.email_address = val.email_address ? val.email_address : null
+        val.is_default = val.is_default ? 1 : 0
+        replaceWithNull(val)
+        return val
+      })
+    },
+    socials: (newData) => {
+      newData.socials = newData.socials.map((val) => {
+        val.visibility = val.visibility ? 1 : 0
+        val.link = val.link ? val.link : null
+        splitFields(val, ['social_media'])
+        replaceWithNull(val)
+        return val
+      })
+    },
+    phone_numbers: (newData) => {
+      newData.phone_numbers = newData.phone_numbers.map((val) => {
+        val.visibility = val.visibility ? 1 : 0
+        val.phone_number = val.phone_number ? val.phone_number : null
+        replaceWithNull(val)
+        return val
+      })
+    },
   }
+
+  const onSubmit = async (values) => {
+    let newData = cloneDeep(values)
+    transformFuncs.phone_numbers(newData)
+    transformFuncs.emails(newData)
+    transformFuncs.socials(newData)
+
+    let responseObj = {
+      phone_numbers: {},
+      emails: {},
+      socials: {},
+    }
+
+    let requestObj = {
+      phone_numbers: {},
+      emails: {},
+      socials: {},
+    }
+    const args = {
+      phone_numbers: [[], [], ['id', 'user_id'], []],
+      emails: [[], [], ['id', 'user_id'], []],
+      socials: [['social_media'], ['base_link'], ['id', 'user_id'], []],
+    }
+
+    const final_data = { phone_numbers: [], emails: [], socials: [] }
+
+    await Promise.all(
+        Object.keys(dataAfterSubmit).map(async (key) => {
+          const send_to_req = {}
+          send_to_req[key] = cloneDeep(dataAfterSubmit[key])
+          transformFuncs[key](send_to_req)
+          requestObj[key] = createReqObject(
+              send_to_req[key],
+              newData[key],
+              deletedData[key]
+          )
+          const url = craftUserUrl(user_id, key)
+          responseObj[key] = await submitChanges(url, requestObj[key])
+          final_data[key] = handleResponse(
+              send_to_req[key],
+              requestObj[key],
+              responseObj[key],
+              values,
+              key,
+              args[key],
+              transformFuncs[key]
+          )
+        })
+    )
+    console.log('req', requestObj, 'res', responseObj)
+
+    setIsUpdated(true)
+    applyNewData(final_data)
+    deletedData = { phone_numbers: [], emails: [], socials: [] }
+  }
+
+  const { phone_numbers, emails, socials } = data
 
   return (
     <Formik
-      initialValues={{
-        phone_numbers: data.phone_numbers,
-        emails: transformEmails(data.emails),
-        socials: transformSocials(data.socials),
-      }}
-      enableReinitialize
-      onSubmit={onSubmitHandler}
+        initialValues={{
+          phone_numbers: transformPhones(phone_numbers),
+          emails: transformEmails(emails),
+          socials: transformSocials(socials),
+        }}
+        enableReinitialize
+        onSubmit={onSubmit}
     >
       {(props) => {
         return (

@@ -6,31 +6,77 @@ import { XCircleFill, PlusCircleFill } from 'react-bootstrap-icons'
 import { Formik, Field, Form, FieldArray } from 'formik'
 
 import { cloneDeep } from 'lodash'
-import { replaceWithNull } from '../../../../helpers/submissionHelpers'
+import {handleResponse, replaceWithNull} from '../../../../helpers/submissionHelpers'
+import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
+import {craftUserUrl} from "../../../../helpers/urlHelper";
 
 const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
+
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data)
+  }
+
+  let deletedData = []
+
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       replaceWithNull(datum)
+      datum.visibility = datum.visibility == 1
       return datum
     })
 
     return newData
   }
 
-  const onSubmitHandler = (values) => {
-    console.log(values)
+  const transformDataForSubmission = (newData) => {
+    newData.certificates = newData.certificates.map((val) => {
+      val.visibility = val.visibility ? 1 : 0
+      val.certificate_name = val.certificate_name ? val.certificate_name : null
+      val.issuing_authority = val.issuing_authority
+          ? val.issuing_authority
+          : null
+      replaceWithNull(val)
+      return val
+    })
+  }
 
-    //after form submission
+  const onSubmit = async (values) => {
     setIsUpdated(true)
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData)
+
+    const send_to_req = { certificates: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(
+        send_to_req.certificates,
+        newData.certificates,
+        deletedData
+    )
+    const url = craftUserUrl(user_id, 'certificates')
+    const responseObj = await submitChanges(url, requestObj)
+    const args = [[], [], ['id', 'user_id'], []]
+    const new_data = handleResponse(
+        send_to_req.certificates,
+        requestObj,
+        responseObj,
+        values,
+        'certificates',
+        args,
+        transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req', requestObj, 'res', responseObj)
+
+    deletedData = []
   }
 
   return (
     <Formik
       enableReinitialize
       initialValues={{ certificates: transformData(data) }}
-      onSubmit={onSubmitHandler}
+      onSubmit={onSubmit}
     >
       {(props) => (
         <Form>

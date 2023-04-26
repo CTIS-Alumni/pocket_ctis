@@ -3,13 +3,14 @@ import styles from './AdminUserFormStyles.module.css'
 import { Formik, FieldArray, Form, Field } from 'formik'
 import { XCircleFill, PlusCircleFill } from 'react-bootstrap-icons'
 import { cloneDeep } from 'lodash'
-import { _getFetcher } from '../../../../helpers/fetchHelpers'
-import { replaceWithNull } from '../../../../helpers/submissionHelpers'
-import { craftUrl } from '../../../../helpers/urlHelper'
+import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
+import {handleResponse, replaceWithNull, splitFields} from '../../../../helpers/submissionHelpers'
+import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
 
 const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [skillType, setSkillType] = useState([])
   const [skills, setSkills] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
   useEffect(() => {
     _getFetcher({
@@ -20,10 +21,18 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
       setSkillType(skill_types.data)
     })
   }, [])
+
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data)
+  }
+
+  let deletedData = []
+
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       replaceWithNull(datum)
+      datum.visibility = datum.visibility == 1
       datum.skill_type = `${datum.skill_type_id}-${datum.skill_type_name}`
       datum.skill = `${datum.skill_id}-${datum.skill_name}`
       return datum
@@ -31,18 +40,56 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
     return newData
   }
 
-  const onSubmitHandler = (values) => {
-    console.log(values)
+  const transformDataForSubmission = (newData) => {
+    newData.skills = newData.skills.map((val) => {
+      val.visibility = val.visibility ? 1 : 0
+      val.skill_level = val.skill_level ? parseInt(val.skill_level) : null
+      replaceWithNull(val)
+      splitFields(val, ['skill_type', 'skill'])
+      return val
+    })
+  }
 
-    //after form submission
+  const onSubmit = async (values) => {
     setIsUpdated(true)
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData)
+
+    const send_to_req = { skills: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(
+        send_to_req.skills,
+        newData.skills,
+        deletedData
+    )
+    const url = craftUserUrl(user_id, 'skills')
+    const responseObj = await submitChanges(url, requestObj)
+    const args = [
+      ['skill_type', 'skill'],
+      ['skill_type_id'],
+      ['id', 'user_id'],
+      [],
+    ]
+    const new_data = handleResponse(
+        send_to_req.skills,
+        requestObj,
+        responseObj,
+        values,
+        'skills',
+        args,
+        transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req', requestObj, 'res', responseObj)
+
+    deletedData = []
   }
 
   return (
-    <Formik
-      enableReinitialize
-      initialValues={{ skills: transformData(data) }}
-      onSubmit={onSubmitHandler}
+      <Formik
+          enableReinitialize
+          initialValues={{ skills: transformData(data) }}
+          onSubmit={onSubmit}
     >
       {(props) => (
         <Form>

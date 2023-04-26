@@ -9,6 +9,7 @@ import {
 } from 'react-bootstrap'
 import SearchBar from '../SearchBar/SearchBar'
 import styles from './GraduationProjectsList.module.scss'
+import {getGraduationProjectPicturePath} from "../../helpers/formatHelpers";
 
 const GraduationProjectsList = ({ graduationProjects }) => {
   return (
@@ -19,6 +20,9 @@ const GraduationProjectsList = ({ graduationProjects }) => {
           <a key={i} className={styles.graduation_project_link} href={`/user/graduationProjects/${graduationProject.id}`}>
             <div className={styles.graduation_projects_item}>
               <span className={styles.graduation_projects_item_team}>Team {graduationProject.team_number}</span>
+                <img
+                     src={getGraduationProjectPicturePath(graduationProject.team_pic, "team")}
+                />
               <span className={styles.graduation_projects_item_name}>{graduationProject.project_name}</span>
               <span className={styles.graduation_projects_item_advisor}>Advisor: {graduationProject.advisor}</span>
               <span className={styles.graduation_projects_item_type}>{graduationProject.project_type} project</span>

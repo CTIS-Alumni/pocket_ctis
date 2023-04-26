@@ -5,9 +5,7 @@ import {compare} from "bcrypt"
 
 
 export default async function (req, res) {
-    //const {username, password} = req.body;
-    const username = "tempusername";
-    const password = "a";
+    const {username, password} = JSON.parse(req.body);
     try {
             const query = "SELECT * FROM usercredential WHERE username = ? ";
             const user = await doquery({query: query, values: [username]});

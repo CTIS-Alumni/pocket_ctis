@@ -49,6 +49,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
     location: [],
     career_objective: [],
     high_school: [],
+    wanted_sectors: []
   }
 
   const transformData = (data) => {
@@ -127,28 +128,41 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
         }
       }
     },
+    wanted_sectors: (newData) => {
+      console.log("is it here")
+      if(newData.wanted_sectors.sectors){
+        newData.wanted_sectors.sectors = newData.wanted_sectors.sectors.map((val) => {
+          val.sector = val.value;
+          delete val.value;
+          delete val.label;
+          splitFields(val, ["sector"]);
+          val.visibility = newData.wanted_sectors.visibility ? 1 : 0
+          return val;
+        })
+        newData.wanted_sectors = newData.wanted_sectors.sectors;
+      }else{
+
+      }
+    }
   }
 
-  /* wanted_sectors: (newData) => {
-           let sectors = [];
-           let flag = false;
-           if (newData.wanted_sectors.sectors && newData.wanted_sectors.sectors.length > 0) {
-               const sector_visibility = newData.wanted_sectors.visibility ? 1 : 0;
-               newData.wanted_sectors.sectors.forEach((sector) => {
-                   if (sector) {
-                       const split = sector.split("-");
-                       sectors.push({sector_id: parseInt(split[0]), sector_name: split[1], visibility: sector_visibility});
-                   } else flag = true;
-               });
-           }
-           if (flag)
-               sectors = [];
-           newData.wanted_sectors = sectors;
-       },*/
+  const transformSectorsForSubmission = (newData) => {//special case
+    newData.wanted_sectors.sectors = newData.wanted_sectors.sectors.map((val) => {
+      val.sector = val.value;
+      delete val.value;
+      delete val.label;
+      console.log("this is val.sector", val.sector);
+      splitFields(val, ["sector"]);
+      val.visibility = newData.wanted_sectors.visibility ? 1 : 0
+      return val;
+    })
+    newData.wanted_sectors = newData.wanted_sectors.sectors;
+  }
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
     let newData = await cloneDeep(values)
+    console.log("heres values", values);
 
     transformFuncs.location(newData)
     if (
@@ -190,8 +204,10 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       values.career_objective = []
     }
 
-    /*transformFuncs.wanted_sectors(newData); //special case
-        let flag = false;
+    transformFuncs.wanted_sectors(newData); //special case
+    console.log(newData);
+    console.log("heres values", values);
+      /*  let flag = false;
         let is_found;
         if(dataAfterSubmit.wanted_sectors.length > 0){
             dataAfterSubmit.wanted_sectors.forEach((sector) => {
@@ -212,23 +228,26 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       location: {},
       career_objective: {},
       high_school: {},
+      wanted_sectors: {}
     }
     let responseObj = {
       location: {},
       career_objective: {},
       high_school: {},
+      wanted_sectors: {}
     }
 
     const args = {
       location: [['country', 'city'], [], ['id', 'user_id'], []],
       career_objective: [[], [], ['id', 'user_id'], []],
       high_school: [['high_school'], [], ['user_id', 'id'], []],
+      wanted_sectors: [['sector'], [], ['user_id', 'id'], []]
     }
 
-    const final_data = { location: [], career_objective: [], high_school: [] }
+    const final_data = { location: [], career_objective: [], high_school: [] , wanted_sectors: []}
     await Promise.all(
       Object.keys(
-        omitFields(dataAfterSubmit, ['basic_info', 'wanted_sectors'])
+        omitFields(dataAfterSubmit, ['basic_info'])
       ).map(async (key) => {
         const send_to_req = {}
         send_to_req[key] = cloneDeep(dataAfterSubmit[key])
@@ -259,6 +278,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       location: [],
       career_objective: [],
       high_school: [],
+      wanted_sectors: []
     }
   }
 

@@ -8,32 +8,40 @@ import styles from './AdminUserFormStyles.module.css'
 
 import { cloneDeep } from 'lodash'
 import {
-  convertToIso,
-  replaceWithNull,
+  convertToIso, handleResponse,
+  replaceWithNull, splitFields,
 } from '../../../../helpers/submissionHelpers'
-import { _getFetcher } from '../../../../helpers/fetchHelpers'
+import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
 import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
 
 const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [examTypes, setExamTypes] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+
+  let deletedData = []
 
   useEffect(() => {
     _getFetcher({ exams: craftUrl('exams') }).then(({ exams }) =>
-      setExamTypes(
-        exams.data.map((datum) => {
-          return {
-            ...datum,
-            exam: `${datum.id}-${datum.exam_name}`,
-          }
-        })
-      )
+        setExamTypes(
+            exams.data.map((datum) => {
+              return {
+                ...datum,
+                exam: `${datum.id}-${datum.exam_name}`,
+              }
+            })
+        )
     )
   }, [])
+
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data)
+  }
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       replaceWithNull(datum)
+      datum.visibility = datum.visibility == 1
       datum.exam = `${datum.exam_id}-${datum.exam_name}`
       datum.exam_date = datum.exam_date ? new Date(datum.exam_date) : null
       return datum
@@ -41,18 +49,53 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
     return newData
   }
 
-  const onSubmitHandler = (values) => {
-    console.log(values)
+  const transformDataForSubmission = (newData) => {
+    newData.exams = newData.exams.map((val) => {
+      val.visibility = val.visibility ? 1 : 0
+      val.exam_date = val.exam_date != null ? convertToIso(val.exam_date) : null
+      val.grade = val.grade ? val.grade : null
+      replaceWithNull(val)
+      splitFields(val, ['exam'])
+      return val
+    })
+  }
 
-    //after form submission
+  const onSubmit = async (values) => {
     setIsUpdated(true)
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData)
+    const args = [['exam'], [], ['id', 'user_id'], ['exam_date']]
+    const send_to_req = { exams: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(
+        send_to_req.exams,
+        newData.exams,
+        deletedData,
+        args[4]
+    )
+    const url = craftUserUrl(user_id, 'exams')
+    const responseObj = await submitChanges(url, requestObj)
+
+    const new_data = handleResponse(
+        send_to_req.exams,
+        requestObj,
+        responseObj,
+        values,
+        'exams',
+        args,
+        transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req, ', requestObj, 'res', responseObj)
+
+    deletedData = []
   }
 
   return (
-    <Formik
-      enableReinitialize
-      onSubmit={onSubmitHandler}
-      initialValues={{ exams: transformData(data) }}
+      <Formik
+          initialValues={{ exams: transformData(data) }}
+          enableReinitialize
+          onSubmit={onSubmit}
     >
       {(props) => {
         return (

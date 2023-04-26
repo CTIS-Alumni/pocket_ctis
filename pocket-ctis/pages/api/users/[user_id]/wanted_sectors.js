@@ -1,36 +1,68 @@
 import {
     insertToUserTable,
-    doMultiQueries,
+    doMultiQueries, buildInsertQueries, buildSelectQueries, doMultiDeleteQueries,
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
+import limitPerUser from '../../../../config/moduleConfig.js';
+
+const field_conditions = {
+    must_be_different: ["sector_id"],
+    date_fields: [],
+    user: {
+        check_user_only: true,
+        user_id: null
+    }
+}
+
+const fields = {
+    basic: ["sector_id", "visibility"],
+    date: []
+}
+
+const table_name = "userwantsector";
+
+const validation = (data) => {
+    if(data.visibility !== 0 && data.visibility !== 1)
+        return false;
+    return true;
+}
 
 export default async function handler(req, res){
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if(payload.user === "admin" || payload.user === "owner") {
+        const sectors = JSON.parse(req.body)
         const {user_id} = req.query;
+        field_conditions.user.user_id = user_id;
         const method = req.method;
         switch (method) {
             case "POST":
                 try {
-                    const sectors = JSON.parse(req.body);
-                    const base_query = "INSERT INTO userwantsector( ";
-                    const fields = ["sector_id", "visibility"];
-                    const queries = buildInsertQueries(sectors, fields, base_query, user_id);
-                    const {data, errors} = await insertToUserTable(queries, "userwantsector");
+                    const select_queries = buildSelectQueries(sectors, table_name, field_conditions);
+                    const queries = buildInsertQueries(sectors, table_name, fields, user_id);
+                    const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, limitPerUser.wanted_sectors)
                     res.status(200).json({data, errors});
+                    //const base_query = "INSERT INTO userwantsector( ";
+                    //const fields = ["sector_id", "visibility"];
+                    //const queries = buildInsertQueries(sectors, fields, base_query, user_id);
+                    //const {data, errors} = await insertToUserTable(queries, "userwantsector");
+                    //res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
                 }
                 break;
             case "PUT":
                 try {
-                    const sectors = JSON.parse(req.body);
+                    const query = "UPDATE userwantsector SET visibility = ? WHERE user_id = ? ";
+                    const values = [sectors[0].visibility, user_id];
+                    const queries = {name: "wanted_sectors", query: query, values: values};
+                    const {data, errors} = await doMultiQueries(queries);
+                    /*const sectors = JSON.parse(req.body);
                     const base_query = "UPDATE userwantsector SET sector_id = ?, ";
                     const base_values = ["sector_id"];
                     const optional_values = ["visibility"];
                     const queries = (sectors, base_query, base_values, optional_values);
-                    const {data, errors} = await doMultiQueries(queries);
+                    const {data, errors} = await doMultiQueries(queries);*/
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
@@ -38,17 +70,7 @@ export default async function handler(req, res){
                 break;
             case "DELETE":
                 try {
-                    const sectors = JSON.parse(req.body);
-                    let queries = [];
-                    const tempQuery = "DELETE FROM userwantsector WHERE id = ?";
-                    sectors.forEach((s) => {
-                        queries.push({
-                            name: s.id,
-                            query: tempQuery,
-                            values: [s.id]
-                        });
-                    });
-                    const {data, errors} = await doMultiQueries(queries);
+                    const {data, errors} = await doMultiDeleteQueries(sectors, table_name);
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
