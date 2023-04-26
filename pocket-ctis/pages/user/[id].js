@@ -181,7 +181,7 @@ const Profile = ({ userData, session, errors }) => {
         </div>
       </div>
 
-      {session !== 'visitor' && (
+      {session === 'owner' && (
         <ProfileEditModal user={user} refreshProfile={refreshProfile} />
       )}
     </>
