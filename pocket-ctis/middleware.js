@@ -57,7 +57,7 @@ export default async function middleware(req){
         }
     }
     if(refresh === undefined && !url.includes("login")){
-        if(url.includes("user") || url.includes("logout")) {
+        if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user") || url.includes("logout")) {
             return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/login");
         }
     }
