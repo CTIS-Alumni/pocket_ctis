@@ -57,16 +57,22 @@ export default async function middleware(req){
         }
     }
     if(refresh === undefined && !url.includes("login")){
-        if(!url.includes("users") && url.includes("user") || url.includes("logout")) {
+        if(url.includes("user") || url.includes("logout")) {
             return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/login");
         }
     }
     if(access && refresh){
         try{
-            await verify(access, process.env.ACCESS_SECRET);
+            const {payload} =  await verify(access, process.env.ACCESS_SECRET);
+
             if(url.includes("login")){
                 return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user");
-            }
+            }else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user") && payload.mode === "admin"){
+                    return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin");
+            }else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin") && payload.mode === "user")
+                return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user");
+
+
         }catch(error){
             return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/login");
         }

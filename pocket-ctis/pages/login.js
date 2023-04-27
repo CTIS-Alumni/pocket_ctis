@@ -3,14 +3,19 @@ import { Col, Container, Row } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import styles from '../styles/login.module.css'
 import { User_data } from '../context/userContext'
-import { useContext } from 'react'
+import { useContext,useState } from 'react'
 import {_submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
 
 const requestLogin = async (authCredentials) => {
   const res = await _submitFetcher("POST", craftUrl("login"), authCredentials);
-  console.log("this is res", res);
   return res
+}
+
+const requestPasswordReset = async ({username, email}) => {
+  const res = await _submitFetcher("POST",craftUrl("mail", [{name: "forgotPassword", value: 1}]), {username, email})
+  return res;
+
 }
 
 const Login = () => {
@@ -32,6 +37,18 @@ const Login = () => {
     }
   }
 
+  const sendMail = async (values) => {
+    const res = await requestPasswordReset(values);
+    console.log(res);
+  }
+
+  const [loginForm, changeLoginForm] = useState(true);
+
+  const changeForm = () => {
+    changeLoginForm(!loginForm);
+  }
+
+
   return (
     <div
       style={{ backgroundColor: '#1F272B', height: '100vh' }}
@@ -48,7 +65,7 @@ const Login = () => {
       >
         <Row style={{ height: '80%', width: '90%' }}>
           <Col className='d-flex align-items-center'>
-            <Formik
+            {loginForm && <Formik
               initialValues={{ username: '', password: '' }}
               enableReinitialize
               onSubmit={onSubmit}
@@ -77,7 +94,7 @@ const Login = () => {
                   </label>
                 </p>
                 <p className={styles.forgot_password_container}>
-                  <span className={styles.forgot_password}>
+                       <span onClick={changeForm} className={styles.forgot_password}>
                     Forgot password?
                   </span>
                 </p>
@@ -85,7 +102,46 @@ const Login = () => {
                   Login
                 </button>
               </Form>
-            </Formik>
+            </Formik>}
+            {!loginForm && <Formik
+                initialValues={{ username: '', email: ''}}
+                enableReinitialize
+                onSubmit={sendMail}
+            >
+              <Form className={styles.form_container}>
+                <p className={styles.input_container}>
+                  <Field
+                      className={styles.input_field}
+                      id='username'
+                      name='username'
+                      placeholder='username'
+                  />
+                  <label className={styles.input_label} htmlFor='username'>
+                    Username
+                  </label>
+                </p>
+                <p className={styles.input_container}>
+                  <Field
+                      className={styles.input_field}
+                      id='email'
+                      name='email'
+                      placeholder='email'
+                  />
+                  <label className={styles.input_label} htmlFor='email'>
+                    Email
+                  </label>
+                </p>
+                <p className={styles.forgot_password_container}>
+                  <span onClick={changeForm} className={styles.forgot_password}>
+                    Go Back
+                  </span>
+                </p>
+                <button type='submit' className={styles.button}>
+                  Send Mail
+                </button>
+              </Form>
+            </Formik>}
+
           </Col>
           <Col
             style={{ borderLeft: '1px solid #aaa' }}

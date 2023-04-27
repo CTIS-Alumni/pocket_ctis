@@ -162,7 +162,6 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
   const onSubmit = async (values) => {
     setIsUpdated(true)
     let newData = await cloneDeep(values)
-    console.log("heres values", values);
 
     transformFuncs.location(newData)
     if (
@@ -205,8 +204,6 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
     }
 
     transformFuncs.wanted_sectors(newData); //special case
-    console.log(newData);
-    console.log("heres values", values);
       /*  let flag = false;
         let is_found;
         if(dataAfterSubmit.wanted_sectors.length > 0){

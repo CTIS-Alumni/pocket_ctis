@@ -23,7 +23,7 @@ export default async function (req, res) {
                             const access_token = await sign({
                                 user_id: user[0].user_id,
                                 mode: "user"
-                            }, process.env.ACCESS_SECRET, 60 * 7);
+                            }, process.env.ACCESS_SECRET, 60 * 10);
 
                             const refresh_token = await sign({
                                 user_id: user[0].user_id,
@@ -34,7 +34,7 @@ export default async function (req, res) {
                                 httpOnly: true,
                                 secure: process.env.NODE_ENV !== "development",
                                 sameSite: "strict",
-                                maxAge: 60 * 7,
+                                maxAge: 60 * 10,
                                 path: "/"
                             });
 

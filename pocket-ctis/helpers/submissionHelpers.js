@@ -80,8 +80,6 @@ export const handleResponse = (original_data, req, res, values, name, args, tran
                     }
                 );
                 if(found_in_res !== undefined){//attach the insert_id's back to records in the form so that you can edit them immediately without refetching data
-                    console.log("heres values[name]", values[name]);
-                    console.log("heres index of that ", values[name][index])
                     if(!values[name][index].hasOwnProperty("id")){
                         values[name][index].id = found_in_res.inserted.id;
                     }

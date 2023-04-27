@@ -56,9 +56,11 @@ export default async function handler(req, res){
                     }
 
                     ({query, length_query} = await buildSearchQuery(req, query, values, length_query, length_values, columns));
-                    const split_limit = query.split("LIMIT");
 
-                    query = split_limit[0] + " GROUP BY e.id LIMIT" + split_limit[1];
+                    if(query.includes("LIMIT")){
+                        const split_limit = query.split("LIMIT");
+                        query = split_limit[0] + " GROUP BY e.id LIMIT " + split_limit[1];
+                    }else query += " GROUP BY e.id ";
 
                     const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
                         {name: "length", query: length_query, values: length_values}]);

@@ -27,7 +27,6 @@ const Anonymous = () => {
 }
 
 const InternshipsList = ({ internships }) => {
-  console.log("hers internships", internships)
   return (
     <div className={styles.internship_students}>
       {internships.map((internship) => {
