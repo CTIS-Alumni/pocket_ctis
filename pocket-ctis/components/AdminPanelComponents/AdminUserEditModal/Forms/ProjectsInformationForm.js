@@ -1,9 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FieldArray, Field, Formik, Form } from 'formik'
 import styles from './AdminUserFormStyles.module.css'
 import { PlusCircleFill, XCircleFill } from 'react-bootstrap-icons'
+import { _getFetcher } from '../../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../../helpers/urlHelper'
 
 const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
+  const [graduationProjects, setGraduationProjects] = useState([])
+
+  useEffect(() => {
+    _getFetcher({ graduationProjects: craftUrl('graduationprojects') })
+      .then((res) => setGraduationProjects(res.graduationProjects.data))
+      .catch((err) => console.log('error', err))
+  }, [])
+
   const onSubmitHandler = (values) => {
     console.log(values)
 
@@ -11,10 +21,18 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
     setIsUpdated(true)
   }
 
+  const transformGraduationProject = (project) => {
+    const newData = {
+      graduation_project: `${project[0].id}-${project[0].graduation_project_name}`,
+      ...project[0],
+    }
+    return [newData]
+  }
+
   return (
     <Formik
       initialValues={{
-        graduation_project: data.graduation_project,
+        graduation_project: transformGraduationProject(data.graduation_project),
         projects: data.projects,
       }}
       enableReinitialize
@@ -81,10 +99,31 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                                 Project Name
                                               </label>
                                               <Field
+                                                as='select'
                                                 className={`${styles.inputField}`}
-                                                id={`graduation_project[${index}].graduation_project_name`}
-                                                name={`graduation_project[${index}].graduation_project_name`}
-                                              />
+                                                id={`graduation_project[${index}].graduation_project`}
+                                                name={`graduation_project[${index}].graduation_project`}
+                                              >
+                                                <option
+                                                  disabled
+                                                  selected
+                                                  value=''
+                                                >
+                                                  Please select Graduation
+                                                  Project
+                                                </option>
+                                                {graduationProjects.map(
+                                                  (project) => (
+                                                    <option
+                                                      value={`${project.id}-${project.graduation_project_name}`}
+                                                    >
+                                                      {
+                                                        project.graduation_project_name
+                                                      }
+                                                    </option>
+                                                  )
+                                                )}
+                                              </Field>
                                             </div>
                                             <div
                                               className={styles.inputContainer}

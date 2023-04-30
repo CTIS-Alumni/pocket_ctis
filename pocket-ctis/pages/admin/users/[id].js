@@ -2,7 +2,7 @@ import React from 'react'
 import { _getFetcher } from '../../../helpers/fetchHelpers'
 import { craftUserUrl } from '../../../helpers/urlHelper'
 import AdminPageContainer from '../../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
-import { Badge, Card, Container, Tab, Tabs } from 'react-bootstrap'
+import { Badge, Card, Container, Spinner, Tab, Tabs } from 'react-bootstrap'
 import { EnvelopeFill, GeoAltFill, TelephoneFill } from 'react-bootstrap-icons'
 import { Rating } from 'react-simple-star-rating'
 import {
@@ -15,6 +15,7 @@ import CustomBadge from '../../../components/ProfilePageComponents/CustomBadge/C
 import ProfileEditModal from '../../../components/Modals/ProfileEditModal/ProfileEditModal'
 import { useState } from 'react'
 import AdminUserEditModal from '../../../components/AdminPanelComponents/AdminUserEditModal/AdminUserEditModal'
+import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
 
 const AdminUserView = ({ user }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -56,8 +57,12 @@ const AdminUserView = ({ user }) => {
 
   const refreshProfile = () => {
     setIsLoading(true)
-    _getFetcher({ res: craftUserUrl(user.basic_info[0].id, 'profile') })
-      .then(({ res }) => setUser(res.data))
+    console.log(user)
+    _getFetcher({
+      res: craftUserUrl(user.userInfo.data.basic_info[0].id, 'profile'),
+    })
+      .then(({ res }) => setUserData(res))
+      // .then(({ res }) => console.log(res))
       .finally(() => {
         setIsLoading(false)
       })
@@ -73,6 +78,7 @@ const AdminUserView = ({ user }) => {
           flexWrap: 'wrap',
         }}
       >
+        <LoadingSpinner isLoading={isLoading} />
         <Card border='light' style={{ padding: 20, flexGrow: '3' }}>
           <div
             style={{ display: 'flex', justifyContent: 'space-between' }}
