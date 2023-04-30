@@ -63,6 +63,16 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
   }
 
   const onSubmitHandler = (values) => {
+    var wanted_sectors = values.wanted_sectors.sectors.map((sector) => {
+      const [id, name] = sector.value.split('-')
+      return {
+        sector: sector.value,
+        sector_id: id,
+        sector_name: name,
+        visibility: values.wanted_sectors.visibility,
+      }
+    })
+    values.wanted_sectors = wanted_sectors
     console.log(values)
 
     //after submission
