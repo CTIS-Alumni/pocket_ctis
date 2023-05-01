@@ -274,7 +274,11 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push('')}
+                              onClick={() => arrayHelpers.push( {
+                                    skill_type: '',
+                                    skill_level: '',
+                                    skill: '',
+                                  })}
                             >
                               Add a Skill
                             </button>

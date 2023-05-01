@@ -122,6 +122,13 @@ export default async function handler(req, res) {
                     temp += "ORDER BY w.start_date DESC"
                     queries.push({name: "work_records", query: temp, values: [user_id]});
 
+                    temp = "SELECT w.company_id, c.company_name FROM workrecord w LEFT OUTER JOIN company c ON (w.company_id = c.id) " +
+                        "WHERE w.user_id = ? AND w.work_type != 3 "
+                    if(payload.user !== "admin" && payload.user !== "owner")
+                        temp += "AND w.visibility = 1 ";
+                    temp += "LIMIT 2"
+                    queries.push({name: "current_works", query: temp, values: [user_id]})
+
                     temp = "SELECT i.id, c.company_name, i.company_id, i.semester, i.department, i.start_date, i.end_date, i.rating, i.opinion, i.visibility " +
                         "FROM internshiprecord i JOIN company c ON (i.company_id = c.id) " +
                         "WHERE i.user_id = ? ";

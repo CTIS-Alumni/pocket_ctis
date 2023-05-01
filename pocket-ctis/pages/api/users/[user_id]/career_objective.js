@@ -1,7 +1,7 @@
 import {
     buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
     doMultiQueries,
-   insertToUserTable
+    insertToUserTable, updateTable
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 
@@ -41,7 +41,7 @@ export default async function handler(req, res){
             case "PUT":
                 try{
                     const queries = buildUpdateQueries(career, table_name, fields);
-                    const {data, errors} = await doMultiQueries(queries, true);
+                    const {data, errors} = await updateTable(queries, validation);
                     res.status(200).json({data, errors});
                 }catch(error){
                     res.status(500).json({error: error.message});

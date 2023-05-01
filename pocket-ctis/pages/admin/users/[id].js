@@ -31,7 +31,6 @@ const AdminUserView = ({ user }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [userData, setUserData] = useState(user.userInfo)
 
-  console.log(userData.data.socials)
 
   const {
     basic_info,
@@ -41,6 +40,7 @@ const AdminUserView = ({ user }) => {
     profile_picture,
     location,
     work_records,
+    current_works,
     edu_records,
     internships,
     erasmus,
@@ -130,12 +130,12 @@ const AdminUserView = ({ user }) => {
               ))}
             </div>
           </div>
-          <p>
-            Wanted Sectors:{' '}
+          {wanted_sectors.length > 0 && <p>
+             Wanted Sectors:{' '}
             <span style={{ color: '#999' }}>
               {wanted_sectors.map((sector) => sector.sector_name).join(', ')}
             </span>
-          </p>
+          </p>}
           <div>{career_objective[0]?.career_objective}</div>
         </Card>
         <Card
@@ -158,12 +158,12 @@ const AdminUserView = ({ user }) => {
               ))}
             </div>
           </div>
-          <div style={{ display: 'flex' }} className='mb-2'>
+          {location.length > 0 && <div style={{ display: 'flex' }} className='mb-2'>
             <GeoAltFill size={18} fill='#f5a425' className='me-3' />
             <div>
-              {location[0].city_name}, {location[0].country_name}
+              {location[0].city_name} {location[0].country_name}
             </div>
-          </div>
+          </div>}
           <div>
             {socials.map((social, key) => {
               return (

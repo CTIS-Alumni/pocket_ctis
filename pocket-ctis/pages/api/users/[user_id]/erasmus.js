@@ -39,7 +39,9 @@ const validation = (data) => {
         return false;
     if(data.opinion !== null && data.opinion.trim() === "")
         return false;
-    if(data.rating < 0 || data.rating > 10 || (data.rating % 0.5) !== 0)
+    if(data.rating < 0 || data.rating > 5 || (data.rating % 0.5) !== 0)
+        return false;
+    if(data.semester === null || data.semester.trim() === "")
         return false;
     return true;
 }
@@ -49,6 +51,7 @@ export default async function handler(req, res){
     if(payload.user === "admin" || payload.user === "owner") {
         const erasmus = JSON.parse(req.body);
         const {user_id} = req.query;
+        field_conditions.user.user_id = user_id
         const method = req.method;
         switch (method) {
             case "POST":
@@ -81,7 +84,7 @@ export default async function handler(req, res){
                 break;
             case "DELETE":
                 try{
-                    const {data, errors} = await doMultiDeleteQueries(erasmus, table_name);
+                    const {data, errors} = await doMultiDeleteQueries(table_name);
                     res.status(200).json({data, errors});
                 }catch(error){
                     res.status(500).json({error: error.message});

@@ -7,14 +7,16 @@ import Select from 'react-select'
 
 import styles from './AdminUserFormStyles.module.css'
 
-import { _getFetcher } from '../../../../helpers/fetchHelpers'
-import { craftUrl } from '../../../../helpers/urlHelper'
+import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
+import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
 import { cloneDeep } from 'lodash'
+import {handleResponse, omitFields, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
   const { locationData } = useContext(Location_data)
   const [sectors, setSectors] = useState([])
   const [highSchools, setHighSchools] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
   useEffect(() => {
     _getFetcher({ sectors: craftUrl('sectors') }).then(({ sectors }) =>
@@ -32,11 +34,24 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
     )
   }, [])
 
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data)
+  }
+
+  let deletedData = {
+    location: [],
+    career_objective: [],
+    high_school: [],
+    wanted_sectors: [],
+    basic_info: []
+  }
+
   const transformLocation = (location) => {
     const newData = cloneDeep(location)
     if (location.length > 0) {
       newData[0].country = `${location[0].country_id}-${location[0].country_name}`
       newData[0].city = `${location[0].city_id}-${location[0].city_name}`
+      newData[0].visibility = newData[0].visibility == 1
     }
     return newData
   }
@@ -45,8 +60,17 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.high_school = `${datum.high_school_id}-${datum.high_school_name}`
+      datum.visibility = datum.visibility == 1
       return datum
     })
+    return newData
+  }
+
+  const transformCareer = (career) => {
+    const newData = cloneDeep(career)
+    if(career.length > 0){
+      newData[0].visibility = newData[0].visibility == 1
+    }
     return newData
   }
 
@@ -56,40 +80,216 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       return {
         value: `${sector.sector_id}-${sector.sector_name}`,
         label: sector.sector_name,
+        id: sector.id
       }
     })
-    newData.visibility = data[0].visibility
+    if(newData.sectors.length > 0)
+      newData.visibility = data[0].visibility
     return newData
   }
 
-  const onSubmitHandler = (values) => {
+  const transformFuncs = {
+    career_objective: (newData) => {
+      if (newData.career_objective.length > 0) {
+        if (newData.career_objective[0].career_objective.trim() == '') {
+          newData.career_objective = []
+        } else
+          newData.career_objective[0].visibility = newData.career_objective[0]
+              .visibility
+              ? 1
+              : 0
+      }
+    },
+    high_school: (newData) => {
+      if (newData.high_school.length > 0) {
+        if (newData.high_school[0].high_school == '') newData.high_school = []
+        else {
+          newData.high_school[0].visibility = newData.high_school[0].visibility
+              ? 1
+              : 0
+          splitFields(newData.high_school[0], ['high_school'])
+        }
+      }
+    },
+    location: (newData) => {
+      if (newData.location.length > 0) {
+        if (newData.location[0].country == '') newData.location = []
+        else {
+          newData.location[0].visibility = newData.location[0].visibility
+              ? 1
+              : 0
+          replaceWithNull(newData.location[0])
+          splitFields(newData.location[0], ['country', 'city'])
+        }
+      }
+    },
+    wanted_sectors: (newData) => {
+      if (newData.wanted_sectors.length > 0) {
+        newData.wanted_sectors = newData.wanted_sectors.map((val) => {
+          splitFields(val, ["sector"]);
+          val.visibility = val.visibility ? 1 : 0
+          return val;
+        })
+      }
+    },
+    basic_info: (newData) => {
+      //nothing here
+    }
+  }
+
+  const onSubmit = async (values) => {
     var wanted_sectors = values.wanted_sectors.sectors.map((sector) => {
       const [id, name] = sector.value.split('-')
-      return {
+      let newSector = {
         sector: sector.value,
         sector_id: id,
         sector_name: name,
         visibility: values.wanted_sectors.visibility,
       }
+      if(sector.id)
+        newSector.id = sector.id
+      return newSector
     })
     values.wanted_sectors = wanted_sectors
-    console.log(values)
 
-    //after submission
+    let newData = cloneDeep(values)
+
+    transformFuncs.location(newData)
+    if (
+        dataAfterSubmit.location.length > newData.location.length &&
+        dataAfterSubmit.location[0].id != ''
+    ) {
+      deletedData.location.push({
+        name: dataAfterSubmit.location[0].id,
+        id: dataAfterSubmit.location[0].id,
+        data: dataAfterSubmit.location[0],
+      })
+      values.location = []
+    }
+
+    transformFuncs.high_school(newData)
+    if (
+        dataAfterSubmit.high_school.length > newData.high_school.length &&
+        dataAfterSubmit.high_school[0].id
+    ) {
+      deletedData.high_school.push({
+        name: dataAfterSubmit.high_school[0].id,
+        id: dataAfterSubmit.high_school[0].id,
+        data: dataAfterSubmit.high_school[0],
+      })
+      values.high_school = []
+    }
+
+    transformFuncs.career_objective(newData)
+    if (
+        dataAfterSubmit.career_objective.length >
+        newData.career_objective.length &&
+        dataAfterSubmit.career_objective[0].id
+    ) {
+      deletedData.career_objective.push({
+        name: dataAfterSubmit.career_objective[0].id,
+        id: dataAfterSubmit.career_objective[0].id,
+        data: dataAfterSubmit.career_objective[0],
+      })
+      values.career_objective = []
+    }
+
+    transformFuncs.wanted_sectors(newData);
+    dataAfterSubmit.wanted_sectors.forEach((submittedSector)=>{
+      const is_found =  newData.wanted_sectors.find(datum => {
+        return datum.id === submittedSector.id
+      })
+      if(is_found === undefined)
+        deletedData.wanted_sectors.push({
+          name: submittedSector.sector_id,
+          id: submittedSector.id,
+          data: submittedSector,
+        })
+    })
+
+
+
+    let requestObj = {
+      location: {},
+      career_objective: {},
+      high_school: {},
+      wanted_sectors: {},
+      basic_info: {}
+    }
+    let responseObj = {
+      location: {},
+      career_objective: {},
+      high_school: {},
+      wanted_sectors: {},
+      basic_info: {}
+    }
+
+    const args = {
+      location: [['country', 'city'], [], ['id', 'user_id'], []],
+      career_objective: [[], [], ['id', 'user_id'], []],
+      high_school: [['high_school'], [], ['user_id', 'id'], []],
+      wanted_sectors: [['sector'], [], ['user_id', 'id'], []],
+      basic_info: [[], [], ['user_id', 'id'], []]
+    }
+
+    const final_data = { location: [], career_objective: [], high_school: [] , wanted_sectors: [], basic_info: []}
+    await Promise.all(
+        Object.keys(dataAfterSubmit).map(async (key) => {
+          const send_to_req = {}
+          send_to_req[key] = cloneDeep(dataAfterSubmit[key])
+          transformFuncs[key](send_to_req)
+          requestObj[key] = createReqObject(
+              send_to_req[key],
+              newData[key],
+              deletedData[key]
+          )
+          const url = craftUserUrl(user_id, key)
+          responseObj[key] = await submitChanges(url, requestObj[key])
+          final_data[key] = handleResponse(
+              send_to_req[key],
+              requestObj[key],
+              responseObj[key],
+              values,
+              key,
+              args[key],
+              transformFuncs[key]
+          )
+        })
+    )
+
+    applyNewData(final_data)
+    console.log('req', requestObj, 'res', responseObj)
+    values.wanted_sectors = transformWantedSectors(values.wanted_sectors)
+
+    deletedData = {
+      location: [],
+      career_objective: [],
+      high_school: [],
+      wanted_sectors: [],
+      basic_info: []
+    }
+
     setIsUpdated(true)
   }
+
+  const {
+    basic_info,
+    career_objective,
+    location,
+    wanted_sectors,
+    high_school,
+  } = data
 
   return (
     <Formik
       enableReinitialize
-      onSubmit={onSubmitHandler}
+      onSubmit={onSubmit}
       initialValues={{
-        first_name: data.basic_info[0].first_name,
-        last_name: data.basic_info[0].last_name,
-        career_objective: data.career_objective,
-        location: transformLocation(data.location),
-        wanted_sectors: transformWantedSectors(data.wanted_sectors),
-        high_school: transformHighSchool(data.high_school),
+        basic_info: basic_info,
+        career_objective: transformCareer(career_objective),
+        location: transformLocation(location),
+        wanted_sectors: transformWantedSectors(wanted_sectors),
+        high_school: transformHighSchool(high_school),
       }}
     >
       {(props) => {
@@ -106,8 +306,8 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                       <Field
                         className={`${styles.inputField}`}
                         style={{ width: '100%' }}
-                        id='first_name'
-                        name='first_name'
+                        id='basic_info[0].first_name'
+                        name='basic_info[0].first_name'
                         placeholder='First Name'
                       />
                     </div>
@@ -121,8 +321,8 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                       </label>
                       <Field
                         className={`${styles.inputField}`}
-                        id='last_name'
-                        name='last_name'
+                        id='basic_info[0].last_name'
+                        name='basic_info[0].last_name'
                         placeholder='Last Name'
                       />
                     </div>
@@ -167,13 +367,13 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                         name='wanted_sectors.sectors'
                         options={sectors}
                         onChange={(values) => {
-                          console.log(values)
                           props.setFieldValue(
                             'wanted_sectors.sectors',
                             values.map((datum) => {
                               return {
                                 value: datum.value,
                                 label: datum.label,
+                                id: datum.id
                               }
                             })
                           )

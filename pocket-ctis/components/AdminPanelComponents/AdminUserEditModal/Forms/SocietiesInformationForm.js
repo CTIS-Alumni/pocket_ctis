@@ -231,7 +231,7 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push('')}
+                              onClick={() =>   arrayHelpers.push( { society: '' })}
                             >
                               Add a Society
                             </button>

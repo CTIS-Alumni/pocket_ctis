@@ -6,13 +6,22 @@ import { XCircleFill, PlusCircleFill } from 'react-bootstrap-icons'
 import { Rating } from 'react-simple-star-rating'
 import DatePickerField from '../../../DatePickers/DatePicker'
 import styles from './AdminUserFormStyles.module.css'
-import { _getFetcher } from '../../../../helpers/fetchHelpers'
-import { craftUrl } from '../../../../helpers/urlHelper'
+import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
+import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [companies, setCompanies] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data)
+  }
+
+  let deletedData = [];
+
   useEffect(() => {
-    _getFetcher({ companies: craftUrl('companies') })
+    _getFetcher({ companies: craftUrl('companies', [{name: "internship", value: 1}]) })
       .then((res) => setCompanies(res.companies.data))
       .catch((err) => console.log(err))
   }, [])
@@ -23,16 +32,60 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
       datum.company = `${datum.company_id}-${datum.company_name}`
       datum.start_date = datum.start_date ? new Date(datum.start_date) : null
       datum.end_date = datum.end_date ? new Date(datum.end_date) : null
-
+      datum.visibility = datum.visibility == 1
       return datum
     })
     return newData
   }
 
-  const onSubmitHandler = (values) => {
-    console.log(values)
+  const transformDataForSubmission = (newData) => {
+    newData.internships = newData.internships.map((val) => {
+      val.visibility = val.visibility ? 1 : 0
+      val.start_date =
+          val.start_date != null ? convertToIso(val.start_date) : null
+      val.end_date = val.end_date != null ? convertToIso(val.end_date) : null
+      val.rating = val.rating ? val.rating : null
+      val.opinion = val.opinion ? val.opinion.trim() : null
+      splitFields(val, ["company"])
+      replaceWithNull(val)
+      return val
+    })
+  }
 
-    //after submission
+  const args = [
+    ["company"],
+    [],
+    ['id', 'user_id', 'record_date'],
+    ['start_date', 'end_date'],
+  ]
+
+  const onSubmit = async (values) => {
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData)
+
+    const send_to_req = { internships: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(
+        send_to_req.internships,
+        newData.internships,
+        deletedData
+    )
+    const url = craftUserUrl(user_id, 'internships')
+    const responseObj = await submitChanges(url, requestObj)
+
+    const new_data = handleResponse(
+        send_to_req.internships,
+        requestObj,
+        responseObj,
+        values,
+        'internships',
+        args,
+        transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req,', requestObj, 'res', responseObj)
+    deletedData = []
+
     setIsUpdated(true)
   }
 
@@ -40,7 +93,7 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
     <Formik
       enableReinitialize
       initialValues={{ internships: transformData(data) }}
-      onSubmit={onSubmitHandler}
+      onSubmit={onSubmit}
     >
       {(props) => (
         <Form>
@@ -67,7 +120,7 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                   start_date: null,
                                   end_date: null,
                                   department: '',
-                                  semester: '',
+                                  semester: 'Spring',
                                   rating: 0,
                                   opinion: '',
                                 })
@@ -92,6 +145,12 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                         type='button'
                                         onClick={() => {
                                           arrayHelpers.remove(index)
+                                          if (internship.hasOwnProperty('id'))
+                                            deletedData.push({
+                                              name: internship.id,
+                                              id: internship.id,
+                                              data: internship
+                                            })
                                         }}
                                       >
                                         <XCircleFill
@@ -184,8 +243,9 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           name={`internships[${index}]semester`}
                                           id={`internships[${index}]semester`}
                                         >
-                                          <option value='spring'>Spring</option>
-                                          <option value='fall'>Fall</option>
+                                          <option value='Spring'>Spring</option>
+                                          <option value='Fall'>Fall</option>
+                                          <option value='Summer'>Summer</option>
                                         </Field>
                                       </div>
 
@@ -240,6 +300,7 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           name={`internships[${index}]opinion`}
                                           id={`internships[${index}]opinion`}
                                           className={styles.inputField}
+                                          placeholder='Enter your opinions...'
                                         />
                                       </div>
                                     </div>

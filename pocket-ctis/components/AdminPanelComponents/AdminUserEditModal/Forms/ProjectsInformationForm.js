@@ -2,11 +2,20 @@ import { useState, useEffect } from 'react'
 import { FieldArray, Field, Formik, Form } from 'formik'
 import styles from './AdminUserFormStyles.module.css'
 import { PlusCircleFill, XCircleFill } from 'react-bootstrap-icons'
-import { _getFetcher } from '../../../../helpers/fetchHelpers'
-import { craftUrl } from '../../../../helpers/urlHelper'
+import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
+import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {cloneDeep} from "lodash";
+import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [graduationProjects, setGraduationProjects] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data)
+  }
+
+  let deletedData = { projects: [], graduation_project: [] }
 
   useEffect(() => {
     _getFetcher({ graduationProjects: craftUrl('graduationprojects') })
@@ -14,29 +23,111 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
       .catch((err) => console.log('error', err))
   }, [])
 
-  const onSubmitHandler = (values) => {
-    console.log(values)
+  const args = {
+    graduation_project: [['graduation_project'], [], ['id', 'user_id'], []],
+    projects: [[], [], ['id', 'user_id'], []],
+  }
 
-    //after form submission
+  const transformGraduationProject = (data) => {
+    let newData = cloneDeep(data)
+    newData = newData.map((datum) => {
+      datum.graduation_project = `${datum.id}-${datum.graduation_project_name}`;
+      datum.visibility = datum.visibility == 1;
+      return datum;
+    })
+    return newData;
+  }
+
+  const transformData = (data) => {
+    let newData = cloneDeep(data)
+    newData = newData.map((datum) => {
+      datum.visibility = datum.visibility == 1
+      return datum
+    })
+    return newData
+  }
+
+  const transformFuncs = {
+    projects: (newData) => {
+      newData.projects = newData.projects.map((val) => {
+        val.visibility = val.visibility ? 1 : 0
+        val.project_name = val.project_name ? val.project_name : null
+        val.project_description = val.project_description
+            ? val.project_description
+            : null
+        replaceWithNull(val)
+        return val
+      })
+    },
+    graduation_project: (newData) => {
+      newData.graduation_project = newData.graduation_project.map((val) => {
+        val.graduation_project_description = val.graduation_project_description
+            ? val.graduation_project_description
+            : null
+        val.visibility = val.visibility ? 1 : 0
+        splitFields(val, ["graduation_project"])
+        replaceWithNull(val)
+        return val
+      })
+    },
+  }
+
+  const onSubmit = async (values) => {
+
+    let newData = cloneDeep(values)
+    transformFuncs.projects(newData)
+    transformFuncs.graduation_project(newData)
+
+    let responseObj = {
+      graduation_project: {},
+      projects: {},
+    }
+    let requestObj = {
+      graduation_project: {},
+      projects: {},
+    }
+
+    const final_data = { graduation_project: [], projects: [] }
+    await Promise.all(
+        Object.keys(dataAfterSubmit).map(async (key) => {
+          const send_to_req = {}
+          send_to_req[key] = cloneDeep(dataAfterSubmit[key])
+          transformFuncs[key](send_to_req)
+          requestObj[key] = createReqObject(
+              send_to_req[key],
+              newData[key],
+              deletedData[key]
+          )
+          const url = craftUserUrl(user_id, key)
+          responseObj[key] = await submitChanges(url, requestObj[key])
+          final_data[key] = handleResponse(
+              send_to_req[key],
+              requestObj[key],
+              responseObj[key],
+              values,
+              key,
+              args[key],
+              transformFuncs[key]
+          )
+        })
+    )
+    console.log('req', requestObj, 'res', responseObj)
+    applyNewData(final_data)
+    deletedData = { projects: [], graduation_project: [] }
     setIsUpdated(true)
   }
 
-  const transformGraduationProject = (project) => {
-    const newData = {
-      graduation_project: `${project[0].id}-${project[0].graduation_project_name}`,
-      ...project[0],
-    }
-    return [newData]
-  }
+
+  const { projects, graduation_project } = data
 
   return (
     <Formik
       initialValues={{
-        graduation_project: transformGraduationProject(data.graduation_project),
-        projects: data.projects,
+        graduation_project: transformGraduationProject(graduation_project),
+        projects: transformData(projects),
       }}
       enableReinitialize
-      onSubmit={onSubmitHandler}
+      onSubmit={onSubmit}
     >
       {(props) => {
         return (
@@ -77,10 +168,14 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               className={styles.removeBtn}
                                               type='button'
                                               onClick={() => {
-                                                props.setFieldValue(
-                                                  `graduation_project[${index}].graduation_project_description`,
-                                                  ''
-                                                )
+                                                arrayHelpers.remove(index)
+                                                if (project.hasOwnProperty('id')) {
+                                                  deletedData.graduation_project.push({
+                                                    name: project.graduation_project_name,
+                                                    id: project.id,
+                                                    data: project,
+                                                  })
+                                                }
                                               }}
                                             >
                                               <XCircleFill
@@ -155,7 +250,7 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                 <button
                                   className={styles.bigAddBtn}
                                   type='button'
-                                  onClick={() => arrayHelpers.push('')}
+                                  onClick={() => arrayHelpers.push({graduation_project: '', graduation_project_description: ''})}
                                 >
                                   Add a Project
                                 </button>
@@ -270,7 +365,11 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                 <button
                                   className={styles.bigAddBtn}
                                   type='button'
-                                  onClick={() => arrayHelpers.push('')}
+                                  onClick={() => arrayHelpers.push( {
+                                    project_name: '',
+                                    project_description: '',
+                                  })
+                                  }
                                 >
                                   Add a Project
                                 </button>

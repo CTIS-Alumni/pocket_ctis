@@ -24,9 +24,7 @@ export const checkAuth = async (headers, res) => { //verify the token here and m
 }
 
 export const checkUserType = async (session, query) => {
-    if(session.payload.user_id === parseInt(query.user_id))
-        return {user: "owner", user_id: session.payload.user_id};
-    else if(session.payload.mode === "admin"){
+    if(session.payload.mode === "admin"){
         let data;
         try{
             const db_query = "SELECT GROUP_CONCAT(act.type_name) as 'user_types' FROM useraccounttype uct " +
@@ -40,7 +38,9 @@ export const checkUserType = async (session, query) => {
 
         return {user: "admin"}
 
-    }else return {user: "visitor", user_id: session.payload.user_id};
+    }else if(session.payload.user_id === parseInt(query.user_id))
+        return {user: "owner", user_id: session.payload.user_id};
+    else return {user: "visitor", user_id: session.payload.user_id};
 }
 
 /*export const checkAuth = async (headers, query, check_user_type = false) => {

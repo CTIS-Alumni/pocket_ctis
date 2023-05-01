@@ -421,7 +421,17 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                           <button
                             className={styles.bigAddBtn}
                             type='button'
-                            onClick={() => arrayHelpers.push('')}
+                            onClick={() => arrayHelpers.push({
+                              company: '',
+                              work_type: '',
+                              city: '',
+                              country: '',
+                              start_date: null,
+                              end_date: null,
+                              department: '',
+                              position: '',
+                              work_description: '',
+                            })}
                           >
                             Add a Work Record
                           </button>

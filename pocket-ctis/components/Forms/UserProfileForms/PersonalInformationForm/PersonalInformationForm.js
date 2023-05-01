@@ -146,22 +146,9 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
     }
   }
 
-  const transformSectorsForSubmission = (newData) => {//special case
-    newData.wanted_sectors.sectors = newData.wanted_sectors.sectors.map((val) => {
-      val.sector = val.value;
-      delete val.value;
-      delete val.label;
-      console.log("this is val.sector", val.sector);
-      splitFields(val, ["sector"]);
-      val.visibility = newData.wanted_sectors.visibility ? 1 : 0
-      return val;
-    })
-    newData.wanted_sectors = newData.wanted_sectors.sectors;
-  }
-
   const onSubmit = async (values) => {
     setIsUpdated(true)
-    let newData = await cloneDeep(values)
+    let newData = cloneDeep(values)
 
     transformFuncs.location(newData)
     if (

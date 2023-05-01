@@ -179,6 +179,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               deletedData.push({
                                                 name: edu_record.id,
                                                 id: edu_record.id,
+                                                data: edu_record
                                               })
                                           }}
                                         >

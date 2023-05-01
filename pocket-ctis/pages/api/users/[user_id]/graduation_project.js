@@ -19,7 +19,7 @@ const field_conditions = {
 }
 
 const fields = {
-    basic: ["graduation_project_description", "visibility"],
+    basic: ["graduation_project_id", "graduation_project_description", "visibility"],
     date: []
 };
 
@@ -39,6 +39,7 @@ export default async function handler(req, res){
     if(payload.user === "admin" || payload.user === "owner") {
         const grad_projects = JSON.parse(req.body);
         const {user_id} = req.query;
+        field_conditions.user.user_id = user_id;
         const method = req.method;
         switch (method) {
             case "POST":
@@ -51,28 +52,33 @@ export default async function handler(req, res){
                     }catch(error){
                         res.status(500).json({error: error.message});
                     }
+                }else{
+                    res.status(500).json({error: "Unauthorized!"});
                 }
                 break;
             case "PUT":
                 try {
-                    if(payload.user === "admin"){
-                        field_conditions.basic = [];
+                    if(payload.user === "owner"){
                         fields.basic = ["graduation_project_description", "visibility"];
                         }
                     const queries = buildUpdateQueries(grad_projects, table_name, fields);
                     const select_queries = buildSelectQueries(grad_projects, table_name,field_conditions);
                     const {data, errors} = await updateTable(queries, validation, select_queries);
-                    res.status(200).json({data, errors, queries});
+                    res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
                 }
                 break;
             case "DELETE":
-                try{
-                    const {data, errors} = await doMultiDeleteQueries(grad_projects, table_name);
-                    res.status(200).json({data, errors});
-                }catch(error){
-                    res.status(500).json({error: error.message});
+                if(payload.user === "admin"){
+                    try{
+                        const {data, errors} = await doMultiDeleteQueries(grad_projects, table_name);
+                        res.status(200).json({data, errors});
+                    }catch(error){
+                        res.status(500).json({error: error.message});
+                    }
+                }else{
+                    res.status(500).json({error: "Unauthorized!"});
                 }
                 break;
         }

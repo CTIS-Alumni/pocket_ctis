@@ -22,12 +22,12 @@ export default async function (req, res) {
 
                             const access_token = await sign({
                                 user_id: user[0].user_id,
-                                mode: "user"
+                                mode: "admin"
                             }, process.env.ACCESS_SECRET, 60 * 10);
 
                             const refresh_token = await sign({
                                 user_id: user[0].user_id,
-                                mode: "user"
+                                mode: "admin"
                             }, process.env.REFRESH_SECRET, 60 * 60 * 24 * 3);
 
                             const serialCookie = serialize("AccessJWT", access_token, {

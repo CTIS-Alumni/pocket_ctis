@@ -7,14 +7,29 @@ import { XCircleFill } from 'react-bootstrap-icons'
 import { Rating } from 'react-simple-star-rating'
 import { cloneDeep } from 'lodash'
 import DatePickerField from '../../../DatePickers/DatePicker'
-import { _getFetcher } from '../../../../helpers/fetchHelpers'
-import { craftUrl } from '../../../../helpers/urlHelper'
+import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
+import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [universities, setUniversities] = useState([])
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+
+  const applyNewData = (data) => {
+    setDataAfterSubmit(data)
+  }
+
+  const args = [
+    ['edu_inst'],
+    [],
+    ['id', 'user_id', 'record_date'],
+    ['start_date', 'end_date'],
+  ]
+
+  let deletedData = []
 
   useEffect(() => {
-    _getFetcher({ universities: craftUrl('educationinstitutes') })
+    _getFetcher({ universities: craftUrl('educationinstitutes', [{name: "erasmus", value: 1}]) })
       .then((res) => setUniversities(res.universities.data))
       .catch((err) => console.log(err))
   }, [])
@@ -25,14 +40,48 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
       datum.edu_inst = `${datum.edu_inst_id}-${datum.edu_inst_name}`
       datum.start_date = datum.start_date ? new Date(datum.start_date) : null
       datum.end_date = datum.end_date ? new Date(datum.end_date) : null
+      datum.visibility = datum.visibility == 1
       return datum
     })
     return newData
   }
 
-  const onSubmitHandler = (values) => {
-    console.log(values)
+  const transformDataForSubmission = (newData) => {
+    newData.erasmus = newData.erasmus.map((val) => {
+      val.visibility = val.visibility ? 1 : 0
+      val.start_date = val.start_date != null ? convertToIso(val.start_date) : null
+      val.end_date = val.end_date != null ? convertToIso(val.end_date) : null
+      val.rating = val.rating ? val.rating : null
+      val.opinion = val.opinion ? val.opinion.trim() : null
+      replaceWithNull(val)
+      splitFields(val, ["edu_inst"])
+      return val
+    })
+  }
 
+  const onSubmit = async (values) => {
+    let newData = cloneDeep(values)
+    transformDataForSubmission(newData)
+
+    const send_to_req = { erasmus: cloneDeep(dataAfterSubmit) }
+    transformDataForSubmission(send_to_req)
+    const requestObj = createReqObject(send_to_req.erasmus, newData.erasmus, deletedData)
+    const url = craftUserUrl(user_id, 'erasmus')
+
+    const responseObj = await submitChanges(url, requestObj)
+
+    const new_data = handleResponse(
+        send_to_req.erasmus,
+        requestObj,
+        responseObj,
+        values,
+        'erasmus',
+        args,
+        transformDataForSubmission
+    )
+    applyNewData(new_data)
+    console.log('req,', requestObj, 'res', responseObj)
+    deletedData = []
     //after submission
     setIsUpdated(true)
   }
@@ -41,7 +90,7 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
     <Formik
       initialValues={{ erasmus: transformData(data) }}
       enableReinitialize
-      onSubmit={onSubmitHandler}
+      onSubmit={onSubmit}
     >
       {(props) => (
         <Form>
@@ -54,7 +103,7 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                     <>
                       {props.values.erasmus &&
                       props.values.erasmus.length > 0 ? (
-                        props.values.erasmus.map((project, index) => {
+                        props.values.erasmus.map((erasmus, index) => {
                           return (
                             <>
                               <tr key={index} style={{ width: '100%' }}>
@@ -66,6 +115,12 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                                         type='button'
                                         onClick={() => {
                                           arrayHelpers.remove(index)
+                                          if (erasmus.hasOwnProperty('id'))
+                                            deletedData.push({
+                                              name: erasmus.id,
+                                              id: erasmus.id,
+                                              data: erasmus
+                                            })
                                         }}
                                       >
                                         <XCircleFill
@@ -160,11 +215,11 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             name={`erasmus[${index}]semester`}
                                             id={`erasmus[${index}]semester`}
                                           >
-                                            <option value='spring'>
+                                            <option value='Spring'>
                                               Spring
                                             </option>
-                                            <option value='fall'>Fall</option>
-                                            <option value='fullyear'>
+                                            <option value='Fall'>Fall</option>
+                                            <option value='Fall & Spring'>
                                               Fall & Spring
                                             </option>
                                           </Field>
@@ -225,8 +280,8 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           className={`${styles.inputField}`}
                                           as='textarea'
                                           rows={5}
-                                          id={`erasmus[0${index}.opinion`}
-                                          name={`erasmus[0${index}.opinion`}
+                                          id={`erasmus[${index}].opinion`}
+                                          name={`erasmus[${index}].opinion`}
                                           placeholder='Enter your opinions...'
                                         />
                                       </div>
@@ -243,7 +298,14 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push('')}
+                              onClick={() => arrayHelpers.push({
+                                edu_inst: '',
+                                semester: 'Spring',
+                                start_date: null,
+                                end_date: null,
+                                rating: 0,
+                                opinion: ''
+                              })}
                             >
                               Add an Erasmus
                             </button>

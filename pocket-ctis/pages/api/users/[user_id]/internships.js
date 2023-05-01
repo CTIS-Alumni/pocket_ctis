@@ -8,7 +8,7 @@ import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import  limitPerUser from '../../../../config/moduleConfig.js';
 
 const field_conditions = {
-    must_be_different: ["company_id", "semester"],
+    must_be_different: ["semester"],
     date_fields: [],
     user: {
         check_user_only: true,
@@ -35,9 +35,11 @@ const validation = (data) => {
         return false;
     if(data.visibility !== 0 && data.visibility !== 1)
         return false;
-    if(data.opinion !== null && data.opinion.trim() === "")
+    if(data.opinion && data.opinion.trim() === "")
         return false;
-    if(data.rating < 0 || data.rating > 10 || (data.rating % 0.5) !== 0)
+    if(data.rating < 0 || data.rating > 5 || (data.rating % 0.5) !== 0)
+        return false;
+    if(data.semester === null || data.semester.trim() === "")
         return false;
     return true;
 }
@@ -57,7 +59,7 @@ export default async function handler(req, res){
                         const select_queries = buildSelectQueries(internships, table_name, field_conditions);
                         const queries = buildInsertQueries(internships, table_name, fields, user_id);
                         const {data, errors} = await insertToUserTable(queries, table_name,  validation, select_queries, limitPerUser.internships);
-                        res.status(200).json({data, errors});
+                        res.status(200).json({data, errors, queries});
                     } catch (error) {
                         res.status(500).json({error: error.message});
                     }
@@ -80,11 +82,15 @@ export default async function handler(req, res){
                 }
                 break;
             case "DELETE":
-                try{
-                    const {data, errors} = await doMultiDeleteQueries(internships, table_name);
-                    res.status(200).json({data, errors});
-                }catch(error){
-                    res.status(500).json({error: error.message});
+                if(payload.user === "admin") {
+                    try {
+                        const {data, errors} = await doMultiDeleteQueries(internships, table_name);
+                        res.status(200).json({data, errors});
+                    } catch (error) {
+                        res.status(500).json({error: error.message});
+                    }
+                }else{
+                    res.status(500).json({errors: "Unauthorized"});
                 }
                 break;
         }

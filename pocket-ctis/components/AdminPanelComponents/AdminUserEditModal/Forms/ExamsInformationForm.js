@@ -60,11 +60,12 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
     })
   }
 
+  const args = [['exam'], [], ['id', 'user_id'], ['exam_date']]
+
   const onSubmit = async (values) => {
     setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
-    const args = [['exam'], [], ['id', 'user_id'], ['exam_date']]
     const send_to_req = { exams: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
     const requestObj = createReqObject(
@@ -121,7 +122,7 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                   arrayHelpers.insert(0, {
                                     exam: '',
                                     grade: '',
-                                    date: null,
+                                    exam_date: null,
                                   })
                                 }
                               >
@@ -244,7 +245,11 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
                               <button
                                 className={styles.bigAddBtn}
                                 type='button'
-                                onClick={() => arrayHelpers.push('')}
+                                onClick={() => arrayHelpers.push({
+                                  exam: '',
+                                  grade: '',
+                                  exam_date: null,
+                                })}
                               >
                                 Add an Exam
                               </button>

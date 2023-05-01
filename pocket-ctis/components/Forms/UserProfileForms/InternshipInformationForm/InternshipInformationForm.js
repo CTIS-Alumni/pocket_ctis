@@ -235,6 +235,7 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                       name={`internships[${index}]opinion`}
                                       id={`internships[${index}]opinion`}
                                       className={styles.inputField}
+                                      placeholder='Enter your opinions...'
                                     />
                                   </div>
                                 </td>

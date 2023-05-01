@@ -106,11 +106,11 @@ export const buildSelectQueries = (data, table, field_conditions) => {
 export const buildInsertQueries = (data, table, fields, user_id = null) => {
     let queries = [];
 
-    let query = `INSERT INTO ${table} (` + (user_id ? "user_id, " : "") +
-        `${fields.basic.concat(fields.date).join(", ")}) values (` + (user_id ? ":user_id, ": "") +
-        fields.basic.map(field => `:${field}`).join(", ") + ", ";
-
     data.forEach((datum) => {
+        let query = `INSERT INTO ${table} (` + (user_id ? "user_id, " : "") +
+            `${fields.basic.concat(fields.date).join(", ")}) values (` + (user_id ? ":user_id, ": "") +
+            fields.basic.map(field => `:${field}`).join(", ") + ", ";
+
         fields.date.forEach((field) => {
             if(datum[field] !== null)
                 query += `STR_TO_DATE(:${field}, '%Y-%m-%dT%H:%i:%s.000Z'), `;
@@ -220,7 +220,10 @@ export async function updateTable(queries, validation, get_queries = []) {
     for(const [index, query] of queries.entries()){
         try{
             if(validation(query.values)){
-                const [get_res] = await connection.execute(get_queries[index].query, get_queries[index].values);
+                let get_res = []
+                if(get_queries.length > 0)
+                    [get_res] = await connection.execute(get_queries[index].query, get_queries[index].values);
+
                 if(get_res.length > 0){
                     const error_message = get_queries[index].query.includes("user_id") ? "Data Must Be Unique" : "Another User Has Already Taken This";
                     errors.push({name: query.name, error: error_message, queries, get_queries});
