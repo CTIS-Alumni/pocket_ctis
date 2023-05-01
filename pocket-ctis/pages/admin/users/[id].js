@@ -2,8 +2,18 @@ import React from 'react'
 import { _getFetcher } from '../../../helpers/fetchHelpers'
 import { craftUserUrl } from '../../../helpers/urlHelper'
 import AdminPageContainer from '../../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
-import { Badge, Card, Container, Tab, Tabs } from 'react-bootstrap'
-import { EnvelopeFill, GeoAltFill, TelephoneFill } from 'react-bootstrap-icons'
+import { Badge, Card, Container, Spinner, Tab, Tabs } from 'react-bootstrap'
+import {
+  EnvelopeFill,
+  Facebook,
+  GeoAltFill,
+  Github,
+  Link45deg,
+  Linkedin,
+  TelephoneFill,
+  Twitter,
+  Youtube,
+} from 'react-bootstrap-icons'
 import { Rating } from 'react-simple-star-rating'
 import {
   getDateString,
@@ -15,10 +25,13 @@ import CustomBadge from '../../../components/ProfilePageComponents/CustomBadge/C
 import ProfileEditModal from '../../../components/Modals/ProfileEditModal/ProfileEditModal'
 import { useState } from 'react'
 import AdminUserEditModal from '../../../components/AdminPanelComponents/AdminUserEditModal/AdminUserEditModal'
+import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
 
 const AdminUserView = ({ user }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [userData, setUserData] = useState(user.userInfo)
+
+  console.log(userData.data.socials)
 
   const {
     basic_info,
@@ -38,6 +51,7 @@ const AdminUserView = ({ user }) => {
     skills,
     certificates,
     wanted_sectors,
+    socials,
   } = userData.data
 
   const classifySkills = () => {
@@ -56,11 +70,24 @@ const AdminUserView = ({ user }) => {
 
   const refreshProfile = () => {
     setIsLoading(true)
-    _getFetcher({ res: craftUserUrl(user.basic_info[0].id, 'profile') })
-      .then(({ res }) => setUser(res.data))
+    console.log(user)
+    _getFetcher({
+      res: craftUserUrl(user.userInfo.data.basic_info[0].id, 'profile'),
+    })
+      .then(({ res }) => setUserData(res))
+      // .then(({ res }) => console.log(res))
       .finally(() => {
         setIsLoading(false)
       })
+  }
+
+  const socialMediaIcons = {
+    Facebook: <Facebook size={18} fill='#3b5998' className='me-3' />,
+    Youtube: <Youtube size={18} fill='#c4302b ' className='me-3' />,
+    Github: <Github size={18} fill='#171515' className='me-3' />,
+    Other: <Link45deg size={18} fill='#f5a425' className='me-3' />,
+    Linkedin: <Linkedin size={18} fill='#0072b1' className='me-3' />,
+    Twitter: <Twitter size={18} fill='#00acee' className='me-3' />,
   }
 
   return (
@@ -73,6 +100,7 @@ const AdminUserView = ({ user }) => {
           flexWrap: 'wrap',
         }}
       >
+        <LoadingSpinner isLoading={isLoading} />
         <Card border='light' style={{ padding: 20, flexGrow: '3' }}>
           <div
             style={{ display: 'flex', justifyContent: 'space-between' }}
@@ -135,6 +163,24 @@ const AdminUserView = ({ user }) => {
             <div>
               {location[0].city_name}, {location[0].country_name}
             </div>
+          </div>
+          <div>
+            {socials.map((social, key) => {
+              return (
+                <div key={key} style={{ display: 'flex' }} className='mb-2'>
+                  {socialMediaIcons[social.social_media_name]}
+                  <a
+                    href={`http://${social.base_link || ''}${
+                      social.link || ''
+                    }`}
+                    target='_blank'
+                  >
+                    {social.base_link}
+                    {social.link}
+                  </a>
+                </div>
+              )
+            })}
           </div>
         </Card>
         <Card
