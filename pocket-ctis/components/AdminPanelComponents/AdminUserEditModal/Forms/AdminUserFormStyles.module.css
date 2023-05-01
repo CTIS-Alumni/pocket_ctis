@@ -19,7 +19,7 @@
     font-size: 13px;
     width: fit-content;
     letter-spacing: 1px;
-    /* z-index: 1; */
+    z-index: 1;
     /* opacity: 50%; */
 }
 .inputField:disabled{

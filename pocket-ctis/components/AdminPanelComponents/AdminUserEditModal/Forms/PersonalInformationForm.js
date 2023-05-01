@@ -206,7 +206,10 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                       </div>
                       <div style={{ flexGrow: '1' }}>
                         <div className={styles.inputContainer}>
-                          <label className={styles.inputLabel}>
+                          <label
+                            className={styles.inputLabel}
+                            style={{ zIndex: 0 }}
+                          >
                             High School
                           </label>
                           <Field
@@ -261,7 +264,10 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                       </div>
                       <div style={{ flexGrow: '1' }}>
                         <div className={`${styles.inputContainer}`}>
-                          <label className={`${styles.inputLabel}`}>
+                          <label
+                            className={`${styles.inputLabel}`}
+                            style={{ zIndex: 0 }}
+                          >
                             Country
                           </label>
                           <Field
@@ -289,7 +295,12 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                           </Field>
                         </div>
                         <div className={`${styles.inputContainer}`}>
-                          <label className={`${styles.inputLabel}`}>City</label>
+                          <label
+                            className={`${styles.inputLabel}`}
+                            style={{ zIndex: 0 }}
+                          >
+                            City
+                          </label>
                           <Field
                             as='select'
                             className={`${styles.inputField}`}
