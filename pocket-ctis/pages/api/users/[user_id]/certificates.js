@@ -44,7 +44,7 @@ export default async function handler(req, res) {
         switch (method) {
             case "POST":
                 try {
-                    const queries = buildInsertQueries(certificates, table_name, fields, user_id)
+                    const queries = buildInsertQueries(certificates, table_name, fields, user_id);
                     const select_queries = buildSelectQueries(certificates, table_name, field_conditions);
                     const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, limitPerUser.certificates);
                     res.status(200).json({data, errors});
