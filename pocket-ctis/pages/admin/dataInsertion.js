@@ -19,9 +19,10 @@ const DataInsertion = () => {
   const [file, setFile] = useState(null)
 
   const onSubmitHandler = (values) => {
-    // values.file = file
     console.log('submission', values)
     console.log('file', file)
+
+    //access selected file from 'file' variable, not from values.
   }
 
   return (
