@@ -1,7 +1,7 @@
 import { Container } from 'react-bootstrap'
 import styles from './AdminSidebar.module.scss'
 import Link from 'next/link'
-import { PeopleFill } from 'react-bootstrap-icons'
+import { DatabaseFillAdd, PeopleFill } from 'react-bootstrap-icons'
 
 const Button = ({ children, href, icon }) => {
   return (
@@ -19,6 +19,9 @@ const AdminSidebar = () => {
       <div className={styles.userTitle}>Admin User</div>
       <Button href='/admin/users' icon={<PeopleFill />}>
         Users
+      </Button>
+      <Button href='/admin/dataInsertion' icon={<DatabaseFillAdd />}>
+        Data Insertion
       </Button>
     </div>
   )
