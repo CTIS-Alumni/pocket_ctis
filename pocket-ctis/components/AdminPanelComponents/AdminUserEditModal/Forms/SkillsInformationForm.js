@@ -50,6 +50,15 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
     })
   }
 
+  const args = [
+    ['skill_type', 'skill'],
+    ['skill_type_id'],
+    ['id', 'user_id'],
+    [],
+  ]
+
+  const url = craftUserUrl(user_id, 'skills')
+
   const onSubmit = async (values) => {
     setIsUpdated(true)
     let newData = cloneDeep(values)
@@ -62,14 +71,9 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
         newData.skills,
         deletedData
     )
-    const url = craftUserUrl(user_id, 'skills')
+
     const responseObj = await submitChanges(url, requestObj)
-    const args = [
-      ['skill_type', 'skill'],
-      ['skill_type_id'],
-      ['id', 'user_id'],
-      [],
-    ]
+
     const new_data = handleResponse(
         send_to_req.skills,
         requestObj,

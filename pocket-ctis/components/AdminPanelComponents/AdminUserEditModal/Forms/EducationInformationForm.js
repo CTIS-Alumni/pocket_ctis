@@ -77,6 +77,8 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
     ['start_date', 'end_date'],
   ]
 
+  const url = craftUserUrl(user_id, 'educationrecords')
+
   const onSubmit = async (values) => {
     setIsUpdated(true)
     let newData = cloneDeep(values)
@@ -89,7 +91,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
         newData.edu_records,
         deletedData
     )
-    const url = craftUserUrl(user_id, 'educationrecords')
+
     const responseObj = await submitChanges(url, requestObj)
     const new_data = handleResponse(
         send_to_req.edu_records,
@@ -159,7 +161,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                 <td>
                                   <div style={{ display: 'flex' }}>
                                     <div className={styles.removeBtnContainer}>
-                                      <button
+                                      {edu_record.id}<button
                                         className={styles.removeBtn}
                                         type='button'
                                         onClick={() => {
@@ -170,6 +172,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               id: edu_record.id,
                                               data: edu_record
                                             })
+                                          console.log(deletedData)
                                         }}
                                       >
                                         <XCircleFill
@@ -394,7 +397,15 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push('')}
+                              onClick={() => arrayHelpers.push( {
+                                edu_inst: '',
+                                start_date: null,
+                                end_date: null,
+                                education_description: '',
+                                degree_type: '',
+                                name_of_program: '',
+                                gpa: '',
+                              })}
                             >
                               Add an Education Record
                             </button>

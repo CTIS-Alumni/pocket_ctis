@@ -42,6 +42,9 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
     })
   }
 
+  const url = craftUserUrl(user_id, 'certificates')
+  const args = [[], [], ['id', 'user_id'], []]
+
   const onSubmit = async (values) => {
     setIsUpdated(true)
     let newData = cloneDeep(values)
@@ -54,9 +57,9 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
         newData.certificates,
         deletedData
     )
-    const url = craftUserUrl(user_id, 'certificates')
+
     const responseObj = await submitChanges(url, requestObj)
-    const args = [[], [], ['id', 'user_id'], []]
+
     const new_data = handleResponse(
         send_to_req.certificates,
         requestObj,
@@ -177,7 +180,8 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push('')}
+                              onClick={() => arrayHelpers.push({ certificate_name: '',
+                                issuing_authority: ''})}
                             >
                               Add a Certificate
                             </button>

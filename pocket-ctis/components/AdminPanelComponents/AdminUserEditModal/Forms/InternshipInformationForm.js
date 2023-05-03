@@ -59,6 +59,8 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
     ['start_date', 'end_date'],
   ]
 
+  const url = craftUserUrl(user_id, 'internships')
+
   const onSubmit = async (values) => {
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
@@ -70,7 +72,6 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
         newData.internships,
         deletedData
     )
-    const url = craftUserUrl(user_id, 'internships')
     const responseObj = await submitChanges(url, requestObj)
 
     const new_data = handleResponse(

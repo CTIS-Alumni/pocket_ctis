@@ -59,6 +59,8 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
     })
   }
 
+  const url = craftUserUrl(user_id, 'erasmus')
+
   const onSubmit = async (values) => {
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
@@ -66,7 +68,6 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
     const send_to_req = { erasmus: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
     const requestObj = createReqObject(send_to_req.erasmus, newData.erasmus, deletedData)
-    const url = craftUserUrl(user_id, 'erasmus')
 
     const responseObj = await submitChanges(url, requestObj)
 

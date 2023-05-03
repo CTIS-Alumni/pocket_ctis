@@ -55,7 +55,6 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
-      datum.is_default = datum.is_default == 1
       return datum
     })
     return newData
@@ -66,7 +65,6 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
       newData.emails = newData.emails.map((val) => {
         val.visibility = val.visibility ? 1 : 0
         val.email_address = val.email_address ? val.email_address : null
-        val.is_default = val.is_default ? 1 : 0
         replaceWithNull(val)
         return val
       })
@@ -90,6 +88,12 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
     },
   }
 
+  const args = {
+    phone_numbers: [[], [], ['id', 'user_id'], []],
+    emails: [[], [], ['id', 'user_id'], []],
+    socials: [['social_media'], ['base_link'], ['id', 'user_id'], []],
+  }
+
   const onSubmit = async (values) => {
     let newData = cloneDeep(values)
     transformFuncs.phone_numbers(newData)
@@ -106,11 +110,6 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
       phone_numbers: {},
       emails: {},
       socials: {},
-    }
-    const args = {
-      phone_numbers: [[], [], ['id', 'user_id'], []],
-      emails: [[], [], ['id', 'user_id'], []],
-      socials: [['social_media'], ['base_link'], ['id', 'user_id'], []],
     }
 
     const final_data = { phone_numbers: [], emails: [], socials: [] }
@@ -281,7 +280,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                           <button
                             className={styles.bigAddBtn}
                             type='button'
-                            onClick={() => arrayHelpers.push('')}
+                            onClick={() => arrayHelpers.push({social_media: '', link: ''})}
                           >
                             Add a Social Media
                           </button>
@@ -359,7 +358,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                           <button
                             className={styles.bigAddBtn}
                             type='button'
-                            onClick={() => arrayHelpers.push('')}
+                            onClick={() => arrayHelpers.push({phone_number: ''})}
                           >
                             Add a Phone Number
                           </button>
@@ -395,7 +394,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                               <td>
                                 <div style={{ display: 'flex' }}>
                                   <div className={styles.removeBtnContainer}>
-                                    <button
+                                    {e.id}<button
                                       className={styles.removeBtn}
                                       type='button'
                                       onClick={() => {
@@ -436,7 +435,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                           <button
                             className={styles.bigAddBtn}
                             type='button'
-                            onClick={() => arrayHelpers.push('')}
+                            onClick={() => arrayHelpers.push({email_address: ''})}
                           >
                             Add an Email
                           </button>

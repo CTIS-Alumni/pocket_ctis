@@ -137,6 +137,14 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
     }
   }
 
+  const args = {
+    location: [['country', 'city'], [], ['id', 'user_id'], []],
+    career_objective: [[], [], ['id', 'user_id'], []],
+    high_school: [['high_school'], [], ['user_id', 'id'], []],
+    wanted_sectors: [['sector'], [], ['user_id', 'id'], []],
+    basic_info: [[], [], ['user_id', 'id'], []]
+  }
+
   const onSubmit = async (values) => {
     var wanted_sectors = values.wanted_sectors.sectors.map((sector) => {
       const [id, name] = sector.value.split('-')
@@ -208,7 +216,6 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
     })
 
 
-
     let requestObj = {
       location: {},
       career_objective: {},
@@ -222,14 +229,6 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       high_school: {},
       wanted_sectors: {},
       basic_info: {}
-    }
-
-    const args = {
-      location: [['country', 'city'], [], ['id', 'user_id'], []],
-      career_objective: [[], [], ['id', 'user_id'], []],
-      high_school: [['high_school'], [], ['user_id', 'id'], []],
-      wanted_sectors: [['sector'], [], ['user_id', 'id'], []],
-      basic_info: [[], [], ['user_id', 'id'], []]
     }
 
     const final_data = { location: [], career_objective: [], high_school: [] , wanted_sectors: [], basic_info: []}

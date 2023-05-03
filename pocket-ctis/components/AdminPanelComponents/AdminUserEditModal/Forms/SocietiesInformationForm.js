@@ -49,6 +49,9 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
     })
   }
 
+  const args = [['society'], [], ['user_id', 'id'], []]
+  const url = craftUserUrl(user_id, 'societies')
+
   const onSubmit = async (values) => {
     setIsUpdated(true)
     let newData = cloneDeep(values)
@@ -61,9 +64,9 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
         newData.societies,
         deletedData
     )
-    const url = craftUserUrl(user_id, 'societies')
+
     const responseObj = await submitChanges(url, requestObj)
-    const args = [['society'], [], ['user_id', 'id'], []]
+
     const new_data = handleResponse(
         send_to_req.societies,
         requestObj,

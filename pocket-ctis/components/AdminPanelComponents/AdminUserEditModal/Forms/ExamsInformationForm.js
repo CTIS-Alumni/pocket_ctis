@@ -61,6 +61,7 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
   }
 
   const args = [['exam'], [], ['id', 'user_id'], ['exam_date']]
+  const url = craftUserUrl(user_id, 'exams')
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
@@ -74,7 +75,6 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
         deletedData,
         args[4]
     )
-    const url = craftUserUrl(user_id, 'exams')
     const responseObj = await submitChanges(url, requestObj)
 
     const new_data = handleResponse(

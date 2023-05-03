@@ -93,11 +93,6 @@ export default async function handler(req, res) {
                         values.push(req.query.name);
                     }
 
-                    if(payload.user !== "admin"){
-                        query += addAndOrWhere(query, " (i.visibility = 1 OR i.user_id = ?) ");
-                        values.push(payload.user_id);
-                    }
-
                     query += " GROUP BY uat.user_id ORDER BY u.first_name ASC";
 
                     const data = await doquery({query: query, values: values});

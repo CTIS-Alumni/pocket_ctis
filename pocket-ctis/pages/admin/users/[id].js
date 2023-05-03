@@ -54,6 +54,8 @@ const AdminUserView = ({ user }) => {
     socials,
   } = userData.data
 
+  const text_skill_level = ['Beginner', 'Intermediate', 'Competent', 'Proficient', 'Expert']
+
   const classifySkills = () => {
     const classifiedSkill = {}
     skills.forEach((skill) => {
@@ -148,6 +150,7 @@ const AdminUserView = ({ user }) => {
               {emails.map((email, i) => (
                 <div key={i}>{email.email_address}</div>
               ))}
+              {emails.length === 0 ? 'No contact available': ''}
             </div>
           </div>
           <div style={{ display: 'flex' }} className='mb-2'>
@@ -156,6 +159,7 @@ const AdminUserView = ({ user }) => {
               {phone_numbers.map((phone_number, i) => (
                 <div key={i}>{phone_number.phone_number}</div>
               ))}
+              {phone_numbers.length === 0 ? 'No contact available': ''}
             </div>
           </div>
           {location.length > 0 && <div style={{ display: 'flex' }} className='mb-2'>
@@ -432,7 +436,7 @@ const AdminUserView = ({ user }) => {
                         <Container style={{ color: '#999' }}>
                           {classifiedSkills[classification].map((skill, i) => (
                             <div>
-                              {skill.skill_name} - {skill.skill_level}
+                              {skill.skill_name} - {text_skill_level[skill.skill_level]}
                             </div>
                           ))}
                         </Container>
