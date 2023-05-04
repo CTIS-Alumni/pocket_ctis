@@ -14,6 +14,7 @@ import {
   Twitter,
   Youtube,
 } from 'react-bootstrap-icons'
+import { ToastContainer, toast } from 'react-toastify'
 import { Rating } from 'react-simple-star-rating'
 import {
   getDateString,
@@ -23,7 +24,7 @@ import {
 } from '../../../helpers/formatHelpers'
 import CustomBadge from '../../../components/ProfilePageComponents/CustomBadge/CustomBadge'
 import ProfileEditModal from '../../../components/Modals/ProfileEditModal/ProfileEditModal'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import AdminUserEditModal from '../../../components/AdminPanelComponents/AdminUserEditModal/AdminUserEditModal'
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
 
@@ -31,6 +32,24 @@ const AdminUserView = ({ user }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [userData, setUserData] = useState(user.userInfo)
 
+  if (userData.hasOwnProperty('error')) {
+    console.log(userData.error)
+    toast.error('Failed to load profile: ' + userData.error)
+    return (
+      <AdminPageContainer>
+        <ToastContainer
+          position='top-right'
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          draggable
+          pauseOnHover
+          theme='light'
+        />
+      </AdminPageContainer>
+    )
+  }
 
   const {
     basic_info,
@@ -54,7 +73,13 @@ const AdminUserView = ({ user }) => {
     socials,
   } = userData.data
 
-  const text_skill_level = ['Beginner', 'Intermediate', 'Competent', 'Proficient', 'Expert']
+  const text_skill_level = [
+    'Beginner',
+    'Intermediate',
+    'Competent',
+    'Proficient',
+    'Expert',
+  ]
 
   const classifySkills = () => {
     const classifiedSkill = {}
@@ -132,17 +157,24 @@ const AdminUserView = ({ user }) => {
               ))}
             </div>
           </div>
-          {wanted_sectors.length > 0 && <p>
-             Wanted Sectors:{' '}
-            <span style={{ color: '#999' }}>
-              {wanted_sectors.map((sector) => sector.sector_name).join(', ')}
-            </span>
-          </p>}
+          {wanted_sectors.length > 0 && (
+            <p>
+              Wanted Sectors:{' '}
+              <span style={{ color: '#999' }}>
+                {wanted_sectors.map((sector) => sector.sector_name).join(', ')}
+              </span>
+            </p>
+          )}
           <div>{career_objective[0]?.career_objective}</div>
         </Card>
         <Card
           border='light'
-          style={{ padding: 20, flexGrow: '1', maxWidth: '35%', minWidth: 300 }}
+          style={{
+            padding: 20,
+            flexGrow: '1',
+            maxWidth: '35%',
+            minWidth: 300,
+          }}
         >
           <div style={{ display: 'flex' }} className='mb-2'>
             <EnvelopeFill size={18} fill='#f5a425' className='me-3' />
@@ -150,7 +182,7 @@ const AdminUserView = ({ user }) => {
               {emails.map((email, i) => (
                 <div key={i}>{email.email_address}</div>
               ))}
-              {emails.length === 0 ? 'No contact available': ''}
+              {emails.length === 0 ? 'No contact available' : ''}
             </div>
           </div>
           <div style={{ display: 'flex' }} className='mb-2'>
@@ -159,15 +191,17 @@ const AdminUserView = ({ user }) => {
               {phone_numbers.map((phone_number, i) => (
                 <div key={i}>{phone_number.phone_number}</div>
               ))}
-              {phone_numbers.length === 0 ? 'No contact available': ''}
+              {phone_numbers.length === 0 ? 'No contact available' : ''}
             </div>
           </div>
-          {location.length > 0 && <div style={{ display: 'flex' }} className='mb-2'>
-            <GeoAltFill size={18} fill='#f5a425' className='me-3' />
-            <div>
-              {location[0].city_name} {location[0].country_name}
+          {location.length > 0 && (
+            <div style={{ display: 'flex' }} className='mb-2'>
+              <GeoAltFill size={18} fill='#f5a425' className='me-3' />
+              <div>
+                {location[0].city_name} {location[0].country_name}
+              </div>
             </div>
-          </div>}
+          )}
           <div>
             {socials.map((social, key) => {
               return (
@@ -436,7 +470,8 @@ const AdminUserView = ({ user }) => {
                         <Container style={{ color: '#999' }}>
                           {classifiedSkills[classification].map((skill, i) => (
                             <div>
-                              {skill.skill_name} - {text_skill_level[skill.skill_level]}
+                              {skill.skill_name} -{' '}
+                              {text_skill_level[skill.skill_level]}
                             </div>
                           ))}
                         </Container>
@@ -521,9 +556,20 @@ const AdminUserView = ({ user }) => {
           </Tabs>
         </Card>
       </div>
+
       <AdminUserEditModal
         user={userData.data}
         refreshProfile={refreshProfile}
+      />
+      <ToastContainer
+        position='top-right'
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        draggable
+        pauseOnHover
+        theme='light'
       />
     </AdminPageContainer>
   )
@@ -535,7 +581,6 @@ export async function getServerSideProps(context) {
   const { cookies } = context.req
   const token = cookies.AccessJWT
 
-  console.log(craftUserUrl(context.params.id, 'profile'))
   const userInfo = await _getFetcher(
     { userInfo: craftUserUrl(context.params.id, 'profile') },
     token
