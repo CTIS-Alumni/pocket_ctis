@@ -33,7 +33,6 @@ const AdminUserView = ({ user }) => {
   const [userData, setUserData] = useState(user.userInfo)
 
   if (userData.hasOwnProperty('error')) {
-    console.log(userData.error)
     toast.error('Failed to load profile: ' + userData.error)
     return (
       <AdminPageContainer>
