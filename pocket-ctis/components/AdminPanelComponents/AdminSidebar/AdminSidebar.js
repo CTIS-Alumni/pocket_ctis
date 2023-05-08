@@ -1,7 +1,7 @@
 import { Container } from 'react-bootstrap'
 import styles from './AdminSidebar.module.scss'
 import Link from 'next/link'
-import { DatabaseFillAdd, PeopleFill } from 'react-bootstrap-icons'
+import { DatabaseFillAdd, PeopleFill, Search } from 'react-bootstrap-icons'
 
 const Button = ({ children, href, icon }) => {
   return (
@@ -22,6 +22,9 @@ const AdminSidebar = () => {
       </Button>
       <Button href='/admin/dataInsertion' icon={<DatabaseFillAdd />}>
         Data Insertion
+      </Button>
+      <Button href='/admin/reportGeneration' icon={<Search />}>
+        Report Generation
       </Button>
     </div>
   )

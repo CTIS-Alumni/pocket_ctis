@@ -15,19 +15,16 @@ const AdminUsersList = () => {
     )
   }, [])
 
-  console.log(users)
-
   return (
     <AdminPageContainer>
       <Container>
         <ListGroup variant='flush'>
-          {users.map((user) => {
+          {users.map((user, i) => {
             return (
-              <ListGroupItem style={{ width: '100%' }}>
+              <ListGroupItem style={{ width: '100%' }} key={i}>
                 <Link href={`/admin/users/${user.id}`}>
                   <div style={{ display: 'flex' }}>
                     <img
-                      //   src={getProfilePicturePath(user.profile_picture)}
                       width={80}
                       height={80}
                       style={{ objectFit: 'contain', borderRadius: '50%' }}
