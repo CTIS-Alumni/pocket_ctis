@@ -4,26 +4,38 @@ import { useRouter } from 'next/router'
 import styles from '../styles/login.module.css'
 import {_submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
+import {verify} from "../helpers/jwtHelper";
+import Link from "next/link";
 
 
 const changePassword = async (password, token) => {
-    const res = await _submitFetcher("POST", craftUrl("changePassword"), {password, token})
+    const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "forgotPassword", value: 1}]), {password, token})
     return res;
+}
+
+const checkPassword = (pass, cnfpass) => {
+    if(pass !== cnfpass)
+        return {errors: [{error: "Passwords do not match"}]};
+    if(pass.length < 6)
+        return {errors: [{error: "Password must be at least 6 characters"}]};
+    return true;
 }
 
 const ResetPassword = ({token}) => {
     const router = useRouter()
     const onSubmit = async (values) => {
-        if(values.password === values.confirmPassword){
-            const res = await changePassword(values.password, token)
-            if (res.data?.changedRows === 1)  {
-                router.push({ pathname: '/login' })
-            }else{
-                console.log(res.error);
-            }
-        }else{
-            console.log("Passwords do not match");
+        const is_valid = checkPassword(values.password, values.confirmPassword);
+        if(is_valid.errors) {
+            console.log(is_valid);
+            return false; //TODO: TOAST
         }
+        const res = await changePassword(values.password, token)
+        if (res.errors)  {
+            console.log(res)
+            return false; //TODO: TOAST
+        }
+        router.push({ pathname: '/login' })
+
     }
 
     return (
@@ -70,7 +82,11 @@ const ResetPassword = ({token}) => {
                                         Confirm Password
                                     </label>
                                 </p>
-
+                                <p className={styles.forgot_password_container}>
+                                    <Link href='/login' className={styles.forgot_password}>
+                                        Go back to login
+                                    </Link>
+                                </p>
                                 <button type='submit' className={styles.button}>
                                     Change Password
                                 </button>
@@ -85,7 +101,9 @@ const ResetPassword = ({token}) => {
                             Welcome to PocketCTIS
                             <br />
                             <br />
-                            Your everlasting connection to you Alma Mater
+                            Please enter your new password.
+                            <br />
+                            Your password should be at least 6 characters long.
                         </div>
                     </Col>
                 </Row>
@@ -95,7 +113,12 @@ const ResetPassword = ({token}) => {
 }
 
 export async function getServerSideProps(context) {
-    return { props: {token: context.query.token}}
+    try{
+        const payload = await verify(context.query.token, process.env.MAIL_SECRET);
+        return { props: {token: context.query.token}};
+    }catch(error){
+        return {redirect: {permanent: false, destination: "/login"}};
+    }
 }
 
 export default ResetPassword

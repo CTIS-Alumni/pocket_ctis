@@ -396,11 +396,11 @@ CREATE TABLE `module` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `module_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci NOT NULL,
   `is_active` tinyint NOT NULL DEFAULT '1',
-  `is_user_addable` tinyint NOT NULL DEFAULT '-1',
+  `is_user_add_own` tinyint NOT NULL DEFAULT '-1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `module_name` (`module_name`),
   CONSTRAINT `CHK_is_active` CHECK (((`is_active` >= 1) and (`is_active` <= 4))),
-  CONSTRAINT `CHK_is_user_addable` CHECK (((`is_user_addable` >= -(1)) and (`is_user_addable` <= 1) and (((`is_active` > 1) and (`is_user_addable` < 1)) or (`is_active` = 1))))
+  CONSTRAINT `CHK_is_user_add_own` CHECK (((`is_user_add_own` >= -(1)) and (`is_user_add_own` <= 1) and (((`is_active` > 1) and (`is_user_add_own` < 1)) or (`is_active` = 1))))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

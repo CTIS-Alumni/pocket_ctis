@@ -1,4 +1,4 @@
-import {doquery} from "../../helpers/dbHelpers";
+import {doquery, doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth} from "../../helpers/authHelper";
 
 export default async function handler(req, res){
@@ -10,17 +10,14 @@ export default async function handler(req, res){
                 try {
                     const query = "SELECT * FROM socialmedia order by social_media_name asc";
 
-                    const data = await doquery({query: query});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
+                    const {data, errors} = await doqueryNew({query: query});
+                    res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
                 }
                 break;
         }
     }else {
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

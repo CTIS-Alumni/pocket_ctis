@@ -6,7 +6,7 @@ import styles from '../../../styles/companies.module.scss'
 import React from 'react'
 import { BuildingFill } from 'react-bootstrap-icons'
 import {_getFetcher} from "../../../helpers/fetchHelpers";
-import {craftPathUrl, craftUrl} from "../../../helpers/urlHelper";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const Company = ({ company, users }) => {
   return (
@@ -87,8 +87,8 @@ export async function getServerSideProps(context) {
     const {cookies} = context.req;
     const token = cookies.AccessJWT;
     const {company, users} = await _getFetcher({
-        company: craftPathUrl(["companies", context.params.id]),
-        users: craftUrl("workrecords", [{name: "company_id", value: context.params.id}])
+        company: craftUrl(["companies", context.params.id]),
+        users: craftUrl(["workrecords"], [{name: "company_id", value: context.params.id}])
     }, token);
 
     return {props: {company, users}}

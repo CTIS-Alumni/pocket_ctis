@@ -1,24 +1,16 @@
 import {
     doMultiDeleteQueries,
-    insertToTable, updateTable,
-    buildSelectQueries, buildInsertQueries, buildUpdateQueries, buildSearchQuery, doMultiQueries
+    updateTable,
+    buildSelectQueries, buildInsertQueries, buildUpdateQueries, buildSearchQuery, doMultiQueries, insertToTable
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
+import {replaceWithNull} from "../../helpers/submissionHelpers";
 
 const columns = {
     project_name: "g.graduation_project_name",
     company: "c.company_name",
     advisor: "CONCAT(u.first_name, ' ', u.nee, ' ', u.last_name)",
     year: "g.project_year"
-}
-
-const field_conditions = {
-    must_be_different: ["graduation_project_name", "product_name"],
-    date_fields: [],
-    user: {
-        check_user_only: false,
-        user_id: null
-    }
 }
 
 const fields = {
@@ -37,17 +29,32 @@ const fields = {
 const table_name = "graduationproject";
 
 const validation = (data) => {
-    if(data.product_name !== null && data.product_name.trim() === "")
-        return false;
-    if(data.project_description != null && data.project_description.trim() === "")
-        return false;
+    replaceWithNull(data)
+    if(!data.graduation_project_name)
+        return "Project Name can't be empty!";
+    if(isNaN(parseInt(data.team_number)))
+        return "Team Number must be a number!";
+    if(!data.project_year)
+        return "Project Year can't be empty!";
+    if(data.project_year.length !== 9)
+        return "Invalid value for Project Year!";
+    if(!data.semester)
+        return "Semester can't be empty!";
+    if(isNaN(parseInt(data.advisor_id)))
+        return "Advisor ID must be a number!";
+    if(!data.project_type)
+        return "Project Type can't be empty!";
+    if (data.project_type === "Company" && isNaN(parseInt(data.company_id)))
+        return "Company projects must have a valid Company ID!";
+    if (data.project_type !== "Company" && data.company_id !== null)
+        return "Instructor or student projects can't have a Company ID!";
     return true;
 }
 
 export default async function handler(req, res) {
     const session = await checkAuth(req.headers, res);
     if (session) {
-        let payload, grad_projects = [];
+        let payload
         const method = req.method;
         switch (method) {
             case "GET":
@@ -78,40 +85,39 @@ export default async function handler(req, res) {
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);
-                if (payload.user === "admin") {
+                if (payload?.user === "admin") {
                     try {
-                        grad_projects = JSON.parse(req.body);
-                        const select_queries = buildSelectQueries(grad_projects, table_name, field_conditions);
-                        const queries = buildInsertQueries(grad_projects, table_name, fields);
-                        const {data, errors} = await insertToTable(queries, table_name, validation, select_queries);
+                        const {graduationprojects} = JSON.parse(req.body);
+                        const queries = buildInsertQueries(graduationprojects, table_name, fields);
+                        const {data, errors} = await insertToTable(queries, table_name, validation);
                         res.status(200).json({data, errors});
                     } catch (error) {
                         res.status(500).json({error: error.message});
                     }
                 }else{
-                    res.status(500).json({error: "Unauthorized"});
+                    res.redirect("/401", 401);
                 }
                 break;
             case "PUT":
                 payload = await checkUserType(session, req.query);
-                if (payload.user === "admin") {
+                if (payload?.user === "admin") {
                     try {
-                        grad_projects = JSON.parse(req.body);
-                        const queries = buildUpdateQueries(grad_projects,table_name, fields);
-                        const select_queries = buildSelectQueries(grad_projects, table_name, field_conditions);
+                        const {graduationprojects} = JSON.parse(req.body);
+                        const queries = buildUpdateQueries(graduationprojects,table_name, fields);
+                        const select_queries = buildSelectQueries(graduationprojects, table_name, field_conditions);
                         const {data, errors} = await updateTable(queries, validation, select_queries);
                         res.status(200).json({data, errors});
                     } catch (error) {
                         res.status(500).json({error: error.message});
                     }
                 }else{
-                    res.status(500).json({error: "Unauthorized"});
+                    res.redirect("/401", 401);
                 }
                 break;
             case "DELETE":
                 try{
-                    grad_projects = JSON.parse(req.body);
-                    const {data, errors} = await doMultiDeleteQueries(grad_projects, table_name);
+                    const {graduationprojects} = JSON.parse(req.body);
+                    const {data, errors} = await doMultiDeleteQueries(graduationprojects, table_name);
                     res.status(200).json({data, errors});
                 }catch(error){
                     res.status(500).json({error: error.message});
@@ -119,6 +125,6 @@ export default async function handler(req, res) {
                 break;
         }
     } else {
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

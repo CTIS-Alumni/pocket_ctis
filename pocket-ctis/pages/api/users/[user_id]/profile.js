@@ -3,8 +3,10 @@ import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 
 export default async function handler(req, res) {
     const session = await checkAuth(req.headers, res);
+    console.log("heres session", session);
     const payload = await checkUserType(session, req.query);
-    if (session) {
+    console.log(payload);
+    if (session && payload) {
         const {user_id} = req.query;
         const method = req.method;
         switch (method) {
@@ -164,11 +166,11 @@ export default async function handler(req, res) {
                     res.status(200).json({data, errors, session});
 
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error:error.message}]});
                 }
                 break;
             case "PUT":
-                if (payload.user === "admin" || payload.user === "owner") {
+                if (payload?.user === "admin" || payload?.user === "owner") {
                     let put_queries = [];
                     try {
                         const {visibility} = JSON.parse(req.body);
@@ -231,14 +233,14 @@ export default async function handler(req, res) {
 
                         res.status(200).json({data, errors});
                     } catch (error) {
-                        res.status(500).json({error: error.message});
+                        res.status(500).json({errors: [{error:error.message}]});
                     }
                 }else{
-                    res.status(500).json({errors: "Unauthorized"});
+                    res.redirect("/401", 401);
                 }
                 break;
         }
     } else {
-        res.status(500).json({errors: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

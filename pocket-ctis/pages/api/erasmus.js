@@ -1,5 +1,13 @@
-import {addAndOrWhere, buildSearchQuery, doMultiQueries} from "../../helpers/dbHelpers";
+import {
+    addAndOrWhere,
+    buildInsertQueries,
+    buildSearchQuery, buildSelectQueries,
+    doMultiQueries, doqueryNew,
+    insertToUserRelatedTable
+} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
+import limitPerUser from "../../config/moduleConfig";
+import {replaceWithNull} from "../../helpers/submissionHelpers";
 
 const columns = {
     user: "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
@@ -8,21 +16,41 @@ const columns = {
     city: "ci.city_name"
 }
 
+const fields = {
+    basic: ["edu_inst_id", "semester"],
+    date: ["start_date", "end_date"]
+}
+
+const field_conditions = {
+    must_be_different: ["edu_inst_id", "semester"],
+    date_fields: [],
+    user: {
+        check_user_only: true,
+        user_id: null
+    }
+}
+
+
+const table_name = "erasmusrecord";
+
 const validation = (data) => {
+    replaceWithNull(data);
     const currentDate = new Date();
     const startDate = data.start_date ? new Date(data.start_date) : null;
     const endDate = data.end_date ? new Date(data.end_date) : null;
 
-    if (startDate && endDate && startDate > endDate)
-        return false;
+    if(isNaN(parseInt(data.user_id)))
+        return "User ID must be a number!";
+    if(isNaN(parseInt(data.edu_inst_id)))
+        return "Education Institute ID must be a number!";
+    if(!data.semester)
+        return "Semester can't be empty!";
+    if(!startDate)
+        return "Please enter a start date!";
+    if (endDate && startDate > endDate)
+        return "Start Date can't be after End Date!";
     if((endDate && endDate > currentDate) || (startDate && startDate > currentDate))
-        return false;
-    if(data.visibility !== 0 && data.visibility !== 1)
-        return false;
-    if(data.opinion !== null && data.opinion.trim() === "")
-        return false;
-    if(data.rating < 0 || data.rating > 10 || (data.rating % 0.5) !== 0)
-        return false;
+        return "Dates can't be after current date!";
     return true;
 }
 
@@ -71,8 +99,24 @@ export default async function handler(req, res){
                     res.status(500).json({error: error.message});
                 }
                 break;
+            case "POST":
+                if(payload?.user === "admin") {
+                    try {
+                        const {erasmus} = JSON.parse(req.body);
+                        const queries = buildInsertQueries(erasmus, table_name, fields);
+                        const select_queries = buildSelectQueries(erasmus, table_name,field_conditions);
+                        const {data, errors} = await insertToUserRelatedTable(queries, table_name, validation, select_queries, limitPerUser.erasmus);
+                        res.status(200).json({data, errors})
+
+                    } catch (error) {
+                        res.status(500).json({error: error.message});
+                    }
+                }else{
+                    res.redirect("/401", 401);
+                }
+                break;
         }
     }else {
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

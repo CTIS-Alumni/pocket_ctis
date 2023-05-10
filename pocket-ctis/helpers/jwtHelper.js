@@ -19,9 +19,9 @@ export const verify = async (token, secret) => {
 
 }
 
-export const refreshToken = async (refresh_token, secret) => {
+export const refreshToken = async (refresh_token) => {
     try{
-        const {payload} = await verify(refresh_token, secret);
+        const {payload} = await verify(refresh_token, process.env.REFRESH_SECRET);
         const access_token = await sign({user_id: payload.user_id, mode: payload.mode}, process.env.ACCESS_SECRET, 60*10);
 
         const serialCookie = serialize("AccessJWT", access_token, {
@@ -39,7 +39,7 @@ export const refreshToken = async (refresh_token, secret) => {
             httpOnly: true,
             secure: process.env.NODE_ENV !== "development",
             sameSite: "strict",
-            maxAge: 60*6*24*3,
+            maxAge: 60*60*24*3,
             path: "/"
         });
 

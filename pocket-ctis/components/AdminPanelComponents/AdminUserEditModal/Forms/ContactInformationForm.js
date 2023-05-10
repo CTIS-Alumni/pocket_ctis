@@ -6,7 +6,7 @@ import { PlusCircleFill, XCircleFill } from 'react-bootstrap-icons'
 
 import { cloneDeep } from 'lodash'
 import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {craftUrl} from '../../../../helpers/urlHelper'
 import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
@@ -14,7 +14,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [socialMediaTypes, setSocialMediaTypes] = useState([])
 
   useEffect(() => {
-    _getFetcher({ socials: craftUrl('socialmedia') }).then(({ socials }) =>
+    _getFetcher({ socials: craftUrl(['socialmedia']) }).then(({ socials }) =>
       setSocialMediaTypes(
         socials.data.map((social) => {
           return {
@@ -124,7 +124,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
               newData[key],
               deletedData[key]
           )
-          const url = craftUserUrl(user_id, key)
+          const url = craftUrl(["users",user_id, key])
           responseObj[key] = await submitChanges(url, requestObj[key])
           final_data[key] = handleResponse(
               send_to_req[key],
@@ -168,7 +168,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                       <tr>
                         <td colSpan={3}>
                           <div className={styles.formPartitionHeading}>
-                            <span>Social Medias</span>
+                            <span>Social Media</span>
                             <button
                               className={styles.addButton}
                               type='button'

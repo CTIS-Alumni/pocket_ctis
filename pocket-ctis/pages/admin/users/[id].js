@@ -1,6 +1,6 @@
 import React from 'react'
 import { _getFetcher } from '../../../helpers/fetchHelpers'
-import { craftUserUrl } from '../../../helpers/urlHelper'
+import { craftUrl } from '../../../helpers/urlHelper'
 import AdminPageContainer from '../../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
 import { Badge, Card, Container, Spinner, Tab, Tabs } from 'react-bootstrap'
 import {
@@ -74,7 +74,7 @@ const AdminUserView = ({ user }) => {
     setIsLoading(true)
     console.log(user)
     _getFetcher({
-      res: craftUserUrl(user.userInfo.data.basic_info[0].id, 'profile'),
+      res: craftUrl(["users",user.userInfo.data.basic_info[0].id, 'profile']),
     })
       .then(({ res }) => setUserData(res))
       // .then(({ res }) => console.log(res))
@@ -535,10 +535,11 @@ export async function getServerSideProps(context) {
   const { cookies } = context.req
   const token = cookies.AccessJWT
 
-  console.log(craftUserUrl(context.params.id, 'profile'))
+  console.log(craftUrl(["users",context.params.id, 'profile']))
   const userInfo = await _getFetcher(
-    { userInfo: craftUserUrl(context.params.id, 'profile') },
+    { userInfo: craftUrl(["users", context.params.id, 'profile']) },
     token
   )
+  console.log("heres userInfo", userInfo.errors);
   return { props: { user: userInfo } }
 }

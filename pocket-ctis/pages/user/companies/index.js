@@ -17,7 +17,7 @@ const CompaniesDashboard = ({ res }) => {
   const onQuery = (queryParams) => {
     const conditions = buildCondition(queryParams)
     setIsLoading(true)
-    _getFetcher({ companies: craftUrl('companies', conditions) })
+    _getFetcher({ companies: craftUrl(['companies'], conditions) })
       .then(({ companies }) => {
         setTotal(companies.length)
         setCompanies(companies.data)
@@ -44,7 +44,7 @@ export async function getServerSideProps(context) {
   const token = cookies.AccessJWT
   const { companies } = await _getFetcher(
     {
-      companies: craftUrl('companies', [
+      companies: craftUrl(['companies'], [
         { name: 'limit', value: 15 },
         { name: 'offset', value: 0 },
       ]),

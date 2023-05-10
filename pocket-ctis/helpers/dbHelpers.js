@@ -1,5 +1,7 @@
 import mysql from "mysql2/promise";
 import dbconfig from "../config/dbconfig.js";
+import {replaceWithNull} from "./submissionHelpers";
+import {reFormatDate} from "./formatHelpers";
 
 export const createDBConnection = async (namedPlaceholders = false) => {
     const connection = await mysql.createConnection({
@@ -90,8 +92,10 @@ export const buildSelectQueries = (data, table, field_conditions) => {
     const base_query = "SELECT id FROM " + table + " WHERE ";
 
     data.forEach((datum) => {
-        if(!datum.hasOwnProperty("user_id"))
+        if(!datum.hasOwnProperty("user_id") && field_conditions.user.user_id)
             datum.user_id = field_conditions.user.user_id;
+        if(datum.hasOwnProperty("user_id") && !field_conditions.user.user_id){}
+            field_conditions.user.user_id = datum.user_id;
         let query = base_query + buildConditionForComparison(datum, field_conditions);
         queries.push({
             name: datum.id,
@@ -107,18 +111,22 @@ export const buildInsertQueries = (data, table, fields, user_id = null) => {
     let queries = [];
 
     data.forEach((datum) => {
+        user_id = datum.user_id ? datum.user_id : user_id;
+
         let query = `INSERT INTO ${table} (` + (user_id ? "user_id, " : "") +
             `${fields.basic.concat(fields.date).join(", ")}) values (` + (user_id ? ":user_id, ": "") +
             fields.basic.map(field => `:${field}`).join(", ") + ", ";
 
         fields.date.forEach((field) => {
-            if(datum[field] !== null)
+            datum[field] = reFormatDate(datum[field]);
+            if(datum[field]){
+                datum[field] += "T00:00:00.000Z";
                 query += `STR_TO_DATE(:${field}, '%Y-%m-%dT%H:%i:%s.000Z'), `;
+            }
             else query += `:${field}, `;
         });
         datum.user_id = user_id;
         queries.push({
-            name: datum.id,
             user_id: user_id,
             query: query.slice(0, -2) + ")",
             values: datum
@@ -133,7 +141,7 @@ export function buildUpdateQueries(data, table, fields){
     data.forEach((datum) => {
         let query = `UPDATE ${table} SET ` + fields.basic.map(field => `${field} = :${field}`).join(", ") + ", ";
         fields.date.forEach((field) => {
-            if(datum[field] !== null)
+            if(datum[field])
                 query += `${field} = STR_TO_DATE(:${field}, '%Y-%m-%dT%H:%i:%s.000Z'), `;
             else query += `${field} = :${field}, `;
         });
@@ -150,10 +158,21 @@ export function buildUpdateQueries(data, table, fields){
     return queries;
 }
 
-export const getCountForUser = async (connection, table, user_id) => {
+export const getCountForUser = async (connection, table, user_id) => { //gets the count of records a user has in a certain table, used for checking limits
     const query = "SELECT COUNT(id) as count FROM " + table + " WHERE user_id = ? ";
     const [count_res] = await connection.execute(query, [user_id]);
     return count_res[0].count;
+}
+
+export const doqueryNew = async ({query, values = [], namedPlaceholders = false}) => {
+    const connection = await createDBConnection(namedPlaceholders);
+    try {
+        const [data] = await connection.execute(query, values);
+        connection.end();
+        return {data};
+    } catch (error) {
+        return {errors: [{error: error.message}]};
+    }
 }
 
 export const doquery = async ({query, values = []}) => {
@@ -211,75 +230,172 @@ export const doMultiDeleteQueries = async (records, table) => {
     return {data, errors};
 }
 
-export async function updateTable(queries, validation, get_queries = []) {
+export async function updateTable(queries, validation, select_queries = []) {//put requests/UPDATE
     let data = {};
     let errors = [];
+    let is_valid;
 
     const connection = await createDBConnection(true);
 
     for(const [index, query] of queries.entries()){
         try{
-            if(validation(query.values)){
+            is_valid = "Invalid Values!"
+            if(typeof validation === "function")
+                is_valid = validation(query.values);
+            if(typeof validation !== "function" || is_valid === true ){
                 let get_res = []
-                if(get_queries.length > 0)
-                    [get_res] = await connection.execute(get_queries[index].query, get_queries[index].values);
+                if(select_queries.length > 0)
+                    [get_res] = await connection.execute(select_queries[index].query, select_queries[index].values);
 
                 if(get_res.length > 0){
-                    const error_message = get_queries[index].query.includes("user_id") ? "Data Must Be Unique" : "Another User Has Already Taken This";
-                    errors.push({name: query.name, error: error_message, queries, get_queries});
+                    const error_message = select_queries[index].query.includes("user_id") ? "Data is not unique for user!" : "Another user has already taken this";
+                    errors.push({name: query.name, error: error_message, queries, select_queries});
                 }else{
                     const [res] = await connection.execute(query.query, query.values);
                     data[query.name] = res;
             }
-            }else errors.push({name: query.name, error: "Invalid Values"})
+            }else errors.push({name: query.name, error: is_valid})
         }catch(error){
-            errors.push({name: query.name, error: error.message, queries, get_queries});
+            errors.push({name: query.name, error: error.message, queries, select_queries});
         }
     }
     connection.end();
     return {data, errors};
 }
 
+export const createUsersWithCSV = async (users, validation) => {
+
+    const connection = await createDBConnection(true);
+
+    let data = []; //iterate all users //get query objects -> they should have a user query, a type query, and a edu_record query
+    let errors = [];
+    const type_query = "INSERT INTO useraccounttype(user_id, type_id) values (:user_id, :type_id) ";
+    const user_query = "INSERT INTO users(bilkent_id, first_name, last_name, gender, contact_email) values " +
+        " (:bilkent_id, :first_name, :last_name, :gender, :contact_email) ";
+
+
+    for(const [index, user] of users.entries()){
+        try{
+            await connection.beginTransaction();
+
+            let edu_record_query = "INSERT INTO educationrecord(user_id, edu_inst_id, degree_type_id, name_of_program, " +
+                "start_date, end_date, is_current) values (:user_id, :edu_inst_id, :degree_type_id, :name_of_program,";
+
+            let types = user.types.split(",");
+
+            types = types.map((type) => type.trim()).filter((type) => type !== '');
+            user.types = types;
+
+            let is_valid = validation(user); //checks for both type fields, user fields and edu_record fields
+            if(is_valid !== true)
+                throw {message: is_valid};
+
+            const [res] = await connection.execute(user_query, user);
+
+            if (!res.hasOwnProperty("insertId") || res.insertId == 0) //if you managed to insert to db, get the id of the record you inserted
+               throw {message: "Failed to create user!"};
+
+            const user_id = res.insertId;
+
+            for(const [i, type] of types.entries()){
+                const type_values = {user_id: user_id, type_id: type};
+                const [type_res] = await connection.execute(type_query, type_values);
+            }
+
+
+            if(user.edu_inst_id && user.degree_type_id && user.name_of_program && user.start_date){
+                const edu_values = {
+                    user_id: user_id,
+                    edu_inst_id: user.edu_inst_id,
+                    degree_type_id: user.degree_type_id,
+                    name_of_program: user.name_of_program,
+                    start_date: user.start_date,
+                    end_date: user.end_date,
+                    is_current: user.is_current
+                }
+                edu_values.start_date = reFormatDate(user.start_date);
+                if(user.start_date){
+                    edu_values.start_date += "T00:00:00.000Z";
+                    edu_record_query += `STR_TO_DATE(:start_date, '%Y-%m-%dT%H:%i:%s.000Z'), `;
+                }
+                else edu_record_query += `:start_date, `;
+
+                edu_values.end_date = reFormatDate(user.end_date);
+                if(user.end_date){
+                    edu_values.end_date += "T00:00:00.000Z";
+                    edu_record_query += `STR_TO_DATE(:end_date, '%Y-%m-%dT%H:%i:%s.000Z'), `;
+                }
+                else edu_record_query += `:end_date, `;
+
+                edu_record_query += " :is_current) ";
+                console.log("heres the query and values so far query: ", edu_record_query,edu_values);
+                const [edu_res] = await connection.execute(edu_record_query, edu_values);
+            }
+
+            data.push({index: index, data: {id: user_id, bilkent_id: user.bilkent_id} });
+
+            await connection.commit();
+
+        }catch(error){
+            error.message = handleDBErrorMessage(error);
+            errors.push({index: index, error: error.message});
+            await connection.rollback();
+        }
+
+    }
+    connection.end();
+    return {data, errors};
+
+}
+
+//used in users/[user_id]/ api's
 export const insertToUserTable = async (queries, table, validation, select_queries = [], limit = null) => {
     let data = [];
     let errors = [];
     let count = 0;
+    let is_valid;
 
     const connection = await createDBConnection(true);
 
     if(limit)
-        count = await getCountForUser(connection, table, queries[0].user_id);
+        count = await getCountForUser(connection, table, queries[0].user_id);   //how many of that data type does the user already have
 
     for (const [index, query] of queries.entries()){
         try {
-            if(validation(query.values)){
+            is_valid = "Invalid Values!"
+
+            if(typeof validation === "function")
+                is_valid = validation(query.values);
+
+            if(typeof validation !== "function" || is_valid === true ){
                 let equal = [];
 
                 if(select_queries.length > 0)
-                [equal] = await connection.execute(select_queries[index].query, select_queries[index].values);
+                [equal] = await connection.execute(select_queries[index].query, select_queries[index].values); //is there data that's similar/same as this data
 
-                if (equal.length > 0) {
-                    const error_message = select_queries[index].query.includes("user_id") ? "Data Must Be Unique" : "Another User Has Already Taken This";
-                    errors.push({name: query.name, error: error_message});
+                if (equal.length > 0) {           //if yes then according to whether you checked the entire db or only this particular user give error msg
+                    const error_message = select_queries[index].query.includes("user_id") ? "Data is not unique for user!" : "Another User Has Already Taken This";
+                    errors.push({index: index, error: error_message});
 
                 } else {
-                    if (!limit || count < limit) {
+                    if (!limit || count < limit) {      //if there is no limit or if we're still below the limit (per user)
                         const [res] = await connection.execute(query.query, query.values);
 
-                        if (res.hasOwnProperty("insertId") && res.insertId != 0) {
+                        if (res.hasOwnProperty("insertId") && res.insertId != 0) {      //if you managed to insert to db then get the id of the record you inserted
                             const get_inserted_query = "SELECT * FROM " + table + " WHERE id = ? ";
                             const [inserted] = await connection.execute(get_inserted_query, [res.insertId]);
-                            data.push({res: res, inserted: inserted[0]});
+                            data.push({index: index, res: res, inserted: inserted[0]});
                             count++;
                         }
                     } else {
-                        errors.push({name: query.name, error: "Limit Exceeded!"});
+                        errors.push({index: index,  error: "Limit Exceeded!"});
                     }
                 }
-            } else errors.push({name: query.name, error: "Invalid Values"})
+            } else errors.push({index: index, error: is_valid})
         } catch
             (error) {
-            errors.push({name: query.name, error: error.message});
+            error.message = handleDBErrorMessage(error);
+            errors.push({index: index, error: error.message});
         }
     }
 
@@ -287,43 +403,86 @@ export const insertToUserTable = async (queries, table, validation, select_queri
     return {data, errors};
 }
 
-export const insertToTable = async (queries, table, validation, select_queries = [], limit = null) => {
+//inserts to plain tables without user_id's like skills, companies, highschools
+export const insertToTable = async(queries, table, validation = null) => {
+    let data = [];
+    let errors = [];
+    let is_valid;
+
+    const connection = await createDBConnection(true);
+
+    for (const [index, query] of queries.entries()){
+        try{
+            is_valid = "Invalid Values!"
+
+            if(typeof validation === "function")
+                is_valid = validation(query.values);
+
+            if(typeof validation !== "function" || is_valid === true ){
+                const [res] = await connection.execute(query.query, query.values);
+
+                if (res.hasOwnProperty("insertId") && res.insertId != 0) {
+                    const get_inserted_query = "SELECT * FROM " + table + " WHERE id = ? ";
+                    const [inserted] = await connection.execute(get_inserted_query, [res.insertId]);
+                    data.push({index: index, res: res, inserted: inserted[0]});
+                }
+            } else errors.push({index: index, error: is_valid})
+        }catch(error){
+            error.message = handleDBErrorMessage(error);
+            errors.push({index: index, error: error.message});
+        }
+    }
+    connection.end();f
+    return {data, errors};
+}
+
+//can be used to insert multiple edu_records, erasmus records, internship records, basically any records with a user_id
+export const insertToUserRelatedTable = async (queries, table, validation = true, select_queries = [], limit = null) => {//this func is for api/internships, api/gradprojects, api/erasmus, api/edurecords
     let data = [];
     let errors = [];
     let count = {};
+    let is_valid;
 
     const connection = await createDBConnection(true);
 
     for (const [index, query] of queries.entries()){
         try {
-            if(validation(query.values)){
+            is_valid = "Invalid Values!"
+
+            if(typeof validation === "function")
+                is_valid = validation(query.values);
+
+            if(typeof validation !== "function" || is_valid === true ){        //if validation isnt a function or and the data is valid
                 let equal = [];
 
-                if(select_queries.length > 0)
+                if(select_queries.length > 0)        //is there data similar to this
                     [equal] = await connection.execute(select_queries[index].query, select_queries[index].values);
 
-                if (equal.length > 0) {
-                    const error_message = select_queries[index].query.includes("user_id") ? "Data Must Be Unique" : "Another User Has Already Taken This";
-                    errors.push({name: query.name, error: error_message});
+                if (equal.length > 0) {        //if yes then according to whether you checked the entire db or this particular user only give error msg
+                    const error_message = select_queries[index].query.includes("user_id") ? "Data is not unique for user!" : "Another User Has Already Taken This";
+                    errors.push({index: index, error: error_message});
+
                 } else {
-                    if(limit && !count.hasOwnProperty(query.user_id));
-                        count[query.user_id] = await getCountForUser(connection, table, query.user_id);
-                    if (!limit || count[query.user_id] < limit) {
-                        const [res] = await connection.execute(query.query, query.values);
+                    if(limit && !count.hasOwnProperty(query.user_id))   //if we have a limit restriction and if count object doesnt already have a key for this particular user
+                        count[query.user_id] = await getCountForUser(connection, table, query.user_id); //get the number of items the user has and map it to count object
+
+                    if (!limit || count[query.user_id] < limit) {  //if we dont have a limit restriction or if we have restriction but we are still below it
+                        const [res] = await connection.execute(query.query, query.values);              //do the query and get the id of the inserted value
+
                         if (res.hasOwnProperty("insertId") && res.insertId != 0) {
                             const get_inserted_query = "SELECT * FROM " + table + " WHERE id = ? ";
                             const [inserted] = await connection.execute(get_inserted_query, [res.insertId]);
-                            data.push({res: res, inserted: inserted[0]});
+                            data.push({index: index, res: res, inserted: inserted[0]});
                             count[query.user_id]++;
                         }
                     } else {
-                        errors.push({name: query.name, error: "Limit Exceeded!"});
+                        errors.push({index: index, error: "Limit Exceeded!"});
                     }
                 }
-            } else errors.push({name: query.name, error: "Invalid Values"})
-        } catch
-            (error) {
-            errors.push({name: query.name, error: error.message});
+            } else errors.push({index: index, error: is_valid})
+        } catch (error) {
+            error.message = handleDBErrorMessage(error);
+            errors.push({index: index, error: error.message});
         }
     }
 
@@ -331,134 +490,15 @@ export const insertToTable = async (queries, table, validation, select_queries =
     return {data, errors};
 }
 
-export async function doMultiInsertQueries(queries, table, validation, get_queries = [],  limit = null) {
-    let data = [];
-    let errors = [];
-    //queries = [{name: "certificates", query: "SELECT FROM etc" ,values: []}, {name: "skills", query: "asdasda", values: []}]
-    //errors = [{name: "certificates", error: error}];
-    const connection = await createDBConnection(true);
-
-    let count = 0;
-    if(limit){
-        const count_query = get_queries.pop();
-        const [count_res] = await connection.execute(count_query.query, count_query.values);
-        count = count_res[0].count;
-    }
-
-    for (const [index, query] of queries.entries()){
-        try {
-            if(validation(query.values)){
-                let get_res = [];
-                if(get_queries.length > 0)
-                    [get_res] = await connection.execute(get_queries[index].query, get_queries[index].values);
-                if (get_res.length > 0) {
-                    const error_message = get_queries[index].query.includes("user_id") ? "Data Must Be Unique" : "Another User Has Already Taken This";
-                    errors.push({name: query.name, error: error_message});
-                } else {
-                    if (!limit || count < limit) {
-                        const [res] = await connection.execute(query.query, query.values);
-                        if (res.hasOwnProperty("insertId") && res.insertId != 0) {
-                            const select_query = "SELECT * FROM " + table + " WHERE id = ? ";
-                            const [inserted] = await connection.execute(select_query, [res.insertId]);
-                            data.push({res: res, inserted: inserted[0]});
-                            count++;
-                        }
-                    } else {
-                        errors.push({name: query.name, error: "Limit Exceeded!"});
-                    }
-                }
-            }else errors.push({name: query.name, error: "Invalid Values"})
-        } catch
-            (error) {
-            errors.push({name: query.name, error: error.message});
-        }
-    }
-    connection.end();
-    return {data, errors};
+const handleDBErrorMessage = (error) => {
+    if(error.message.includes("constraint fails"))
+        return "Referenced ID doesn't exist!";
+    if(error.message.includes("Duplicate entry"))
+        return "Duplicate entry!";
+    if(error.message.includes("Incorrect datetime"))
+        return "Invalid Date Value!";
+    return error.message;
 }
-
-export function createGetQueries(data, table_name, fields_to_check, user_id = null, get_count = false, global = false) {
-    let queries = [];
-    const base_query = "SELECT id FROM " + table_name + " WHERE "
-
-    data.forEach((datum) => {
-        let tempValues = [];
-        let tempQuery = base_query;
-        fields_to_check.forEach((val) => {
-                if(datum[val] == null){
-                    tempQuery += val + " IS NULL AND ";
-                }else{
-                    if(val.includes("date"))
-                        tempQuery += val + " = STR_TO_DATE(?, '%Y-%m-%dT%H:%i:%s.000Z') AND ";
-                    else tempQuery += val + " = ? AND ";
-                    tempValues.push(datum[val]);
-                }
-        });
-        if (user_id && !global) {
-            tempQuery += "user_id = ? AND "
-            tempValues.push(user_id)
-        }
-        if(datum.hasOwnProperty("id")){
-            tempQuery += "id NOT IN (?) "
-            tempValues.push(datum.id);
-        }
-        if(!datum.hasOwnProperty("id"))
-            tempQuery = tempQuery.slice(0, -4);
-        queries.push({
-            name: datum.id,
-            query: tempQuery,
-            values: tempValues
-        });
-    });
-
-    if (user_id && get_count) {
-        queries.push({
-            name: "count",
-            query: "SELECT count(*) as count FROM " + table_name + " WHERE user_id = ?",
-            values: [user_id]
-        });
-    }
-
-    return queries;
-}
-
-export function createPostQueries(data, table_name, fields, user_id = null, date_fields = []){
-    let queries = [];
-
-    data.forEach((datum)=>{
-        let tempValues = {};
-        let tempQuery = "INSERT INTO " + table_name + "( ";
-        let second_half_of_query = "";
-        if(user_id){
-            tempQuery += "user_id,";
-            tempValues["user_id"] = user_id;
-            second_half_of_query += ":user_id, ";
-        }
-        fields.forEach((field)=>{
-           tempQuery += field + ",";
-           tempValues[field] =  datum[field];
-           second_half_of_query += ":" + field + ",";
-        });
-
-        date_fields.forEach((date_field)=>{
-            tempQuery += date_field + ",";
-            if(datum[date_field] != null){
-                second_half_of_query += "STR_TO_DATE(:" + date_field + ", '%Y-%m-%dT%H:%i:%s.000Z'),";
-            }else second_half_of_query += ":" + date_field + ",";
-            tempValues[date_field] = datum[date_field];
-        })
-
-        tempQuery = tempQuery.slice(0,-1) + ") values (" + second_half_of_query.slice(0,-1) + ")";
-
-        queries.push({
-            name: datum.id,
-            query: tempQuery,
-            values: tempValues
-        });
-    });
-    return queries;
-}
-
 
 
 

@@ -12,8 +12,8 @@ import DatePickerField from '../../../DatePickers/DatePicker'
 import styles from './AdminUserFormStyles.module.css'
 
 import { cloneDeep } from 'lodash'
-import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {_getFetcher, _submitFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
+import {craftUrl} from '../../../../helpers/urlHelper'
 import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
@@ -23,8 +23,8 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   useEffect(() => {
     _getFetcher({
-      edu_insts: craftUrl('educationinstitutes'),
-      degree_types: craftUrl('degreetypes'),
+      edu_insts: craftUrl(['educationinstitutes']),
+      degree_types: craftUrl(['degreetypes']),
     }).then(({ edu_insts, degree_types }) => {
       setEduInsts(edu_insts.data)
       setDegreeTypes(degree_types.data)
@@ -33,6 +33,11 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   const applyNewData = (data) => {
     setDataAfterSubmit(data)
+  }
+
+  const sendMail = async () => {
+    const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id, type: "education"})
+    return res;
   }
 
   let deletedData = []
@@ -77,10 +82,9 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
     ['start_date', 'end_date'],
   ]
 
-  const url = craftUserUrl(user_id, 'educationrecords')
+  const url = craftUrl(["users",user_id, 'educationrecords'])
 
   const onSubmit = async (values) => {
-    setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
 
@@ -103,9 +107,14 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
         transformDataForSubmission
     )
     applyNewData(new_data)
+    setIsUpdated(true)
     console.log('req:', requestObj, 'res', responseObj)
-
     deletedData = []
+
+    if(responseObj.POST.data?.length){
+      const {data, errors} = await sendMail();
+      //TODO: if data is true, show update mail sent toast, if errors.length > 0, show update mail couldnt send toast
+    }
   }
 
   return (
@@ -168,11 +177,9 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           arrayHelpers.remove(index)
                                           if (edu_record.hasOwnProperty('id'))
                                             deletedData.push({
-                                              name: edu_record.id,
                                               id: edu_record.id,
                                               data: edu_record
                                             })
-                                          console.log(deletedData)
                                         }}
                                       >
                                         <XCircleFill

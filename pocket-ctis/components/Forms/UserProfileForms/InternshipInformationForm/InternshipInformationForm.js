@@ -14,7 +14,7 @@ import {
   createReqObject,
   submitChanges,
 } from '../../../../helpers/fetchHelpers'
-import { craftUserUrl } from '../../../../helpers/urlHelper'
+import { craftUrl } from '../../../../helpers/urlHelper'
 
 const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
@@ -66,7 +66,7 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
       newData.internships,
       []
     )
-    const url = craftUserUrl(user_id, 'internships')
+    const url = craftUrl(["users", user_id, 'internships'])
     const responseObj = await submitChanges(url, requestObj)
 
     const new_data = handleResponse(

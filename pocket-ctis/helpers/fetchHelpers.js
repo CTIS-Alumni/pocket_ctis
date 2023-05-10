@@ -1,5 +1,4 @@
 import {isEqual} from "lodash";
-import {craftUrl} from "./urlHelper";
 
 //divides the incoming requests based on type, priority is delete > put > post
 export const submitChanges = async (url, requestObj) => {
@@ -41,6 +40,7 @@ export const _getFetcher = async (apis,  token = false) => { // [{name: url}, {n
             });
             results[api] = await res.json();
         }));
+        console.log("heres the results", results);
         return results;
     }catch(error){
         console.log(error.message);

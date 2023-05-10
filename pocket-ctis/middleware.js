@@ -2,34 +2,6 @@ import { NextResponse} from "next/server";
 import {verify} from "./helpers/jwtHelper";
 import {refreshToken} from "./helpers/jwtHelper";
 
-export async function apiMiddleware(req, res){
-    const {cookies} = req;
-    const all_cookies = cookies.getAll();
-    console.log(all_cookies);
-    let jwt;
-    let refresh;
-    all_cookies.forEach((cookie)=>{
-        if(cookie.name === "AccessJWT"){
-            jwt = cookie.value
-        }
-
-        else if(cookie.name === "RefreshJWT"){
-            refresh = cookie.value
-        }
-    });
-
-    if(jwt === undefined && refresh){
-        try{
-            const {serialCookie, refreshCookie} = await refreshToken(refresh, process.env.REFRESH_SECRET);
-            const requestHeaders = new Headers(req.headers)
-            requestHeaders.set("cookie", [serialCookie, refreshCookie]);
-            NextResponse.next();
-        }catch(error){
-            console.log("An error happened while refreshing access token")
-        }
-    }
-}
-
 export default async function middleware(req){
     const {cookies} = req;
     const all_cookies = cookies.getAll();
@@ -48,7 +20,7 @@ export default async function middleware(req){
 
    if(access === undefined && refresh){
         try{
-            const {serialCookie, refreshCookie} = await refreshToken(refresh, process.env.REFRESH_SECRET);
+            const {serialCookie, refreshCookie} = await refreshToken(refresh);
             const response = NextResponse.next();
             response.headers.set("Set-Cookie", [serialCookie,refreshCookie]);
             return response;
@@ -57,7 +29,8 @@ export default async function middleware(req){
         }
     }
     if(refresh === undefined && !url.includes("login")){
-        if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user") || url.includes("logout")) {
+        if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user") ||
+            url.includes("logout") || url.includes("admin")) {
             return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/login");
         }
     }

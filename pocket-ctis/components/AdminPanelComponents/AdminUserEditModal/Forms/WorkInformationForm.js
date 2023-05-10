@@ -13,7 +13,7 @@ import {
 import styles from './AdminUserFormStyles.module.css'
 
 import { cloneDeep } from 'lodash'
-import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {craftUrl} from '../../../../helpers/urlHelper'
 import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
 import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 import {toast} from "react-toastify";
@@ -32,8 +32,8 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
   let deletedData = []
   useEffect(() => {
     _getFetcher({
-      companies: craftUrl('companies'),
-      work_types: craftUrl('worktypes'),
+      companies: craftUrl(['companies']),
+      work_types: craftUrl(['worktypes']),
     })
       .then(({ companies, work_types }) => {
         setCompanies(companies.data)
@@ -85,7 +85,7 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
     ['start_date', 'end_date'],
   ]
 
-  const url = craftUserUrl(user_id, 'workrecords')
+  const url = craftUrl(["users",user_id, 'workrecords'])
 
   const onSubmit = async (values) => {
 
@@ -194,7 +194,6 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           arrayHelpers.remove(index)
                                           if (work_record.hasOwnProperty('id'))
                                             deletedData.push({
-                                              name: work_record.id,
                                               id: work_record.id,
                                               data: work_record,
                                             })

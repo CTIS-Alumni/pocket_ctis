@@ -4,7 +4,7 @@ import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 export default async function handler(req, res){
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
-    if(payload.user === "admin" || payload.user === "owner") {
+    if(payload?.user === "admin" || payload?.user === "owner") {
         const {user_id} = req.query;
         const method = req.method;
         switch (method) {

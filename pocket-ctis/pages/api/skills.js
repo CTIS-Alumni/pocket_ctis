@@ -1,5 +1,22 @@
-import {doquery} from "../../helpers/dbHelpers";
+import {buildInsertQueries, doquery, doqueryNew, insertToTable} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
+import {replaceWithNull} from "../../helpers/submissionHelpers";
+
+const table_name = "skill"
+
+const fields = {
+    basic: ["skill_type_id", "skill_name"],
+    date: []
+}
+
+const validation = (data) => {
+    replaceWithNull(data);
+    if(!data.skill_name)
+        return "Skill Name can't be empty!";
+     if(isNaN(parseInt(data.skill_type_id)))
+        return "Skill Type ID must be a number!";
+    return true;
+}
 
 export default async function handler(req, res) {
     const session = await checkAuth(req.headers, res);
@@ -18,35 +35,29 @@ export default async function handler(req, res) {
                     }
                     query += "ORDER BY skill_name ASC";
 
-                    const data = await doquery({query: query, values: [id_params]});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
+                    const {data, errors} = await doqueryNew({query: query, values: [id_params]});
+                    res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
                 }
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);
-                if(payload.user === "admin") {
+                if(payload?.user === "admin") {
                     try {
-                        const {skill_name, skill_type_id} = req.body.skill;
-                        const query = "INSERT INTO skill(skill_name, skill_type_id) values (?, ?)"
-                        const data = await doquery({query: query, values: [skill_name, skill_type_id]});
-                        if (data.hasOwnProperty("error"))
-                            res.status(500).json({error: data.error.message});
-                        else
-                            res.status(200).json({data});
+                        const {skills} = JSON.parse(req.body);
+                        const queries = buildInsertQueries(skills, table_name, fields);
+                        const {data, errors} = await insertToTable(queries, table_name, validation);
+                        res.status(200).json({data, errors})
                     } catch (error) {
                         res.status(500).json({error: error.message});
                     }
                 }else{
-                    res.status(500).json({error: "Unauthorized"});
+                    res.redirect("/401", 401);
                 }
                 break;
         }
     } else {
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

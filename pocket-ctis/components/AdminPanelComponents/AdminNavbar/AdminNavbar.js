@@ -1,4 +1,5 @@
 import { Navbar, Nav, NavDropdown } from 'react-bootstrap'
+import departmentConfig from '../../../config/departmentConfig'
 import styles from './AdminNavbar.module.scss'
 
 const AdminNavbar = () => {
@@ -6,7 +7,7 @@ const AdminNavbar = () => {
     <>
       <Navbar className={styles.navbar} fixed='top'>
         <Navbar.Brand href='/admin' className={styles.navbar_logo}>
-          PocketCTIS
+          {departmentConfig.app_name}
         </Navbar.Brand>
         <Nav className='d-flex justify-content-end'>
           <NavDropdown

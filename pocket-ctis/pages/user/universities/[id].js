@@ -6,7 +6,7 @@ import React from 'react'
 import { MortarboardFill } from 'react-bootstrap-icons'
 import styles from '../../../styles/universities.module.scss'
 import {_getFetcher} from "../../../helpers/fetchHelpers";
-import {craftPathUrl, craftUrl} from "../../../helpers/urlHelper";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const EducationInstitute = ({ edu_inst, users }) => {
   return (
@@ -94,8 +94,8 @@ export async function getServerSideProps(context) {
   const {cookies} = context.req;
   const token = cookies.AccessJWT;
   const {edu_inst, users} = await _getFetcher({
-    edu_inst: craftPathUrl(["educationinstitutes", context.params.id]),
-    users: craftUrl("educationrecords", [{name: "edu_inst_id", value: context.params.id}])
+    edu_inst: craftUrl(["educationinstitutes", context.params.id]),
+    users: craftUrl(["educationrecords"], [{name: "edu_inst_id", value: context.params.id}])
   }, token);
 
   return { props: { edu_inst, users } }

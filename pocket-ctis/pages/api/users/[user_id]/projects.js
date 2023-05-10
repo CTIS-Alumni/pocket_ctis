@@ -5,6 +5,7 @@ import {
 } from "../../../../helpers/dbHelpers";
 import  limitPerUser from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
+import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 
 const field_conditions = {
     must_be_different: ["project_name"],
@@ -23,17 +24,18 @@ const fields = {
 const table_name = "userproject";
 
 const validation = (data) => {
-    if(data.project_description !== null && data.project_description.trim() === "")
-        return false;
+    replaceWithNull(data)
     if(data.visibility !== 1 && data.visibility !== 0)
-        return false;
+        return "Invalid Values!";
+    if(!data.project_name)
+        return "Project name can't be empty!";
     return true;
 }
 
 export default async function handler(req, res){
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
-    if(payload.user === "admin" || payload.user === "owner") {
+    if(payload?.user === "admin" || payload?.user === "owner") {
         const projects = JSON.parse(req.body);
         const {user_id} = req.query;
         field_conditions.user.user_id = user_id;
@@ -44,9 +46,9 @@ export default async function handler(req, res){
                     const queries = buildInsertQueries(projects, table_name, fields, user_id);
                     const select_queries = buildSelectQueries(projects, table_name,field_conditions);
                     const {data, errors} = await insertToUserTable(queries, table_name, validation,  select_queries, limitPerUser.projects);
-                    res.status(200).json({data, errors, queries});
+                    res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error:error.message}]});
                 }
                 break;
             case "PUT":
@@ -56,7 +58,7 @@ export default async function handler(req, res){
                     const {data, errors} = await doMultiQueries(queries, select_queries, validation);
                     res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error:error.message}]});
                 }
                 break;
             case "DELETE":
@@ -64,11 +66,11 @@ export default async function handler(req, res){
                     const {data, errors} = await doMultiDeleteQueries(projects, table_name);
                     res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error:error.message}]});
                 }
                 break;
         }
     }else{
-        res.status(500).json({errors: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

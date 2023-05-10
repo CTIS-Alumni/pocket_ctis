@@ -1,9 +1,34 @@
-import {addAndOrWhere, buildSearchQuery, doMultiQueries, doquery} from "../../helpers/dbHelpers";
+import {
+    addAndOrWhere,
+    buildInsertQueries,
+    buildSearchQuery,
+    doMultiQueries,
+    insertToTable
+} from "../../helpers/dbHelpers";
 import {checkAuth} from "../../helpers/authHelper";
+import {replaceWithNull} from "../../helpers/submissionHelpers";
 
 const columns = {
     company_name: "c.company_name",
     sector_name: "s.sector_name"
+}
+
+const table_name = "company";
+
+const fields = {
+    basic: ["company_name", "sector_id", "is_internship"],
+    date: []
+}
+
+const validation = (data) => {
+    replaceWithNull(data)
+    if(!data.company_name)
+        return "Company Name can't be empty!";
+    if(isNaN(parseInt(data.sector_id)))
+        return "Sector Id must be a number!";
+    if(isNaN(parseInt(data.is_internship)) || (parseInt(data.is_internship) !== 1 && parseInt(data.is_internship) !== 0))
+        return "Invalid value for internship field!";
+    return true;
 }
 
 export default async function handler(req, res){
@@ -55,18 +80,15 @@ export default async function handler(req, res){
                 break;
             case "POST":
                 try {
-                    const {company_name, sector_id, is_internship} = req.body.company;
-                    const query = "INSERT INTO company(company_name, sector_id, is_internship) values(?,?,?)";
-                    const data = await doquery({query: query, values: [company_name, sector_id, is_internship]});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
+                    const {companies} = JSON.parse(req.body);
+                    const queries = buildInsertQueries(companies, table_name, fields);
+                    const {data, errors} = await insertToTable(queries, table_name, validation);
+                    res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
                 }
         }
     }else {
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

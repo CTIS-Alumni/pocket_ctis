@@ -8,9 +8,9 @@ import Select from 'react-select'
 import styles from './AdminUserFormStyles.module.css'
 
 import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {craftUrl} from '../../../../helpers/urlHelper'
 import { cloneDeep } from 'lodash'
-import {handleResponse, omitFields, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
+import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
   const { locationData } = useContext(Location_data)
@@ -19,7 +19,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
   useEffect(() => {
-    _getFetcher({ sectors: craftUrl('sectors') }).then(({ sectors }) =>
+    _getFetcher({ sectors: craftUrl(['sectors']) }).then(({ sectors }) =>
       setSectors(
         sectors.data.map((datum) => {
           return {
@@ -29,7 +29,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
         })
       )
     )
-    _getFetcher({ high_school: craftUrl('highschools') }).then(
+    _getFetcher({ high_school: craftUrl(['highschools']) }).then(
       ({ high_school }) => setHighSchools(high_school.data)
     )
   }, [])
@@ -242,7 +242,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
               newData[key],
               deletedData[key]
           )
-          const url = craftUserUrl(user_id, key)
+          const url = craftUrl(["users",user_id, key])
           responseObj[key] = await submitChanges(url, requestObj[key])
           final_data[key] = handleResponse(
               send_to_req[key],

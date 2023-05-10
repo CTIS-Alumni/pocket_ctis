@@ -22,17 +22,19 @@ const fields = {
 const table_name = "userstudentsociety";
 
 const validation = (data) => {
+    if(!data.society_name)
+        return "Please select a student society!";
     if(data.visibility !== 0 && data.visibility !== 1)
-        return false;
+        return "Invalid Values!";
     if(data.activity_status !== 0 && data.activity_status !== 1)
-        return false;
+        return "Invalid Values!";
     return true;
 }
 
 export default async function handler(req, res){
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
-    if(payload.user === "admin" || payload.user === "owner") {
+    if(payload?.user === "admin" || payload?.user === "owner") {
         const societies = JSON.parse(req.body);
         const {user_id} = req.query;
         field_conditions.user.user_id = user_id;
@@ -46,7 +48,7 @@ export default async function handler(req, res){
                     res.status(200).json({data, errors});
 
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error:error.message}]});
                 }
                 break;
             case "PUT":
@@ -56,7 +58,7 @@ export default async function handler(req, res){
                     const {data, errors} = await updateTable(queries, validation, select_queries);
                     res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error:error.message}]});
                 }
                 break;
             case "DELETE":
@@ -64,11 +66,11 @@ export default async function handler(req, res){
                     const {data, errors} = await doMultiDeleteQueries(societies, table_name);
                     res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error:error.message}]});
                 }
                 break;
         }
     }else{
-        res.status(500).json({errors: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

@@ -15,7 +15,7 @@ const HighSchoolDashboard = ({ res }) => {
 
   const onSearch = ({ searchValue }) => {
     setIsLoading(true)
-    _getFetcher({highschools: craftUrl("highschools", [{name: "name", value: searchValue}])})
+    _getFetcher({highschools: craftUrl(["highschools"], [{name: "name", value: searchValue}])})
       .then(({highschools}) => setHighschools(highschools.data))
       .catch((err) => console.log(err))
       .finally((_) => setIsLoading(false))
@@ -37,7 +37,7 @@ const HighSchoolDashboard = ({ res }) => {
 export async function getServerSideProps(context) {
   const {cookies} = context.req;
   const token = cookies.AccessJWT;
-  const {highschools} = await _getFetcher({highschools: craftUrl("highschools")}, token);
+  const {highschools} = await _getFetcher({highschools: craftUrl(["highschools"])}, token);
   return { props: { res: highschools } }
 }
 

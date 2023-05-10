@@ -9,7 +9,7 @@ import {
 import { cloneDeep } from 'lodash'
 import { useState, useEffect } from 'react'
 import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {craftUrl} from '../../../../helpers/urlHelper'
 import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
@@ -17,7 +17,7 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
   useEffect(() => {
-    _getFetcher({ societies: craftUrl('studentsocieties') }).then(
+    _getFetcher({ societies: craftUrl(['studentsocieties']) }).then(
         ({ societies }) => setSocieties(societies.data)
     )
   }, [])
@@ -50,7 +50,7 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
   }
 
   const args = [['society'], [], ['user_id', 'id'], []]
-  const url = craftUserUrl(user_id, 'societies')
+  const url = craftUrl(["users",user_id, 'societies'])
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
@@ -131,9 +131,7 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
                                         onClick={() => {
                                           arrayHelpers.remove(index)
                                           if (society.hasOwnProperty('id')) {
-                                            console.log(deletedData)
                                             deletedData.push({
-                                              name: society.id,
                                               id: society.id,
                                               data: society,
                                             })

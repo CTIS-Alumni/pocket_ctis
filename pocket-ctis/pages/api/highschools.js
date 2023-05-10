@@ -1,10 +1,27 @@
-import {buildSearchQuery, doMultiQueries, doquery} from "../../helpers/dbHelpers";
+import {buildInsertQueries, buildSearchQuery, doMultiQueries, doquery, insertToTable} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
+import {replaceWithNull} from "../../helpers/submissionHelpers";
 
 const columns = {
     high_school_name: "h.high_school_name",
     city: "ci.city_name",
     country: "co.country_name"
+}
+
+const fields = {
+    basic: ["high_school_name", "city_id"],
+    date: []
+}
+
+const table_name = "highschool";
+
+const validation = (data) => {
+    replaceWithNull(data)
+    if(!data.high_school_name)
+        return "High School Name can't be empty!";
+    if(isNaN(parseInt(data.city_id)))
+        return "City ID must be a number!";
+    return true;
 }
 
 export default async function handler(req, res) {
@@ -41,24 +58,21 @@ export default async function handler(req, res) {
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);
-                if(payload.user === "admin") {
+                if(payload?.user === "admin") {
                     try {
-                        const {high_school_name, city_id} = req.body.highschool;
-                        const query = "INSERT INTO highschool(high_school_name, city_id) values(?,?)";
-                        const data = await doquery({query: query, values: [high_school_name, city_id]});
-                        if (data.hasOwnProperty("error"))
-                            res.status(500).json({error: data.error.message});
-                        else
-                            res.status(200).json({data});
+                        const {highschools} = JSON.parse(req.body);
+                        const queries = buildInsertQueries(highschools, table_name, fields);
+                        const {data, errors} = await insertToTable(queries, table_name, validation);
+                        res.status(200).json({data, errors});
                     } catch (error) {
                         res.status(500).json({error: error.message});
                     }
                 }else{
-                    res.status(500).json({error: "Unauthorized"});
+                    res.redirect("/401", 401);
                 }
                 break;
         }
     } else {
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

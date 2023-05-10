@@ -11,11 +11,11 @@ import {craftUrl} from "../../../helpers/urlHelper";
 
 const getData = async (search) => {
   const {companies, eduInsts, gradProjects, users, highSchools} = await _getFetcher({
-    companies: craftUrl("companies", [{name: "name", value: search}]),
-    eduInsts: craftUrl("educationinstitutes", [{name: "name", value: search}]),
-    gradProjects: craftUrl("graduationprojects", [{name: "name", value: search}]),
-    users: craftUrl("users", [{name: "name", value: search}]),
-    highSchools: craftUrl("highschools", [{name: "name", value: search}]),
+    companies: craftUrl(["companies"], [{name: "name", value: search}]),
+    eduInsts: craftUrl(["educationinstitutes"], [{name: "name", value: search}]),
+    gradProjects: craftUrl(["graduationprojects"], [{name: "name", value: search}]),
+    users: craftUrl(["users"], [{name: "name", value: search}]),
+    highSchools: craftUrl(["highschools"], [{name: "name", value: search}]),
   });
 
   return { companies, eduInsts, gradProjects, users, highSchools }

@@ -42,7 +42,7 @@ export default async function handler(req, res) {
                 }
                 break;
             case "DELETE":
-                if (payload.user === "admin") {
+                if (payload?.user === "admin") {
                     try {
                         const query = "DELETE FROM users WHERE id = ?"
                         const data = await doquery({query: query, values: [user_id]});
@@ -54,11 +54,11 @@ export default async function handler(req, res) {
                         res.status(500).json({error: error.message});
                     }
                 }else{
-                    res.status(500).json({error: "Unauthorized"});
+                    res.redirect("/401", 401);
                 }
                 break;
         }
     } else {
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

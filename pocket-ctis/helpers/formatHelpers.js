@@ -84,3 +84,16 @@ export const getDateString = (date) => {
         return dateString
     } else return null
 }
+
+export const reFormatDate = (data) => {
+    if(data && data.trim() === "")
+        data = null;
+
+    if(data && data.includes("/")){
+        const temp = data.split("/");
+        if(temp[0].length === 2 && temp[1]?.length === 2 && temp[2]?.length === 4)
+            data = temp[2] + "-" + temp[1] + "-" + temp[0]
+    }
+
+    return data;
+}

@@ -4,7 +4,7 @@ import React from 'react'
 import styles from '../../../styles/highSchools.module.scss'
 import { BuildingFill } from 'react-bootstrap-icons'
 import {_getFetcher} from "../../../helpers/fetchHelpers";
-import {craftPathUrl, craftUrl} from "../../../helpers/urlHelper";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const HighSchool = ({ high_school, users }) => {
   return (
@@ -78,8 +78,8 @@ export async function getServerSideProps(context) {
   const {cookies} = context.req;
   const token = cookies.AccessJWT;
   const {high_school, users} = await _getFetcher({
-    high_school: craftPathUrl(["highschools", context.params.id]),
-    users: craftUrl("users", [{name: "highschool_id", value: context.params.id}])
+    high_school: craftUrl(["highschools", context.params.id]),
+    users: craftUrl(["users"], [{name: "highschool_id", value: context.params.id}])
   }, token);
 
   return { props: { high_school, users } }

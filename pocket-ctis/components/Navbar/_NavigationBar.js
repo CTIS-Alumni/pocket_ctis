@@ -1,5 +1,6 @@
 import React from 'react'
 import { Navbar } from 'react-bootstrap'
+import departmentConfig from '../../config/departmentConfig'
 
 import styles from './NavigationBar.module.scss'
 
@@ -11,7 +12,7 @@ const NavigationBar = () => {
         href='/user'
         className={styles.navbar_logo}
         >
-          PocketCTIS
+            {departmentConfig.app_name}
         </Navbar.Brand>
       </Navbar>
     </>

@@ -8,12 +8,12 @@ import {_submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
 
 const requestLogin = async (authCredentials) => {
-  const res = await _submitFetcher("POST", craftUrl("login"), authCredentials);
+  const res = await _submitFetcher("POST", craftUrl(["login"]), authCredentials);
   return res
 }
 
 const requestPasswordReset = async ({username, email}) => {
-  const res = await _submitFetcher("POST",craftUrl("mail", [{name: "forgotPassword", value: 1}]), {username, email})
+  const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "forgotPassword", value: 1}]), {username, email})
   return res;
 
 }
@@ -24,7 +24,8 @@ const Login = () => {
   const router = useRouter()
   const onSubmit = async (values) => {
     const res = await requestLogin(values)
-    if (res.data.length > 0) {
+    console.log(res);
+    if (res.data?.length > 0) {
       router.push({ pathname: '/user' })
       const data = res.data;
       setUserData({
@@ -34,12 +35,14 @@ const Login = () => {
         profile_picture: data[0].profile_picture,
         user_types: data[0].user_types
       })
+    }else{
+      //TODO: SHOW ERROR TOAST;
     }
   }
 
   const sendMail = async (values) => {
     const res = await requestPasswordReset(values);
-    console.log(res);
+    console.log("here",res);
   }
 
   const [loginForm, changeLoginForm] = useState(true);

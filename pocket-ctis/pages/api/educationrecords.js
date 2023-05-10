@@ -1,4 +1,4 @@
-import {addAndOrWhere, doquery} from "../../helpers/dbHelpers";
+import {addAndOrWhere, doquery, doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 
 export default async function handler(req, res){
@@ -32,7 +32,7 @@ export default async function handler(req, res){
                     }
 
                     query += "GROUP BY e.id ORDER BY e.record_date DESC";
-                    const data = await doquery({query: query, values: values});
+                    const data = await doqueryNew({query: query, values: values});
                     if (data.hasOwnProperty("error"))
                         res.status(500).json({error: data.error.message});
                     else
@@ -43,6 +43,6 @@ export default async function handler(req, res){
                 break;
         }
     }else{
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

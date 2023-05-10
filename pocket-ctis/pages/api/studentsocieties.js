@@ -1,4 +1,4 @@
-import {doquery} from "../../helpers/dbHelpers";
+import {doquery, doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 
 export default async function handler(req, res) {
@@ -11,18 +11,15 @@ export default async function handler(req, res) {
                 try {
                     const query = "SELECT * FROM studentsociety order by society_name asc";
 
-                    const data = await doquery({query: query});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
+                    const {data, errors} = await doqueryNew({query: query});
+                    res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({error: error.message});
                 }
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);
-                if(payload.user === "admin"){
+                if(payload?.user === "admin"){
                     try {
                         const {society_name, description} = req.body.society;
                         const query = "INSERT INTO studentsociety(society_name, description) values(?, ?)";
@@ -35,12 +32,12 @@ export default async function handler(req, res) {
                         res.status(500).json({error: error.message});
                     }
                 }else{
-                    res.status(500).json({error: "Unauthorized"});
+                    res.redirect("/401", 401);
                 }
                 break;
         }
     } else {
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 
 }

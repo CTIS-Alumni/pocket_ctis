@@ -1,10 +1,12 @@
 import {
     addAndOrWhere,
     buildInsertQueries,
-    buildSelectQueries, buildUpdateQueries, doMultiDeleteQueries,
-    doquery, insertToTable, updateTable,
+    buildSelectQueries, buildUpdateQueries, createUsersWithCSV, doMultiDeleteQueries,
+    doquery, insertToTable, insertToUserRelatedTable, updateTable,
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
+import limitPerUser from "../../config/moduleConfig";
+import {replaceWithNull} from "../../helpers/submissionHelpers";
 
 const table_name = "users";
 
@@ -17,21 +19,57 @@ const field_conditions = {
     }
 }
 
-const fields = {
+
+/*const fields = {
     basic: ["first_name", "nee", "last_name", "contact_email", "is_active", "is_retired", "gender", "bilkent_id"],
     date: []
-};
+};*/
 
 const validation = (data) => {
     const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (data.gender !== 1 && data.gender !== 0)
-        return false;
-    if (data.is_active !== 1 && data.is_active !== 0)
-        return false;
-    if (data.first_name.trim() == "" || data.last_name.trim() == "")
-        return false;
+
+    replaceWithNull(data);
+    const currentDate = new Date();
+    const startDate = data.start_date ? new Date(data.start_date) : null;
+    const endDate = data.end_date ? new Date(data.end_date) : null;
+
+    if (!data.bilkent_id)
+        return "Bilkent ID can't be empty!";
+    if (!data.first_name || !data.last_name)
+        return "First Name and Last Name can't be empty!";
+    if (parseInt(data.gender) !== 1 && parseInt(data.gender) !== 0)
+        return "Invalid value for gender!";
+    if (data.hasOwnProperty("is_active") && data.is_active !== 1 && data.is_active !== 0)
+        return "Invalid value for activity status!";
     if (!email_regex.test(data.contact_email))
-        return false;
+        return "Invalid Contact Email!";
+
+    if(!data.types?.length)
+        return "User must have account type!";
+
+    for (const type of data.types) {
+        if (isNaN(parseInt(type)))
+            return "User types must be a valid integer!";
+    }
+
+    if(!data.edu_inst_id && (data.degree_type_id || data.name_of_program || data.start_date || data.end_date || data.is_current))
+        return "Missing fields in education record!"
+    if(data.edu_inst_id && isNaN(parseInt(data.edu_inst_id)))
+        return "Education Institute ID must be a valid number!";
+    if(data.edu_inst_id && !data.degree_type_id)
+        return "Degree Type ID can't be empty!";
+    if(data.edu_inst_id && !data.name_of_program)
+        return "Name of Program can't be empty!";
+    if(data.edu_inst_id && !startDate)
+        return "Please enter a Start Date!";
+    if (endDate && startDate > endDate)
+        return "Start date can't be after end date!";
+    if((endDate && endDate > currentDate) || (startDate && startDate > currentDate))
+        return "Please do not select future dates!";
+    if (data.edu_inst_id &&  parseInt(data.is_current) !== 1 && parseInt(data.is_current) !== 0)
+        return "Invalid value for current status!";
+
+
     return true;
 }
 
@@ -105,20 +143,24 @@ export default async function handler(req, res) {
                 }
                 break;
             case "POST":
-                if (payload.user === "admin") {
+                if (payload?.user === "admin") {
                     try {
-                        const users = JSON.parse(req.body);
+                        const {users} = JSON.parse(req.body);
+                        const {data, errors} = await createUsersWithCSV(users, validation);
+                        res.status(200).json({data, errors});
+
+                        /*const users = JSON.parse(req.body);
                         const queries = buildInsertQueries(users, table_name);
                         const select_queries = buildSelectQueries(users, table_name, field_conditions);
-                        const {data, errors} = await insertToTable(queries, table_name, validation, select_queries)
-                        res.status(200).json({data, errors});
+                        const {data, errors} = await insertToUserRelatedTable(queries, table_name, validation, select_queries)
+                        res.status(200).json({data, errors});*/
                     } catch (error) {
                         res.status(500).json({error: error.message});
                     }
                 } else res.status(500).json({error: "Unauthorized!"});
                 break;
             case "PUT":
-                if (payload.user === "admin") {
+                if (payload?.user === "admin") {
                     try{
                         const users = JSON.parse(req.body);
                         const queries = buildUpdateQueries(users, table_name, fields);
@@ -131,7 +173,7 @@ export default async function handler(req, res) {
                 } else res.status(500).json({error: "Unauthorized!"});
                 break;
             case "DELETE":
-                if(payload.user === "admin"){
+                if(payload?.user === "admin"){
                     try{
                         const users = JSON.parse(req.body);
                         const {data, errors} = await doMultiDeleteQueries(users, table_name); //TODO: learn what to do after users are deleted
@@ -142,6 +184,6 @@ export default async function handler(req, res) {
                 }
         }
     } else {
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }
