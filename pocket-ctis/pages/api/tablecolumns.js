@@ -6,7 +6,8 @@ export default async function handler(req, res) {
         switch (method) {
             case "GET":
                 try {
-                    const query = "SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.columns WHERE table_schema = DATABASE() ORDER BY table_name, ordinal_position";
+                    const query = "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM information_schema.columns WHERE table_schema = DATABASE() ORDER BY table_name, ordinal_position";
+                    // const query = "SELECT TABLE_NAME, COLUMN_NAME FROM information_schema.columns WHERE table_schema = DATABASE() ORDER BY table_name, ordinal_position";
                     const data = await doquery({query: query, values: []});
                     res.status(200).json({data});
 
