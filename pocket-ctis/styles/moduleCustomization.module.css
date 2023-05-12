@@ -1,0 +1,21 @@
+.collapsible{
+    /* border-bottom: 1px solid #eee; */
+    margin: 10px 0 0 0;
+    position: absolute;
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.26s ease;
+}
+
+.active{
+    transform: scaleY(1);
+    position: relative;
+}
+
+.collapsibleHeading{
+    cursor: pointer;
+}
+
+.break{
+    margin: 5px 0px;
+}

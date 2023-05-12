@@ -125,7 +125,6 @@ const AdminUserView = ({ user }) => {
       res: craftUserUrl(user.userInfo.data.basic_info[0].id, 'profile'),
     })
       .then(({ res }) => setUserData(res))
-      // .then(({ res }) => console.log(res))
       .finally(() => {
         setIsLoading(false)
       })
@@ -149,6 +148,17 @@ const AdminUserView = ({ user }) => {
     console.log(profileImage)
 
     //continue file upload here
+  }
+
+  const getCurrentWorksString = (works) => {
+    if (works.length == 1) {
+      return 'Currently working at ' + works[0].company_name
+    } else {
+      return (
+        'Currently working at ' +
+        works.map((work) => work.company_name).join(' and ')
+      )
+    }
   }
 
   return (
@@ -187,18 +197,39 @@ const AdminUserView = ({ user }) => {
                   <Pencil />
                 </div>
               </div>
-              <div>
+              <div
+                className='d-flex flex-column justify-content-between py-3'
+                style={{ height: '100%' }}
+              >
                 <div>
-                  {basic_info[0].first_name} {basic_info[0].nee}{' '}
-                  {basic_info[0].last_name}
+                  <div>
+                    {basic_info[0].first_name} {basic_info[0].nee}{' '}
+                    {basic_info[0].last_name}
+                  </div>
+                  <div>{basic_info[0].gender == 1 ? 'Female' : 'Male'}</div>
                 </div>
-                <div>{basic_info[0].gender == 1 ? 'Female' : 'Male'}</div>
+                {current_works && (
+                  <div>{getCurrentWorksString(current_works)}</div>
+                )}
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              {basic_info[0].user_types.split(',').map((type) => (
-                <Badge className='ms-2'>{type.toUpperCase()}</Badge>
-              ))}
+            <div className='d-flex flex-column justify-content-center align-items-end'>
+              {basic_info[0].is_retired == 1 && (
+                <div
+                  style={{
+                    color: '#aaa',
+                    fontStyle: 'italic',
+                    marginBottom: 5,
+                  }}
+                >
+                  Retired
+                </div>
+              )}
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                {basic_info[0].user_types.split(',').map((type) => (
+                  <Badge className='ms-2'>{type.toUpperCase()}</Badge>
+                ))}
+              </div>
             </div>
           </div>
           {wanted_sectors.length > 0 && (
@@ -271,17 +302,19 @@ const AdminUserView = ({ user }) => {
             padding: 20,
             flexGrow: '2',
             width: '45%',
-            height: '400px',
-            overflowY: 'scroll',
           }}
         >
           <Tabs defaultActiveKey='work' className='mb-3'>
-            <Tab eventKey='work' title='Work'>
-              {work_records.length == 0 ? (
+            <Tab
+              eventKey='work'
+              title='Work'
+              style={{ height: '300px', overflowY: 'scroll' }}
+            >
+              {work_records?.length == 0 ? (
                 <div>No data available</div>
               ) : (
                 <>
-                  {work_records.map((work, i) => {
+                  {work_records?.map((work, i) => {
                     const workPeriod = getTimePeriod(
                       work.start_date,
                       work.end_date,
@@ -321,7 +354,11 @@ const AdminUserView = ({ user }) => {
                 </>
               )}
             </Tab>
-            <Tab eventKey='internship' title='Internship'>
+            <Tab
+              eventKey='internship'
+              title='Internship'
+              style={{ height: '300px', overflowY: 'scroll' }}
+            >
               {internships.length == 0 ? (
                 <div>No Data Available</div>
               ) : (
@@ -363,7 +400,11 @@ const AdminUserView = ({ user }) => {
                 </>
               )}
             </Tab>
-            <Tab eventKey='graduationProject' title='Graduation Project'>
+            <Tab
+              eventKey='graduationProject'
+              title='Graduation Project'
+              style={{ height: '300px', overflowY: 'scroll' }}
+            >
               <>
                 {graduation_project.length == 0 ? (
                   <div>No Data Available</div>
@@ -403,12 +444,18 @@ const AdminUserView = ({ user }) => {
             padding: 20,
             flexGrow: '2',
             width: '45%',
-            height: '400px',
-            overflowY: 'scroll',
           }}
         >
-          <Tabs defaultActiveKey='university' className='mb-3'>
-            <Tab eventKey='university' title='University'>
+          <Tabs defaultActiveKey='education' className='mb-3'>
+            <Tab
+              eventKey='education'
+              title='Education'
+              style={{
+                height: '300px',
+                overflowY: 'scroll',
+                paddingBottom: 50,
+              }}
+            >
               {edu_records.length == 0 ? (
                 <div>No data availble</div>
               ) : (
@@ -445,8 +492,22 @@ const AdminUserView = ({ user }) => {
                   })}
                 </>
               )}
+              {high_school.length != 0 && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 10,
+                  }}
+                >
+                  High School: {high_school[0].high_school_name}
+                </div>
+              )}
             </Tab>
-            <Tab eventKey='erasmus' title='Erasmus'>
+            <Tab
+              eventKey='erasmus'
+              title='Erasmus'
+              style={{ height: '300px', overflowY: 'scroll' }}
+            >
               {erasmus.length == 0 ? (
                 <div>No data available</div>
               ) : (
@@ -477,15 +538,6 @@ const AdminUserView = ({ user }) => {
                       </div>
                     )
                   })}
-                </>
-              )}
-            </Tab>
-            <Tab eventKey='highSchool' title='High School'>
-              {high_school.length == 0 ? (
-                <div>No data availble</div>
-              ) : (
-                <>
-                  <div>{high_school[0].high_school_name}</div>
                 </>
               )}
             </Tab>
@@ -606,6 +658,7 @@ const AdminUserView = ({ user }) => {
         refreshProfile={refreshProfile}
       />
 
+      {/* profile picture modal */}
       <Modal
         size='md'
         show={profilePictureModal}

@@ -13,10 +13,19 @@ import {
 import styles from './AdminUserFormStyles.module.css'
 
 import { cloneDeep } from 'lodash'
-import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
-import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
-import {toast} from "react-toastify";
+import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
+import {
+  _getFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import {
+  convertToIso,
+  handleResponse,
+  replaceWithNull,
+  splitFields,
+} from '../../../../helpers/submissionHelpers'
+import { toast } from 'react-toastify'
 
 const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [companies, setCompanies] = useState([])
@@ -53,6 +62,7 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
       datum.work_type = `${datum.work_type_id}-${datum.work_type_name}`
       datum.country = `${datum.country_id}-${datum.country_name}`
       datum.city = `${datum.city_id}-${datum.city_name}`
+      datum.hiring_method = !datum.hiring_method ? '' : datum.hiring_method
 
       return datum
     })
@@ -65,13 +75,13 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
       val.is_current = val.is_current ? 1 : 0
       if (val.is_current && val.end_date) val.end_date = null
       val.start_date =
-          val.start_date != null ? convertToIso(val.start_date) : null
+        val.start_date != null ? convertToIso(val.start_date) : null
       val.end_date = val.end_date != null ? convertToIso(val.end_date) : null
       val.department = val.department ? val.department.trim() : null
       val.position = val.position ? val.position.trim() : null
       val.work_description = val.work_description
-          ? val.work_description.trim()
-          : null
+        ? val.work_description.trim()
+        : null
       replaceWithNull(val)
       splitFields(val, ['work_type', 'company', 'city', 'country'])
       return val
@@ -88,27 +98,26 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
   const url = craftUserUrl(user_id, 'workrecords')
 
   const onSubmit = async (values) => {
-
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
     const send_to_req = { work_records: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
     const requestObj = createReqObject(
-        send_to_req.work_records,
-        newData.work_records,
-        deletedData
+      send_to_req.work_records,
+      newData.work_records,
+      deletedData
     )
 
     const responseObj = await submitChanges(url, requestObj)
 
     const new_data = handleResponse(
-        send_to_req.work_records,
-        requestObj,
-        responseObj,
-        values,
-        'work_records',
-        args,
-        transformDataForSubmission
+      send_to_req.work_records,
+      requestObj,
+      responseObj,
+      values,
+      'work_records',
+      args,
+      transformDataForSubmission
     )
     applyNewData(new_data)
     console.log('req', requestObj, 'res', responseObj)
@@ -125,11 +134,15 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
       errors.forEach((errorInfo) => {
         toast.error(errorInfo.error)
       })
-    } else if(responseObj.POST.data || responseObj.PUT.data || responseObj.DELETE.data){
+    } else if (
+      responseObj.POST.data ||
+      responseObj.PUT.data ||
+      responseObj.DELETE.data
+    ) {
       toast.success('Data successfully saved')
     }
 
-    deletedData = [];
+    deletedData = []
 
     setIsUpdated(true)
   }
@@ -378,6 +391,41 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             ))}
                                           </Field>
                                         </div>
+                                        <div
+                                          className={styles.inputContainer}
+                                          style={{ width: '49%' }}
+                                        >
+                                          <label className={styles.inputLabel}>
+                                            Hiring Method
+                                          </label>
+                                          <Field
+                                            as='select'
+                                            className={styles.inputField}
+                                            name={`work_records[${index}]hiring_method`}
+                                            id={`work_records[${index}]hiring_method`}
+                                          >
+                                            <option value='' disabled selected>
+                                              Select Hiring Method
+                                            </option>
+                                            <option value='Recommendation'>
+                                              Recommendation
+                                            </option>
+                                            <option value='LinkedIn'>
+                                              LinkedIn
+                                            </option>
+                                            <option value='Contacted By Employer'>
+                                              Contacted By Employer
+                                            </option>
+                                            <option value='Applied for a Position'>
+                                              Applied for a Position
+                                            </option>
+                                            <option value='Promoted through Internship/Hiring program'>
+                                              Promoted through Internship/Hiring
+                                              program
+                                            </option>
+                                            <option value='Other'>Other</option>
+                                          </Field>
+                                        </div>
                                       </div>
                                       <div
                                         style={{
@@ -497,17 +545,19 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                           <button
                             className={styles.bigAddBtn}
                             type='button'
-                            onClick={() => arrayHelpers.push({
-                              company: '',
-                              work_type: '',
-                              city: '',
-                              country: '',
-                              start_date: null,
-                              end_date: null,
-                              department: '',
-                              position: '',
-                              work_description: '',
-                            })}
+                            onClick={() =>
+                              arrayHelpers.push({
+                                company: '',
+                                work_type: '',
+                                city: '',
+                                country: '',
+                                start_date: null,
+                                end_date: null,
+                                department: '',
+                                position: '',
+                                work_description: '',
+                              })
+                            }
                           >
                             Add a Work Record
                           </button>
