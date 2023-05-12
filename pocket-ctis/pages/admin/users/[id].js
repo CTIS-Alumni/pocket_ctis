@@ -1,8 +1,7 @@
-import React from 'react'
 import { _getFetcher } from '../../../helpers/fetchHelpers'
 import { craftUserUrl } from '../../../helpers/urlHelper'
 import AdminPageContainer from '../../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
-import { Badge, Card, Container, Spinner, Tab, Tabs } from 'react-bootstrap'
+import { Badge, Card, Container, Modal, Tab, Tabs } from 'react-bootstrap'
 import {
   EnvelopeFill,
   Facebook,
@@ -10,8 +9,10 @@ import {
   Github,
   Link45deg,
   Linkedin,
+  Pencil,
   TelephoneFill,
   Twitter,
+  XLg,
   Youtube,
 } from 'react-bootstrap-icons'
 import { ToastContainer, toast } from 'react-toastify'
@@ -23,14 +24,37 @@ import {
   getTimePeriod,
 } from '../../../helpers/formatHelpers'
 import CustomBadge from '../../../components/ProfilePageComponents/CustomBadge/CustomBadge'
-import ProfileEditModal from '../../../components/Modals/ProfileEditModal/ProfileEditModal'
 import { useState, useEffect } from 'react'
 import AdminUserEditModal from '../../../components/AdminPanelComponents/AdminUserEditModal/AdminUserEditModal'
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
+import styles from '../../../styles/adminUserView.module.css'
+import { useFormik } from 'formik'
 
 const AdminUserView = ({ user }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [userData, setUserData] = useState(user.userInfo)
+
+  const [profilePictureModal, setProfilePictureModal] = useState(false)
+  const [profileImage, setProfileImage] = useState()
+  const [preview, setPreview] = useState()
+  const [fileInputResetKey, setfileInputResetKey] = useState(
+    Math.random().toString(36)
+  )
+
+  useEffect(() => {
+    if (!profileImage) {
+      setPreview(undefined)
+      setfileInputResetKey(Math.random().toString(36))
+      return
+    }
+
+    const objectUrl = URL.createObjectURL(profileImage)
+    setPreview(objectUrl)
+
+    return () => {
+      URL.revokeObjectURL(objectUrl)
+    }
+  }, [profileImage])
 
   if (userData.hasOwnProperty('error')) {
     toast.error('Failed to load profile: ' + userData.error)
@@ -116,6 +140,17 @@ const AdminUserView = ({ user }) => {
     Twitter: <Twitter size={18} fill='#00acee' className='me-3' />,
   }
 
+  const uploadFile = () => {
+    if (!profileImage) {
+      toast.error('Please select an image to upload', {
+        containerId: 'modalContainer',
+      })
+    }
+    console.log(profileImage)
+
+    //continue file upload here
+  }
+
   return (
     <AdminPageContainer>
       <div
@@ -133,15 +168,25 @@ const AdminUserView = ({ user }) => {
             className='mb-3'
           >
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-              <img
-                src={getProfilePicturePath(
-                  profile_picture[0].visibility,
-                  profile_picture[0].profile_picture
-                )}
-                width={100}
-                height={100}
-                style={{ objectFit: 'cover', borderRadius: '5px' }}
-              />
+              <div className={styles.imageContainer}>
+                <img
+                  className={styles.profileImage}
+                  src={getProfilePicturePath(
+                    profile_picture[0].visibility,
+                    profile_picture[0].profile_picture
+                  )}
+                  width={100}
+                  height={100}
+                />
+                <div
+                  className={styles.imageEdit}
+                  onClick={() => {
+                    setProfilePictureModal(true)
+                  }}
+                >
+                  <Pencil />
+                </div>
+              </div>
               <div>
                 <div>
                   {basic_info[0].first_name} {basic_info[0].nee}{' '}
@@ -560,16 +605,81 @@ const AdminUserView = ({ user }) => {
         user={userData.data}
         refreshProfile={refreshProfile}
       />
-      <ToastContainer
-        position='top-right'
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        draggable
-        pauseOnHover
-        theme='light'
-      />
+
+      <Modal
+        size='md'
+        show={profilePictureModal}
+        onHide={() => {
+          setProfilePictureModal(false)
+          setProfileImage(null)
+        }}
+        backdrop='static'
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Profile Picture</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className='d-flex justify-content-center'>
+            {!preview ? (
+              <img
+                className={styles.profileImage}
+                src={getProfilePicturePath(
+                  profile_picture[0].visibility,
+                  profile_picture[0].profile_picture
+                )}
+                width={100}
+                height={100}
+              />
+            ) : (
+              <div className={styles.previewContainer}>
+                <div
+                  className={styles.previewRemover}
+                  onClick={() => setProfileImage()}
+                >
+                  <XLg />
+                </div>
+                <img
+                  className={styles.profileImage}
+                  src={preview}
+                  width={100}
+                  height={100}
+                />
+              </div>
+            )}
+          </div>
+          <div className='mt-4'>
+            <div>
+              <input
+                type='file'
+                accept='image/png, image/gif, image/jpeg'
+                key={fileInputResetKey || ''}
+                onChange={(event) => {
+                  if (!event.target.files || event.target.files.length === 0) {
+                    setProfileImage(null)
+                  } else {
+                    setProfileImage(event.target.files[0])
+                  }
+                }}
+              />
+            </div>
+            <button className={styles.button} onClick={uploadFile}>
+              Confirm
+            </button>
+          </div>
+          <ToastContainer
+            position='top-right'
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            draggable
+            pauseOnHover
+            theme='light'
+            containerId='modalContainer'
+          />
+        </Modal.Body>
+      </Modal>
     </AdminPageContainer>
   )
 }
