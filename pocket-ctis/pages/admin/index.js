@@ -1,20 +1,7 @@
-import NavigationBar from '../../components/navbar/NavigationBar'
-import AdminSidebar from '../../components/AdminPanelComponents/AdminSidebar/AdminSidebar'
+import AdminPageContainer from '../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
 
 const AdminRoute = () => {
-  return (
-    <div
-      style={{
-        width: '100%',
-        height: '100vh',
-        display: 'flex',
-        flexFlow: 'column',
-      }}
-    >
-      <NavigationBar />
-      <AdminSidebar />
-    </div>
-  )
+  return <AdminPageContainer />
 }
 
 export default AdminRoute

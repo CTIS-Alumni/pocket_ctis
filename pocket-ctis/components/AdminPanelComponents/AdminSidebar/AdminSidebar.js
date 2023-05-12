@@ -1,7 +1,15 @@
 import { Container } from 'react-bootstrap'
 import styles from './AdminSidebar.module.scss'
 import Link from 'next/link'
-import { DatabaseFillAdd, PeopleFill } from 'react-bootstrap-icons'
+import {
+  Boxes,
+  DatabaseFillAdd,
+  PeopleFill,
+  Search,
+} from 'react-bootstrap-icons'
+import { useContext, useState, useEffect } from 'react'
+import { User_data } from '../../../context/userContext'
+import { getProfilePicturePath } from '../../../helpers/formatHelpers'
 
 const Button = ({ children, href, icon }) => {
   return (
@@ -13,15 +21,28 @@ const Button = ({ children, href, icon }) => {
 }
 
 const AdminSidebar = () => {
+  const { userData } = useContext(User_data)
+
   return (
     <div className={styles.sidebar}>
-      <img src='/test.jpeg' className={styles.sidebarImg} />
-      <div className={styles.userTitle}>Admin User</div>
+      <img
+        src={getProfilePicturePath(1, userData?.profile_picture)}
+        className={styles.sidebarImg}
+      />
+      <div className={styles.userTitle}>
+        {userData?.first_name} {userData?.last_name}
+      </div>
       <Button href='/admin/users' icon={<PeopleFill />}>
         Users
       </Button>
       <Button href='/admin/dataInsertion' icon={<DatabaseFillAdd />}>
         Data Insertion
+      </Button>
+      <Button href='/admin/reportGeneration' icon={<Search />}>
+        Report Generation
+      </Button>
+      <Button href='/admin/moduleCustomization' icon={<Boxes />}>
+        Module Customization
       </Button>
     </div>
   )
