@@ -111,7 +111,7 @@ export default async function handler(req, res) {
                     temp += "ORDER BY s.sector_name ASC";
                     queries.push({name: "wanted_sectors", query: temp, values: [user_id]});
 
-                    temp = "SELECT w.id, w.company_id, c.company_name, wt.work_type_name, w.work_type_id, w.department, w.position, w.work_description, w.city_id, ci.city_name, w.country_id, co.country_name, w.start_date, w.end_date, w.visibility, w.is_current " +
+                    temp = "SELECT w.id, w.company_id, c.company_name, wt.work_type_name, w.hiring_method, w.work_type_id, w.department, w.position, w.work_description, w.city_id, ci.city_name, w.country_id, co.country_name, w.start_date, w.end_date, w.visibility, w.is_current " +
                         "FROM workrecord w LEFT OUTER JOIN company c ON (w.company_id = c.id) " +
                         "JOIN worktype wt ON (w.work_type_id = wt.id) " +
                         "LEFT OUTER JOIN city ci ON (w.city_id = ci.id) " +
@@ -123,7 +123,7 @@ export default async function handler(req, res) {
                     queries.push({name: "work_records", query: temp, values: [user_id]});
 
                     temp = "SELECT w.company_id, c.company_name FROM workrecord w LEFT OUTER JOIN company c ON (w.company_id = c.id) " +
-                        "WHERE w.user_id = ? AND w.work_type != 3 "
+                        "WHERE w.user_id = ? AND w.work_type_id != 3 "
                     if(payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND w.visibility = 1 ";
                     temp += "LIMIT 2"
