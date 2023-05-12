@@ -2,6 +2,9 @@ import NavigationBar from '../../navbar/NavigationBar'
 import AdminNavbar from '../AdminNavbar/AdminNavbar'
 import AdminSidebar from '../AdminSidebar/AdminSidebar'
 import { Container } from 'react-bootstrap'
+import {verify} from "../../../helpers/jwtHelper";
+import {_getFetcher} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const AdminPageContainer = ({ children }) => {
   return (
@@ -28,5 +31,13 @@ const AdminPageContainer = ({ children }) => {
     </div>
   )
 }
+
+export async function getServerSideProps(context) {
+    const {cookie} = context.req.headers;
+
+
+    return { props: { user: userInfo } }
+}
+
 
 export default AdminPageContainer

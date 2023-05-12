@@ -19,6 +19,18 @@ export const verify = async (token, secret) => {
 
 }
 
+export const deleteCookie = (name) => {
+    const expired_cookie = serialize(name, null, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== "development",
+        sameSite: "strict",
+        maxAge: -1,
+        path: "/"
+    });
+
+    return expired_cookie;
+}
+
 export const refreshToken = async (refresh_token) => {
     try{
         const {payload} = await verify(refresh_token, process.env.REFRESH_SECRET);

@@ -91,12 +91,11 @@ const EducationInstitute = ({ edu_inst, users }) => {
 }
 
 export async function getServerSideProps(context) {
-  const {cookies} = context.req;
-  const token = cookies.AccessJWT;
+  const {cookie} = context.req.headers
   const {edu_inst, users} = await _getFetcher({
     edu_inst: craftUrl(["educationinstitutes", context.params.id]),
     users: craftUrl(["educationrecords"], [{name: "edu_inst_id", value: context.params.id}])
-  }, token);
+  }, cookie);
 
   return { props: { edu_inst, users } }
 }

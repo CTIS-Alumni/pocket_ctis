@@ -7,11 +7,11 @@ const fs = require('fs');
 import departmentConfig from '../config/departmentConfig';
 
 
-export const sendPasswordResetMail = async (user) => {
+export const sendPasswordResetMail = async (user, type) => {
     const transport = nodemailer.createTransport(mailConfig);
     try {
         const reset_pass_token = await sign({
-            user_id: user.id, type: "forgotPassword"
+            user_id: user.id, type: type
         }, process.env.MAIL_SECRET, 60 * 10);
 
         const template = compile(fs.readFileSync('public/views/forgotPassword.hbs', 'utf-8'));
@@ -25,9 +25,12 @@ export const sendPasswordResetMail = async (user) => {
         const options = {
             from: mailConfig.auth.user,
             to: user.contact_email,
-            subject: "PocketCTIS Password Reset",
+            subject: `${departmentConfig.app_name} Password Reset Request`,
             html: html
         }
+
+        if(type === "forgotAdminPassword")
+            options.subject = `${departmentConfig.app_name} Admin Password Reset Request`;
 
         await transport.sendMail(options);
         transport.close();
@@ -37,6 +40,8 @@ export const sendPasswordResetMail = async (user) => {
         return err;
     }
 }
+
+
 
 export const sendProfileUpdateEmail = async (user, type) => {
     const transport = nodemailer.createTransport({
@@ -97,7 +102,7 @@ export const sendActivationMail = async (user) => {
         const options = {
             from: mailConfig.auth.user,
             to: user.contact_email,
-            subject: `${departmentConfig.app_name} Profile Update`,
+            subject: `${departmentConfig.app_name} Account Activation`,
             html: html
         }
 

@@ -84,12 +84,11 @@ const Company = ({ company, users }) => {
 }
 
 export async function getServerSideProps(context) {
-    const {cookies} = context.req;
-    const token = cookies.AccessJWT;
+    const {cookie} = context.req.headers
     const {company, users} = await _getFetcher({
         company: craftUrl(["companies", context.params.id]),
         users: craftUrl(["workrecords"], [{name: "company_id", value: context.params.id}])
-    }, token);
+    }, cookie);
 
     return {props: {company, users}}
 }

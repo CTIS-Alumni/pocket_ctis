@@ -23,7 +23,7 @@ const NotFound = () => {
                         className='d-flex justify-content-between align-items-start'
                         style={{color: '#f5a425'}}
                     >
-                        Click here to return to main page.
+                        <h1 style={{color: '#ffffff'}}>Click here to return to main page</h1>
                     </Link>
                 </div>
             </Container>

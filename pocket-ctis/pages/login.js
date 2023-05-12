@@ -6,6 +6,7 @@ import { User_data } from '../context/userContext'
 import { useContext,useState } from 'react'
 import {_submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
+import departmentConfig from "../config/departmentConfig";
 
 const requestLogin = async (authCredentials) => {
   const res = await _submitFetcher("POST", craftUrl(["login"]), authCredentials);
@@ -18,29 +19,37 @@ const requestPasswordReset = async ({username, email}) => {
 
 }
 
+function checkValues(username, password) {
+  if(username.trim() === "" || password.trim() === "")
+    return {errors: [{error: "Please fill all fields"}]};
+  return true;
+}
+
 const Login = () => {
   const { userData, setUserData } = useContext(User_data)
 
   const router = useRouter()
   const onSubmit = async (values) => {
+    const is_valid = checkValues(values.username, values.password);
+    if(is_valid.errors) {
+      console.log(is_valid);
+      return false; //TODO: TOAST
+    }
     const res = await requestLogin(values)
     console.log(res);
     if (res.data?.length > 0) {
-      router.push({ pathname: '/user' })
-      const data = res.data;
-      setUserData({
-        id: data[0].id,
-        first_name: data[0].first_name,
-        last_name: data[0].last_name,
-        profile_picture: data[0].profile_picture,
-        user_types: data[0].user_types
-      })
+      router.push('/user' )
     }else{
       //TODO: SHOW ERROR TOAST;
     }
   }
 
   const sendMail = async (values) => {
+    const is_valid = checkValues(values.username, values.email);
+    if(is_valid.errors) {
+      console.log(is_valid);
+      return false; //TODO: TOAST
+    }
     const res = await requestPasswordReset(values);
     console.log("here",res);
   }
@@ -150,12 +159,18 @@ const Login = () => {
             style={{ borderLeft: '1px solid #aaa' }}
             className='d-flex align-items-center'
           >
-            <div>
-              Welcome to PocketCTIS
+            {loginForm && <div>
+              Welcome to {departmentConfig.app_name}
               <br />
               <br />
-              Your everlasting connection to you Alma Mater
-            </div>
+              Your everlasting connection to your Alma Mater
+            </div>}
+            {!loginForm && <div>
+              Please enter your username and email address.
+              <br />
+              <br />
+              An link for resetting your password will be sent to your email shortly.
+            </div>}
           </Col>
         </Row>
       </Container>

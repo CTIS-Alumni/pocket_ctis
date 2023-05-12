@@ -2,9 +2,10 @@ import { Formik, Field, Form } from 'formik'
 import { Col, Container, Row } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import styles from '../styles/login.module.css'
-import {_submitFetcher} from "../helpers/fetchHelpers";
+import {_getFetcher, _submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
 import {verify} from "../helpers/jwtHelper";
+import departmentConfig from "../config/departmentConfig";
 
 
 const activateAccount = async (username, password, token) => {
@@ -28,7 +29,7 @@ const ActivateAccount = ({token}) => {
         if(is_valid === true){
             const res = await activateAccount(values.username, values.password, token);
             if(res.data.changedRows === 1){
-                router.push({pathname: '/login'}); //TODO: show success message
+                router.push( '/login'); //TODO: show success message
             }
         }else{
             console.log(is_valid);
@@ -102,7 +103,7 @@ const ActivateAccount = ({token}) => {
                         className='d-flex align-items-center'
                     >
                         <div>
-                            Welcome to PocketCTIS
+                            Welcome to {departmentConfig.app_name}
                             <br />
                             <br />
                             Please select a username and password to activate your account

@@ -35,9 +35,8 @@ const HighSchoolDashboard = ({ res }) => {
 }
 
 export async function getServerSideProps(context) {
-  const {cookies} = context.req;
-  const token = cookies.AccessJWT;
-  const {highschools} = await _getFetcher({highschools: craftUrl(["highschools"])}, token);
+  const {cookie} = context.req.headers
+  const {highschools} = await _getFetcher({highschools: craftUrl(["highschools"])}, cookie);
   return { props: { res: highschools } }
 }
 

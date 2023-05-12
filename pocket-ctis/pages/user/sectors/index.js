@@ -35,9 +35,8 @@ const SectorsDashboard = ({ res }) => {
 }
 
 export async function getServerSideProps(context) {
-    const {cookies} = context.req;
-    const token = cookies.AccessJWT;
-  const {sectors} = await _getFetcher({sectors: craftUrl(["sectors"])}, token);
+    const {cookie} = context.req.headers
+  const {sectors} = await _getFetcher({sectors: craftUrl(["sectors"])}, cookie);
   return { props: { res: sectors } }
 }
 

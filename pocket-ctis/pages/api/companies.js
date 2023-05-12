@@ -40,8 +40,12 @@ export default async function handler(req, res){
                 let values = [], length_values = [];
 
                 try {
-                    let query = "SELECT c.id, c.company_name, c.sector_id, s.sector_name, c.is_internship " +
-                        "FROM company c JOIN sector s ON (c.sector_id = s.id) ";
+                    let query = "SELECT c.id, c.company_name, c.sector_id, s.sector_name, c.is_internship ";
+
+                        if(req.query.internship){
+                            query += " AVG(i.rating) AS rating ";
+                    }
+                        query += "FROM company c JOIN sector s ON (c.sector_id = s.id) ";
 
                     let length_query = "SELECT COUNT(*) as count FROM company c JOIN sector s ON (c.sector_id = s.id) ";
 
@@ -53,7 +57,9 @@ export default async function handler(req, res){
                     }
 
                     if (req.query.internship) {//for the internships page
+                        query += " LEFT OUTER JOIN internshiprecord i ON (i.company_id = c.id) ";
                         query += addAndOrWhere(query," c.is_internship = ? ");
+                        length_query += " LEFT OUTER JOIN internshiprecord i ON (i.company_id = c.id) ";
                         length_query += addAndOrWhere(length_query, " c.is_internship = ? ");
                         values.push(req.query.internship);
                         length_values.push(req.query.internship);
@@ -65,6 +71,11 @@ export default async function handler(req, res){
                         length_query += addAndOrWhere(length_query, " c.company_name LIKE CONCAT('%', ?, '%') ")
                         values.push(req.query.name);
                         length_values.push(req.query.name);
+                    }
+
+                    if(req.query.internship){
+                        query += " GROUP BY c.id";
+                        length_query += " GROUP BY c.id";
                     }
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));

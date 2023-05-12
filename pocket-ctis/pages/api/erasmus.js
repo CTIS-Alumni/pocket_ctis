@@ -63,7 +63,7 @@ export default async function handler(req, res){
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT e.id, e.user_id, GROUP_CONCAT(act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, " +
+                    let query = "SELECT e.id, e.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, " +
                         "e.edu_inst_id, ei.edu_inst_name, ei.city_id, ci.city_name, ci.country_id, co.country_name, e.semester, e.start_date, e.end_date, e.rating, e.opinion, e.visibility as 'record_visibility' " +
                         "FROM erasmusrecord e JOIN users u on (e.user_id = u.id) " +
                         "JOIN userprofilepicture upp ON (e.user_id = upp.user_id) " +

@@ -2,14 +2,14 @@ import { Formik, Field, Form } from 'formik'
 import { Col, Container, Row } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import styles from '../styles/login.module.css'
-import {_submitFetcher} from "../helpers/fetchHelpers";
+import {_getFetcher, _submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
 import {verify} from "../helpers/jwtHelper";
 import Link from "next/link";
 
 
-const changePassword = async (password, token) => {
-    const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "forgotPassword", value: 1}]), {password, token})
+const changePassword = async (password, confirm, token, type) => {
+    const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: type, value: 1}]), {password, confirm, token})
     return res;
 }
 
@@ -21,7 +21,7 @@ const checkPassword = (pass, cnfpass) => {
     return true;
 }
 
-const ResetPassword = ({token}) => {
+const ResetPassword = ({token, type}) => {
     const router = useRouter()
     const onSubmit = async (values) => {
         const is_valid = checkPassword(values.password, values.confirmPassword);
@@ -29,7 +29,7 @@ const ResetPassword = ({token}) => {
             console.log(is_valid);
             return false; //TODO: TOAST
         }
-        const res = await changePassword(values.password, token)
+        const res = await changePassword(values.password, values.confirmPassword, token, type)
         if (res.errors)  {
             console.log(res)
             return false; //TODO: TOAST
@@ -40,7 +40,8 @@ const ResetPassword = ({token}) => {
 
     return (
         <div
-            style={{ backgroundColor: '#1F272B', height: '100vh' }}
+            style={type === "forgotAdminPassword"? { backgroundColor: '#9a9a9a', height: '100vh' }
+                : { backgroundColor: '#1F272B', height: '100vh' }}
             className='d-flex justify-content-center align-items-center'
         >
             <Container
@@ -68,7 +69,7 @@ const ResetPassword = ({token}) => {
                                         placeholder='password'
                                     />
                                     <label className={styles.input_label} htmlFor='password'>
-                                        Enter Password
+                                        Enter New Password
                                     </label>
                                 </p>
                                 <p className={styles.input_container}>
@@ -98,10 +99,8 @@ const ResetPassword = ({token}) => {
                         className='d-flex align-items-center'
                     >
                         <div>
-                            Welcome to PocketCTIS
+                            Please enter your new {(type === "forgotAdminPassword") ? `Admin`: ''} password.
                             <br />
-                            <br />
-                            Please enter your new password.
                             <br />
                             Your password should be at least 6 characters long.
                         </div>
@@ -114,8 +113,8 @@ const ResetPassword = ({token}) => {
 
 export async function getServerSideProps(context) {
     try{
-        const payload = await verify(context.query.token, process.env.MAIL_SECRET);
-        return { props: {token: context.query.token}};
+        const {payload} = await verify(context.query.token, process.env.MAIL_SECRET);
+        return { props: {token: context.query.token, type: payload.type}};
     }catch(error){
         return {redirect: {permanent: false, destination: "/login"}};
     }

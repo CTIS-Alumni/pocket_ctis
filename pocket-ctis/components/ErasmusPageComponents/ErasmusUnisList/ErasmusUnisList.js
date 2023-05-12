@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { MortarboardFill } from 'react-bootstrap-icons'
 import styles from './ErasmusUnisList.module.scss'
+import ReactStars from "react-stars";
+import React from "react";
 
 const ErasmusUnisList = ({ universities }) => {
   return (

@@ -189,12 +189,9 @@ const Profile = ({ userData, session, errors }) => {
 }
 
 export async function getServerSideProps(context) {
-  const { cookies } = context.req
-  const token = cookies.AccessJWT
+  const {cookie} = context.req.headers
   const { res } = await _getFetcher(
-    { res: craftUrl(["users", context.params.id, 'profile']) },
-    token
-  )
+    { res: craftUrl(["users", context.params.id, 'profile']) }, cookie)
 
   return {
     props: { userData: res.data, session: res.session, errors: res.errors },

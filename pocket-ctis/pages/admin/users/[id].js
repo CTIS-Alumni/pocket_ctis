@@ -532,14 +532,10 @@ const AdminUserView = ({ user }) => {
 export default AdminUserView
 
 export async function getServerSideProps(context) {
-  const { cookies } = context.req
-  const token = cookies.AccessJWT
+  const {cookie} = context.req.headers;
 
-  console.log(craftUrl(["users",context.params.id, 'profile']))
   const userInfo = await _getFetcher(
-    { userInfo: craftUrl(["users", context.params.id, 'profile']) },
-    token
-  )
-  console.log("heres userInfo", userInfo.errors);
+    { userInfo: craftUrl(["users", context.params.id, 'profile']) }, cookie)
+
   return { props: { user: userInfo } }
 }

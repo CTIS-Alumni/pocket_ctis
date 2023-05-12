@@ -37,10 +37,9 @@ const UniversitiesDashboard = ({ educationinstitutes }) => {
 }
 
 export async function getServerSideProps(context) {
-    const {cookies} = context.req;
-    const token = cookies.AccessJWT;
+    const {cookie} = context.req.headers
     const {educationinstitutes} = await _getFetcher({
-        educationinstitutes: craftUrl(["educationinstitutes"])}, token);
+        educationinstitutes: craftUrl(["educationinstitutes"])}, cookie);
   return { props: { educationinstitutes } }
 }
 export default UniversitiesDashboard

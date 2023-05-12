@@ -40,8 +40,7 @@ const CompaniesDashboard = ({ res }) => {
 }
 
 export async function getServerSideProps(context) {
-  const { cookies } = context.req
-  const token = cookies.AccessJWT
+    const {cookie} = context.req.headers
   const { companies } = await _getFetcher(
     {
       companies: craftUrl(['companies'], [
@@ -49,7 +48,7 @@ export async function getServerSideProps(context) {
         { name: 'offset', value: 0 },
       ]),
     },
-    token
+    cookie
   )
   return { props: { res: companies } }
 }

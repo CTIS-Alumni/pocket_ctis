@@ -40,16 +40,19 @@ export default async function handler(req, res) {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SElECT ei.id, ei.edu_inst_name, ci.city_name, co.country_name, ei.is_erasmus " +
-                        "FROM educationinstitute ei LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) " +
+                    let query = "SElECT ei.id, ei.edu_inst_name, ci.city_name, co.country_name, ei.is_erasmus "
+                    if(req.query.erasmus) {
+                        query += "AVG(er.rating) AS rating ";
+                    }
+                       query +=  "FROM educationinstitute ei LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) " +
                         "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
                     let length_query = "SELECT COUNT(*) as count FROM educationinstitute ei LEFT OUTER JOIN city ci ON (ei.city_id = ci.id)" +
                         " LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 
                     //for erasmus page = showing only the universities which is for erasmus
                     if (req.query.erasmus) { //for the erasmus page
-                        query += " WHERE ei.is_erasmus = ? ";
-                        length_query += " WHERE ei.is_erasmus = ? ";
+                        query += "LEFT OUTER JOIN erasmusrecord er ON (er.edu_inst_id = ei.id) WHERE ei.is_erasmus = ? ";
+                        length_query += "LEFT OUTER JOIN erasmusrecord er ON (er.edu_inst_id = ei.id) WHERE ei.is_erasmus = ? ";
                         values.push(req.query.erasmus);
                         length_values.push(req.query.erasmus);
                     }
@@ -59,6 +62,13 @@ export default async function handler(req, res) {
                         values.push(req.query.name);
                         length_values.push(req.query.name);
                     }
+
+                    if(req.query.erasmus){
+                        query += " GROUP BY ei.id";
+                        length_query += " GROUP BY ei.id";
+                    }
+
+                    console.log(query);
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
 

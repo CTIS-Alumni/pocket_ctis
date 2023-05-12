@@ -18,13 +18,12 @@ const UsersRoute = ({work, edu}) => {
 //call API, using getServerSideProps. This will be called before the page is served to the frontend
 //the result will be added to props object, which will be added to the corresponding component.
 export async function getServerSideProps(context) {
-    const {cookies} = context.req;
-    const token = cookies.AccessJWT;
+    const {cookie} = context.req.headers
     const {work, edu} = await _getFetcher(
         {
             work: craftUrl(["workrecords"]),
             edu: craftUrl(["educationrecords"])
-        }, token);
+        }, cookie);
 
     return {props: {work, edu}}
 }
