@@ -1,7 +1,17 @@
 import {_getFetcher, _submitFetcher, _submitFile} from '../../../helpers/fetchHelpers'
 import { craftUrl } from '../../../helpers/urlHelper'
 import AdminPageContainer from '../../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
-import { Badge, Card, Container, Modal, Tab, Tabs } from 'react-bootstrap'
+import {
+  Badge,
+  Card,
+  Container,
+  Modal,
+  Tab,
+  Tabs,
+  Popover,
+  Button,
+  OverlayTrigger,
+} from 'react-bootstrap'
 import {
   EnvelopeFill,
   Facebook,
@@ -164,6 +174,27 @@ const AdminUserView = ({ user }) => {
       return
     }
   }
+
+  const removeProfilePicture = () => {
+    console.log('set to default image')
+    setProfilePictureModal(false)
+  }
+
+  const removeImagePopover = (
+    <Popover title='Remove Profile Picture?'>
+      <div className='p-2'>
+        Are you sure you would like to remove your profile picture?
+        <div className='d-flex justify-content-end'>
+          <Button
+            style={{ fontSize: 'small', padding: '2px 5px' }}
+            onClick={removeProfilePicture}
+          >
+            Confirm
+          </Button>
+        </div>
+      </div>
+    </Popover>
+  )
 
   return (
     <AdminPageContainer>
@@ -679,15 +710,28 @@ const AdminUserView = ({ user }) => {
         <Modal.Body>
           <div className='d-flex justify-content-center'>
             {!preview ? (
-              <img
-                className={styles.profileImage}
-                src={getProfilePicturePath(
-                  profile_picture[0].visibility,
-                  profile_picture[0].profile_picture
-                )}
-                width={100}
-                height={100}
-              />
+              <OverlayTrigger
+                trigger='click'
+                placement='top'
+                overlay={removeImagePopover}
+                rootClose
+              >
+                <div className={styles.previewContainer}>
+                  <div className={styles.previewRemover}>
+                    {/* <Button>Hide All Data</Button> */}
+                    <XLg />
+                  </div>
+                  <img
+                    className={styles.profileImage}
+                    src={getProfilePicturePath(
+                      profile_picture[0].visibility,
+                      profile_picture[0].profile_picture
+                    )}
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              </OverlayTrigger>
             ) : (
               <div className={styles.previewContainer}>
                 <div
