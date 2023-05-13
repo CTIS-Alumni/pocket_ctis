@@ -10,13 +10,13 @@ import { ArrowLeft } from 'react-bootstrap-icons'
 import CreateUserForm from '../../../components/AdminPanelComponents/CreateUserForm/CreateUserForm'
 
 const AdminUsersList = () => {
-  const [activeKey, setActiveKey] = useState('create')
+  const [activeKey, setActiveKey] = useState('display')
   const [users, setUsers] = useState([])
 
   useEffect(() => {
-    _getFetcher({ users: craftUrl('users') }).then((res) =>
-      setUsers(res.users.data)
-    )
+    _getFetcher({ users: craftUrl('users') })
+      .then((res) => setUsers(res.users.data))
+      .catch((err) => console.log(err))
   }, [])
 
   return (
@@ -33,40 +33,45 @@ const AdminUsersList = () => {
                 Create User
               </button>
             </div>
-            <ListGroup variant='flush'>
-              {users.map((user, i) => {
-                return (
-                  <ListGroupItem style={{ width: '100%' }} key={i}>
-                    <Link href={`/admin/users/${user.id}`}>
-                      <div style={{ display: 'flex' }}>
-                        <img
-                          width={80}
-                          height={80}
-                          style={{ objectFit: 'contain', borderRadius: '50%' }}
-                          src={getProfilePicturePath(
-                            user.pic_visibility,
-                            user.profile_picture
-                          )}
-                        />
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            flexFlow: 'column',
-                            paddingLeft: '0.8em',
-                          }}
-                        >
-                          <div>
-                            {user.id} - {user.first_name} {user.last_name}
+            {users.length > 0 && (
+              <ListGroup variant='flush'>
+                {users.map((user, i) => {
+                  return (
+                    <ListGroupItem style={{ width: '100%' }} key={i}>
+                      <Link href={`/admin/users/${user.id}`}>
+                        <div style={{ display: 'flex' }}>
+                          <img
+                            width={80}
+                            height={80}
+                            style={{
+                              objectFit: 'contain',
+                              borderRadius: '50%',
+                            }}
+                            src={getProfilePicturePath(
+                              user.pic_visibility,
+                              user.profile_picture
+                            )}
+                          />
+                          <div
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'center',
+                              flexFlow: 'column',
+                              paddingLeft: '0.8em',
+                            }}
+                          >
+                            <div>
+                              {user.id} - {user.first_name} {user.last_name}
+                            </div>
+                            <Container>{user.user_types}</Container>
                           </div>
-                          <Container>{user.user_types}</Container>
                         </div>
-                      </div>
-                    </Link>
-                  </ListGroupItem>
-                )
-              })}
-            </ListGroup>
+                      </Link>
+                    </ListGroupItem>
+                  )
+                })}
+              </ListGroup>
+            )}
           </Tab>
           <Tab eventKey='create' title='create'>
             <CreateUserForm goBack={() => setActiveKey('display')} />

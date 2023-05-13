@@ -68,53 +68,65 @@ const CreateUserForm = ({ goBack }) => {
   }, [])
 
   const onSubmitHandler = (values) => {
-    // console.log(values)
     const data = clone(values)
-    data.roles = data.roles.map((role) => role.value)
-    data.gender = data.gender.value == 'Male' ? 1 : 0
+    data.user[0].roles = data.user[0].roles.map((role) => role.value)
+    data.user[0].gender = data.user[0].gender.value == 'Male' ? 1 : 0
     console.log(data)
 
     //API here
 
     formik.resetForm({
       values: {
-        roles: null,
-        gender: null,
-        firstName: null,
-        lastName: null,
-        bilkentId: null,
-        emailAddress: null,
+        user: [
+          {
+            roles: null,
+            gender: null,
+            first_name: null,
+            last_name: null,
+            bilkent_id: null,
+            contact_email: null,
+          },
+        ],
       },
     })
+
     setRefreshKey(Math.random().toString(36))
   }
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      roles: null,
-      gender: null,
-      firstName: null,
-      lastName: null,
-      bilkentId: null,
-      emailAddress: null,
+      user: [
+        {
+          roles: null,
+          gender: null,
+          first_name: null,
+          last_name: null,
+          bilkent_id: null,
+          contact_email: null,
+        },
+      ],
     },
     validationSchema: Yup.object({
-      firstName: Yup.string()
-        .max(15, 'Must be 15 characters or less')
-        .required('Required'),
-      lastName: Yup.string()
-        .max(20, 'Must be 20 characters or less')
-        .required('Required'),
-      emailAddress: Yup.string()
-        .email('Invalid email address')
-        .required('Required'),
-      bilkentId: Yup.number()
-        .positive('Invalid BILKENT ID')
-        .integer('Invalid BILKENT ID')
-        .required('Required'),
-      gender: Yup.object().required('Required'),
-      roles: Yup.array().required('Required'),
+      user: Yup.array().of(
+        Yup.object({
+          first_name: Yup.string()
+            .max(15, 'Must be 15 characters or less')
+            .required('Required'),
+          last_name: Yup.string()
+            .max(20, 'Must be 20 characters or less')
+            .required('Required'),
+          contact_email: Yup.string()
+            .email('Invalid email address')
+            .required('Required'),
+          bilkent_id: Yup.number()
+            .positive('Invalid BILKENT ID')
+            .integer('Invalid BILKENT ID')
+            .required('Required'),
+          gender: Yup.object().required('Required'),
+          roles: Yup.array().required('Required'),
+        })
+      ),
     }),
     onSubmit: (values) => {
       onSubmitHandler(values)
@@ -126,10 +138,10 @@ const CreateUserForm = ({ goBack }) => {
       values: {
         roles: null,
         gender: null,
-        firstName: null,
-        lastName: null,
-        bilkentId: null,
-        emailAddress: null,
+        first_name: null,
+        last_name: null,
+        bilkent_id: null,
+        contact_email: null,
       },
     })
     setRefreshKey(Math.random().toString(36))
@@ -151,21 +163,26 @@ const CreateUserForm = ({ goBack }) => {
             <div style={{ display: 'flex', gap: 10 }}>
               <div style={{ width: '50%' }}>
                 <div>
-                  <label htmlFor='firstName' className={styles.inputLabel}>
+                  <label
+                    htmlFor='user[0].first_name'
+                    className={styles.inputLabel}
+                  >
                     First Name
                   </label>
                 </div>
                 <div>
                   <input
-                    value={formik.values.firstName}
+                    value={formik.values.user?.[0].first_name}
                     onChange={formik.handleChange}
                     type='text'
-                    name='firstName'
+                    id='first_name'
+                    name='user[0].first_name'
                     className={styles.inputField}
                   />
-                  {formik.touched.firstName && formik.errors.firstName ? (
+                  {formik.touched.user?.[0].first_name &&
+                  formik.errors.user?.[0].first_name ? (
                     <div className={styles.error}>
-                      {formik.errors.firstName}
+                      {formik.errors.user?.[0].first_name}
                     </div>
                   ) : null}
                 </div>
@@ -173,20 +190,24 @@ const CreateUserForm = ({ goBack }) => {
               {/* ------ */}
               <div style={{ width: '50%' }}>
                 <div>
-                  <label htmlFor='lastName' className={styles.inputLabel}>
+                  <label htmlFor='last_name' className={styles.inputLabel}>
                     Last Name
                   </label>
                 </div>
                 <div>
                   <input
-                    value={formik.values.lastName}
+                    value={formik.values.user?.[0].last_name}
                     onChange={formik.handleChange}
                     type='text'
-                    name='lastName'
+                    id='last_name'
+                    name='user[0].last_name'
                     className={styles.inputField}
                   />
-                  {formik.touched.lastName && formik.errors.lastName ? (
-                    <div className={styles.error}>{formik.errors.lastName}</div>
+                  {formik.touched.user?.[0].last_name &&
+                  formik.errors.user?.[0].last_name ? (
+                    <div className={styles.error}>
+                      {formik.errors.user?.[0].last_name}
+                    </div>
                   ) : null}
                 </div>
               </div>
@@ -195,21 +216,23 @@ const CreateUserForm = ({ goBack }) => {
             <div style={{ display: 'flex', gap: 10 }} className='my-2'>
               <div style={{ width: '50%' }}>
                 <div>
-                  <label htmlFor='bilkentId' className={styles.inputLabel}>
+                  <label htmlFor='bilkent_id' className={styles.inputLabel}>
                     BILKENT ID
                   </label>
                 </div>
                 <div>
                   <input
-                    value={formik.values.bilkentId}
+                    value={formik.values.user?.[0].bilkent_id}
                     onChange={formik.handleChange}
-                    type='text'
-                    name='bilkentId'
+                    type='number'
+                    name='user[0].bilkent_id'
+                    id='bilkent_id'
                     className={styles.inputField}
                   />
-                  {formik.touched.bilkentId && formik.errors.bilkentId ? (
+                  {formik.touched.user?.[0].bilkent_id &&
+                  formik.errors.user?.[0].bilkent_id ? (
                     <div className={styles.error}>
-                      {formik.errors.bilkentId}
+                      {formik.errors.user?.[0].bilkent_id}
                     </div>
                   ) : null}
                 </div>
@@ -223,17 +246,23 @@ const CreateUserForm = ({ goBack }) => {
                 </div>
                 <div>
                   <Select
-                    value={formik.values.gender}
-                    onChange={(val) => formik.setFieldValue('gender', val)}
-                    name='gender'
+                    value={formik.values.user?.[0].gender}
+                    onChange={(val) =>
+                      formik.setFieldValue('user[0].gender', val)
+                    }
+                    id='gender'
+                    name='user[0].gender'
                     styles={customStyles}
                     options={[
                       { value: 'Male', label: 'Male' },
                       { value: 'Female', label: 'Female' },
                     ]}
                   />
-                  {formik.touched.gender && formik.errors.gender ? (
-                    <div className={styles.error}>{formik.errors.gender}</div>
+                  {formik.touched.user?.[0].gender &&
+                  formik.errors.user?.[0].gender ? (
+                    <div className={styles.error}>
+                      {formik.errors.user?.[0].gender}
+                    </div>
                   ) : null}
                 </div>
               </div>
@@ -241,21 +270,23 @@ const CreateUserForm = ({ goBack }) => {
             {/* ------ */}
             <div className='my-2'>
               <div>
-                <label htmlFor='emailAddress' className={styles.inputLabel}>
+                <label htmlFor='contact_email' className={styles.inputLabel}>
                   Email Address
                 </label>
               </div>
               <div>
                 <input
-                  value={formik.values.emailAddress}
+                  value={formik.values.user?.[0].contact_email}
                   onChange={formik.handleChange}
                   type='email'
-                  name='emailAddress'
+                  id='contact_email'
+                  name='user[0].contact_email'
                   className={styles.inputField}
                 />
-                {formik.touched.emailAddress && formik.errors.emailAddress ? (
+                {formik.touched.user?.[0].contact_email &&
+                formik.errors.user?.[0].contact_email ? (
                   <div className={styles.error}>
-                    {formik.errors.emailAddress}
+                    {formik.errors.user?.[0].contact_email}
                   </div>
                 ) : null}
               </div>
@@ -263,16 +294,20 @@ const CreateUserForm = ({ goBack }) => {
             <div>
               <label htmlFor='roles'>Roles</label>
               <Select
-                value={formik.values.roles}
-                onChange={(val) => formik.setFieldValue('roles', val)}
+                value={formik.values.user?.[0].roles}
+                onChange={(val) => formik.setFieldValue('user[0].roles', val)}
                 isMulti
                 closeMenuOnSelect={false}
-                name='roles'
+                id='roles'
+                name='user[0].roles'
                 styles={customStyles}
                 options={accountTypes}
               />
-              {formik.touched.roles && formik.errors.roles ? (
-                <div className={styles.error}>{formik.errors.roles}</div>
+              {formik.touched.user?.[0].roles &&
+              formik.errors.user?.[0].roles ? (
+                <div className={styles.error}>
+                  {formik.errors.user?.[0].roles}
+                </div>
               ) : null}
             </div>
             {/* ----- */}
@@ -302,16 +337,3 @@ const CreateUserForm = ({ goBack }) => {
 }
 
 export default CreateUserForm
-
-{
-  /* <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-              <Input name='firstName' label='First Name' type='text' />
-              <Input name='lastName' label='Last Name' type='text' />
-            </div>
-            <Input
-              name='emailAddress'
-              label='Email Address'
-              type='email'
-              className={styles.emailAddressInput}
-            /> */
-}
