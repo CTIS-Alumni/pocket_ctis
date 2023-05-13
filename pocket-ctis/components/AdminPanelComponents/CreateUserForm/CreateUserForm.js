@@ -3,13 +3,14 @@ import styles from './CreateUserForm.module.css'
 import { Card } from 'react-bootstrap'
 import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import { _getFetcher } from '../../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../../helpers/fetchHelpers'
 import { ToastContainer, toast } from 'react-toastify'
 import { craftUrl } from '../../../helpers/urlHelper'
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { clone } from 'lodash'
+import {replaceWithNull, splitFields} from "../../../helpers/submissionHelpers";
 
 const customStyles = {
   control: (provided, state) => ({
@@ -47,16 +48,16 @@ const CreateUserForm = ({ goBack }) => {
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   useEffect(() => {
-    _getFetcher({ roles: craftUrl('accounttypes') })
-      .then(({ roles }) => {
-        if (roles?.data) {
-          const data = roles.data.map((role) => ({
+    _getFetcher({ types: craftUrl(['accounttypes']) })
+      .then(({ types }) => {
+        if (types?.data) {
+          const data = types.data.map((role) => ({
             value: `${role.id}-${role.type_name}`,
             label: role.type_name,
           }))
           setAccountTypes(data)
         } else {
-          roles.errors.map((error) => {
+          types.errors.map((error) => {
             toast.error(error)
           })
         }
@@ -67,55 +68,58 @@ const CreateUserForm = ({ goBack }) => {
       })
   }, [])
 
-  const onSubmitHandler = (values) => {
-    // console.log(values)
-    const data = clone(values)
-    data.roles = data.roles.map((role) => role.value)
-    data.gender = data.gender.value == 'Male' ? 1 : 0
-    console.log(data)
+  const onSubmitHandler = async (values) => {
 
-    //API here
+    const user = clone(values)
+    user.types = user.types.map((role) => role.value.split("-")[0]);
+    user.gender = user.gender.value == 'Male' ? 1 : 0
+    replaceWithNull(user);
 
-    formik.resetForm({
+    console.log("heres user", user)
+    const res = await _submitFetcher('POST', craftUrl(['users']), {users: [user]});
+    console.log(res);
+
+    /*formik.resetForm({
       values: {
-        roles: null,
+        types: null,
         gender: null,
-        firstName: null,
-        lastName: null,
-        bilkentId: null,
-        emailAddress: null,
+        first_name: null,
+        last_name: null,
+        bilkent_id: null,
+        contact_email: null,
       },
-    })
+    })*/
     setRefreshKey(Math.random().toString(36))
   }
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      roles: null,
+      types: null,
       gender: null,
-      firstName: null,
-      lastName: null,
-      bilkentId: null,
-      emailAddress: null,
+      first_name: null,
+      last_name: null,
+      bilkent_id: null,
+      contact_email: null,
     },
     validationSchema: Yup.object({
-      firstName: Yup.string()
+      first_name: Yup.string()
         .max(15, 'Must be 15 characters or less')
         .required('Required'),
-      lastName: Yup.string()
+      last_name: Yup.string()
         .max(20, 'Must be 20 characters or less')
         .required('Required'),
-      emailAddress: Yup.string()
+      contact_email: Yup.string()
         .email('Invalid email address')
         .required('Required'),
-      bilkentId: Yup.number()
+      bilkent_id: Yup.number()
         .positive('Invalid BILKENT ID')
         .integer('Invalid BILKENT ID')
         .required('Required'),
       gender: Yup.object().required('Required'),
-      roles: Yup.array().required('Required'),
+      types: Yup.array().required('Required'),
     }),
+
     onSubmit: (values) => {
       onSubmitHandler(values)
     },
@@ -124,17 +128,18 @@ const CreateUserForm = ({ goBack }) => {
   const goBackHandler = () => {
     formik.resetForm({
       values: {
-        roles: null,
+        types: null,
         gender: null,
-        firstName: null,
-        lastName: null,
-        bilkentId: null,
-        emailAddress: null,
+        first_name: null,
+        last_name: null,
+        bilkent_id: null,
+        contact_email: null,
       },
     })
     setRefreshKey(Math.random().toString(36))
     goBack()
   }
+
 
   return (
     <>
@@ -151,21 +156,21 @@ const CreateUserForm = ({ goBack }) => {
             <div style={{ display: 'flex', gap: 10 }}>
               <div style={{ width: '50%' }}>
                 <div>
-                  <label htmlFor='firstName' className={styles.inputLabel}>
+                  <label htmlFor='first_name' className={styles.inputLabel}>
                     First Name
                   </label>
                 </div>
                 <div>
                   <input
-                    value={formik.values.firstName}
+                    value={formik.values.first_name}
                     onChange={formik.handleChange}
                     type='text'
-                    name='firstName'
+                    name='first_name'
                     className={styles.inputField}
                   />
-                  {formik.touched.firstName && formik.errors.firstName ? (
+                  {formik.touched.first_name && formik.errors.first_name ? (
                     <div className={styles.error}>
-                      {formik.errors.firstName}
+                      {formik.errors.first_name}
                     </div>
                   ) : null}
                 </div>
@@ -173,20 +178,20 @@ const CreateUserForm = ({ goBack }) => {
               {/* ------ */}
               <div style={{ width: '50%' }}>
                 <div>
-                  <label htmlFor='lastName' className={styles.inputLabel}>
+                  <label htmlFor='last_name' className={styles.inputLabel}>
                     Last Name
                   </label>
                 </div>
                 <div>
                   <input
-                    value={formik.values.lastName}
+                    value={formik.values.last_name}
                     onChange={formik.handleChange}
                     type='text'
-                    name='lastName'
+                    name='last_name'
                     className={styles.inputField}
                   />
-                  {formik.touched.lastName && formik.errors.lastName ? (
-                    <div className={styles.error}>{formik.errors.lastName}</div>
+                  {formik.touched.last_name && formik.errors.last_name ? (
+                    <div className={styles.error}>{formik.errors.last_name}</div>
                   ) : null}
                 </div>
               </div>
@@ -195,19 +200,19 @@ const CreateUserForm = ({ goBack }) => {
             <div style={{ display: 'flex', gap: 10 }} className='my-2'>
               <div style={{ width: '50%' }}>
                 <div>
-                  <label htmlFor='bilkentId' className={styles.inputLabel}>
+                  <label htmlFor='bilkent_id' className={styles.inputLabel}>
                     BILKENT ID
                   </label>
                 </div>
                 <div>
                   <input
-                    value={formik.values.bilkentId}
+                    value={formik.values.bilkent_id}
                     onChange={formik.handleChange}
                     type='text'
-                    name='bilkentId'
+                    name='bilkent_id'
                     className={styles.inputField}
                   />
-                  {formik.touched.bilkentId && formik.errors.bilkentId ? (
+                  {formik.touched.bilkent_id && formik.errors.bilkent_id ? (
                     <div className={styles.error}>
                       {formik.errors.bilkentId}
                     </div>
@@ -241,38 +246,38 @@ const CreateUserForm = ({ goBack }) => {
             {/* ------ */}
             <div className='my-2'>
               <div>
-                <label htmlFor='emailAddress' className={styles.inputLabel}>
+                <label htmlFor='contact_email' className={styles.inputLabel}>
                   Email Address
                 </label>
               </div>
               <div>
                 <input
-                  value={formik.values.emailAddress}
+                  value={formik.values.contact_email}
                   onChange={formik.handleChange}
                   type='email'
-                  name='emailAddress'
+                  name='contact_email'
                   className={styles.inputField}
                 />
-                {formik.touched.emailAddress && formik.errors.emailAddress ? (
+                {formik.touched.contact_email && formik.errors.contact_email ? (
                   <div className={styles.error}>
-                    {formik.errors.emailAddress}
+                    {formik.errors.contact_email}
                   </div>
                 ) : null}
               </div>
             </div>
             <div>
-              <label htmlFor='roles'>Roles</label>
+              <label htmlFor='types'>Roles</label>
               <Select
-                value={formik.values.roles}
-                onChange={(val) => formik.setFieldValue('roles', val)}
+                value={formik.values.types}
+                onChange={(val) => formik.setFieldValue('types', val)}
                 isMulti
                 closeMenuOnSelect={false}
-                name='roles'
+                name='types'
                 styles={customStyles}
                 options={accountTypes}
               />
-              {formik.touched.roles && formik.errors.roles ? (
-                <div className={styles.error}>{formik.errors.roles}</div>
+              {formik.touched.types && formik.errors.types ? (
+                <div className={styles.error}>{formik.errors.types}</div>
               ) : null}
             </div>
             {/* ----- */}
@@ -305,13 +310,13 @@ export default CreateUserForm
 
 {
   /* <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-              <Input name='firstName' label='First Name' type='text' />
-              <Input name='lastName' label='Last Name' type='text' />
+              <Input name='first_name' label='First Name' type='text' />
+              <Input name='last_name' label='Last Name' type='text' />
             </div>
             <Input
-              name='emailAddress'
+              name='contact_email'
               label='Email Address'
               type='email'
-              className={styles.emailAddressInput}
+              className={styles.contact_emailInput}
             /> */
 }

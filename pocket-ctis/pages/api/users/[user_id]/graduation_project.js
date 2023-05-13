@@ -53,9 +53,7 @@ export default async function handler(req, res){
                     }catch(error){
                         res.status(500).json({errors: {error: error.message}});
                     }
-                }else{
-                    res.redirect("/401", 401);
-                }
+                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
                 break;
             case "PUT":
                 try {
@@ -78,12 +76,8 @@ export default async function handler(req, res){
                     }catch(error){
                         res.status(500).json({errors: [{error:error.message}]});
                     }
-                }else{
-                    res.redirect("/401", 401);
-                }
+                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
                 break;
         }
-    }else{
-        res.redirect("/401", 401);
-    }
+    }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
 }

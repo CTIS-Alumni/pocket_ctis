@@ -97,7 +97,5 @@ export default async function handler(req, res) {
                 }
                 break;
         }
-    }else{
-        res.status(500).json({errors:[{errors: "Unauthorized"}]});
-    }
+    }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
 }

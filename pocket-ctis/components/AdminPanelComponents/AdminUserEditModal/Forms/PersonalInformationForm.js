@@ -146,6 +146,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
   }
 
   const onSubmit = async (values) => {
+    setIsUpdated(true)
     var wanted_sectors = values.wanted_sectors.sectors.map((sector) => {
       const [id, name] = sector.value.split('-')
       let newSector = {
@@ -268,7 +269,6 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       basic_info: []
     }
 
-    setIsUpdated(true)
   }
 
   const {

@@ -26,8 +26,6 @@ function checkValues(username, password) {
 }
 
 const Login = () => {
-  const { userData, setUserData } = useContext(User_data)
-
   const router = useRouter()
   const onSubmit = async (values) => {
     const is_valid = checkValues(values.username, values.password);
@@ -37,7 +35,7 @@ const Login = () => {
     }
     const res = await requestLogin(values)
     console.log(res);
-    if (res.data?.length > 0) {
+    if (res.data && !res.errors) {
       router.push('/user' )
     }else{
       //TODO: SHOW ERROR TOAST;

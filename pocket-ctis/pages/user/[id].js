@@ -21,11 +21,12 @@ import ProfileExamsSection from '../../components/ProfilePageComponents/ProfileE
 import GraduationProjectSection from '../../components/ProfilePageComponents/GraduationProjectSection/GraduationProjectSection'
 import { _getFetcher } from '../../helpers/fetchHelpers'
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner'
-import {craftUrl, craftUserUrl} from "../../helpers/urlHelper";
+import {craftUrl} from "../../helpers/urlHelper";
 
 const Profile = ({ userData, session, errors }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState(userData)
+
 
   const {
     certificates,
@@ -181,7 +182,7 @@ const Profile = ({ userData, session, errors }) => {
         </div>
       </div>
 
-      {session === 'owner' && (
+      {session === "owner" && (
         <ProfileEditModal user={user} refreshProfile={refreshProfile} />
       )}
     </>

@@ -67,6 +67,7 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
   const url = craftUrl(["users",user_id, 'internships'])
 
   const onSubmit = async (values) => {
+    setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
 
@@ -92,7 +93,6 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
     applyNewData(new_data)
     console.log('req,', requestObj, 'res', responseObj)
     deletedData = []
-    setIsUpdated(true)
 
     if(responseObj.POST.data?.length){
       const {data, errors} = await sendMail();

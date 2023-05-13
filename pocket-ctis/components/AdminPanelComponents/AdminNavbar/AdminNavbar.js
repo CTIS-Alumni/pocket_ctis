@@ -17,6 +17,7 @@ const AdminNavbar = () => {
     const {res} = await _getFetcher({res: craftUrl(['logout'], [{name: "adminPanel", value: 1}])})
     console.log(res)
     if(res.data){
+      console.log("got in here?")
       router.push('/user' );
     }else{
       //TODO: SHOW ERROR TOAST

@@ -33,7 +33,7 @@ export const checkUserType = async (session, query) => {
             if (errors  && !data[0].user_types.split(",").includes("admin"))
                 return null;
 
-            return {user: "admin"}
+            return {user: "admin", user_id: session.payload.user_id}
 
         } else if (session.payload.user_id === parseInt(query.user_id))
             return {user: "owner", user_id: session.payload.user_id};

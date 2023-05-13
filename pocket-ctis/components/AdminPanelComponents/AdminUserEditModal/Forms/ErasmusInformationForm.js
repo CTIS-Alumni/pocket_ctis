@@ -67,6 +67,7 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
   const url = craftUrl(["users",user_id, 'erasmus'])
 
   const onSubmit = async (values) => {
+    setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
 
@@ -89,7 +90,6 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
     console.log('req,', requestObj, 'res', responseObj)
     deletedData = []
 
-    setIsUpdated(true)
     //after submission
     if(responseObj.POST.data?.length){
       const {data, errors} = await sendMail();

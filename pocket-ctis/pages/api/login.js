@@ -11,8 +11,8 @@ export default async function (req, res) {
         const payload = await checkUserType(session, req.query);
 
         try {
-            if (payload.user !== "visitor") {
-                throw {message: "Unauhtorized!"}
+            if (session.payload.mode !== "user") {
+                throw {code: 403, message: "Forbidden action!"}
             }
 
             const {username, password} = JSON.parse(req.body);
@@ -21,7 +21,7 @@ export default async function (req, res) {
             const {data: d, errors: err} = await doqueryNew({query: admin_query, values: [payload.user_id]});
 
             if (err || (d && !d.length)) {
-                throw {message: "Unauhtorized!"}
+                throw {code: 401, message: "Unauhtorized!"}
             }
 
             const query = "SELECT hashed FROM usercredential WHERE username = ? AND is_admin_auth = 1 AND  user_id = ? ";
@@ -29,12 +29,12 @@ export default async function (req, res) {
             const user = data;
 
             if (errors || (data && !data.length))
-                throw {message: "Wrong username or password"};
+                throw {code: 401, message: "Wrong username or password"};
 
 
             const result = await compare(password, user[0].hashed)
             if (!result)
-                throw {message: "Wrong username or password"};
+                throw {code: 401, message: "Wrong username or password"};
 
             const access_token = await sign({
                 user_id: payload.user_id,
@@ -66,7 +66,10 @@ export default async function (req, res) {
             res.status(200).json({data: [{message: "Switched to admin mode successfully!"}], errors: errors});
 
         } catch (error) {
-            res.status(500).json({errors: {error: error.message}});
+            let code = 500;
+            if(error.code)
+                code = error.code;
+            res.status(code).json({errors: {error: error.message}});
 
         }
     } else {
@@ -77,7 +80,7 @@ export default async function (req, res) {
             const user = data;
 
             if (errors || (data && !data.length)) {
-                throw {message: "Wrong username or password"};
+                throw {code: 401, message: "Wrong username or password"};
             }
 
             compare(password, user[0].hashed, async function (err, result) {
@@ -113,10 +116,13 @@ export default async function (req, res) {
                 });
 
                 res.setHeader("Set-Cookie", [serialCookie, refreshCookie]);
-                res.status(200).json({data: {message: "Logged in successfully!"}, errors});
+                res.status(200).json({data: {message: "Logged in successfully!"}, errors: errors});
             });
         } catch (error) {
-            res.status(500).json({errors: [{error: error.message}]});
+            let code = 500;
+            if(error.code)
+                code = error.code
+            res.status(code).json({errors: [{error: error.message}]});
         }
     }
 

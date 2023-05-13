@@ -53,9 +53,7 @@ export default async function handler(req, res) {
                     } catch (error) {
                         res.status(500).json({error: error.message});
                     }
-                }else{
-                    res.redirect("/401", 401);
-                }
+                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
                 break;
         }
     } else {

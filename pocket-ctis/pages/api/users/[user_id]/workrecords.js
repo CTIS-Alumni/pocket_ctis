@@ -21,6 +21,7 @@ const fields = {
         "department",
         "position",
         "work_description",
+        "hiring_method",
         "city_id",
         "country_id",
         "visibility",
@@ -92,6 +93,6 @@ export default async function handler(req, res){
                 break;
         }
     }else{
-        es.status(500).json({errors: [{error: "Unauthorized"}]});
+        res.status(403).json({errors: [{error: "Forbidden action!"}]});
     }
 }

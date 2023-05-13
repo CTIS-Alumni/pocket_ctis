@@ -2,8 +2,6 @@ import {doquery, doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth} from "../../helpers/authHelper";
 
 export default async function handler(req, res) {
-    //const session = await checkAuth(req.headers, res);
-    //if (session) {
         const method = req.method;
         switch (method) {
             case "GET":
@@ -16,7 +14,4 @@ export default async function handler(req, res) {
                 }
                 break;
         }
-    //}else{
-   //     res.status({error: "Unauthorized"});
-   // }
 }

@@ -95,6 +95,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
   }
 
   const onSubmit = async (values) => {
+    setIsUpdated(true)
     let newData = cloneDeep(values)
     transformFuncs.phone_numbers(newData)
     transformFuncs.emails(newData)
@@ -138,8 +139,6 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
         })
     )
     console.log('req', requestObj, 'res', responseObj)
-
-    setIsUpdated(true)
     applyNewData(final_data)
     deletedData = { phone_numbers: [], emails: [], socials: [] }
   }

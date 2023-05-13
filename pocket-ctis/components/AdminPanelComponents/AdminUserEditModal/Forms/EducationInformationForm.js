@@ -85,6 +85,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
   const url = craftUrl(["users",user_id, 'educationrecords'])
 
   const onSubmit = async (values) => {
+    setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
 
@@ -107,7 +108,6 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
         transformDataForSubmission
     )
     applyNewData(new_data)
-    setIsUpdated(true)
     console.log('req:', requestObj, 'res', responseObj)
     deletedData = []
 

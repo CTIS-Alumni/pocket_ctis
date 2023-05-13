@@ -13,7 +13,7 @@ export default async function handler(req, res){
                 const {data, errors} = await doqueryNew({query: query,values: [sector_id]});
                 res.status(200).json({data: data[0] || null, errors});
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({errors: [{error: error.message}]});
             }
             break;
         case "PUT":
@@ -26,7 +26,7 @@ export default async function handler(req, res){
                 else
                     res.status(200).json({data});
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({errors: [{error: error.message}]});
             }
             break;
         case "DELETE":
@@ -38,7 +38,7 @@ export default async function handler(req, res){
                 else
                     res.status(200).json({data});
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({errors: [{error: error.message}]});
             }
     }
     }else{

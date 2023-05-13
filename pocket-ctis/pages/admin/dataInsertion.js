@@ -37,46 +37,56 @@ const sendMail = async (data, type) => {
 }
 
 const DataInsertion = () => {
-  const [file, setFile] = useState(null)
+    const [file, setFile] = useState(null)
+    const [rows, setRows] = useState(null)
+    const [columns, setColumns] = useState(null)
 
-    let mail_results = [];
+    let is_submitted = false;
+    let mail_results = {};
 
   const onSubmitHandler = async (values) => {
     console.log('submission', values)
     console.log('file', file)
 
       if(file){
+          is_submitted = false;
           console.log("values.dat", values.dataType);
           Papa.parse(file, {
               header: true,
               encoding: 'utf-8',
               skipEmptyLines: true,
               complete: async function(results){
+                  if(results?.data?.length){
+                      setRows(results.data);
+                      setColumns(Object.keys(results.data[0]))
+                  }
+                  is_submitted = true;
                   mail_results = [];
-                  const res = await _submitFetcher("POST", craftUrl([values.dataType]), {[values.dataType]: results.data})
+                  const res = await _submitFetcher("POST", craftUrl([values.dataType], [{name: "csv", value: 1}]), {[values.dataType]: results.data})
                   console.log(res);
 
-                  const completed_users = [];
+                  //const completed_users = [];
 
                   if(res.data?.length && (values.dataType === "internships" || values.dataType === "erasmus")){
                       //mail_results = await sendMail(res.data);
                       for(const [i, user] of res.data.entries()) {
                           if(!completed_users.includes(user.inserted.user_id)){
                               const results = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id: user.inserted.user_id, type: values.dataType})
-                              mail_results.push({id: user.inserted.id, index: user.index, data: results.data, errors: results.errors});
-                              completed_users.push(user.inserted.user_id);
-                              console.log("heres completed users:", completed_users);
+                              mail_results[user.index]({id: user.inserted.id, index: user.index, data: results.data, errors: results.errors});
+                              //completed_users.push(user.inserted.user_id);
+                              //console.log("heres completed users:", completed_users);
                           }
                       }
 
-                      console.log(mail_results);
+                      console.log("mail_results:", mail_results);
                   }
                   if(res.data?.length && (values.dataType === "users")){
                       for(const [i, user] of res.data.entries()) {
                           console.log("hers user", user);
                               const results = await _submitFetcher("POST",craftUrl(["mail"], [{name: "activateAccount", value: 1}]), {user_id: user.data.id})
-                              mail_results.push({id: user.data.id, index: user.index, data: results.data, errors: results.errors});
+                              mail_results[user.index]({id: user.data.id, index: user.index, data: results.data, errors: results.errors});
                       }
+                      console.log(errors);
                       console.log(mail_results);
                   }
               }
@@ -147,9 +157,39 @@ const DataInsertion = () => {
           }}
         </Formik>
       </Card>
-      <Card border='light' style={{ padding: 20 }}>
+      {rows && <Card border='light' style={{ padding: 20 }}>
         Preview Data
-      </Card>
+          <table>
+              <thead>
+              <tr>
+                  <th>Index</th>
+                  {columns.map((column) => {
+                      return (
+                          <th key={column}>{column}</th>
+                      );
+                  })}
+              </tr>
+              </thead>
+              <tbody>
+              {rows.map((row, index) => {
+                  return (
+                      <tr key={index}>
+                          <td>{Number(index) + 1}</td>
+                          {columns.map((col) => {
+                              return (
+                                  <td key={col}>
+                                      {rows[index][col]}
+                                  </td>
+                              );
+                          })}
+
+                      </tr>
+                  );
+              })}
+              </tbody>
+          </table>
+
+      </Card>}
     </AdminPageContainer>
   )
 }

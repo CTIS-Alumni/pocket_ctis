@@ -2,14 +2,21 @@ import { Formik, Field, Form } from 'formik'
 import { Col, Container, Row } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import styles from '../styles/login.module.css'
-import {_getFetcher, _submitFetcher} from "../helpers/fetchHelpers";
+import {_submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
 import {verify} from "../helpers/jwtHelper";
 import departmentConfig from "../config/departmentConfig";
 
 
 const activateAccount = async (username, password, token) => {
-    const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "activate", value:1}]), {username, password, token})
+    const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "activateAccount", value:1}]), {username, password, token})
+    console.log(res)
+    return res;
+}
+
+const activateAdminAccount = async (username, password, token) => {
+    const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "activateAdminAccount", value:1}]), {username, password, token})
+    console.log(res)
     return res;
 }
 
@@ -21,24 +28,33 @@ const checkPassword = (pass, cnfpass) => {
     return true;
 }
 
-const ActivateAccount = ({token}) => {
+const ActivateAccount = ({token, type}) => {
     const router = useRouter()
     const onSubmit = async (values) => {
         const is_valid = checkPassword(values.password, values.confirmPassword);
         //TODO: CHECK IS_VALID AND MAKE TOAST
         if(is_valid === true){
-            const res = await activateAccount(values.username, values.password, token);
-            if(res.data.changedRows === 1){
-                router.push( '/login'); //TODO: show success message
+            let res;
+            if(type === "activateAccount") {
+                res = await activateAccount(values.username, values.password, token);
+                if (res.data?.changedRows === 1)
+                    router.push('/login'); //TODO: show success message
             }
-        }else{
+            else if(type === "activateAdminAccount"){
+                    res = await activateAdminAccount(values.username, values.password, token);
+                    if(res.data?.insertId)
+                        router.push( '/login'); //TODO: show success message
+                }
+            }
+        else{
             console.log(is_valid);
         }
     }
 
     return (
         <div
-            style={{ backgroundColor: '#1F272B', height: '100vh' }}
+            style={type === "activateAdminAccount"? { backgroundColor: '#9a9a9a', height: '100vh' }
+                : { backgroundColor: '#1F272B', height: '100vh' }}
             className='d-flex justify-content-center align-items-center'
         >
             <Container
@@ -119,8 +135,8 @@ const ActivateAccount = ({token}) => {
 
 export async function getServerSideProps(context) {
     try{
-        const payload = await verify(context.query.token, process.env.MAIL_SECRET);
-        return { props: {token: context.query.token}};
+        const {payload} = await verify(context.query.token, process.env.MAIL_SECRET);
+        return { props: {token: context.query.token, type: payload.type}};
     }catch(error){
         return {redirect: {permanent: false, destination: "/login"}};
     }

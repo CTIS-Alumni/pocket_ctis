@@ -1,6 +1,6 @@
 import {
     insertToUserTable,
-    doMultiQueries, buildInsertQueries, buildSelectQueries, doMultiDeleteQueries, buildUpdateQueries,
+    doMultiQueries, buildInsertQueries, buildSelectQueries, doMultiDeleteQueries, buildUpdateQueries, updateTable,
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import limitPerUser from '../../../../config/moduleConfig.js';
@@ -48,10 +48,6 @@ export default async function handler(req, res){
                 break;
             case "PUT":
                 try {
-                    /*const query = "UPDATE userwantsector SET visibility = ? WHERE user_id = ? ";
-                    const values = [sectors[0].visibility, user_id];
-                    const queries = {name: "wanted_sectors", query: query, values: values};
-                    const {data, errors} = await doMultiQueries(queries);*/
                     const queries = buildUpdateQueries(sectors, table_name, fields);
                     const select_queries = buildSelectQueries(sectors, table_name, field_conditions);
                     const {data, errors} = await updateTable(queries, validation, select_queries);
@@ -69,7 +65,5 @@ export default async function handler(req, res){
                 }
                 break;
         }
-    }else{
-        res.redirect("/401", 401);
-    }
+    }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
 }

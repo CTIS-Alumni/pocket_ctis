@@ -38,7 +38,7 @@ export default async function handler(req, res) {
                     const {data, errors} = await doqueryNew({query: query, values: [id_params]});
                     res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error: error.message}]});
                 }
                 break;
             case "POST":
@@ -50,11 +50,9 @@ export default async function handler(req, res) {
                         const {data, errors} = await insertToTable(queries, table_name, validation);
                         res.status(200).json({data, errors})
                     } catch (error) {
-                        res.status(500).json({error: error.message});
+                        res.status(500).json({errors: [{error: error.message}]});
                     }
-                }else{
-                    res.redirect("/401", 401);
-                }
+                } res.status(403).json({errors: [{error: "Forbidden action!"}]});
                 break;
         }
     } else {

@@ -78,7 +78,7 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
   }
 
   const onSubmit = async (values) => {
-
+    setIsUpdated(true)
     let newData = cloneDeep(values)
     transformFuncs.projects(newData)
     transformFuncs.graduation_project(newData)
@@ -119,7 +119,6 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
     console.log('req', requestObj, 'res', responseObj)
     applyNewData(final_data)
     deletedData = { projects: [], graduation_project: [] }
-    setIsUpdated(true)
 
     if(responseObj.graduation_project.POST.data?.length){
       const {data, errors} = await sendMail();

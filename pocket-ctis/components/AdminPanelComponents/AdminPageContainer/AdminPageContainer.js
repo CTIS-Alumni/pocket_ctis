@@ -32,12 +32,5 @@ const AdminPageContainer = ({ children }) => {
   )
 }
 
-export async function getServerSideProps(context) {
-    const {cookie} = context.req.headers;
-
-
-    return { props: { user: userInfo } }
-}
-
 
 export default AdminPageContainer

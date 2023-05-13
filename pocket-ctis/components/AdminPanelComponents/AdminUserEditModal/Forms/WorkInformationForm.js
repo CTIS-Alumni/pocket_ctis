@@ -13,7 +13,7 @@ import {
 import styles from './AdminUserFormStyles.module.css'
 
 import { cloneDeep } from 'lodash'
-import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {craftUrl} from '../../../../helpers/urlHelper'
 import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
 import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 import {toast} from "react-toastify";

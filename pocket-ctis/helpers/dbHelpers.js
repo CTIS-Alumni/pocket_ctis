@@ -1,7 +1,7 @@
 import mysql from "mysql2/promise";
 import dbconfig from "../config/dbconfig.js";
-import {replaceWithNull} from "./submissionHelpers";
 import {reFormatDate} from "./formatHelpers";
+import {sendActivationMail, sendAdminActivationMail} from "./mailHelper";
 
 export const createDBConnection = async (namedPlaceholders = false) => {
     const connection = await mysql.createConnection({
@@ -263,6 +263,68 @@ export async function updateTable(queries, validation, select_queries = []) {//p
     return {data, errors};
 }
 
+export const createUser = async(user, validation) => {
+
+    const connection = await createDBConnection(true);
+    let data = [];
+    let errors = [];
+
+    const type_query = "INSERT INTO useraccounttype(user_id, type_id) values (:user_id, :type_id) ";
+    const user_query = "INSERT INTO users(bilkent_id, first_name, last_name, gender, contact_email) values " +
+        " (:bilkent_id, :first_name, :last_name, :gender, :contact_email) ";
+    const profile_picture_query = "INSERT INTO userprofilepicture(user_id, profile_picture) values (:user_id, 'defaultuser') ";
+
+    try {
+        await connection.beginTransaction();
+
+        let is_valid = validation(user); //checks for both type fields and user fields
+        if (is_valid !== true)
+            throw {message: is_valid};
+
+        const [res] = await connection.execute(user_query, user);
+
+        if (!res.hasOwnProperty("insertId") || res.insertId == 0) //if you managed to insert to db, get the id of the record you inserted
+            throw {message: "Failed to create user!"};
+
+        user.id = res.insertId
+
+        for (const [i, type] of user.types.entries()) {
+            const type_values = {user_id: user.id, type_id: type};
+            const [type_res] = await connection.execute(type_query, type_values);
+        }
+
+        const [results] = await connection.execute(profile_picture_query, {user_id: user.id});
+
+        const mail_status = await sendActivationMail(user);
+
+        if (mail_status !== true) {
+            throw {message: "Could not send account activation mail to user.", details: mail_status};
+        }
+
+
+        let admin_mail_status = "Not an admin";
+
+        if(user.types.includes('4')){
+            admin_mail_status = await sendAdminActivationMail(user);
+            if(admin_mail_status !== true)
+                throw {message: "Could not admin send account activation mail to user.", details: mail_status};
+        }
+
+        data.push({data: {id: user.id, mail_status: mail_status, admin_mail_status: admin_mail_status} });
+
+        await connection.commit();
+
+    }catch(error) {
+        error.message = handleDBErrorMessage(error);
+        errors.push({error: error.message});
+        await connection.rollback();
+    }
+
+    connection.end();
+    return {data, errors};
+
+}
+
 export const createUsersWithCSV = async (users, validation) => {
 
     const connection = await createDBConnection(true);
@@ -272,6 +334,7 @@ export const createUsersWithCSV = async (users, validation) => {
     const type_query = "INSERT INTO useraccounttype(user_id, type_id) values (:user_id, :type_id) ";
     const user_query = "INSERT INTO users(bilkent_id, first_name, last_name, gender, contact_email) values " +
         " (:bilkent_id, :first_name, :last_name, :gender, :contact_email) ";
+    const profile_picture_query = "INSERT INTO userprofilepicture(user_id, profile_picture) values (:user_id, 'defaultuser') ";
 
 
     for(const [index, user] of users.entries()){
@@ -302,6 +365,7 @@ export const createUsersWithCSV = async (users, validation) => {
                 const [type_res] = await connection.execute(type_query, type_values);
             }
 
+            const [results] = await connection.execute(profile_picture_query, {user_id: user_id});
 
             if(user.edu_inst_id && user.degree_type_id && user.name_of_program && user.start_date){
                 const edu_values = {
@@ -328,7 +392,6 @@ export const createUsersWithCSV = async (users, validation) => {
                 else edu_record_query += `:end_date, `;
 
                 edu_record_query += " :is_current) ";
-                console.log("heres the query and values so far query: ", edu_record_query,edu_values);
                 const [edu_res] = await connection.execute(edu_record_query, edu_values);
             }
 

@@ -3,9 +3,7 @@ import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 
 export default async function handler(req, res) {
     const session = await checkAuth(req.headers, res);
-    console.log("heres session", session);
     const payload = await checkUserType(session, req.query);
-    console.log(payload);
     if (session && payload) {
         const {user_id} = req.query;
         const method = req.method;
@@ -163,7 +161,7 @@ export default async function handler(req, res) {
                     queries.push({name: "edu_records", query: temp, values: [user_id]});
 
                     const {data, errors} = await doMultiQueries(queries);
-                    res.status(200).json({data, errors, session});
+                    res.status(200).json({data: data, errors: errors, session: payload.user});
 
                 } catch (error) {
                     res.status(500).json({errors: [{error:error.message}]});
@@ -235,9 +233,7 @@ export default async function handler(req, res) {
                     } catch (error) {
                         res.status(500).json({errors: [{error:error.message}]});
                     }
-                }else{
-                    res.redirect("/401", 401);
-                }
+                } res.status(403).json({errors: [{error: "Forbidden action!"}]});
                 break;
         }
     } else {

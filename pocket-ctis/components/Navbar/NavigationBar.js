@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
 import departmentConfig from '../../config/departmentConfig'
 
@@ -6,6 +6,7 @@ import styles from './NavigationBar.module.scss'
 import {_getFetcher} from "../../helpers/fetchHelpers";
 import {craftUrl} from "../../helpers/urlHelper";
 import {useRouter} from "next/router";
+import { User_data } from '../../context/userContext'
 
 
 const NavigationBar = () => {

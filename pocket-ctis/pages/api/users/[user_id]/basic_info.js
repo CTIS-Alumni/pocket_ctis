@@ -57,20 +57,6 @@ export default async function handler(req, res) {
                     res.status(500).json({errors: [{error: error.message}]});
                 }
                 break;
-            case "DELETE":
-                if (payload?.user === "admin") {
-                    try {
-                        const query = "DELETE FROM users WHERE id = ?"
-                        const {data, errors} = await doqueryNew({query: query, values: [user_id]});
-                        res.status(200).json({data, errors});
-
-                    } catch (error) {
-                        res.status(500).json({errors: [{error: error.message}]});
-                    }
-                }else{
-                    res.redirect("/401", 401);
-                }
-                break;
         }
     } else {
         res.redirect("/401", 401);

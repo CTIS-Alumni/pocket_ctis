@@ -12,7 +12,7 @@ export default async function handler(req, res){
                 const {data, errors} = await doquery({query: query,values: [society_id]});
                 res.status(200).json({data, errors});
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({errors: [{error: error.message}]});
             }
             break;
         case "PUT":
@@ -25,7 +25,7 @@ export default async function handler(req, res){
                 else
                     res.status(200).json({data});
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({errors: [{error: error.message}]});
             }
             break;
         case "DELETE":
@@ -37,7 +37,7 @@ export default async function handler(req, res){
                 else
                     res.status(200).json({data});
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({errors: [{error: error.message}]});
             }
             break;
     }

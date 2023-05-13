@@ -1,25 +1,39 @@
 import {
     addAndOrWhere,
-    buildInsertQueries,
-    buildSelectQueries, buildUpdateQueries, createUsersWithCSV, doMultiDeleteQueries,
-    doquery, insertToTable, insertToUserRelatedTable, updateTable,
+    buildUpdateQueries, createUser, createUsersWithCSV, doMultiDeleteQueries, doqueryNew,
+    updateTable,
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
-import limitPerUser from "../../config/moduleConfig";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 
 const table_name = "users";
 
-const field_conditions = {
-    must_be_different: ["bilkent_id"],
-    date_fields: [],
-    user: {
-        check_user_only: false,
-        user_id: null
+const validation = (data) => {
+    const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    replaceWithNull(data);
+    if (!data.bilkent_id)
+        return "Bilkent ID can't be empty!";
+    if (!data.first_name || !data.last_name)
+        return "First Name and Last Name can't be empty!";
+    if (parseInt(data.gender) !== 1 && parseInt(data.gender) !== 0)
+        return "Invalid value for gender!";
+    if (data.hasOwnProperty("is_active") && data.is_active !== 1 && data.is_active !== 0)
+        return "Invalid value for activity status!";
+    if (!email_regex.test(data.contact_email))
+        return "Invalid Contact Email!";
+
+    if(!data.types?.length)
+        return "User must have account type!";
+
+    for (const type of data.types) {
+        if (isNaN(parseInt(type)))
+            return "User types must be a valid integer!";
     }
+    return true;
 }
 
-const validation = (data) => {
+const CSVvalidation = (data) => {
     const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     replaceWithNull(data);
@@ -42,6 +56,8 @@ const validation = (data) => {
         return "User must have account type!";
 
     for (const type of data.types) {
+        if(type == 4)
+            return "Can not create admin account with CSV."
         if (isNaN(parseInt(type)))
             return "User types must be a valid integer!";
     }
@@ -65,6 +81,11 @@ const validation = (data) => {
 
 
     return true;
+}
+
+const fields = {
+    basic: ["first_name, last_name, is_retired, is_active, gender, contact_email, bilkent_id"],
+    date: []
 }
 
 export default async function handler(req, res) {
@@ -127,29 +148,26 @@ export default async function handler(req, res) {
 
                     query += " GROUP BY uat.user_id ORDER BY u.first_name ASC";
 
-                    const data = await doquery({query: query, values: values});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
+                    const {data, errors} = await doqueryNew({query: query, values: values});
+                    res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error: error.message}]});
                 }
                 break;
             case "POST":
                 if (payload?.user === "admin") {
                     try {
                         const {users} = JSON.parse(req.body);
-                        const {data, errors} = await createUsersWithCSV(users, validation);
-                        res.status(200).json({data, errors});
+                        if(req.query.csv){
+                            const {data, errors} = await createUsersWithCSV(users, CSVvalidation);
+                            res.status(200).json({data, errors});
+                        }else {
+                            const {data, errors} = await createUser(users[0], validation);
+                            res.status(200).json({data, errors});
+                        }
 
-                        /*const users = JSON.parse(req.body);
-                        const queries = buildInsertQueries(users, table_name);
-                        const select_queries = buildSelectQueries(users, table_name, field_conditions);
-                        const {data, errors} = await insertToUserRelatedTable(queries, table_name, validation, select_queries)
-                        res.status(200).json({data, errors});*/
                     } catch (error) {
-                        res.status(500).json({error: error.message});
+                        res.status(500).json({errors: [{error: error.message}]});
                     }
                 } else res.status(500).json({error: "Unauthorized!"});
                 break;
@@ -158,13 +176,12 @@ export default async function handler(req, res) {
                     try{
                         const users = JSON.parse(req.body);
                         const queries = buildUpdateQueries(users, table_name, fields);
-                        const select_queries = buildSelectQueries(users, table_name, field_conditions);
-                        const {data, errors} = await updateTable(queries, validation, select_queries);
+                        const {data, errors} = await updateTable(queries, validation);
                         res.status(200).json({data, errors});
                     }catch(error){
-                        res.status(500).json({error: error.message});
+                        res.status(500).json({errors: [{error: error.message}]});
                     }
-                } else res.status(500).json({error: "Unauthorized!"});
+                } else res.status(403).json({errors: [{error: "Forbidden action!"}]});
                 break;
             case "DELETE":
                 if(payload?.user === "admin"){
@@ -173,9 +190,9 @@ export default async function handler(req, res) {
                         const {data, errors} = await doMultiDeleteQueries(users, table_name); //TODO: learn what to do after users are deleted
                         res.status(200).json({data, errors});
                     }catch(error){
-                        res.status(500).json({error: error.message});
+                        res.status(500).json({errors: [{error: error.message}]});
                     }
-                }
+                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
         }
     } else {
         res.redirect("/401", 401);

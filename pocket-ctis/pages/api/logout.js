@@ -37,7 +37,7 @@ export default async function(req,res){
 
                 res.setHeader("Set-Cookie", [serialCookie, refreshCookie]);
                 res.status(200).json({data: "Logged out successfully!"})
-            }else res.status(500).json({errors: [{error: "You are not logged in as an admin."}]});
+            }else res.status(403).json({errors: [{error: "You are not logged in as an admin."}]});
         }catch(error){
             res.status(500).json({errors: {error: error.message}});
         }
@@ -50,7 +50,7 @@ export default async function(req,res){
                 const access_expired = deleteCookie("AccessJWT");
                 res.setHeader("Set-Cookie", [refresh_expired, access_expired]);
                 res.status(200).json({data: "Logged out successfully!"})
-            }else res.status(500).json({errors: [{error: "You are not logged in."}]});
+            }else res.status(403).json({errors: [{error: "You are not logged in."}]});
         }catch(error){
             res.status(500).json({errors: {error: error.message}});
         }

@@ -2,8 +2,8 @@ import {addAndOrWhere, doquery, doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 
 export default async function handler(req, res) {
-    const session = await checkAuth(req.headers, res);
-    const payload = await checkUserType(session, req.query);
+    const session = await checkAuth(req.headers, res); //everyone logged in can get
+    const payload = await checkUserType(session, req.query); //ones who arent admin can only see records of themselves or visible ones
     if (session) {
         const method = req.method;
         switch (method) {

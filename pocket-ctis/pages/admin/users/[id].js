@@ -1,4 +1,4 @@
-import { _getFetcher } from '../../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher, _submitFile} from '../../../helpers/fetchHelpers'
 import { craftUrl } from '../../../helpers/urlHelper'
 import AdminPageContainer from '../../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
 import { Badge, Card, Container, Modal, Tab, Tabs } from 'react-bootstrap'
@@ -103,6 +103,8 @@ const AdminUserView = ({ user }) => {
     'Proficient',
     'Expert',
   ]
+
+  let deleted_image = false;
 
   const classifySkills = () => {
     const classifiedSkill = {}

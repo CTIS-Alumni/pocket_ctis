@@ -29,6 +29,14 @@ export const _submitFetcher = async (method, url, body) => {
     }
 }
 
+export const _submitFile = async (method, url, file, body) => {
+    try{
+
+    }catch(error){
+        return {errors: [{error: error.message}]};
+    }
+}
+
 
 export const _getFetcher = async (apis,  cookies = null, token = null) => { // [{name: url}, {name: url}]
     let results = {}
