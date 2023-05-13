@@ -153,11 +153,13 @@ const AdminUserView = ({ user }) => {
   const getCurrentWorksString = (works) => {
     if (works.length == 1) {
       return 'Currently working at ' + works[0].company_name
-    } else {
+    } else if (works.length == 2) {
       return (
         'Currently working at ' +
         works.map((work) => work.company_name).join(' and ')
       )
+    } else {
+      return
     }
   }
 
@@ -208,7 +210,7 @@ const AdminUserView = ({ user }) => {
                   </div>
                   <div>{basic_info[0].gender == 1 ? 'Female' : 'Male'}</div>
                 </div>
-                {current_works && (
+                {current_works.length > 0 && (
                   <div>{getCurrentWorksString(current_works)}</div>
                 )}
               </div>

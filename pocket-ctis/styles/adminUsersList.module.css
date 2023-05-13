@@ -1,0 +1,12 @@
+.createUserButton{
+    border: none;
+    background-color: rgba(245, 164, 37, 1);
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    transition: all 0.25s;
+}
+
+.createUserButton:hover{
+    background-color: rgba(245, 164, 37, 0.35);
+}
