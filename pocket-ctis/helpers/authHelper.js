@@ -1,4 +1,4 @@
-import {doquery, doqueryNew} from "./dbHelpers";
+import {doqueryNew} from "./dbHelpers";
 import {refreshToken, verify} from "./jwtHelper";
 import {parse} from "cookie";
 

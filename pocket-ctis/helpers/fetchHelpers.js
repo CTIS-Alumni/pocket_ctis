@@ -17,7 +17,7 @@ export const submitChanges = async (url, requestObj) => {
     return responseObj;
 }
 
-export const _submitFetcher = async (method, url, body) => {
+export const _submitFetcher = async (method, url, body ) => {
     try{
         const res = await fetch(url, {
             method: method,
@@ -30,9 +30,14 @@ export const _submitFetcher = async (method, url, body) => {
     }
 }
 
-export const _submitFile = async (method, url, file, body) => {
+export const _submitFile = async (method, url, formData) => {
     try{
-
+        const res = await fetch(url, {
+            method: method,
+            credentials: 'include',
+            body: formData
+        })
+        return await res.json()
     }catch(error){
         return {errors: [{error: error.message}]};
     }
@@ -61,7 +66,6 @@ export const _getFetcher = async (apis,  cookies = null) => { // [{name: url}, {
 }
 
 export const createReqObject = (originalData, finalData, deletedData) => {
-    console.log("fianLdata", finalData)
 
     let requestObj = {POST: [], PUT: [], DELETE: []};
     finalData.forEach((item) => {

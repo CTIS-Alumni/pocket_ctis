@@ -157,12 +157,17 @@ const handler =  async (req, res) => {
                 break;
             case "POST":
                 if (payload?.user === "admin") {
+                    console.log("does it come here");
                     try {
                         const {users} = JSON.parse(req.body);
                         if(req.query.csv){
+                            console.log("are you stupid")
+                            console.log(req.query);
                             const {data, errors} = await createUsersWithCSV(users, CSVvalidation);
                             res.status(200).json({data, errors});
                         }else {
+                            console.log("are you stupid 2")
+                            console.log("users",users);
                             const {data, errors} = await createUser(users[0], validation);
                             res.status(200).json({data, errors});
                         }

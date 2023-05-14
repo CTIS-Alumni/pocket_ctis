@@ -74,16 +74,12 @@ export const handleResponse = (original_data, req, res, values, name, args, tran
             const index = findIndex(cloned_values[name], (item) => {
                 return isEqual(item, toInsert);
             });
-            console.log("hers the index of the found thing", index)
             if(index !== -1){
                 const found_in_res = res.POST.data?.find(datum => { // find the index of the id'less version of the data in the form
                       return isEqualFields(toInsert, datum.inserted, args[0], args[1], args[2], args[3]);
                     });
-                console.log("heres found_in_res", found_in_res);
                 if(found_in_res !== undefined){//attach the insert_id's back to records in the form so that you can edit them immediately without refetching data
-                    console.log("here")
                     if(!values[name][index].hasOwnProperty("id")){
-                        console.log("heres values[name,", values[name][index]);
                         values[name][index].id = found_in_res.inserted.id;
                     }
                 }

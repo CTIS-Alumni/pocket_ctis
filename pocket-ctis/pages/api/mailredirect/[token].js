@@ -6,7 +6,6 @@ export default async function handler(req,res){
     const {token} = req.query;
     try{
         const {payload} = await verify(token, process.env.MAIL_SECRET);
-        console.log(payload);
 
         if(payload.type === "forgotPassword"){
             const refresh_expired = deleteCookie("RefreshJWT");           //logout the user just in case
@@ -25,7 +24,6 @@ export default async function handler(req,res){
         }
 
         else if(payload.type === "activateAccount") {
-            console.log("here")
             const refresh_expired = deleteCookie("RefreshJWT");           //logout the user just in case
             const access_expired = deleteCookie("AccessJWT");
             res.setHeader("Set-Cookie", [refresh_expired, access_expired]);
@@ -68,4 +66,3 @@ export default async function handler(req,res){
         res.redirect("/401", 401);
     }
 }
-export default checkApiKey(handler);

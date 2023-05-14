@@ -23,26 +23,28 @@ const activateAdminAccount = async (username, password, token) => {
 const checkPassword = (pass, cnfpass) => {
     if(pass !== cnfpass)
         return {errors: [{error: "Passwords do not match"}]};
-    if(pass.length < 6)
+    if(pass.length < 6){
         return {errors: [{error: "Password must be at least 6 characters"}]};
+    }
     return true;
 }
 
 const ActivateAccount = ({token, type}) => {
     const router = useRouter()
     const onSubmit = async (values) => {
+        console.log(values)
         const is_valid = checkPassword(values.password, values.confirmPassword);
         //TODO: CHECK IS_VALID AND MAKE TOAST
         if(is_valid === true){
             let res;
             if(type === "activateAccount") {
                 res = await activateAccount(values.username, values.password, token);
-                if (res.data?.changedRows === 1)
+                if (res.data && !res.errors)
                     router.push('/login'); //TODO: show success message
             }
             else if(type === "activateAdminAccount"){
                     res = await activateAdminAccount(values.username, values.password, token);
-                    if(res.data?.insertId)
+                    if(res.data?.insertId && !res.errors)
                         router.push( '/login'); //TODO: show success message
                 }
             }

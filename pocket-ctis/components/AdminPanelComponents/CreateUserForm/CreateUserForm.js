@@ -80,20 +80,8 @@ const CreateUserForm = ({ goBack }) => {
     replaceWithNull(data)
     console.log(data.user[0])
 
-    const res = await _submitFetcher('POST', craftUrl(['users']), {users: [data[0]]});
+    const res = await _submitFetcher('POST', craftUrl(['users']), {users: data.user});
     console.log(res)
-
-    // use this data.user[0] instead of data[0] below.
-    // or you can also just send data.user, and not put it in [].
-    // e.g (should work the way you want, I didn't try sending the request)
-    // const res = await _submitFetcher('POST', craftUrl(['users']), {
-    //   users: data.user,
-    // })
-
-    // const res = await _submitFetcher('POST', craftUrl(['users']), {
-    //   users: [data[0]],
-    // })
-    // console.log(res)
 
     formik.resetForm({
       values: {

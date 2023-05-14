@@ -2,6 +2,9 @@ import mysql from "mysql2/promise";
 import dbconfig from "../config/dbconfig.js";
 import {reFormatDate} from "./formatHelpers";
 import {sendActivationMail, sendAdminActivationMail} from "./mailHelper";
+import formidable from "formidable";
+import fs from "fs/promises";
+import {resizeAndCropImage} from "./imageHelper";
 
 export const createDBConnection = async (namedPlaceholders = false) => {
     const connection = await mysql.createConnection({
@@ -261,6 +264,41 @@ export async function updateTable(queries, validation, select_queries = []) {//p
             errors.push({name: query.name, error: error.message, queries, select_queries});
         }
     }
+    connection.end();
+    return {data, errors};
+}
+
+export const insertWithImage = async (query, obj, validation, file_objs, targetWidth, targetHeight) => { //files: [{file: {filedata}, name: 'newnameyouwant', location: 'foldername' }]
+    const errors = [];
+    const data = [];
+    const connection = await createDBConnection(true);
+
+    try{
+        await connection.beginTransaction();
+
+        let is_valid = validation(obj); //checks for both type fields and user fields
+        if (is_valid !== true)
+            throw {message: is_valid};
+
+
+        const [res] = await connection.execute(query, obj);
+
+        for(const [key, value] of Object.entries(file_objs)){
+            const destinationFilePath = process.env.PUBLIC_IMAGES_PATH + value.location + "/" + value.name + ".png";
+            const resizedBuffer = await resizeAndCropImage(value[key], targetWidth, targetHeight);
+            await fs.writeFile(destinationFilePath, resizedBuffer);
+        }
+
+        data.push(obj);
+
+    }catch(error){
+        error.message = handleDBErrorMessage(error);
+        errors.push({error: error.message});
+        await connection.rollback();
+    }
+
+    await connection.commit();
+
     connection.end();
     return {data, errors};
 }
