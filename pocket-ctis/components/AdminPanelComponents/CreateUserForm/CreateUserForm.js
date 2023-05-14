@@ -167,9 +167,9 @@ const CreateUserForm = ({ goBack }) => {
   return (
     <>
       <LoadingSpinner isLoading={isLoading} />
-      <div className={styles.headerContainer}>
+      <div className={styles.headerContainer} onClick={goBackHandler}>
         <span className={styles.backButton}>
-          <ChevronLeft onClick={goBackHandler} />
+          <ChevronLeft />
         </span>
         <h4 className='m-0'>Create User</h4>
       </div>
