@@ -1,6 +1,9 @@
 .headerContainer{
     display: flex;
     align-items: center;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 .backButton{
     font-size: 20px;
@@ -8,10 +11,20 @@
     cursor: pointer;
     border-radius: 50%;
     padding: 5px;
-    transition: all 0.5s;
 }
-.backButton:hover{
-    background-color: rgb(206, 206, 206);
+
+.headerContainer:hover{
+    animation: hoverFill 0.3s ease-in-out;
+    animation-fill-mode: both;
+}
+
+@keyframes hoverFill {
+    0%   {background: linear-gradient(90deg, rgb(220, 220, 220) 0%, rgba(245,245,245,1) 0%);}
+    20%  {background: linear-gradient(90deg, rgb(220, 220, 220) 0%, rgba(245,245,245,1) 14%);}
+    40%  {background: linear-gradient(90deg, rgb(220, 220, 220) 0%, rgba(245,245,245,1) 28%);}
+    60%  {background: linear-gradient(90deg, rgb(220, 220, 220) 0%, rgba(245,245,245,1) 42%);}
+    80%  {background: linear-gradient(90deg, rgb(220, 220, 220) 0%, rgba(245,245,245,1) 56%);}
+    100% {background: linear-gradient(90deg, rgb(220, 220, 220) 0%, rgba(245,245,245,1) 70%);}
 }
 
 .defaultCard{

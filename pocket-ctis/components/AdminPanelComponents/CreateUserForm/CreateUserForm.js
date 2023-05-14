@@ -3,14 +3,17 @@ import styles from './CreateUserForm.module.css'
 import { Card } from 'react-bootstrap'
 import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import {_getFetcher, _submitFetcher} from '../../../helpers/fetchHelpers'
+import { _getFetcher, _submitFetcher } from '../../../helpers/fetchHelpers'
 import { ToastContainer, toast } from 'react-toastify'
 import { craftUrl } from '../../../helpers/urlHelper'
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { clone } from 'lodash'
-import {replaceWithNull, splitFields} from "../../../helpers/submissionHelpers";
+import {
+  replaceWithNull,
+  splitFields,
+} from '../../../helpers/submissionHelpers'
 
 const customStyles = {
   control: (provided, state) => ({
@@ -68,17 +71,31 @@ const CreateUserForm = ({ goBack }) => {
       })
   }, [])
 
-  const onSubmitHandler = async(values) => {
+  const onSubmitHandler = async (values) => {
     const data = clone(values)
-    data.user[0].types = data.user[0].types.map((type) => type.value.split("-")[0])
+    data.user[0].types = data.user[0].types.map(
+      (role) => role.value.split('-')[0]
+    )
     data.user[0].gender = data.user[0].gender.value == 'Male' ? 1 : 0
-    replaceWithNull(data);
-    console.log(data)
+    replaceWithNull(data)
+    console.log(data.user[0])
 
     const res = await _submitFetcher('POST', craftUrl(['users']), {users: [data[0]]});
     console.log(res)
 
-    /*formik.resetForm({
+    // use this data.user[0] instead of data[0] below.
+    // or you can also just send data.user, and not put it in [].
+    // e.g (should work the way you want, I didn't try sending the request)
+    // const res = await _submitFetcher('POST', craftUrl(['users']), {
+    //   users: data.user,
+    // })
+
+    // const res = await _submitFetcher('POST', craftUrl(['users']), {
+    //   users: [data[0]],
+    // })
+    // console.log(res)
+
+    formik.resetForm({
       values: {
         user: [
           {
@@ -91,7 +108,7 @@ const CreateUserForm = ({ goBack }) => {
           },
         ],
       },
-    })*/
+    })
     setRefreshKey(Math.random().toString(36))
   }
 
@@ -111,23 +128,23 @@ const CreateUserForm = ({ goBack }) => {
     },
     validationSchema: Yup.object({
       user: Yup.array().of(
-          Yup.object({
-            first_name: Yup.string()
-                .max(15, 'Must be 15 characters or less')
-                .required('Required'),
-            last_name: Yup.string()
-                .max(20, 'Must be 20 characters or less')
-                .required('Required'),
-            contact_email: Yup.string()
-                .email('Invalid email address')
-                .required('Required'),
-            bilkent_id: Yup.number()
-                .positive('Invalid BILKENT ID')
-                .integer('Invalid BILKENT ID')
-                .required('Required'),
-            gender: Yup.object().required('Required'),
-            types: Yup.array().required('Required'),
-          })
+        Yup.object({
+          first_name: Yup.string()
+            .max(15, 'Must be 15 characters or less')
+            .required('Required'),
+          last_name: Yup.string()
+            .max(20, 'Must be 20 characters or less')
+            .required('Required'),
+          contact_email: Yup.string()
+            .email('Invalid email address')
+            .required('Required'),
+          bilkent_id: Yup.number()
+            .positive('Invalid BILKENT ID')
+            .integer('Invalid BILKENT ID')
+            .required('Required'),
+          gender: Yup.object().required('Required'),
+          types: Yup.array().required('Required'),
+        })
       ),
     }),
     onSubmit: (values) => {
@@ -153,9 +170,9 @@ const CreateUserForm = ({ goBack }) => {
   return (
     <>
       <LoadingSpinner isLoading={isLoading} />
-      <div className={styles.headerContainer}>
+      <div className={styles.headerContainer} onClick={goBackHandler}>
         <span className={styles.backButton}>
-          <ChevronLeft onClick={goBackHandler} />
+          <ChevronLeft />
         </span>
         <h4 className='m-0'>Create User</h4>
       </div>
@@ -294,7 +311,9 @@ const CreateUserForm = ({ goBack }) => {
               </div>
             </div>
             <div>
-              <label htmlFor='types'>types</label>
+              <label htmlFor='types' className={styles.inputLabel}>
+                Account Types
+              </label>
               <Select
                 value={formik.values.user?.[0].types}
                 onChange={(val) => formik.setFieldValue('user[0].types', val)}
