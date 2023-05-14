@@ -1,5 +1,6 @@
 import React from 'react'
 import {_getFetcher} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const GraduationProject = ({ graduationproject }) => {
   return <div>GraduationProject</div>

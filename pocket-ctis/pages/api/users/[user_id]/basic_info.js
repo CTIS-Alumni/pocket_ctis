@@ -1,6 +1,7 @@
 import {buildUpdateQueries, doquery, doqueryNew, updateTable} from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
+import {checkApiKey} from "../../middleware/checkAPIkey";
 
 const fields = {
     basic: ["first_name", "last_name", "is_retired", "is_active", "gender", "nee"],
@@ -22,7 +23,7 @@ const validation = (data) =>{
     return true;
 }
 
-export default async function handler(req, res) {
+const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if (payload?.user === "admin" || payload?.user === "owner") {
@@ -62,3 +63,4 @@ export default async function handler(req, res) {
         res.redirect("/401", 401);
     }
 }
+export default checkApiKey(handler);

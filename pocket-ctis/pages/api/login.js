@@ -12,7 +12,7 @@ export default async function (req, res) {
 
         try {
             if (session.payload.mode !== "user") {
-                throw {code: 403, message: "Forbidden action!"}
+                throw {code: 403, message: "Forbidden request!"}
             }
 
             const {username, password} = JSON.parse(req.body);

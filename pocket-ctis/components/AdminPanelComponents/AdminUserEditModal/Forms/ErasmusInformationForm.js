@@ -277,7 +277,7 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             )
                                           }
                                           initialValue={
-                                            props.values.erasmus[0].rating
+                                            props.values.erasmus[index].rating
                                           }
                                           transition={true}
                                           allowFraction={true}

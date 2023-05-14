@@ -1,6 +1,7 @@
 import {verify} from "../../helpers/jwtHelper";
 import {compare, hash} from "bcrypt";
 import {doqueryNew} from "../../helpers/dbHelpers";
+import {checkApiKey} from "./middleware/checkAPIkey";
 
 const handleErrorMessages = (error) => {
     if(error.includes("timestamp check"))
@@ -146,5 +147,4 @@ export default async function handler(req, res) {
         }
     }
     else res.redirect("/401", 401);
-
 }

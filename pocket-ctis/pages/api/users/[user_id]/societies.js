@@ -70,5 +70,5 @@ export default async function handler(req, res){
                 }
                 break;
         }
-    } res.status(403).json({errors: [{error: "Forbidden action!"}]});
+    } res.status(403).json({errors: [{error: "Forbidden request!"}]});
 }

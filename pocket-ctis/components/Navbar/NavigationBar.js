@@ -11,10 +11,12 @@ import { User_data } from '../../context/userContext'
 
 const NavigationBar = () => {
   const router = useRouter();
+  const { setUserData } = useContext(User_data)
 
   const requestLogout = async () => {
     const {logout} = await _getFetcher({logout: craftUrl(['logout'])});
-      router.push('/login' )
+    setUserData(null)
+    router.push('/login' )
   }
 
   const adminLoginPage = async () => {

@@ -4,20 +4,22 @@ import styles from './AdminNavbar.module.scss'
 import {_getFetcher} from "../../../helpers/fetchHelpers";
 import {craftUrl} from "../../../helpers/urlHelper";
 import {useRouter} from "next/router";
+import {useContext} from "react";
+import {User_data} from "../../../context/userContext";
 
 const AdminNavbar = () => {
   const router = useRouter();
+  const { setUserData } = useContext(User_data);
 
   const requestLogout = async () => {
     const {logout} = await _getFetcher({logout: craftUrl(['logout'])});
+    setUserData(null);
     router.push('/login' )
   }
 
   const returnToUserPage = async () => {
     const {res} = await _getFetcher({res: craftUrl(['logout'], [{name: "adminPanel", value: 1}])})
-    console.log(res)
     if(res.data){
-      console.log("got in here?")
       router.push('/user' );
     }else{
       //TODO: SHOW ERROR TOAST

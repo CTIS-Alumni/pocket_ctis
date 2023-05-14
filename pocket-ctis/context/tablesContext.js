@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from 'react'
 import { _getFetcher } from '../helpers/fetchHelpers'
+import {craftUrl} from "../helpers/urlHelper";
 
 export const Tables_Data = createContext({
   tablesData: [],
@@ -9,7 +10,7 @@ function TablesContext({ children }) {
   const [tablesData, setTablesData] = useState([])
 
   useEffect(() => {
-    _getFetcher({ data: '/api/tablecolumns' })
+    _getFetcher({ data: craftUrl(['tablecolumns']) })
       .then(({ data }) => {
         const tableData = {}
         data.data.forEach((datum) => {

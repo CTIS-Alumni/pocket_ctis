@@ -1,5 +1,6 @@
 import {deleteCookie, verify} from "../../../helpers/jwtHelper";
 import {doqueryNew} from "../../../helpers/dbHelpers";
+import {checkApiKey} from "../middleware/checkAPIkey";
 
 export default async function handler(req,res){
     const {token} = req.query;
@@ -67,3 +68,4 @@ export default async function handler(req,res){
         res.redirect("/401", 401);
     }
 }
+export default checkApiKey(handler);

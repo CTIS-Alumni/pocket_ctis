@@ -1,7 +1,7 @@
 import {deleteCookie, sign, verify} from "../../helpers/jwtHelper";
 import {parse, serialize} from "cookie";
 
-export default async function(req,res){
+const handler =  async (req, res) => {
     if(req.query.adminPanel){
         try{
 

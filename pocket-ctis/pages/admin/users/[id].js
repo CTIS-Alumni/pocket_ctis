@@ -175,9 +175,10 @@ const AdminUserView = ({ user }) => {
     }
   }
 
-  const removeProfilePicture = () => {
-    console.log('set to default image')
+  const removeProfilePicture = async () => {
     setProfilePictureModal(false)
+
+    const res = await _submitFetcher('PUT',craftUrl(['users', basic_info[0].id, 'profilepicture'], {name: 'removePic', value: 1}))
   }
 
   const removeImagePopover = (

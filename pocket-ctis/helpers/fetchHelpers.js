@@ -1,4 +1,5 @@
 import {isEqual} from "lodash";
+import {craftUrl} from "./urlHelper";
 
 //divides the incoming requests based on type, priority is delete > put > post
 export const submitChanges = async (url, requestObj) => {
@@ -38,18 +39,18 @@ export const _submitFile = async (method, url, file, body) => {
 }
 
 
-export const _getFetcher = async (apis,  cookies = null, token = null) => { // [{name: url}, {name: url}]
+export const _getFetcher = async (apis,  cookies = null) => { // [{name: url}, {name: url}]
     let results = {}
-    let headers = {
-        Cookie: cookies,
-        'Authorization': `Bearer ${token}`
-    };
 
     try{
         await Promise.all(Object.entries(apis).map(async ([api, url])=>{
-            const res = await fetch(url, {
-                headers: headers,
-                credentials: 'include'
+            const res = await fetch(craftUrl(['proxy']), {
+                method: 'GET',
+                credentials: 'include',
+                headers: {
+                    Cookie: cookies,
+                    'x-url': url
+                }
             });
             results[api] = await res.json();
         }));
@@ -60,6 +61,8 @@ export const _getFetcher = async (apis,  cookies = null, token = null) => { // [
 }
 
 export const createReqObject = (originalData, finalData, deletedData) => {
+    console.log("fianLdata", finalData)
+
     let requestObj = {POST: [], PUT: [], DELETE: []};
     finalData.forEach((item) => {
         if (!item.hasOwnProperty("id")){ //if it doesnt have id its a POST

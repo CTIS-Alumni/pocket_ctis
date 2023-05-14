@@ -51,9 +51,9 @@ const CreateUserForm = ({ goBack }) => {
     _getFetcher({ types: craftUrl(['accounttypes']) })
       .then(({ types }) => {
         if (types?.data) {
-          const data = types.data.map((role) => ({
-            value: `${role.id}-${role.type_name}`,
-            label: role.type_name,
+          const data = types.data.map((type) => ({
+            value: `${type.id}-${type.type_name}`,
+            label: type.type_name,
           }))
           setAccountTypes(data)
         } else {
@@ -70,7 +70,7 @@ const CreateUserForm = ({ goBack }) => {
 
   const onSubmitHandler = async(values) => {
     const data = clone(values)
-    data.user[0].types = data.user[0].types.map((role) => role.value.split("-"[0]))
+    data.user[0].types = data.user[0].types.map((type) => type.value.split("-")[0])
     data.user[0].gender = data.user[0].gender.value == 'Male' ? 1 : 0
     replaceWithNull(data);
     console.log(data)
@@ -100,7 +100,7 @@ const CreateUserForm = ({ goBack }) => {
     initialValues: {
       user: [
         {
-          roles: null,
+          types: null,
           gender: null,
           first_name: null,
           last_name: null,
@@ -126,7 +126,7 @@ const CreateUserForm = ({ goBack }) => {
                 .integer('Invalid BILKENT ID')
                 .required('Required'),
             gender: Yup.object().required('Required'),
-            roles: Yup.array().required('Required'),
+            types: Yup.array().required('Required'),
           })
       ),
     }),
@@ -138,7 +138,7 @@ const CreateUserForm = ({ goBack }) => {
   const goBackHandler = () => {
     formik.resetForm({
       values: {
-        roles: null,
+        types: null,
         gender: null,
         first_name: null,
         last_name: null,
@@ -294,21 +294,21 @@ const CreateUserForm = ({ goBack }) => {
               </div>
             </div>
             <div>
-              <label htmlFor='roles'>Roles</label>
+              <label htmlFor='types'>types</label>
               <Select
-                value={formik.values.user?.[0].roles}
-                onChange={(val) => formik.setFieldValue('user[0].roles', val)}
+                value={formik.values.user?.[0].types}
+                onChange={(val) => formik.setFieldValue('user[0].types', val)}
                 isMulti
                 closeMenuOnSelect={false}
-                id='roles'
-                name='user[0].roles'
+                id='types'
+                name='user[0].types'
                 styles={customStyles}
                 options={accountTypes}
               />
-              {formik.touched.user?.[0].roles &&
-              formik.errors.user?.[0].roles ? (
+              {formik.touched.user?.[0].types &&
+              formik.errors.user?.[0].types ? (
                 <div className={styles.error}>
-                  {formik.errors.user?.[0].roles}
+                  {formik.errors.user?.[0].types}
                 </div>
               ) : null}
             </div>
