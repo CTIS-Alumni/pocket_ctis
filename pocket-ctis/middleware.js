@@ -67,9 +67,9 @@ export default async function middleware(req){
 
             if(url.includes("login")){
                 return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user");
-            }else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user") && payload.mode === "admin"){
+            }/* else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user") && payload.mode === "admin"){
                     return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin");
-            }else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin") && payload.mode === "user")
+            } */else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin") && payload.mode === "user")
                 return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user");
 
 

@@ -1,13 +1,35 @@
+
+@import '/styles/sass/main.scss';
+
+/* // NEW CODE
+$navbar-height: 64px;
+$sidebar-minwidth: 300px;
+$sidebar-maxwidth: 320px;
+
 $fs-regular: 16px;
 
-$ff-regular: 'Work Sans', sans-serif;
-$ff-button: 'Oswald', sans-serif;
+$ff-primary: 'Fira Sans', Arial, sans-serif;
+$ff-secondary: 'Fira Sans Condensed', Arial, sans-serif;
+$ff-header: 'Montserrat', 'Arial Black', sans-serif;
+$ff-ctis: 'Exo 2', 'Arial Black', sans-serif;
 
-$fw-regular: 500;
+$fw-regular: 400;
+$fw-medium: 500;
 $fw-bold: 700;
+$fw-black: 900;
+
+
+// ---------------------------------------------------------------
+
+
+// failsafe
+$ff-regular: $ff-primary;
+$ff-button: $ff-secondary;
 
 $light-grey: #e3e3e3;
 $medium-grey: #b3b3b3;
 $dark-grey: #696969;
 $white: #fafafa;
-$black: #212121;
+$black: #212121; */
+
+

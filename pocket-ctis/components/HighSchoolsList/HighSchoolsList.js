@@ -6,7 +6,7 @@ import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
 
 const HighSchoolList = ({ highSchools, onSearch, isLoading }) => {
   return (
-    <div className={styles.highSchools}>
+    <section className={styles.highSchools}>
       <h2 className='custom_table_title'>High Schools</h2>
       <div className={styles.highSchools_search_bar}>
         <FilterSquareFill />
@@ -52,7 +52,7 @@ const HighSchoolList = ({ highSchools, onSearch, isLoading }) => {
           ))}
         </tbody>
       </table>
-    </div>
+    </section>
   )
 }
 

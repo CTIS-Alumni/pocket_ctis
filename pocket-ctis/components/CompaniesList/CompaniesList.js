@@ -12,6 +12,7 @@ import {
 import SearchBar from '../SearchBar/SearchBar'
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
 import styles from './CompaniesList.module.scss'
+import common from '../../styles/common.module.scss'
 import { useEffect, useState } from 'react'
 import { useFormik } from 'formik'
 
@@ -52,7 +53,7 @@ const PaginationFooter = ({
   pages.push(
     <span
       key={1}
-      className={1 == currentPage ? styles.active : ''}
+      className={1 == currentPage ? common.page_active : common.page}
       onClick={() => setCurPage(1)}
     >
       {1}
@@ -65,7 +66,7 @@ const PaginationFooter = ({
       pages.push(
         <span
           key={i}
-          className={i == currentPage ? styles.active : ''}
+          className={i == currentPage ? common.page_active : common.page}
           onClick={() => setCurPage(i)}
         >
           {i}
@@ -102,7 +103,7 @@ const PaginationFooter = ({
     pages.push(
       <span
         key={numPages}
-        className={numPages == currentPage ? styles.active : ''}
+        className={numPages == currentPage ? common.page_active : common.page}
         onClick={() => setCurPage(numPages)}
       >
         {numPages}
@@ -118,9 +119,9 @@ const PaginationFooter = ({
   })
 
   return (
-    <div className={styles.pagination}>
+    <div className={common.pagination}>
       <div>
-        <label htmlFor='jumpTo' style={{ marginRight: 10 }}>
+        <label htmlFor='jumpTo'>
           Jump To
         </label>
         <select
@@ -134,19 +135,21 @@ const PaginationFooter = ({
           initialValue=''
         >
           <option value='' selected disabled>
-            Jump to
+            -
           </option>
           {pagesNums}
         </select>
       </div>
-      <div>
-        <span onClick={prevPage}>
-          <ChevronLeft />
-        </span>
-        {pages}
-        <span onClick={nextPage}>
-          <ChevronRight />
-        </span>
+      <div className={common.pagi_pages_wrapper}>
+        <div className={common.pagi_pages}>
+          <span className={common.pagi_icon} onClick={prevPage}>
+            <ChevronLeft />
+          </span>
+          {pages}
+          <span className={common.pagi_icon} onClick={nextPage}>
+            <ChevronRight />
+          </span>
+        </div>
         <form style={{ display: 'inline' }}>
           <select
             name='pageLimit'
@@ -212,7 +215,7 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
   }, [sorting, currentPage, limit, searchString])
 
   return (
-    <div className={styles.companies}>
+    <section className={styles.companies}>
       <h2 className='custom_table_title'>Companies</h2>
       <div className={styles.companies_search_bar}>
         <FilterSquareFill />
@@ -235,7 +238,7 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
         </form>
       </div>
       <LoadingSpinner isLoading={isLoading} />
-      <table className='custom_table'>
+      <table>
         <thead>
           <tr>
             <th
@@ -275,10 +278,10 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
         </thead>
         <tbody>
           {companies.map((company, i) => (
-            <tr className='hoverable' key={i}>
+            <tr className={common.hoverable} key={i}>
               <td>
                 <a
-                  className={`${styles.company_link} link`}
+                  // className={`${styles.company_link} link`}
                   href={`/user/companies/${company.id}`}
                 >
                   {company.company_name}
@@ -286,7 +289,7 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
               </td>
               <td>
                 <a
-                  className={`${styles.company_link} link`}
+                  // className={`${styles.company_link} link`}
                   href={`/user/sectors/${company.sector_id}`}
                 >
                   {company.sector_name}
@@ -313,7 +316,7 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
         currentPage={currentPage}
         pageChange={handlePageChange}
       />
-    </div>
+    </section>
   )
 }
 

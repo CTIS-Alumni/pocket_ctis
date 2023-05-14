@@ -13,7 +13,7 @@ const InternshipsDashboard = ({ internships, companies }) => {
     <main>
       <NavigationBar />
       <UserInfoSidebar />
-      <div className={styles.internships_wrapper}>
+      <section className={styles.internships_wrapper}>
         <h2 className={styles.internships_title}>Internships</h2>
         <Tabs defaultActiveKey='students' className='mb-3'>
           <Tab eventKey='students' title='Students'>
@@ -23,7 +23,7 @@ const InternshipsDashboard = ({ internships, companies }) => {
             <InternshipCompaniesList companies={companies.data} />
           </Tab>
         </Tabs>
-      </div>
+      </section>
     </main>
   )
 }

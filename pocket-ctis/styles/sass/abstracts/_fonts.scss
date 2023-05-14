@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@900&family=Fira+Sans+Condensed:ital,wght@0,400;0,500;1,400;1,500&family=Fira+Sans:ital,wght@0,400;0,500;1,400;1,500&family=Montserrat:ital,wght@0,700;1,700&display=swap');
+
+/* FONT SIZE */
+$fs-small: 12px;
+$fs-regular: 16px;
+$fs-big: 24px;
+$fs-large: 36px;
+
+/* FONT FAMILY */
+$ff-primary: 'Fira Sans', 'Arial', sans-serif;
+$ff-secondary: 'Fira Sans Condensed', 'Arial', sans-serif;
+$ff-heading: 'Montserrat', 'Arial Black' sans-serif;
+$ff-ctis: 'Exo 2', 'Arial Black' sans-serif;
+
+/* FONT WEIGHT */
+$fw-regular: 400;
+$fw-medium: 500;
+$fw-bold: 700;
+$fw-black: 900;
+
+
+// failsafe
+$ff-regular: $ff-primary;
+$ff-button: $ff-secondary;

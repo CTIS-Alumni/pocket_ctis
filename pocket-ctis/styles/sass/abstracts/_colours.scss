@@ -1,0 +1,83 @@
+/* COLOURS */
+// green
+$ctis-green-700: #0E9E0B;
+$ctis-green-500: #4ABF12;
+$ctis-green-400: #6DCA41;
+$ctis-green-300: #A3DD75;
+$ctis-green-200: #CCECB8;
+$ctis-green-100: #F1F9E7;
+
+//yellow
+$ctis-yellow-700: #FF8412;
+$ctis-yellow-500: #FFA61C;
+$ctis-yellow-400: #FFBD59;
+$ctis-yellow-300: #FFD98E;
+$ctis-yellow-200: #FFF5D2;
+$ctis-yellow-100: #FFF9E8;
+
+// red
+$ctis-red-700: #97001B;
+$ctis-red-500: #B90004;
+$ctis-red-400: #CE171A;
+$ctis-red-300: #ED5454;
+$ctis-red-200: #FFB9B5;
+$ctis-red-100: #FFE9E2;
+
+// blue
+$ctis-blue-700: #0054A1;
+$ctis-blue-500: #0078AB;
+$ctis-blue-400: #4A9FC2;
+$ctis-blue-300: #75C2DA;
+$ctis-blue-200: #BFEAF3;
+$ctis-blue-100: #E6F5F7;
+$ctis-blue-50: #F3FAFB;
+
+// neutral
+$true-white: #FFF;
+$ctis-white: #FCFCFC;
+$ctis-grey-100: #F5F5F5;
+$ctis-grey-200: #E0E0E0;
+$ctis-grey-300: #CCCCCC;
+$ctis-grey-400: #B6B6B6;
+$ctis-black: #141414;
+
+
+/* ----------------------------------------------------------------------------------*/
+
+
+/* THEME COLOURS */
+// these colours are for the default light
+$clr-primary: $ctis-blue-500;
+$clr-secondary: $ctis-yellow-500;
+
+$clr-primary-bg: $ctis-blue-400;
+$clr-primary-text: $ctis-blue-100;
+
+$clr-secondary-bg: $ctis-yellow-400;
+$clr-secondary-text: $ctis-yellow-100;
+
+$button-bg: $clr-primary-bg !default;
+$button-text: $clr-primary-text !default;
+
+$clr-text: $ctis-black;
+$clr-bg: $ctis-white;
+
+$clr-alert: $ctis-red-400;
+$clr-alert-bg: $ctis-red-200;
+$clr-alert-text: $ctis-red-500;
+
+$clr-warning: $ctis-yellow-300;
+$clr-warning-bg: $ctis-yellow-200;
+$clr-warning-text: $ctis-yellow-500;
+
+$clr-success: $ctis-green-400;
+$clr-success-bg: $ctis-green-200;
+$clr-success-text: $ctis-green-500;
+
+
+// failsafe
+$light-grey: #e3e3e3;
+$medium-grey: #b3b3b3;
+$dark-grey: #696969;
+$white: #fafafa;
+$black: #212121;

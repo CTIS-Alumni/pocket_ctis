@@ -3,12 +3,17 @@
 .sidebar {
     color: $dark-grey;
     background-color: $white;
-    height: 100vh;
-    width: 100%;
     padding-left: 1.5em;
-    max-width: 320px;
-    min-width: 310px;
-    grid-area: sidebar;
+    
+    // NEW CODE
+    position: fixed;
+    top: $navbar-height;
+    height: 100%;
+    width: 20vw;
+    min-width: $sidebar-minwidth;
+    max-width: $sidebar-maxwidth;
+    max-height: calc(100% - $navbar-height);
+    z-index: 1;
 
     &_user_avatar {
         width: 128px;
@@ -17,7 +22,7 @@
         background-position: center;
         background-size: cover;
         background-repeat: no-repeat;
-        margin: 2em auto 1em;
+        //margin: 2em auto 1em;
     }
 
     &_user_info {

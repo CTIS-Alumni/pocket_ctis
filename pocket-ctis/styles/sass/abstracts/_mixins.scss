@@ -1,0 +1,70 @@
+@use 'breakpoints' as *;
+@use 'fonts' as *;
+
+/* when the element gets attention */
+@mixin owo-whats-this($include-me: false) {
+    // include-me: whether to include the current element in the active state if you get what i mean lol
+    @if $include-me {
+        &,
+        &:hover,
+        &:active,
+        &:focus,
+        &:focus-within {
+            @content;
+        }
+    } @else {
+        &:hover,
+        &:active,
+        &:focus,
+        &:focus-within {
+            @content;
+        }
+    }
+    transition: 0.1s color linear, 0.4s background-color linear;
+}
+
+/* media qery */
+@mixin media-query($name) {
+    $size: map-get($map: $breakpoints, $key: $name);
+
+    @media only screen and (max-width: $size) {
+        @content;
+    }
+}
+
+/* pseudo elements */
+@mixin pseudo($location: before, $content: '', $position: absolute, $top: 0, $bottom: 0, $left: 0, $right: 0) {
+    // main element becomes relative
+    position: relative;
+    // before or after pseudo
+    &::#{$location} {
+        position: $position;
+        content: $content;
+        top: $top;
+        bottom: $bottom;
+        left:$left;
+        right: $right;
+        
+        @content;
+    }
+
+}
+
+/* text stuffz :P */
+@mixin primary-text() {
+    font-family: $ff-primary;
+    font-weight: $fw-regular;
+    font-size: $fs-regular;
+
+    @content;
+}
+
+@mixin secondary-text() {
+    font-family: $ff-secondary;
+    font-weight: $fw-medium;
+    font-size: $fs-small;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+
+    @content;
+}

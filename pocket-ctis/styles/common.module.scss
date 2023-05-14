@@ -1,0 +1,104 @@
+@import '/styles/sass/main.scss';
+
+// hoverable table row
+.hoverable {
+    &:nth-of-type(odd) {
+        @include owo-whats-this() {
+            background-color: $ctis-grey-100;
+        }
+    }
+    &:nth-of-type(even) {
+        @include owo-whats-this() {
+            background-color: $ctis-blue-100;
+        }
+    }
+}
+
+// pagination
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: $margin-medium;
+
+    @include secondary-text();
+
+    label {
+        color: $ctis-blue-500;
+        margin-left: $margin-medium;
+        margin-right: $margin-small;
+    }
+
+    select {
+        cursor: pointer;
+        border: 1px solid $ctis-grey-300;
+        background-color: $ctis-grey-100;
+        border-radius: $border-radius-small;
+        padding: $padding-small;
+    }
+
+    .pagi_pages_wrapper {
+        display: flex;
+        align-items: center;
+
+        select {
+            margin-right: $margin-medium;
+            margin-left: $margin-large;
+        }
+    }
+
+    .pagi_pages {
+        display: flex;
+        align-items: center;
+    }
+
+    .pagi_icon {
+        
+    }
+
+    .page {
+        font-weight: $fw-regular;
+        color: $ctis-blue-300;
+
+        display: inline-block;
+        padding: $padding-small;
+        text-align: center;
+        width: 2em;
+        border-radius: $border-radius-small;
+        margin: 0 $margin-small;
+
+        @include owo-whats-this() {
+            background-color: $ctis-grey-100;
+        }
+
+        &_active {
+            display: inline-block;
+            padding: $padding-small;
+            text-align: center;
+            width: 2em;
+            border-radius: $border-radius-small;
+            margin: 0 $margin-small;
+
+            font-weight: $fw-medium;
+            background-color: $ctis-blue-200;
+            color: $ctis-blue-500;
+        }
+    }
+}
+
+.user_avatar {
+    &_36 {
+        width: 36px;
+        height: 36px;
+    }
+
+    &_48 {
+        width: 48px;
+        height: 48px;
+    }
+
+    &_128 {
+        width: 128px;
+        height: 128px;
+    }
+}

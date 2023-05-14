@@ -11,10 +11,11 @@ import { FilterSquareFill, Check } from 'react-bootstrap-icons'
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
 import SearchBar from '../SearchBar/SearchBar'
 import styles from './SectorsList.module.scss'
+import common from '../../styles/common.module.scss'
 
 const SectorsList = ({ sectors, isLoading, onSearch }) => {
   return (
-    <div className={styles.sectors}>
+    <section className={styles.sectors}>
       <h2 className='custom_table_title'>Sectors</h2>
       <div className={styles.sectors_search_bar}>
         <FilterSquareFill />
@@ -37,7 +38,7 @@ const SectorsList = ({ sectors, isLoading, onSearch }) => {
         </form>
       </div>
       <LoadingSpinner isLoading={isLoading} />
-      <table className='custom_table'>
+      <table>
         <thead>
           <tr>
             <th>Sector</th>
@@ -45,10 +46,10 @@ const SectorsList = ({ sectors, isLoading, onSearch }) => {
         </thead>
         <tbody>
           {sectors.map((sector, i) => (
-            <tr className='hoverable' key={i}>
+            <tr className={common.hoverable} key={i}>
               <td>
                 <a
-                  className={`${styles.sector_link} link`}
+                  //className={`${styles.sector_link} link`}
                   href={`/user/sectors/${sector.id}`}
                 >
                   {sector.sector_name}
@@ -58,7 +59,7 @@ const SectorsList = ({ sectors, isLoading, onSearch }) => {
           ))}
         </tbody>
       </table>
-    </div>
+    </section>
   )
 }
 
