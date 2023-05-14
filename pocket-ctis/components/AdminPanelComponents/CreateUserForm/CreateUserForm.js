@@ -3,14 +3,17 @@ import styles from './CreateUserForm.module.css'
 import { Card } from 'react-bootstrap'
 import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import {_getFetcher, _submitFetcher} from '../../../helpers/fetchHelpers'
+import { _getFetcher, _submitFetcher } from '../../../helpers/fetchHelpers'
 import { ToastContainer, toast } from 'react-toastify'
 import { craftUrl } from '../../../helpers/urlHelper'
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { clone } from 'lodash'
-import {replaceWithNull, splitFields} from "../../../helpers/submissionHelpers";
+import {
+  replaceWithNull,
+  splitFields,
+} from '../../../helpers/submissionHelpers'
 
 const customStyles = {
   control: (provided, state) => ({
@@ -68,17 +71,28 @@ const CreateUserForm = ({ goBack }) => {
       })
   }, [])
 
-  const onSubmitHandler = async(values) => {
+  const onSubmitHandler = async (values) => {
     const data = clone(values)
-    data.user[0].types = data.user[0].types.map((role) => role.value.split("-"[0]))
+    data.user[0].types = data.user[0].types.map(
+      (role) => role.value.split('-')[0]
+    )
     data.user[0].gender = data.user[0].gender.value == 'Male' ? 1 : 0
-    replaceWithNull(data);
-    console.log(data)
+    replaceWithNull(data)
+    console.log(data.user[0])
 
-    const res = await _submitFetcher('POST', craftUrl(['users']), {users: [data[0]]});
-    console.log(res)
+    // use this data.user[0] instead of data[0] below.
+    // or you can also just send data.user, and not put it in [].
+    // e.g (should work the way you want, I didn't try sending the request)
+    // const res = await _submitFetcher('POST', craftUrl(['users']), {
+    //   users: data.user,
+    // })
 
-    /*formik.resetForm({
+    // const res = await _submitFetcher('POST', craftUrl(['users']), {
+    //   users: [data[0]],
+    // })
+    // console.log(res)
+
+    formik.resetForm({
       values: {
         user: [
           {
@@ -91,7 +105,7 @@ const CreateUserForm = ({ goBack }) => {
           },
         ],
       },
-    })*/
+    })
     setRefreshKey(Math.random().toString(36))
   }
 
@@ -100,7 +114,7 @@ const CreateUserForm = ({ goBack }) => {
     initialValues: {
       user: [
         {
-          roles: null,
+          types: null,
           gender: null,
           first_name: null,
           last_name: null,
@@ -111,23 +125,23 @@ const CreateUserForm = ({ goBack }) => {
     },
     validationSchema: Yup.object({
       user: Yup.array().of(
-          Yup.object({
-            first_name: Yup.string()
-                .max(15, 'Must be 15 characters or less')
-                .required('Required'),
-            last_name: Yup.string()
-                .max(20, 'Must be 20 characters or less')
-                .required('Required'),
-            contact_email: Yup.string()
-                .email('Invalid email address')
-                .required('Required'),
-            bilkent_id: Yup.number()
-                .positive('Invalid BILKENT ID')
-                .integer('Invalid BILKENT ID')
-                .required('Required'),
-            gender: Yup.object().required('Required'),
-            roles: Yup.array().required('Required'),
-          })
+        Yup.object({
+          first_name: Yup.string()
+            .max(15, 'Must be 15 characters or less')
+            .required('Required'),
+          last_name: Yup.string()
+            .max(20, 'Must be 20 characters or less')
+            .required('Required'),
+          contact_email: Yup.string()
+            .email('Invalid email address')
+            .required('Required'),
+          bilkent_id: Yup.number()
+            .positive('Invalid BILKENT ID')
+            .integer('Invalid BILKENT ID')
+            .required('Required'),
+          gender: Yup.object().required('Required'),
+          types: Yup.array().required('Required'),
+        })
       ),
     }),
     onSubmit: (values) => {
@@ -138,7 +152,7 @@ const CreateUserForm = ({ goBack }) => {
   const goBackHandler = () => {
     formik.resetForm({
       values: {
-        roles: null,
+        types: null,
         gender: null,
         first_name: null,
         last_name: null,
@@ -294,21 +308,23 @@ const CreateUserForm = ({ goBack }) => {
               </div>
             </div>
             <div>
-              <label htmlFor='roles'>Roles</label>
+              <label htmlFor='types' className={styles.inputLabel}>
+                Account Types
+              </label>
               <Select
-                value={formik.values.user?.[0].roles}
-                onChange={(val) => formik.setFieldValue('user[0].roles', val)}
+                value={formik.values.user?.[0].types}
+                onChange={(val) => formik.setFieldValue('user[0].types', val)}
                 isMulti
                 closeMenuOnSelect={false}
-                id='roles'
-                name='user[0].roles'
+                id='types'
+                name='user[0].types'
                 styles={customStyles}
                 options={accountTypes}
               />
-              {formik.touched.user?.[0].roles &&
-              formik.errors.user?.[0].roles ? (
+              {formik.touched.user?.[0].types &&
+              formik.errors.user?.[0].types ? (
                 <div className={styles.error}>
-                  {formik.errors.user?.[0].roles}
+                  {formik.errors.user?.[0].types}
                 </div>
               ) : null}
             </div>
