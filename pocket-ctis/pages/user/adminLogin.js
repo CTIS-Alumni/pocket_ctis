@@ -2,12 +2,11 @@ import { Formik, Field, Form } from 'formik'
 import { Col, Container, Row } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import styles from '../../styles/login.module.css'
-import { User_data } from '../../context/userContext'
-import { useContext,useState } from 'react'
-import {_getFetcher, _submitFetcher} from "../../helpers/fetchHelpers";
+import {useState } from 'react'
+import {_submitFetcher} from "../../helpers/fetchHelpers";
 import {craftUrl} from "../../helpers/urlHelper";
-import {parse} from "cookie";
-import {verify} from "../../helpers/jwtHelper";
+import {toast, ToastContainer} from "react-toastify";
+
 
 const requestAdminLogin = async (authCredentials) => {
     const res = await _submitFetcher("POST", craftUrl(["login"], [{name: "admin", value: 1}]), authCredentials);
@@ -30,26 +29,30 @@ const Login = () => {
     const onSubmit = async (values) => {
         const is_valid = checkValues(values.username, values.password);
         if(is_valid.errors) {
-            console.log(is_valid);
-            return false; //TODO: TOAST
+            toast.error(is_valid.errors[0].error)
+            return false;
         }
         const res = await requestAdminLogin(values)
-        console.log(res);
-        if (res.data?.length > 0) {
+        if (res.data && !res.errors) {
+            toast.success('Login successful')
             router.push( '/admin' )
         }else{
-            //TODO: SHOW ERROR TOAST;
+            toast.error(res.errors[0].error)
         }
     }
 
     const sendMail = async (values) => {
         const is_valid = checkValues(values.username, values.email);
         if(is_valid.errors) {
-            console.log(is_valid);
-            return false; //TODO: TOAST
+            toast.error(is_valid.errors[0].error)
+            return false;
         }
         const res = await requestAdminPassword(values);
-        console.log("here",res);
+        if (res.data && !res.errors) {
+            toast.success('Please check your email address for your password reset link.')
+        }else{
+            toast.error(res.errors[0].error)
+        }
     }
 
     const [loginForm, changeLoginForm] = useState(true);
@@ -165,6 +168,16 @@ const Login = () => {
                     </Col>
                 </Row>
             </Container>
+            <ToastContainer
+                position='top-right'
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                draggable
+                pauseOnHover
+                theme='light'
+            />
         </div>
     )
 }

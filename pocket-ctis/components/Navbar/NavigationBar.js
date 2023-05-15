@@ -3,10 +3,10 @@ import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
 import departmentConfig from '../../config/departmentConfig'
 
 import styles from './NavigationBar.module.scss'
-import {_getFetcher, logout} from "../../helpers/fetchHelpers";
-import {craftUrl} from "../../helpers/urlHelper";
+import { logout} from "../../helpers/fetchHelpers";
 import {useRouter} from "next/router";
 import { User_data } from '../../context/userContext'
+import {toast} from "react-toastify";
 
 
 const NavigationBar = () => {
@@ -15,13 +15,17 @@ const NavigationBar = () => {
 
   const requestLogout = async () => {
     const res = await logout();
-    console.log(res)
-    setUserData(null)
-    router.push('/login' )
+    if (res.data && !res.errors) {
+      toast.success('Logged out successfully.')
+      setUserData(null)
+      router.push('/login' )
+      return false;
+    }else{
+      toast.error(res.errors[0].error)
+    }
   }
 
   const adminLoginPage = async () => {
-    //const {res} = await _getFetcher({res: })
     router.push('/user/adminLogin')
   }
 

@@ -43,9 +43,9 @@ export const _submitFile = async (method, url, formData) => {
     }
 }
 
-export const logout = async (queryParams) => {
+export const logout = async (queryParams = null) => {
     try{
-        const url = queryParams ? craftUrl(["logout"], {name: 'adminPanel', value: 1}) : craftUrl(['logout']);
+        const url = queryParams ? craftUrl(["logout"], [{name: 'adminPanel', value: 1}]) : craftUrl(['logout']);
         const res = await fetch(url, {
             method: 'GET',
             credentials: 'include',
@@ -59,7 +59,6 @@ export const logout = async (queryParams) => {
 
 export const _getFetcher = async (apis,  cookies = null) => { // [{name: url}, {name: url}]
     let results = {}
-
     try{
         await Promise.all(Object.entries(apis).map(async ([api, url])=>{
             const res = await fetch(craftUrl(['proxy']), {
@@ -70,7 +69,9 @@ export const _getFetcher = async (apis,  cookies = null) => { // [{name: url}, {
                     'x-url': url
                 }
             });
-            results[api] = await res.json();
+            if(res)
+                results[api] = await res.json();
+            else throw {error: "Failed to fetch data"};
         }));
         return results;
     }catch(error){

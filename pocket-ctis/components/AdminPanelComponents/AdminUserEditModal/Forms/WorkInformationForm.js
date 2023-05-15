@@ -89,6 +89,7 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
   const url = craftUrl(["users",user_id, 'workrecords'])
 
   const onSubmit = async (values) => {
+    setLoading(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
     const send_to_req = { work_records: cloneDeep(dataAfterSubmit) }
@@ -136,6 +137,7 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
     deletedData = []
 
     setIsUpdated(true)
+    setLoading(false)
   }
 
   return (

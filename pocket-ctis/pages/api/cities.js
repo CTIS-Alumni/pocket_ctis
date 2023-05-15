@@ -1,5 +1,4 @@
-import {doquery, doqueryNew} from "../../helpers/dbHelpers";
-import {checkAuth} from "../../helpers/authHelper";
+import {doqueryNew} from "../../helpers/dbHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
 
 const handler =  async (req, res) => {

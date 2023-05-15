@@ -29,12 +29,12 @@ export default async function (req, res) {
             const user = data;
 
             if (errors || (data && !data.length))
-                throw {code: 401, message: "Wrong username or password"};
+                throw {code: 401, message: "Wrong username or password!"};
 
 
             const result = await compare(password, user[0].hashed)
             if (!result)
-                throw {code: 401, message: "Wrong username or password"};
+                throw {code: 401, message: "Wrong username or password!"};
 
             const access_token = await sign({
                 user_id: payload.user_id,
@@ -69,7 +69,7 @@ export default async function (req, res) {
             let code = 500;
             if(error.code)
                 code = error.code;
-            res.status(code).json({errors: {error: error.message}});
+            res.status(code).json({errors: [{error: error.message}]});
 
         }
     } else {
@@ -80,14 +80,14 @@ export default async function (req, res) {
             const user = data;
 
             if (errors || (data && !data.length)) {
-                throw {code: 401, message: "Wrong username or password"};
+                throw {code: 401, message: "Wrong username or password!"};
             }
 
             compare(password, user[0].hashed, async function (err, result) {
                 if (err)
                     res.status(500).json({errors: [{error: err.message}]});
                 if (!result)
-                    res.status(401).json({errors: [{error: "Wrong username or password"}]});
+                    res.status(401).json({errors: [{error: "Wrong username or password!"}]});
 
                 const access_token = await sign({
                     user_id: user[0].user_id,
@@ -116,7 +116,7 @@ export default async function (req, res) {
                 });
 
                 res.setHeader("Set-Cookie", [serialCookie, refreshCookie]);
-                res.status(200).json({data: {message: "Logged in successfully!"}, errors: errors});
+                res.status(200).json({data: {message: "Login successful"}, errors: errors});
             });
         } catch (error) {
             let code = 500;
