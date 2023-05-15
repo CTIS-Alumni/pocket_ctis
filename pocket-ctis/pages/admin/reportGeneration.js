@@ -54,7 +54,7 @@ const ReportGeneration = () => {
       var sql = 'SELECT '
       sql += selectSchema.columns.join(', ')
       sql += '\nFROM '
-      sql += selectSchema.tables.join(', ')
+      sql += `${selectSchema.tables[0]} ${selectSchema.tables[0]}`
     }
     if (joinSchema.joins.length > 0) {
       sql += '\n'
@@ -88,13 +88,6 @@ const ReportGeneration = () => {
     interWhereSchema,
     intraWhereSchema,
   ])
-
-  useEffect(() => {
-    console.log(
-      selectSchema,
-      tableForJoin.filter((t) => t != selectSchema.tables[0])
-    )
-  }, [selectSchema])
 
   const sendSqlQuery = () => {
     console.log(sqlQuery + ';')
