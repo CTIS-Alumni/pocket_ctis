@@ -15,29 +15,7 @@ const selectStyles = {
   }),
 }
 
-const transformTableData = (data) => {
-  /*model: [
-        {
-            label: TABLE_NAME,
-            options: [
-                {
-                    label: COLUMN_NAME,
-                    value: TABLE_NAME.COLUMN_NAME
-                }
-            ]
-        }
-        ...
-    ] */
-
-  const optionsModel = Object.keys(data).map((table) => ({
-    value: table,
-    label: table,
-  }))
-  return optionsModel
-}
-
-const SelectClauseCreator = ({ setSelectSchema }) => {
-  const [tableOptions, setTableOptions] = useState([])
+const SelectClauseCreator = ({ setSelectSchema, tableOptions }) => {
   const [columnOptions, setColumnOptions] = useState([])
   const [formatedSelectStatment, setFormatedSelectStatment] = useState('')
   const [columns, setColumns] = useState([])
@@ -53,19 +31,13 @@ const SelectClauseCreator = ({ setSelectSchema }) => {
     },
   })
 
-  useEffect(() => {
-    setTableOptions(transformTableData(tableColumns))
-  }, [tableColumns])
-
   const removeColumn = (col) => {
     const newTables = []
     const newColumns = [...columns.filter((column) => column != col)]
 
-    newColumns.forEach((column) => {
-      const table = column.split('.')[0]
-      if (!newTables.includes(table)) newTables.push(table)
-    })
-
+    if (newColumns.length > 0) {
+      newTables.push(newColumns[0].split('.')[0])
+    }
     setTables(newTables)
     setColumns(newColumns)
   }
@@ -81,12 +53,7 @@ const SelectClauseCreator = ({ setSelectSchema }) => {
               <span>
                 <span
                   className={styles.removeable}
-                  onClick={() =>
-                    // setColumns((columns) => [
-                    //   ...columns.filter((column) => column != col),
-                    // ])
-                    removeColumn(col)
-                  }
+                  onClick={() => removeColumn(col)}
                 >
                   {col}
                 </span>
@@ -94,7 +61,7 @@ const SelectClauseCreator = ({ setSelectSchema }) => {
               </span>
             ))}{' '}
             <br />
-            FROM {tables.join(', ')}
+            FROM {tables[0]} {tables[0]}
           </span>
         </div>
       ) : (
@@ -120,12 +87,11 @@ const SelectClauseCreator = ({ setSelectSchema }) => {
       if (!newColumns.includes(col)) newColumns.push(col)
     }
 
-    newColumns.forEach((column) => {
-      const table = column.split('.')[0]
-      if (!newTables.includes(table)) newTables.push(table)
-    })
+    if (newColumns.length > 0) {
+      newTables.push(newColumns[0].split('.')[0])
+    }
 
-    setTables(newTables)
+    setTables([...newTables])
     setColumns(newColumns)
 
     formik.setValues({ selectColumn: null, selectTable: null })
