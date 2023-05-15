@@ -122,8 +122,7 @@ const ReportGeneration = () => {
       </Card>
       <Card border='light' style={{ padding: 20 }} className='mb-2'>
         <JoinCreator
-          activeTables={tableForJoin.filter((t) => t != selectSchema.tables[0])}
-          // activeTables={tableForJoin}
+          activeTables={tableForJoin}
           setJoinSchema={setJoinSchema}
           selectClauseTable={selectSchema.tables[0]}
         />
