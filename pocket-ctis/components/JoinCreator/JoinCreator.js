@@ -29,7 +29,7 @@ const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
           ref.table == selectClauseTable
         ) {
           availableJoins.push({
-            label: `1 ${table} ${table} ON ${table}.${ref.column} = ${ref.table}.id`,
+            label: `${table} ${table} ON ${table}.${ref.column} = ${ref.table}.id`,
             value: {
               referencedTable: ref.table,
               referencedColumn: 'id',
@@ -43,7 +43,7 @@ const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
       table_references[table].referenced.forEach((ref) => {
         if (activeTables.includes(ref.table)) {
           availableJoins.push({
-            label: `2 ${table} ${table} ON ${table}.${ref.column} = ${ref.table}.id `,
+            label: `${table} ${table} ON ${table}.${ref.column} = ${ref.table}.id `,
             value: {
               referencedTable: table,
               referencedColumn: ref.column,
