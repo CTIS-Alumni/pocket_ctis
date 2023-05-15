@@ -1,10 +1,9 @@
 import {deleteCookie, sign, verify} from "../../helpers/jwtHelper";
 import {parse, serialize} from "cookie";
 
-const handler =  async (req, res) => {
+export default async function (req, res) {
     if(req.query.adminPanel){
         try{
-
             const {cookies} = req;
             if(cookies.RefreshJWT) {
                 const {payload} = await verify(cookies.RefreshJWT, process.env.REFRESH_SECRET);
@@ -44,11 +43,11 @@ const handler =  async (req, res) => {
     }else{
         try{
             const {cookies} = req;
-
             if(cookies.RefreshJWT) {
-                const refresh_expired = deleteCookie("RefreshJWT");
-                const access_expired = deleteCookie("AccessJWT");
-                res.setHeader("Set-Cookie", [refresh_expired, access_expired]);
+                const serialCookie = deleteCookie("RefreshJWT");
+                const refreshCookie = deleteCookie("AccessJWT");
+                console.log("regre", refreshCookie);
+                res.setHeader("Set-Cookie", [serialCookie, refreshCookie]);
                 res.status(200).json({data: "Logged out successfully!"})
             }else res.status(403).json({errors: [{error: "You are not logged in."}]});
         }catch(error){

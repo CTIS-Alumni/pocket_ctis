@@ -3,7 +3,7 @@ import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
 import departmentConfig from '../../config/departmentConfig'
 
 import styles from './NavigationBar.module.scss'
-import {_getFetcher} from "../../helpers/fetchHelpers";
+import {_getFetcher, logout} from "../../helpers/fetchHelpers";
 import {craftUrl} from "../../helpers/urlHelper";
 import {useRouter} from "next/router";
 import { User_data } from '../../context/userContext'
@@ -14,7 +14,8 @@ const NavigationBar = () => {
   const { setUserData } = useContext(User_data)
 
   const requestLogout = async () => {
-    const {logout} = await _getFetcher({logout: craftUrl(['logout'])});
+    const res = await logout();
+    console.log(res)
     setUserData(null)
     router.push('/login' )
   }

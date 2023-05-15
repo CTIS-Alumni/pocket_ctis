@@ -15,7 +15,7 @@ const columns = {
 
 const field_conditions = {
     must_be_different: ["company_id", "semester"],
-    date_fields: [],
+    date_fields: ["start_date"],
     user: {
         check_user_only: true,
         user_id: null

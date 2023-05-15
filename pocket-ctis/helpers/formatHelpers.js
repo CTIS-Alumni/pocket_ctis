@@ -61,11 +61,11 @@ export const getSemester = (semester, start_date) => {
     }
 }
 
-export const getProfilePicturePath = (visibility = 0, fileName = null) => {
-    if (fileName && visibility == 1) {
+export const getProfilePicturePath = (fileName = null) => {
+    if (fileName) {
         return '/profilepictures/' + fileName + '.png'
     } else {
-        return '/profilepictures/defaultUser.png'
+        return '/profilepictures/defaultuser.png'
     }
 }
 

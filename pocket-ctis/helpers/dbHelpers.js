@@ -532,7 +532,7 @@ export const insertToTable = async(queries, table, validation = null) => {
             errors.push({index: index, error: error.message});
         }
     }
-    connection.end();f
+    connection.end();
     return {data, errors};
 }
 

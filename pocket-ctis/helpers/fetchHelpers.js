@@ -43,6 +43,19 @@ export const _submitFile = async (method, url, formData) => {
     }
 }
 
+export const logout = async (queryParams) => {
+    try{
+        const url = queryParams ? craftUrl(["logout"], {name: 'adminPanel', value: 1}) : craftUrl(['logout']);
+        const res = await fetch(url, {
+            method: 'GET',
+            credentials: 'include',
+        });
+        const results = await res.json();
+        return results;
+    }catch(error){
+        return {errors: [{error: error.message}]};
+    }
+}
 
 export const _getFetcher = async (apis,  cookies = null) => { // [{name: url}, {name: url}]
     let results = {}

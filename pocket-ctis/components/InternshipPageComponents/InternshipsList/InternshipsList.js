@@ -31,7 +31,7 @@ const InternshipsList = ({ internships }) => {
   return (
     <div className={styles.internship_students}>
       {internships.map((internship) => {
-        const profilePicture = getProfilePicturePath(internship.pic_visibility, internship.profile_picture)
+        const profilePicture = getProfilePicturePath(internship.profile_picture)
         const internshipSemester = getSemester(internship.semester, internship.start_date)
         const timePeriod = getTimePeriod(internship.start_date, internship.end_date)
         return (
