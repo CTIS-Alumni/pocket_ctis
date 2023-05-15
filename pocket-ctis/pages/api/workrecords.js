@@ -1,4 +1,4 @@
-import {addAndOrWhere, doquery, doqueryNew} from "../../helpers/dbHelpers";
+import {addAndOrWhere, doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 
