@@ -3,12 +3,12 @@
 // hoverable table row
 .hoverable {
     &:nth-of-type(odd) {
-        @include owo-whats-this() {
+        @include attention() {
             background-color: $ctis-grey-100;
         }
     }
     &:nth-of-type(even) {
-        @include owo-whats-this() {
+        @include attention() {
             background-color: $ctis-blue-100;
         }
     }
@@ -67,7 +67,7 @@
         border-radius: $border-radius-small;
         margin: 0 $margin-small;
 
-        @include owo-whats-this() {
+        @include attention() {
             background-color: $ctis-grey-100;
         }
 

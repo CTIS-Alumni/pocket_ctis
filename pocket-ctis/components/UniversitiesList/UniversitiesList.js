@@ -6,7 +6,7 @@ import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
 
 const UniversitiesList = ({ universities, isLoading, onSearch }) => {
   return (
-    <div className={styles.universities}>
+    <section className={styles.universities}>
       <h2 className='custom_table_title'>Universities</h2>
       <div className={styles.universities_search_bar}>
         <FilterSquareFill />
@@ -60,7 +60,7 @@ const UniversitiesList = ({ universities, isLoading, onSearch }) => {
           ))}
         </tbody>
       </table>
-    </div>
+    </section>
   )
 }
 

@@ -2,7 +2,7 @@
 @use 'fonts' as *;
 
 /* when the element gets attention */
-@mixin owo-whats-this($include-me: false) {
+@mixin attention($include-me: false) {
     // include-me: whether to include the current element in the active state if you get what i mean lol
     @if $include-me {
         &,

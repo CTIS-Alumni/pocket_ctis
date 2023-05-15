@@ -1,11 +1,6 @@
 @import '../../styles/variables.scss';
 
-.sidebar {
-    color: $dark-grey;
-    background-color: $white;
-    padding-left: 1.5em;
-    
-    // NEW CODE
+.sidebar {    
     position: fixed;
     top: $navbar-height;
     height: 100%;
@@ -14,29 +9,32 @@
     max-width: $sidebar-maxwidth;
     max-height: calc(100% - $navbar-height);
     z-index: 1;
+    background-color: $true-white;
+    box-shadow: 0px 2px 8px 0px $ctis-grey-100;
+
+    padding: $padding-large $padding-xlarge;
 
     &_user_avatar {
-        width: 128px;
-        height: 128px;
-        border-radius: 50%;
-        background-position: center;
-        background-size: cover;
-        background-repeat: no-repeat;
-        //margin: 2em auto 1em;
+        margin: auto;
+    }
+
+    &_user_wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: $margin-medium;
+        margin-top: $margin-medium;
     }
 
     &_user_info {
         span {display: block;}
+
         .user_role {
-            text-transform: uppercase;
-            font-size: 0.8em;
-            letter-spacing: 0.05em;
+            @include secondary-text();
+            font-weight: $fw-regular;
         }
         .user_name_surname {
-            color: $black;
-            font-weight: $fw-bold;
-            font-size: 1.2em;
-            margin-bottom: 0.4em;
+            @include primary-text();
+            font-weight: $fw-medium;
         }
         margin: auto;
         margin-bottom: 2em;
@@ -47,26 +45,56 @@
         width: 100%;
     }
 
+    &_button_group {
+
+        &_personal {
+            margin-bottom: $margin-xlarge;
+            svg {color: $ctis-yellow-500}
+
+            a {
+                @include attention() {
+                    color: $ctis-yellow-500;
+                }
+            }
+        }
+        &_career {
+            margin-bottom: $margin-xlarge;
+            svg {color: $ctis-red-300}
+
+            a {
+                @include attention() {
+                    color: $ctis-red-300;
+                }
+            }
+        }
+        &_education {
+            margin-bottom: $margin-xlarge;
+            svg {color: $ctis-blue-400}
+
+            a {
+                @include attention() {
+                    color: $ctis-blue-400;
+                }
+            }
+        }
+        &_title {
+            display: block;
+            color: $ctis-grey-400;
+            font-size: $fs-small;
+            margin-bottom: $margin-medium;
+        }
+    }
+
     &_button {
         display: flex;
-        padding: 0.8em 1.5em;
-        background-color: $light-grey;
-        border-radius: 5px;
-        text-transform: uppercase;
-        font-weight: $fw-bold;
-        transition: background-color 0.3s linear;
+        margin-bottom: $margin-small;
 
-        &:not(:last-of-type) { margin-bottom: 0.8em; }
-        &:hover {
-            background-color: $medium-grey;
-            color: $white;
-            transition: background-color 0.3s linear;
-        }
+        @include secondary-text();
 
         svg {
             width: 1.2em;
             height: 1.2em;
-            margin-right: 1em;
+            margin-right: $margin-large;
         }
     }
 }

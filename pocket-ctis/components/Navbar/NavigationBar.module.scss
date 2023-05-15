@@ -1,20 +1,19 @@
 @import '../../styles/variables.scss';
 
 .navbar {
-    background-color: $light-grey;
+    background-color: $ctis-yellow-400;
     width: 100%;
-    padding: 0 3em;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
-
-    // NEW CODE
+    align-content: center;
     position: fixed;
     height: $navbar-height;
     z-index: 1;
+    padding: 0 $padding-xxlarge;
     
     &_logo {
-        font-size: 1.5em;
-        font-weight: $fw-bold;
+        font-size: $fs-large;
+        font-weight: $fw-black;
+        font-family: $ff-ctis;
     }
 }

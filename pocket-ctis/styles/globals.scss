@@ -58,13 +58,13 @@ table {
         color: inherit;
         font-weight: $fw-medium;
 
-        @include owo-whats-this() {
+        @include attention() {
             color: $ctis-blue-400;
         }
     }
 }
 
-[class^='user_avatar'] {
+[class*='common_user_avatar'] {
     display: block;
     border-radius: 50%;
     background-repeat: no-repeat;

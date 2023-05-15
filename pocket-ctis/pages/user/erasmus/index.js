@@ -12,7 +12,7 @@ const ErasmusDashboard = ({ erasmus, eduInsts }) => {
     <main>
       <NavigationBar />
       <UserInfoSidebar />
-      <div className={styles.erasmus_wrapper}>
+      <section className={styles.erasmus_wrapper}>
         <h2 className={styles.erasmus_title}>Erasmus</h2>
         <Tabs defaultActiveKey='students' className='mb-3'>
           <Tab eventKey='students' title='Students'>
@@ -22,7 +22,7 @@ const ErasmusDashboard = ({ erasmus, eduInsts }) => {
             <ErasmusUnisList universities={eduInsts.data} />
           </Tab>
         </Tabs>
-      </div>
+      </section>
     </main>
   )
 }
