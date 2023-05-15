@@ -9,6 +9,7 @@ import styles from './AdminUserFormStyles.module.css'
 import {_getFetcher, _submitFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
 import {craftUrl} from '../../../../helpers/urlHelper'
 import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
+import {toast} from "react-toastify";
 
 const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [companies, setCompanies] = useState([])
@@ -94,9 +95,30 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
     console.log('req,', requestObj, 'res', responseObj)
     deletedData = []
 
+    let errors = []
+    for (const [key, value] of Object.entries(responseObj)) {
+      if (value.errors?.length > 0) {
+        errors = [...errors, ...value.errors.map((error) => error)]
+      }
+    }
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else if (
+        responseObj.POST.data ||
+        responseObj.PUT.data ||
+        responseObj.DELETE.data
+    ) {
+      toast.success('Data successfully saved')
+    }
+
     if(responseObj.POST.data?.length){
       const {data, errors} = await sendMail();
-      //TODO: if data is true, show update mail sent toast, if errors.length > 0, show update mail couldnt send toast
+      if(data)
+        toast.success("Profile update mail sent to user")
+      else toast.error("Failed to send profile update mail to user")
     }
   }
 

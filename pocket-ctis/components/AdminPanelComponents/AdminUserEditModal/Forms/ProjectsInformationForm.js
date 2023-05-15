@@ -6,6 +6,7 @@ import {_getFetcher, _submitFetcher, createReqObject, submitChanges} from '../..
 import {craftUrl} from '../../../../helpers/urlHelper'
 import {cloneDeep} from "lodash";
 import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
+import {toast} from "react-toastify";
 
 const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [graduationProjects, setGraduationProjects] = useState([])
@@ -120,10 +121,26 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
     applyNewData(final_data)
     deletedData = { projects: [], graduation_project: [] }
 
-    if(responseObj.graduation_project.POST.data?.length){
+    let errors = []
+    Object.keys(deletedData).forEach((obj) => {
+      for (const [key, value] of Object.entries(responseObj[obj])) {
+        if (value.errors?.length > 0) {
+          errors = [...errors, ...value.errors.map((error) => error)]
+        }
+      }
+    });
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else toast.success('Data successfully saved')
+
+    if(responseObj.POST.data?.length){
       const {data, errors} = await sendMail();
-      console.log(data, errors);
-      //TODO: if data is true, show update mail sent toast, if errors.length > 0, show update mail couldnt send toast
+      if(data)
+        toast.success("Profile update mail sent to user")
+      else toast.error("Failed to send profile update mail to user")
     }
   }
 

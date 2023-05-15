@@ -10,6 +10,7 @@ import DatePickerField from '../../../DatePickers/DatePicker'
 import {_getFetcher, _submitFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
 import {craftUrl} from '../../../../helpers/urlHelper'
 import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
+import {toast} from "react-toastify";
 
 const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [universities, setUniversities] = useState([])
@@ -88,12 +89,33 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
     )
     applyNewData(new_data)
     console.log('req,', requestObj, 'res', responseObj)
+
     deletedData = []
 
-    //after submission
+    let errors = []
+    for (const [key, value] of Object.entries(responseObj)) {
+      if (value.errors?.length > 0) {
+        errors = [...errors, ...value.errors.map((error) => error)]
+      }
+    }
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else if (
+        responseObj.POST.data ||
+        responseObj.PUT.data ||
+        responseObj.DELETE.data
+    ) {
+      toast.success('Data successfully saved')
+    }
+
     if(responseObj.POST.data?.length){
       const {data, errors} = await sendMail();
-      //TODO: if data is true, show update mail sent toast, if errors.length > 0, show update mail couldnt send toast
+      if(data)
+        toast.success("Profile update mail sent to user")
+      else toast.error("Failed to send profile update mail to user")
     }
   }
 

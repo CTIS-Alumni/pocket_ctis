@@ -8,6 +8,7 @@ import { cloneDeep } from 'lodash'
 import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
 import {craftUrl} from '../../../../helpers/urlHelper'
 import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
+import {toast} from "react-toastify";
 
 const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
@@ -141,6 +142,22 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
     console.log('req', requestObj, 'res', responseObj)
     applyNewData(final_data)
     deletedData = { phone_numbers: [], emails: [], socials: [] }
+
+    let errors = []
+    Object.keys(deletedData).forEach((obj) => {
+      for (const [key, value] of Object.entries(responseObj[obj])) {
+        if (value.errors?.length > 0) {
+          errors = [...errors, ...value.errors.map((error) => error)]
+        }
+      }
+    });
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else toast.success('Data successfully saved')
+
   }
 
   const { phone_numbers, emails, socials } = data

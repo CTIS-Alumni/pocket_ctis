@@ -12,7 +12,6 @@ import * as Yup from 'yup'
 import { clone } from 'lodash'
 import {
   replaceWithNull,
-  splitFields,
 } from '../../../helpers/submissionHelpers'
 
 const customStyles = {
@@ -78,26 +77,29 @@ const CreateUserForm = ({ goBack }) => {
     )
     data.user[0].gender = data.user[0].gender.value == 'Male' ? 1 : 0
     replaceWithNull(data)
-    console.log(data.user[0])
 
     const res = await _submitFetcher('POST', craftUrl(['users']), {users: data.user});
-    console.log(res)
-
-    formik.resetForm({
-      values: {
-        user: [
-          {
-            types: null,
-            gender: null,
-            first_name: null,
-            last_name: null,
-            bilkent_id: null,
-            contact_email: null,
-          },
-        ],
-      },
-    })
-    setRefreshKey(Math.random().toString(36))
+    console.log(res);
+    if(res.data['0']?.data?.mail_status && !res.errors?.length){
+      toast.success("User saved successfully!")
+      formik.resetForm({
+        values: {
+          user: [
+            {
+              types: null,
+              gender: null,
+              first_name: null,
+              last_name: null,
+              bilkent_id: null,
+              contact_email: null,
+            },
+          ],
+        },
+      })
+      setRefreshKey(Math.random().toString(36))
+    }else{
+      toast.error(res.errors[0].error)
+    }
   }
 
   const formik = useFormik({

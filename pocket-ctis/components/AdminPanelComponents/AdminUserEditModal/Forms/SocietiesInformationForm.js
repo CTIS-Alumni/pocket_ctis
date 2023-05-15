@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react'
 import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
 import {craftUrl} from '../../../../helpers/urlHelper'
 import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
+import {toast} from "react-toastify";
 
 const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [societies, setSocieties] = useState([])
@@ -80,6 +81,25 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
     console.log('req,', requestObj, 'res', responseObj)
 
     deletedData = []
+
+    let errors = []
+    for (const [key, value] of Object.entries(responseObj)) {
+      if (value.errors?.length > 0) {
+        errors = [...errors, ...value.errors.map((error) => error)]
+      }
+    }
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else if (
+        responseObj.POST.data ||
+        responseObj.PUT.data ||
+        responseObj.DELETE.data
+    ) {
+      toast.success('Data successfully saved')
+    }
   }
 
   return (
