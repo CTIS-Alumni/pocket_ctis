@@ -2,30 +2,39 @@ import { createContext, useEffect, useState } from 'react'
 import { _getFetcher } from '../helpers/fetchHelpers'
 
 export const Tables_Data = createContext({
-  tablesData: [],
+  tablesColumnTypeData: [],
+  tableColumns: [],
 })
 
 function TablesContext({ children }) {
-  const [tablesData, setTablesData] = useState([])
+  const [tablesColumnTypeData, setTablesColumnTypeData] = useState([])
+  const [tableColumns, setTableColumns] = useState([])
 
   useEffect(() => {
     _getFetcher({ data: '/api/tablecolumns' })
       .then(({ data }) => {
-        const tableData = {}
+        const tablesColumnTypeData = {}
+        const tableColumns = {}
         data.data.forEach((datum) => {
           const { TABLE_NAME, COLUMN_NAME, DATA_TYPE } = datum
-          if (TABLE_NAME in tableData) {
-            tableData[TABLE_NAME].push({ COLUMN_NAME, DATA_TYPE })
+          if (TABLE_NAME in tablesColumnTypeData) {
+            tablesColumnTypeData[TABLE_NAME].push({ COLUMN_NAME, DATA_TYPE })
+            tableColumns[TABLE_NAME].push(COLUMN_NAME)
           } else {
-            tableData[TABLE_NAME] = [{ COLUMN_NAME, DATA_TYPE }]
+            tablesColumnTypeData[TABLE_NAME] = [{ COLUMN_NAME, DATA_TYPE }]
+            tableColumns[TABLE_NAME] = [COLUMN_NAME]
           }
         })
-        setTablesData(tableData)
+        setTablesColumnTypeData(tablesColumnTypeData)
+        setTableColumns(tableColumns)
       })
       .catch((err) => console.log(err))
   }, [])
 
-  const value = { tablesData: tablesData }
+  const value = {
+    tablesColumnTypeData: tablesColumnTypeData,
+    tableColumns: tableColumns,
+  }
 
   return <Tables_Data.Provider value={value}>{children}</Tables_Data.Provider>
 }
