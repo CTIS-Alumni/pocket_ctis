@@ -22,8 +22,11 @@ const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
   const [joinedTablesX, setJoinedTablesX] = useState([])
 
   useEffect(() => {
-    setJoinedTablesX([selectClauseTable])
-  }, [])
+    setJoinedTablesX(prevTables => {
+      const updatedTables = [selectClauseTable, ...prevTables.filter(table => table !== selectClauseTable)];
+      return updatedTables;
+    });
+  }, [selectClauseTable])
 
   const getAvailableJoins = () => {
     const availableJoins = []
@@ -120,7 +123,7 @@ const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
       tables: joinedTables,
       joins: selectedJoins.map((s) => s.text),
     })
-  }, [selectedJoins, joinedTablesX])
+  }, [selectedJoins])
 
   const onSubmitHandler = (values) => {
     const temp = {

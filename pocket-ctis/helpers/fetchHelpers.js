@@ -17,7 +17,7 @@ export const submitChanges = async (url, requestObj) => {
     return responseObj;
 }
 
-export const _submitFetcher = async (method, url, body ) => {
+export const _submitFetcher = async (method, url, body) => {
     try{
         const res = await fetch(url, {
             method: method,
@@ -26,7 +26,7 @@ export const _submitFetcher = async (method, url, body ) => {
         })
         return await res.json()
     }catch(error){
-        return {errors: [{error: error.message}]};
+        return {errors: [{error: "An error occured!"}]};
     }
 }
 
