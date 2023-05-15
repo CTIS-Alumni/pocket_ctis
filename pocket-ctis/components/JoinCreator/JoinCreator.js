@@ -15,7 +15,7 @@ const selectStyles = {
   }),
 }
 
-const JoinCreator = ({ activeTables, setJoinSchema }) => {
+const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
   const [availableJoins, setAvailableJoins] = useState([])
   const [selectedJoins, setSelectedJoins] = useState([])
   const [formatedJoinStatment, setFormatedJoinStatment] = useState('')
@@ -24,15 +24,34 @@ const JoinCreator = ({ activeTables, setJoinSchema }) => {
     const availableJoins = []
     activeTables.forEach((table) => {
       table_references[table].references.forEach((ref) => {
-        availableJoins.push({
-          label: `${ref.table} ON ${table}.${ref.column} = ${ref.table}.id`,
-          value: {
-            referencedTable: ref.table,
-            referencedColumn: 'id',
-            referencingTable: table,
-            referencingColumn: ref.column,
-          },
-        })
+        if (
+          activeTables.includes(ref.table) ||
+          ref.table == selectClauseTable
+        ) {
+          availableJoins.push({
+            label: `1 ${table} ${table} ON ${table}.${ref.column} = ${ref.table}.id`,
+            value: {
+              referencedTable: ref.table,
+              referencedColumn: 'id',
+              referencingTable: table,
+              referencingColumn: ref.column,
+            },
+          })
+        }
+      })
+
+      table_references[table].referenced.forEach((ref) => {
+        if (activeTables.includes(ref.table)) {
+          availableJoins.push({
+            label: `2 ${table} ${table} ON ${table}.${ref.column} = ${ref.table}.id `,
+            value: {
+              referencedTable: table,
+              referencedColumn: ref.column,
+              referencingTable: ref.table,
+              referencingColumn: 'id',
+            },
+          })
+        }
       })
     })
     formik.setFieldValue('joinStatement', null)
@@ -41,7 +60,7 @@ const JoinCreator = ({ activeTables, setJoinSchema }) => {
 
   useEffect(() => {
     getAvailableJoins()
-  }, [activeTables])
+  }, [activeTables, selectClauseTable])
 
   const formik = useFormik({
     enableReinitialize: true,
