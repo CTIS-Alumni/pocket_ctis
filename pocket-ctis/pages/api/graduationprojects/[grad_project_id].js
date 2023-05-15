@@ -1,4 +1,4 @@
-import {doquery} from "../../../helpers/dbHelpers";
+import {doquery, doqueryNew} from "../../../helpers/dbHelpers";
 import {checkAuth} from "../../../helpers/authHelper";
 
 export default async function handler(req, res){
@@ -14,13 +14,10 @@ export default async function handler(req, res){
                     "FROM graduationproject g LEFT OUTER JOIN company c ON (g.company_id = c.id) " +
                     "WHERE g.id = ?";
                 //pics are under public/graduationprojects/,
-                const data = await doquery({query: query,values: [grad_project_id]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
+                const {data, errors} = await doqueryNew({query: query,values: [grad_project_id]});
+                res.status(200).json({data, errors});
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({errors: [{error: error.message}]});
             }
             break;
         case "PUT":
@@ -38,7 +35,7 @@ export default async function handler(req, res){
                 else
                     res.status(200).json({data});
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({errors: [{error: error.message}]});
             }
             break;
         case "DELETE":
@@ -50,11 +47,11 @@ export default async function handler(req, res){
                 else
                     res.status(200).json({data});
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({errors: [{error: error.message}]});
             }
             break;
     }
     }else{
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

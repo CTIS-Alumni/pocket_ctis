@@ -12,7 +12,7 @@ import {
   replaceWithNull, splitFields,
 } from '../../../../helpers/submissionHelpers'
 import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
+import { craftUrl} from '../../../../helpers/urlHelper'
 
 const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [examTypes, setExamTypes] = useState([])
@@ -21,7 +21,7 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
   let deletedData = []
 
   useEffect(() => {
-    _getFetcher({ exams: craftUrl('exams') }).then(({ exams }) =>
+    _getFetcher({ exams: craftUrl(['exams']) }).then(({ exams }) =>
         setExamTypes(
             exams.data.map((datum) => {
               return {
@@ -61,7 +61,7 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
   }
 
   const args = [['exam'], [], ['id', 'user_id'], ['exam_date']]
-  const url = craftUserUrl(user_id, 'exams')
+  const url = craftUrl(["users",user_id, 'exams'])
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
@@ -148,7 +148,6 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             arrayHelpers.remove(index)
                                             if (exam.hasOwnProperty('id'))
                                               deletedData.push({
-                                                name: exam.id,
                                                 id: exam.id,
                                                 data: exam,
                                               })

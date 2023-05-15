@@ -1,5 +1,5 @@
-import { _getFetcher } from '../../../helpers/fetchHelpers'
-import { craftUserUrl } from '../../../helpers/urlHelper'
+import {_getFetcher, _submitFetcher, _submitFile} from '../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../helpers/urlHelper'
 import AdminPageContainer from '../../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
 import {
   Badge,
@@ -114,6 +114,8 @@ const AdminUserView = ({ user }) => {
     'Expert',
   ]
 
+  let deleted_image = false;
+
   const classifySkills = () => {
     const classifiedSkill = {}
     skills.forEach((skill) => {
@@ -132,7 +134,7 @@ const AdminUserView = ({ user }) => {
     setIsLoading(true)
     console.log(user)
     _getFetcher({
-      res: craftUserUrl(user.userInfo.data.basic_info[0].id, 'profile'),
+      res: craftUrl(["users",user.userInfo.data.basic_info[0].id, 'profile']),
     })
       .then(({ res }) => setUserData(res))
       .finally(() => {
@@ -786,12 +788,10 @@ const AdminUserView = ({ user }) => {
 export default AdminUserView
 
 export async function getServerSideProps(context) {
-  const { cookies } = context.req
-  const token = cookies.AccessJWT
+  const {cookie} = context.req.headers;
 
   const userInfo = await _getFetcher(
-    { userInfo: craftUserUrl(context.params.id, 'profile') },
-    token
-  )
+    { userInfo: craftUrl(["users", context.params.id, 'profile']) }, cookie)
+
   return { props: { user: userInfo } }
 }

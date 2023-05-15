@@ -29,12 +29,11 @@ const InternshipsDashboard = ({ internships, companies }) => {
 }
 
 export async function getServerSideProps(context) {
-  const {cookies} = context.req;
-  const token = cookies.AccessJWT;
+  const {cookie} = context.req.headers
   const {internships, companies} = await _getFetcher({
-    internships: craftUrl("internships"),
-    companies: craftUrl("companies", [{name: "is_internship", value: 1}])
-  }, token);
+    internships: craftUrl(["internships"]),
+    companies: craftUrl(["companies"], [{name: "is_internship", value: 1}])
+  }, cookie);
   return { props: { internships, companies } }
 }
 export default InternshipsDashboard

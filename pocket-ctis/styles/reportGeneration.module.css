@@ -1,0 +1,18 @@
+.submitButton{
+    width: 20%;
+    background-color: rgba(245, 164, 37, 0.2);
+    border: none;
+    color: rgb(245, 164, 37);
+    padding: 5px;
+    height: 38px;
+    border-radius: 4px;
+    transition: all 0.1s ease-in-out;
+    margin-bottom: 5px;
+}
+.submitButton:hover:not(:disabled){
+    padding: 3px;
+    border: 2px solid rgb(245, 164, 37);
+}
+.submitButton:disabled{
+    background-color: #fbfbfb;
+}

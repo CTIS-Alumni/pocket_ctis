@@ -5,7 +5,7 @@ import { XCircleFill, PlusCircleFill } from 'react-bootstrap-icons'
 import { cloneDeep } from 'lodash'
 import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
 import {handleResponse, replaceWithNull, splitFields} from '../../../../helpers/submissionHelpers'
-import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {craftUrl} from '../../../../helpers/urlHelper'
 
 const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [skillType, setSkillType] = useState([])
@@ -14,8 +14,8 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   useEffect(() => {
     _getFetcher({
-      skills: craftUrl('skills'),
-      skill_types: craftUrl('skilltypes'),
+      skills: craftUrl(['skills']),
+      skill_types: craftUrl(['skilltypes']),
     }).then(({ skills, skill_types }) => {
       setSkills(skills.data)
       setSkillType(skill_types.data)
@@ -57,7 +57,7 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
     [],
   ]
 
-  const url = craftUserUrl(user_id, 'skills')
+  const url = craftUrl(["users",user_id, 'skills'])
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
@@ -141,9 +141,7 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                         onClick={() => {
                                           arrayHelpers.remove(index)
                                           if (skill.hasOwnProperty('id')) {
-                                            console.log(skill)
                                             deletedData.push({
-                                              name: skill.id,
                                               id: skill.id,
                                               data: skill,
                                             })

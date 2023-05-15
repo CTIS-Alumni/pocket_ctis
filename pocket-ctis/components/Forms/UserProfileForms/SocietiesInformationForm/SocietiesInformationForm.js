@@ -20,14 +20,14 @@ import {
   createReqObject,
   submitChanges,
 } from '../../../../helpers/fetchHelpers'
-import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
+import { craftUrl} from '../../../../helpers/urlHelper'
 
 const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [societies, setSocieties] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
 
   useEffect(() => {
-    _getFetcher({ societies: craftUrl('studentsocieties') }).then(
+    _getFetcher({ societies: craftUrl(['studentsocieties']) }).then(
       ({ societies }) => setSocieties(societies.data)
     )
   }, [])
@@ -71,7 +71,7 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
       newData.societies,
       deletedData
     )
-    const url = craftUserUrl(user_id, 'societies')
+    const url = craftUrl(["users",user_id, 'societies'])
     const responseObj = await submitChanges(url, requestObj)
     const args = [['society'], [], ['user_id', 'id'], []]
     const new_data = handleResponse(
@@ -138,9 +138,7 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
                                         onClick={() => {
                                           arrayHelpers.remove(index)
                                           if (society.hasOwnProperty('id')) {
-                                            console.log(deletedData)
                                             deletedData.push({
-                                              name: society.id,
                                               id: society.id,
                                               data: society,
                                             })

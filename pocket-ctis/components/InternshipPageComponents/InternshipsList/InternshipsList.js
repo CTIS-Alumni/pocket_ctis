@@ -5,6 +5,7 @@ import {
   getProfilePicturePath,
   getSemester, getTimePeriod,
 } from '../../../helpers/formatHelpers'
+import ReactStars from "react-stars";
 
 const Anonymous = () => {
   return (
@@ -64,6 +65,15 @@ const InternshipsList = ({ internships }) => {
                   <span className={styles.internship_students_item_time_period}>
                     {timePeriod}
                   </span>
+                  {internship.rating &&
+                      <ReactStars
+                          count={5}
+                          value={internship.rating}
+                          size={20}
+                          color2={'#c79d34'}
+                          edit={false}
+                      />
+                  }
                 </div>
               </div>
               <div className={styles.internship_students_item_badge}>

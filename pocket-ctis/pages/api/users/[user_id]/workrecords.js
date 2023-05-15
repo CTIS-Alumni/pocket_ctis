@@ -21,6 +21,7 @@ const fields = {
         "department",
         "position",
         "work_description",
+        "hiring_method",
         "city_id",
         "country_id",
         "visibility",
@@ -37,17 +38,17 @@ const validation = (data) => {
     const endDate = data.end_date ? new Date(data.end_date) : null;
 
     if(data.work_type_id !== 3 && !data.company_id)
-        return false;
+        return "Please select a company!";
     if (startDate && endDate && startDate > endDate)
-        return false;
+        return "Start date can't be after end date!";
     if((endDate && endDate > currentDate) || (startDate && startDate > currentDate))
-        return false;
+        return "Please do not select future dates!";
     if(endDate && data.is_current) //if its ongoing it cant have endDate
-        return false;
+        return "Can't submit an end date for ongoing job!";
     if(data.is_current !== 0 && data.is_current !== 1)
-        return false;
+        return "Invalid Values!";
     if(data.visibility !== 0 && data.visibility !== 1)
-        return false;
+        return "Invalid Values!";
     return true;
 }
 
@@ -55,7 +56,7 @@ export default async function handler(req, res){
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
 
-    if(payload.user === "admin" || payload.user === "owner") {
+    if(payload?.user === "admin" || payload?.user === "owner") {
         const work_records = JSON.parse(req.body);
         const {user_id} = req.query;
         field_conditions.user.user_id = user_id;
@@ -67,9 +68,9 @@ export default async function handler(req, res){
                     const select_queries = buildSelectQueries(work_records, table_name,field_conditions);
                     const queries = buildInsertQueries(work_records, table_name, fields, user_id);
                     const {data, errors} = await insertToUserTable(queries, table_name, validation,  select_queries, limitPerUser.work_records);
-                    res.status(200).json({data, errors, queries, select_queries});
+                    res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error:error.message}]});
                 }
                 break;
             case "PUT":
@@ -79,7 +80,7 @@ export default async function handler(req, res){
                     const {data, errors} = await updateTable(queries, validation, select_queries);
                     res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error:error.message}]});
                 }
                 break;
             case "DELETE":
@@ -87,11 +88,11 @@ export default async function handler(req, res){
                     const {data, errors} = await doMultiDeleteQueries(work_records, table_name);
                     res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error:error.message}]});
                 }
                 break;
         }
     }else{
-        res.status(500).json({errors: "Unauthorized"});
+        res.status(403).json({errors: [{error: "Forbidden action!"}]});
     }
 }

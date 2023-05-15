@@ -1,4 +1,4 @@
-import {doquery} from "../../../helpers/dbHelpers";
+import {doquery, doqueryNew} from "../../../helpers/dbHelpers";
 import {checkAuth} from "../../../helpers/authHelper";
 
 export default async function handler(req, res){
@@ -13,13 +13,10 @@ export default async function handler(req, res){
                     "FROM highschool h LEFT OUTER JOIN city ci ON (h.city_id = ci.id) " +
                     "LEFT OUTER JOIN country co ON (ci.country_id = co.id) " +
                     "WHERE h.id = ?"
-                const data = await doquery({query: query,values: [high_school_id]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data: data[0]});
+                const {data, errors} = await doqueryNew({query: query,values: [high_school_id]});
+                res.status(200).json({data: data[0] || errors});
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({errors: [{error: error.message}]});
             }
             break;
         case "PUT":
@@ -29,7 +26,7 @@ export default async function handler(req, res){
                 const data = await doquery({query: query,values: [high_school_name, city_id, high_school_id]});
                 res.status(200).json({message: data });
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({errors: [{error: error.message}]});
             }
             break;
         case "DELETE":
@@ -38,11 +35,11 @@ export default async function handler(req, res){
                 const data = await doquery({query: query,values: [high_school_id]});
                 res.status(200).json({message: data});
             }catch(error){
-                res.status(500).json({error: error.message});
+                res.status(500).json({errors: [{error: error.message}]});
             }
             break;
     }
     }else{
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

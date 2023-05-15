@@ -11,7 +11,7 @@ import {
   XCircleFill,
 } from 'react-bootstrap-icons'
 import DatePickerField from '../../../DatePickers/DatePicker'
-import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
+import { craftUrl} from '../../../../helpers/urlHelper'
 import { Location_data } from '../../../../context/locationContext'
 import {
   _getFetcher,
@@ -37,8 +37,8 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   useEffect(() => {
     _getFetcher({
-      companies: craftUrl('companies'),
-      work_types: craftUrl('worktypes'),
+      companies: craftUrl(['companies']),
+      work_types: craftUrl(['worktypes']),
     })
       .then(({ companies, work_types }) => {
         setCompanies(companies.data)
@@ -105,7 +105,7 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
       newData.work_records,
       deletedData
     )
-    const url = craftUserUrl(user_id, 'workrecords')
+    const url = craftUrl(["users",user_id, 'workrecords'])
     const responseObj = await submitChanges(url, requestObj)
 
     const new_data = handleResponse(
@@ -206,7 +206,6 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                                                 work_record.hasOwnProperty('id')
                                               )
                                                 deletedData.push({
-                                                  name: work_record.id,
                                                   id: work_record.id,
                                                   data: work_record,
                                                 })

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Account Activation</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+        p {
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<h1>Admin Account Activation</h1>
+<p>{{ name }} {{ surname }},</p>
+<p>Your {{app_name}} account for Bilkent {{department}} has been promoted to an admin acount! Please click the link below to activate your
+admin account!</p>
+<p><a class="button" href="{{ link }}">Activate Admin Account</a></p>
+<p>If you your account has been activated already, please ignore this email.</p>
+<p>Thank you!</p>
+</body>
+</html>

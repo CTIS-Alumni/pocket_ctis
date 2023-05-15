@@ -1,4 +1,4 @@
-import {doquery} from "../../../../helpers/dbHelpers";
+import {doquery, doqueryNew} from "../../../../helpers/dbHelpers";
 import {checkAuth} from "../../../../helpers/authHelper";
 
 export default async function handler(req, res) {
@@ -11,17 +11,14 @@ export default async function handler(req, res) {
                 try {
                     const query = "select id, city_name from city where country_id = ? order by city_name asc";
 
-                    const data = await doquery({query: query, values: [country_id]});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
+                    const {data, errors} = await doqueryNew({query: query, values: [country_id]});
+                        res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error: error.message}]});
                 }
                 break;
         }
     }else{
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

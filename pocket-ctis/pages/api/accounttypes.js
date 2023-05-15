@@ -1,4 +1,4 @@
-import {doquery} from "../../helpers/dbHelpers";
+import {doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth} from "../../helpers/authHelper";
 
 export default async function handler(req, res) {
@@ -9,19 +9,15 @@ export default async function handler(req, res) {
             case "GET":
                 try {
                     const query = "SELECT * FROM accounttype";
-
-                    const data = await doquery({query: query});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
+                    const {data, errors} = await doqueryNew({query: query});
+                    res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error: error.message}]});
                 }
                 break;
         }
 
     }else {
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

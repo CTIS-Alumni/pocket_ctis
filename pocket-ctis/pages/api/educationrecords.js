@@ -1,4 +1,4 @@
-import {addAndOrWhere, doquery} from "../../helpers/dbHelpers";
+import {addAndOrWhere, doquery, doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 
 export default async function handler(req, res){
@@ -10,7 +10,7 @@ export default async function handler(req, res){
             case "GET":
                 try {
                     let values = [];
-                    let query = "select e.id, e.user_id, GROUP_CONCAT(act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, e.edu_inst_id, ei.edu_inst_name," +
+                    let query = "select e.id, e.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, e.edu_inst_id, ei.edu_inst_name," +
                         "ci.city_name, co.country_name, d.degree_type_name, e.name_of_program, e.start_date, e.end_date, e.visibility as 'record_visibility', e.is_current, e.record_date " +
                         "FROM educationrecord e JOIN users u ON (e.user_id = u.id) " +
                         "JOIN userprofilepicture upp ON (e.user_id = upp.user_id) " +
@@ -32,17 +32,14 @@ export default async function handler(req, res){
                     }
 
                     query += "GROUP BY e.id ORDER BY e.record_date DESC";
-                    const data = await doquery({query: query, values: values});
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
+                    const {data, errors} = await doqueryNew({query: query, values: values});
+                        res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error: error.message}]});
                 }
                 break;
         }
     }else{
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

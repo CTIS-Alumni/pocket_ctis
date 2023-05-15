@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getTimePeriod, getSemester } from '../../../helpers/formatHelpers'
 import styles from './ErasmusStudentsList.module.scss'
+import ReactStars from "react-stars";
 
 const ErasmusStudentsList = ({ erasmus }) => {
   return (
@@ -42,6 +43,15 @@ const ErasmusStudentsList = ({ erasmus }) => {
                   <span className={styles.erasmus_students_item_time_period}>
                     {timePeriod}
                   </span>
+                  {record.rating &&
+                      <ReactStars
+                          count={5}
+                          value={record.rating}
+                          size={20}
+                          color2={'#c79d34'}
+                          edit={false}
+                      />
+                  }
                 </div>
               </div>
               <div className={styles.erasmus_students_item_badge}>

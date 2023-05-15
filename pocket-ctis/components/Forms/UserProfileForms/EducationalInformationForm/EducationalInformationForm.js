@@ -16,7 +16,7 @@ import {
   createReqObject,
   submitChanges,
 } from '../../../../helpers/fetchHelpers'
-import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
+import { craftUrl} from '../../../../helpers/urlHelper'
 import {
   convertToIso,
   replaceWithNull,
@@ -31,8 +31,8 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   useEffect(() => {
     _getFetcher({
-      edu_insts: craftUrl('educationinstitutes'),
-      degree_types: craftUrl('degreetypes'),
+      edu_insts: craftUrl(['educationinstitutes']),
+      degree_types: craftUrl(['degreetypes']),
     }).then(({ edu_insts, degree_types }) => {
       setEduInsts(edu_insts.data)
       setDegreeTypes(degree_types.data)
@@ -97,7 +97,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
       newData.edu_records,
       deletedData
     )
-    const url = craftUserUrl(user_id, 'educationrecords')
+    const url = craftUrl(["users",user_id, 'educationrecords'])
     const responseObj = await submitChanges(url, requestObj)
     const new_data = handleResponse(
       send_to_req.edu_records,
@@ -177,7 +177,6 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             arrayHelpers.remove(index)
                                             if (edu_record.hasOwnProperty('id'))
                                               deletedData.push({
-                                                name: edu_record.id,
                                                 id: edu_record.id,
                                                 data: edu_record
                                               })

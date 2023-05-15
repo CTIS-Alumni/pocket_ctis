@@ -49,7 +49,7 @@ const ErasmusList = ({ erasmus }) => {
                             <p>{ `${erasmus.semester} - ${erasmus.end_date.substring(0,4)}`}</p>
                         </div>
                           <div>
-                              {erasmus.record_visibility == 1 && erasmus.user_types.split(',').map((type, i) => (
+                              {erasmus.user_types.split(',').map((type, i) => (
                                   <Badge className='mx-1' bg='info' pill key={i}>
                                       {type.toLocaleUpperCase()}
                                   </Badge>

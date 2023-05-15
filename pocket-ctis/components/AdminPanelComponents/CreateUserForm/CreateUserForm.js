@@ -3,13 +3,17 @@ import styles from './CreateUserForm.module.css'
 import { Card } from 'react-bootstrap'
 import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import { _getFetcher } from '../../../helpers/fetchHelpers'
+import { _getFetcher, _submitFetcher } from '../../../helpers/fetchHelpers'
 import { ToastContainer, toast } from 'react-toastify'
 import { craftUrl } from '../../../helpers/urlHelper'
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { clone } from 'lodash'
+import {
+  replaceWithNull,
+  splitFields,
+} from '../../../helpers/submissionHelpers'
 
 const customStyles = {
   control: (provided, state) => ({
@@ -47,16 +51,16 @@ const CreateUserForm = ({ goBack }) => {
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   useEffect(() => {
-    _getFetcher({ roles: craftUrl('accounttypes') })
-      .then(({ roles }) => {
-        if (roles?.data) {
-          const data = roles.data.map((role) => ({
+    _getFetcher({ types: craftUrl(['accounttypes']) })
+      .then(({ types }) => {
+        if (types?.data) {
+          const data = types.data.map((role) => ({
             value: `${role.id}-${role.type_name}`,
             label: role.type_name,
           }))
           setAccountTypes(data)
         } else {
-          roles.errors.map((error) => {
+          types.errors.map((error) => {
             toast.error(error)
           })
         }
@@ -67,19 +71,32 @@ const CreateUserForm = ({ goBack }) => {
       })
   }, [])
 
-  const onSubmitHandler = (values) => {
+  const onSubmitHandler = async (values) => {
     const data = clone(values)
-    data.user[0].roles = data.user[0].roles.map((role) => role.value)
+    data.user[0].types = data.user[0].types.map(
+      (role) => role.value.split('-')[0]
+    )
     data.user[0].gender = data.user[0].gender.value == 'Male' ? 1 : 0
-    console.log(data)
+    replaceWithNull(data)
+    console.log(data.user[0])
 
-    //API here
+    // use this data.user[0] instead of data[0] below.
+    // or you can also just send data.user, and not put it in [].
+    // e.g (should work the way you want, I didn't try sending the request)
+    // const res = await _submitFetcher('POST', craftUrl(['users']), {
+    //   users: data.user,
+    // })
+
+    // const res = await _submitFetcher('POST', craftUrl(['users']), {
+    //   users: [data[0]],
+    // })
+    // console.log(res)
 
     formik.resetForm({
       values: {
         user: [
           {
-            roles: null,
+            types: null,
             gender: null,
             first_name: null,
             last_name: null,
@@ -89,7 +106,6 @@ const CreateUserForm = ({ goBack }) => {
         ],
       },
     })
-
     setRefreshKey(Math.random().toString(36))
   }
 
@@ -98,7 +114,7 @@ const CreateUserForm = ({ goBack }) => {
     initialValues: {
       user: [
         {
-          roles: null,
+          types: null,
           gender: null,
           first_name: null,
           last_name: null,
@@ -124,7 +140,7 @@ const CreateUserForm = ({ goBack }) => {
             .integer('Invalid BILKENT ID')
             .required('Required'),
           gender: Yup.object().required('Required'),
-          roles: Yup.array().required('Required'),
+          types: Yup.array().required('Required'),
         })
       ),
     }),
@@ -136,7 +152,7 @@ const CreateUserForm = ({ goBack }) => {
   const goBackHandler = () => {
     formik.resetForm({
       values: {
-        roles: null,
+        types: null,
         gender: null,
         first_name: null,
         last_name: null,
@@ -151,9 +167,9 @@ const CreateUserForm = ({ goBack }) => {
   return (
     <>
       <LoadingSpinner isLoading={isLoading} />
-      <div className={styles.headerContainer}>
+      <div className={styles.headerContainer} onClick={goBackHandler}>
         <span className={styles.backButton}>
-          <ChevronLeft onClick={goBackHandler} />
+          <ChevronLeft />
         </span>
         <h4 className='m-0'>Create User</h4>
       </div>
@@ -292,21 +308,23 @@ const CreateUserForm = ({ goBack }) => {
               </div>
             </div>
             <div>
-              <label htmlFor='roles'>Roles</label>
+              <label htmlFor='types' className={styles.inputLabel}>
+                Account Types
+              </label>
               <Select
-                value={formik.values.user?.[0].roles}
-                onChange={(val) => formik.setFieldValue('user[0].roles', val)}
+                value={formik.values.user?.[0].types}
+                onChange={(val) => formik.setFieldValue('user[0].types', val)}
                 isMulti
                 closeMenuOnSelect={false}
-                id='roles'
-                name='user[0].roles'
+                id='types'
+                name='user[0].types'
                 styles={customStyles}
                 options={accountTypes}
               />
-              {formik.touched.user?.[0].roles &&
-              formik.errors.user?.[0].roles ? (
+              {formik.touched.user?.[0].types &&
+              formik.errors.user?.[0].types ? (
                 <div className={styles.error}>
-                  {formik.errors.user?.[0].roles}
+                  {formik.errors.user?.[0].types}
                 </div>
               ) : null}
             </div>

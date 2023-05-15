@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import styles from './AdminUserFormStyles.module.css'
 
 import { Formik, Field, Form, FieldArray } from 'formik'
-import { XCircleFill } from 'react-bootstrap-icons'
+import {PlusCircleFill, XCircleFill} from 'react-bootstrap-icons'
 import { Rating } from 'react-simple-star-rating'
 import { cloneDeep } from 'lodash'
 import DatePickerField from '../../../DatePickers/DatePicker'
-import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {_getFetcher, _submitFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
+import {craftUrl} from '../../../../helpers/urlHelper'
 import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
@@ -17,6 +17,11 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   const applyNewData = (data) => {
     setDataAfterSubmit(data)
+  }
+
+  const sendMail = async () => {
+    const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id, type: "erasmus"})
+    return res;
   }
 
   const args = [
@@ -29,7 +34,7 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
   let deletedData = []
 
   useEffect(() => {
-    _getFetcher({ universities: craftUrl('educationinstitutes', [{name: "erasmus", value: 1}]) })
+    _getFetcher({ universities: craftUrl(['educationinstitutes'], [{name: "is_erasmus", value: 1}]) })
       .then((res) => setUniversities(res.universities.data))
       .catch((err) => console.log(err))
   }, [])
@@ -59,9 +64,10 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
     })
   }
 
-  const url = craftUserUrl(user_id, 'erasmus')
+  const url = craftUrl(["users",user_id, 'erasmus'])
 
   const onSubmit = async (values) => {
+    setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
 
@@ -83,8 +89,12 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
     applyNewData(new_data)
     console.log('req,', requestObj, 'res', responseObj)
     deletedData = []
+
     //after submission
-    setIsUpdated(true)
+    if(responseObj.POST.data?.length){
+      const {data, errors} = await sendMail();
+      //TODO: if data is true, show update mail sent toast, if errors.length > 0, show update mail couldnt send toast
+    }
   }
 
   return (
@@ -102,6 +112,32 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                 render={(arrayHelpers) => {
                   return (
                     <>
+                      <tr>
+                        <td colSpan={3}>
+                          <div
+                              className={styles.formPartitionHeading}
+                              style={{ marginTop: 0 }}
+                          >
+                            <span>Erasmus Information</span>
+                            <button
+                                className={styles.addButton}
+                                type='button'
+                                onClick={() =>
+                                    arrayHelpers.insert(0, {
+                                      edu_inst: '',
+                                      start_date: null,
+                                      end_date: null,
+                                      semester: 'Spring',
+                                      rating: 0,
+                                      opinion: '',
+                                    })
+                                }
+                            >
+                              <PlusCircleFill size={20} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
                       {props.values.erasmus &&
                       props.values.erasmus.length > 0 ? (
                         props.values.erasmus.map((erasmus, index) => {
@@ -118,7 +154,6 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           arrayHelpers.remove(index)
                                           if (erasmus.hasOwnProperty('id'))
                                             deletedData.push({
-                                              name: erasmus.id,
                                               id: erasmus.id,
                                               data: erasmus
                                             })

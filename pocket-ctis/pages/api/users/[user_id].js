@@ -10,7 +10,7 @@ export default async function handler(req, res) {
         switch (method) {
             case "GET":
                 try {
-                    const query = "SELECT u.id, GROUP_CONCAT(act.type_name) as 'user_types', u.first_name, u.nee, u.last_name, u.gender," +
+                    const query = "SELECT u.id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.first_name, u.nee, u.last_name, u.gender," +
                         "u.is_retired, u.is_active, u.bilkent_id, u.contact_email FROM users u " +
                         "JOIN useraccounttype uat ON (uat.user_id = u.id) " +
                         "JOIN accounttype act ON (act.id = uat.type_id) " +
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
                 }
                 break;
             case "DELETE":
-                if (payload.user === "admin") {
+                if (payload?.user === "admin") {
                     try {
                         const query = "DELETE FROM users WHERE id = ?"
                         const data = await doquery({query: query, values: [user_id]});
@@ -53,12 +53,10 @@ export default async function handler(req, res) {
                     } catch (error) {
                         res.status(500).json({error: error.message});
                     }
-                }else{
-                    res.status(500).json({error: "Unauthorized"});
-                }
+                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
                 break;
         }
     } else {
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

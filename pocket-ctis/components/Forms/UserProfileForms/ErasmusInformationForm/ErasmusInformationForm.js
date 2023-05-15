@@ -11,10 +11,12 @@ import {
   replaceWithNull,
 } from '../../../../helpers/submissionHelpers'
 import {
+  _submitFetcher,
   createReqObject,
   submitChanges,
 } from '../../../../helpers/fetchHelpers'
-import { craftUserUrl } from '../../../../helpers/urlHelper'
+import { craftUrl } from '../../../../helpers/urlHelper'
+
 
 const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
@@ -61,7 +63,7 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
     const send_to_req = { erasmus: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
     const requestObj = createReqObject(send_to_req.erasmus, newData.erasmus, [])
-    const url = craftUserUrl(user_id, 'erasmus')
+    const url = craftUrl(["users",user_id, 'erasmus'])
     const responseObj = await submitChanges(url, requestObj)
 
     const new_data = handleResponse(

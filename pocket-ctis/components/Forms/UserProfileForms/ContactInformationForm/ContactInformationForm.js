@@ -19,14 +19,14 @@ import {
   createReqObject,
   submitChanges,
 } from '../../../../helpers/fetchHelpers'
-import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
+import { craftUrl} from '../../../../helpers/urlHelper'
 
 const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
   const [socialMediaTypes, setSocialMediaTypes] = useState([])
 
   useEffect(() => {
-    _getFetcher({ socials: craftUrl('socialmedia') }).then(({ socials }) =>
+    _getFetcher({ socials: craftUrl(['socialmedia']) }).then(({ socials }) =>
       setSocialMediaTypes(
         socials.data.map((social) => {
           return {
@@ -137,7 +137,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
           newData[key],
           deletedData[key]
         )
-        const url = craftUserUrl(user_id, key)
+        const url = craftUrl(["users",user_id, key])
         responseObj[key] = await submitChanges(url, requestObj[key])
         final_data[key] = handleResponse(
           send_to_req[key],

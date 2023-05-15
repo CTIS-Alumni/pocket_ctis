@@ -1,16 +1,16 @@
-import {addAndOrWhere, doquery} from "../../helpers/dbHelpers";
+import {addAndOrWhere, doquery, doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 
 export default async function handler(req, res) {
-    const session = await checkAuth(req.headers, res);
-    const payload = await checkUserType(session, req.query);
+    const session = await checkAuth(req.headers, res); //everyone logged in can get
+    const payload = await checkUserType(session, req.query); //ones who arent admin can only see records of themselves or visible ones
     if (session) {
         const method = req.method;
         switch (method) {
             case "GET":
                 try {
                     let values = [];
-                    let query = "SELECT w.id, w.user_id, GROUP_CONCAT(act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, w.company_id,\n" +
+                    let query = "SELECT w.id, w.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, w.company_id,\n" +
                         "c.company_name, wt.work_type_name, w.department, w.position, w.work_description, w.city_id, ci.city_name," +
                         "w.country_id, co.country_name, w.start_date, w.end_date, w.visibility as 'record_visibility', w.is_current, w.record_date " +
                         "FROM workrecord w JOIN users u ON (w.user_id = u.id) " +
@@ -37,18 +37,14 @@ export default async function handler(req, res) {
                    }
                     query += " GROUP BY w.id ORDER BY record_date DESC";
 
-                    const data = await doquery({query: query, values: values});
-
-                    if (data.hasOwnProperty("error"))
-                        res.status(500).json({error: data.error.message});
-                    else
-                        res.status(200).json({data});
+                    const {data,errors} = await doqueryNew({query: query, values: values});
+                    res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: { error: error.message}});
                 }
                 break;
         }
     }else{
-        res.status(500).json({error: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

@@ -1,0 +1,4 @@
+user_id,company_id,department,semester,start_date,end_date
+3,11321,Testing,Fall,2021-12-26,
+1,11322,Software Engineering,Summer,2021-12-26,2022-03-07
+1,11322,Some,Spring,2021-10-12,

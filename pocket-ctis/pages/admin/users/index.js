@@ -14,7 +14,7 @@ const AdminUsersList = () => {
   const [users, setUsers] = useState([])
 
   useEffect(() => {
-    _getFetcher({ users: craftUrl('users') })
+    _getFetcher({ users: craftUrl(['users']) })
       .then((res) => setUsers(res.users.data))
       .catch((err) => console.log(err))
   }, [])

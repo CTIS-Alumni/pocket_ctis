@@ -5,18 +5,20 @@ import 'react-querybuilder/dist/query-builder.css'
 import Select from 'react-select'
 import { Tables_Data } from '../../context/tablesContext'
 import { useFormik } from 'formik'
+import styles from './WhereClauseCreator.module.css'
 
-const createTableOptions = (tables) => {
-  return Object.keys(tables).map((table) => {
-    return {
-      label: table,
-      value: table,
-    }
-  })
+const selectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    borderColor: 'rgb(245, 164, 37)',
+  }),
+  menu: (provided, state) => ({
+    ...provided,
+    zIndex: 2,
+  }),
 }
 
 const getTableFields = (selectedTable, tables) => {
-  console.log(tables[selectedTable.value])
   const columns = tables[selectedTable.value]
   /*model: {
     name: field,
@@ -69,95 +71,144 @@ const initialQuery = {
   rules: [],
 }
 
-const WhereClauseCreator = ({ addWhereClauses }) => {
-  const [whereClause, setWhereClause] = useState(initialQuery)
-  const [displayClause, setDisplayClause] = useState('')
+const WhereClauseCreator = ({ activeTables, setIntraWhereSchema }) => {
   const [isTableSelected, setIsTableSelected] = useState(false)
   const [tableOptions, setTableOptions] = useState([])
   const [fields, setFields] = useState([])
 
-  const { tablesData } = useContext(Tables_Data)
+  const [whereArray, setWhereArray] = useState([])
+  const [formatedWhereClause, setFormatedWhereClause] = useState([])
+
+  const { tablesColumnTypeData } = useContext(Tables_Data)
 
   useEffect(() => {
-    setTableOptions(createTableOptions(tablesData))
-  }, [tablesData])
+    const tables = []
+    activeTables.forEach((d) => {
+      if (!tables.includes(d)) tables.push(d)
+    })
+
+    setTableOptions(tables.map((t) => ({ value: t, label: t })))
+  }, [tablesColumnTypeData, activeTables])
+
+  useEffect(() => {
+    const len = whereArray.length
+    var str =
+      len > 0 ? (
+        <div>
+          WHERE
+          <div style={{ paddingLeft: 10 }}>
+            <div className={styles.clauseHolder}>
+              {whereArray.map((w, idx) => (
+                <span key={idx}>
+                  <span
+                    onClick={() => removeWhere(idx)}
+                    className={styles.removeable}
+                  >
+                    {w}
+                  </span>
+                  {len - 1 != idx && ' AND '}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        ''
+      )
+
+    setFormatedWhereClause(str)
+    setIntraWhereSchema(whereArray)
+  }, [whereArray])
+
+  const removeWhere = (index) => {
+    const temp = [...whereArray]
+    temp.splice(index, 1)
+    formik.setFieldValue('sqlQuery', temp)
+    setWhereArray([...temp])
+  }
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
       table: null,
+      queryObject: null,
+      sqlQuery: [],
     },
     onSubmit: (values) => {
-      formik.setFieldValue('table', null)
-      addWhereClauses(displayClause)
-      setWhereClause(initialQuery)
-      setDisplayClause('')
-      setIsTableSelected(false)
+      setWhereArray(values.sqlQuery)
+      const temp = formatQuery(formik.values.queryObject, 'sql')
+      const newWhere = [...whereArray]
+      newWhere.push(temp)
+      setWhereArray([...newWhere])
+      formik.setFieldValue('queryObject', initialQuery)
     },
   })
 
   return (
     <>
+      <h5>Intra Table Where Clause Creator</h5>
       <div
         className='mb-2'
         style={{
           position: 'relative',
         }}
       >
-        <label
-          htmlFor='whereClause'
+        <div
           style={{
-            position: 'absolute',
-            top: -10,
-            left: 10,
-            background: 'white',
+            border: '1px solid rgb(245, 164, 37)',
+            height: '100px',
+            borderRadius: 5,
+            background: 'rgba(239, 239, 239, 0.3)',
+            margin: '10px 0',
+            padding: '5px',
+            overflowY: 'scroll',
           }}
         >
-          Where Clause
-        </label>
-        <textarea
-          style={{
-            width: '100%',
-            padding: 10,
-            resize: 'none',
-          }}
-          rows='3'
-          name='whereClause'
-          value={displayClause}
-          disabled
-        />
+          {formatedWhereClause}
+        </div>
       </div>
-      <form onSubmit={formik.handleSubmit}>
-        <Select
-          options={tableOptions}
-          className='mb-2'
-          isClearable
-          value={formik.values.table}
-          onChange={(value) => {
-            if (value) {
-              formik.setFieldValue('table', value)
-              setFields(getTableFields(value, tablesData))
-              setIsTableSelected(true)
-            } else {
-              setIsTableSelected(false)
-              formik.setFieldValue('table', null)
-            }
-          }}
-        />
-        <QueryBuilderBootstrap>
-          <QueryBuilder
-            disabled={!!!formik.values.table}
-            query={whereClause}
-            fields={fields}
-            onQueryChange={(q) => {
-              setWhereClause(q)
-              setDisplayClause(formatQuery(q, 'sql'))
-            }}
-            controlClassnames={{ queryBuilder: 'queryBuilder-branches' }}
-          />
-        </QueryBuilderBootstrap>
-        <button type='submit' className='mt-2' disabled={!isTableSelected}>
-          Add Where Clause
+      <form onSubmit={formik.handleSubmit} className={styles.formContainer}>
+        <div style={{ width: '90%' }}>
+          <div className={styles.selectContainer}>
+            <label htmlFor='table' className={styles.inputLabel}>
+              Table
+            </label>
+            <Select
+              styles={selectStyles}
+              options={tableOptions}
+              className='mb-2'
+              isClearable
+              value={formik.values.table}
+              onChange={(value) => {
+                if (value) {
+                  formik.setFieldValue('table', value)
+                  setFields(getTableFields(value, tablesColumnTypeData))
+                  setIsTableSelected(true)
+                } else {
+                  setIsTableSelected(false)
+                  formik.setFieldValue('table', null)
+                }
+              }}
+            />
+          </div>
+          <QueryBuilderBootstrap>
+            <QueryBuilder
+              disabled={!!!formik.values.table}
+              query={formik.values.queryObject}
+              fields={fields}
+              onQueryChange={(q) => {
+                formik.setFieldValue('queryObject', q)
+              }}
+              controlClassnames={{ queryBuilder: 'queryBuilder-branches' }}
+            />
+          </QueryBuilderBootstrap>
+        </div>
+        <button
+          type='submit'
+          disabled={!isTableSelected}
+          className={styles.submitButton}
+        >
+          Add
         </button>
       </form>
     </>

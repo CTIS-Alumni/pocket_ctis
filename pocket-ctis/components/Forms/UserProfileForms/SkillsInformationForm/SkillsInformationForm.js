@@ -18,7 +18,7 @@ import {
   splitFields,
   handleResponse,
 } from '../../../../helpers/submissionHelpers'
-import { craftUrl, craftUserUrl } from '../../../../helpers/urlHelper'
+import { craftUrl} from '../../../../helpers/urlHelper'
 
 const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [skillType, setSkillType] = useState([])
@@ -27,8 +27,8 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   useEffect(() => {
     _getFetcher({
-      skills: craftUrl('skills'),
-      skill_types: craftUrl('skilltypes'),
+      skills: craftUrl(['skills']),
+      skill_types: craftUrl(['skilltypes']),
     }).then(({ skills, skill_types }) => {
       setSkills(skills.data)
       setSkillType(skill_types.data)
@@ -75,7 +75,7 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
       newData.skills,
       deletedData
     )
-    const url = craftUserUrl(user_id, 'skills')
+    const url = craftUrl(["users",user_id, 'skills'])
     const responseObj = await submitChanges(url, requestObj)
     const args = [
       ['skill_type', 'skill'],
@@ -152,7 +152,6 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           if (skill.hasOwnProperty('id')) {
                                             console.log(skill)
                                             deletedData.push({
-                                              name: skill.id,
                                               id: skill.id,
                                               data: skill,
                                             })

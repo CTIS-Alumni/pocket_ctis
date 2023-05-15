@@ -19,13 +19,14 @@ import ProfileStudentSocieties from '../../components/ProfilePageComponents/Prof
 import { useContext, useEffect, useState } from 'react'
 import ProfileExamsSection from '../../components/ProfilePageComponents/ProfileExamsSection/ProfileExamsSection'
 import GraduationProjectSection from '../../components/ProfilePageComponents/GraduationProjectSection/GraduationProjectSection'
-import { craftUserUrl } from '../../helpers/urlHelper'
 import { _getFetcher } from '../../helpers/fetchHelpers'
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner'
+import {craftUrl} from "../../helpers/urlHelper";
 
 const Profile = ({ userData, session, errors }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState(userData)
+
 
   const {
     certificates,
@@ -51,7 +52,7 @@ const Profile = ({ userData, session, errors }) => {
 
   const refreshProfile = () => {
     setIsLoading(true)
-    _getFetcher({ res: craftUserUrl(user.basic_info[0].id, 'profile') })
+    _getFetcher({ res: craftUrl(["users", user.basic_info[0].id, 'profile']) })
       .then(({ res }) => setUser(res.data))
       .finally(() => {
         setIsLoading(false)
@@ -181,7 +182,7 @@ const Profile = ({ userData, session, errors }) => {
         </div>
       </div>
 
-      {session === 'owner' && (
+      {session === "owner" && (
         <ProfileEditModal user={user} refreshProfile={refreshProfile} />
       )}
     </>
@@ -189,12 +190,9 @@ const Profile = ({ userData, session, errors }) => {
 }
 
 export async function getServerSideProps(context) {
-  const { cookies } = context.req
-  const token = cookies.AccessJWT
+  const {cookie} = context.req.headers
   const { res } = await _getFetcher(
-    { res: craftUserUrl(context.params.id, 'profile') },
-    token
-  )
+    { res: craftUrl(["users", context.params.id, 'profile']) }, cookie)
 
   return {
     props: { userData: res.data, session: res.session, errors: res.errors },

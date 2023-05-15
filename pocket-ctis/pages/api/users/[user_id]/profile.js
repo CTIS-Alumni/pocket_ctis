@@ -4,7 +4,7 @@ import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 export default async function handler(req, res) {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
-    if (session) {
+    if (session && payload) {
         const {user_id} = req.query;
         const method = req.method;
         switch (method) {
@@ -12,7 +12,7 @@ export default async function handler(req, res) {
                 let queries = [];
                 try {
                     let temp;
-                    temp = "SELECT u.id, GROUP_CONCAT(act.type_name) as 'user_types', u.first_name, u.nee, u.last_name, u.gender," +
+                    temp = "SELECT u.id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.first_name, u.nee, u.last_name, u.gender," +
                         "u.is_retired, u.is_active FROM users u JOIN useraccounttype uat ON (uat.user_id = u.id) " +
                         "JOIN accounttype act ON (act.id = uat.type_id) WHERE u.id = ? GROUP BY u.id";
                     queries.push({name: "basic_info", query: temp, values: [user_id]});
@@ -161,14 +161,14 @@ export default async function handler(req, res) {
                     queries.push({name: "edu_records", query: temp, values: [user_id]});
 
                     const {data, errors} = await doMultiQueries(queries);
-                    res.status(200).json({data, errors, session});
+                    res.status(200).json({data: data, errors: errors, session: payload.user});
 
                 } catch (error) {
-                    res.status(500).json({error: error.message});
+                    res.status(500).json({errors: [{error:error.message}]});
                 }
                 break;
             case "PUT":
-                if (payload.user === "admin" || payload.user === "owner") {
+                if (payload?.user === "admin" || payload?.user === "owner") {
                     let put_queries = [];
                     try {
                         const {visibility} = JSON.parse(req.body);
@@ -231,14 +231,12 @@ export default async function handler(req, res) {
 
                         res.status(200).json({data, errors});
                     } catch (error) {
-                        res.status(500).json({error: error.message});
+                        res.status(500).json({errors: [{error:error.message}]});
                     }
-                }else{
-                    res.status(500).json({errors: "Unauthorized"});
-                }
+                } res.status(403).json({errors: [{error: "Forbidden action!"}]});
                 break;
         }
     } else {
-        res.status(500).json({errors: "Unauthorized"});
+        res.redirect("/401", 401);
     }
 }

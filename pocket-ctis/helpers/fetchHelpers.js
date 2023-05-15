@@ -1,5 +1,4 @@
 import {isEqual} from "lodash";
-import {craftUrl} from "./urlHelper";
 
 //divides the incoming requests based on type, priority is delete > put > post
 export const submitChanges = async (url, requestObj) => {
@@ -18,20 +17,33 @@ export const submitChanges = async (url, requestObj) => {
 }
 
 export const _submitFetcher = async (method, url, body) => {
-    const res = await fetch(url, {
-        method: method,
-        credentials: 'include',
-        body: JSON.stringify(body)
-    })
-    return await res.json()
+    try{
+        const res = await fetch(url, {
+            method: method,
+            credentials: 'include',
+            body: JSON.stringify(body)
+        })
+        return await res.json()
+    }catch(error){
+        return {errors: [{error: error.message}]};
+    }
+}
+
+export const _submitFile = async (method, url, file, body) => {
+    try{
+
+    }catch(error){
+        return {errors: [{error: error.message}]};
+    }
 }
 
 
-export const _getFetcher = async (apis,  token = false) => { // [{name: url}, {name: url}]
+export const _getFetcher = async (apis,  cookies = null, token = null) => { // [{name: url}, {name: url}]
     let results = {}
-    let headers = {};
-    if(token)
-        headers['Authorization'] =  `Bearer ${token}`;
+    let headers = {
+        Cookie: cookies,
+        'Authorization': `Bearer ${token}`
+    };
 
     try{
         await Promise.all(Object.entries(apis).map(async ([api, url])=>{
@@ -43,8 +55,7 @@ export const _getFetcher = async (apis,  token = false) => { // [{name: url}, {n
         }));
         return results;
     }catch(error){
-        console.log(error.message);
-        //stuff
+        return {errors: [{error: error.message}]};
     }
 }
 

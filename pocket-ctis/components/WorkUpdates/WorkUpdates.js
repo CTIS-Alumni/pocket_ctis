@@ -4,7 +4,6 @@ import styles from './WorkUpdates.module.scss'
 
 8
 const WorkUpdates = ({work}) => {
-  console.log("work records ", work)
   return (
     <div className={styles.work_updates}>
       <h3 className='custom_table_title'>

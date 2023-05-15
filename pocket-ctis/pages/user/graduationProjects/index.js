@@ -15,11 +15,10 @@ const GraduationProjectsDashboard = ({ gradprojects }) => {
 }
 
 export async function getServerSideProps(context) {
-    const {cookies} = context.req;
-    const token = cookies.AccessJWT;
+    const {cookie} = context.req.headers
     const {gradprojects} = await _getFetcher({
-        gradprojects: craftUrl("graduationprojects")
-    }, token);
+        gradprojects: craftUrl(["graduationprojects"])
+    }, cookie);
     return { props: { gradprojects } }
 }
 

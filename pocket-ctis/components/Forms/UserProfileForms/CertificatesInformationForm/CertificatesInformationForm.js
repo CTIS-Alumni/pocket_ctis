@@ -9,7 +9,7 @@ import { Formik, Field, Form, FieldArray } from 'formik'
 import { cloneDeep } from 'lodash'
 import { createReqObject } from '../../../../helpers/fetchHelpers'
 import { submitChanges } from '../../../../helpers/fetchHelpers'
-import { craftUserUrl } from '../../../../helpers/urlHelper'
+import { craftUrl } from '../../../../helpers/urlHelper'
 import { useState } from 'react'
 import {
   replaceWithNull,
@@ -60,7 +60,7 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
       newData.certificates,
       deletedData
     )
-    const url = craftUserUrl(user_id, 'certificates')
+    const url = craftUrl(["users",user_id, 'certificates'])
     const responseObj = await submitChanges(url, requestObj)
     const args = [[], [], ['id', 'user_id'], []]
     const new_data = handleResponse(
@@ -131,7 +131,6 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           arrayHelpers.remove(index)
                                           if (certificate.hasOwnProperty('id'))
                                             deletedData.push({
-                                              name: certificate.certificate_name,
                                               id: certificate.id,
                                               data: certificate,
                                             })

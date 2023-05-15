@@ -15,7 +15,7 @@ const SectorsDashboard = ({ res }) => {
 
   const onSearch = ({ searchValue }) => {
     setIsLoading(true)
-    _getFetcher({sectors: craftUrl("sectors", [{name: "name", value: searchValue}])})
+    _getFetcher({sectors: craftUrl(["sectors"], [{name: "name", value: searchValue}])})
       .then(({sectors}) => setSectors(sectors.data))
       .catch((err) => console.log(err))
       .finally((_) => setIsLoading(false))
@@ -35,9 +35,8 @@ const SectorsDashboard = ({ res }) => {
 }
 
 export async function getServerSideProps(context) {
-    const {cookies} = context.req;
-    const token = cookies.AccessJWT;
-  const {sectors} = await _getFetcher({sectors: craftUrl("sectors")}, token);
+    const {cookie} = context.req.headers
+  const {sectors} = await _getFetcher({sectors: craftUrl(["sectors"])}, cookie);
   return { props: { res: sectors } }
 }
 

@@ -6,8 +6,8 @@ import { XCircleFill, PlusCircleFill } from 'react-bootstrap-icons'
 import { Rating } from 'react-simple-star-rating'
 import DatePickerField from '../../../DatePickers/DatePicker'
 import styles from './AdminUserFormStyles.module.css'
-import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {_getFetcher, _submitFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
+import {craftUrl} from '../../../../helpers/urlHelper'
 import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
 const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
@@ -18,10 +18,15 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
     setDataAfterSubmit(data)
   }
 
+  const sendMail = async () => {
+    const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id, type: "education"})
+    return res;
+  }
+
   let deletedData = [];
 
   useEffect(() => {
-    _getFetcher({ companies: craftUrl('companies', [{name: "internship", value: 1}]) })
+    _getFetcher({ companies: craftUrl(['companies'], []) })
       .then((res) => setCompanies(res.companies.data))
       .catch((err) => console.log(err))
   }, [])
@@ -59,9 +64,10 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
     ['start_date', 'end_date'],
   ]
 
-  const url = craftUserUrl(user_id, 'internships')
+  const url = craftUrl(["users",user_id, 'internships'])
 
   const onSubmit = async (values) => {
+    setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
 
@@ -83,11 +89,15 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
         args,
         transformDataForSubmission
     )
+
     applyNewData(new_data)
     console.log('req,', requestObj, 'res', responseObj)
     deletedData = []
 
-    setIsUpdated(true)
+    if(responseObj.POST.data?.length){
+      const {data, errors} = await sendMail();
+      //TODO: if data is true, show update mail sent toast, if errors.length > 0, show update mail couldnt send toast
+    }
   }
 
   return (
@@ -133,7 +143,7 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                         </td>
                       </tr>
                       {props.values.internships &&
-                        props.values.internships.length > 0 &&
+                        props.values.internships.length > 0 ? (
                         props.values.internships.map((internship, index) => {
                           return (
                             <>
@@ -148,7 +158,6 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           arrayHelpers.remove(index)
                                           if (internship.hasOwnProperty('id'))
                                             deletedData.push({
-                                              name: internship.id,
                                               id: internship.id,
                                               data: internship
                                             })
@@ -315,7 +324,29 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                               )}
                             </>
                           )
-                        })}
+                        })) : (
+                          <tr>
+                            <td>
+                              <button
+                                  className={styles.bigAddBtn}
+                                  type='button'
+                                  onClick={() => arrayHelpers.push({
+                                    company: '',
+                                    semester: 'Spring',
+                                    department: '',
+                                    start_date: null,
+                                    end_date: null,
+                                    rating: 0,
+                                    opinion: ''
+                                  })}
+                              >
+                                Add an Internship
+                              </button>
+                            </td>
+                          </tr>
+                      )
+
+                      }
                     </>
                   )
                 }}

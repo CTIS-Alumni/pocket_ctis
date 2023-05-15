@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { FieldArray, Field, Formik, Form } from 'formik'
 import styles from './AdminUserFormStyles.module.css'
 import { PlusCircleFill, XCircleFill } from 'react-bootstrap-icons'
-import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl, craftUserUrl} from '../../../../helpers/urlHelper'
+import {_getFetcher, _submitFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
+import {craftUrl} from '../../../../helpers/urlHelper'
 import {cloneDeep} from "lodash";
 import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
 
@@ -17,8 +17,13 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   let deletedData = { projects: [], graduation_project: [] }
 
+  const sendMail = async () => {
+    const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id, type: "graduation project"})
+    return res;
+  }
+
   useEffect(() => {
-    _getFetcher({ graduationProjects: craftUrl('graduationprojects') })
+    _getFetcher({ graduationProjects: craftUrl(['graduationprojects']) })
       .then((res) => setGraduationProjects(res.graduationProjects.data))
       .catch((err) => console.log('error', err))
   }, [])
@@ -73,7 +78,7 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
   }
 
   const onSubmit = async (values) => {
-
+    setIsUpdated(true)
     let newData = cloneDeep(values)
     transformFuncs.projects(newData)
     transformFuncs.graduation_project(newData)
@@ -98,7 +103,7 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
               newData[key],
               deletedData[key]
           )
-          const url = craftUserUrl(user_id, key)
+          const url = craftUrl(["users",user_id, key])
           responseObj[key] = await submitChanges(url, requestObj[key])
           final_data[key] = handleResponse(
               send_to_req[key],
@@ -114,7 +119,12 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
     console.log('req', requestObj, 'res', responseObj)
     applyNewData(final_data)
     deletedData = { projects: [], graduation_project: [] }
-    setIsUpdated(true)
+
+    if(responseObj.graduation_project.POST.data?.length){
+      const {data, errors} = await sendMail();
+      console.log(data, errors);
+      //TODO: if data is true, show update mail sent toast, if errors.length > 0, show update mail couldnt send toast
+    }
   }
 
 
