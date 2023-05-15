@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { FilterSquareFill } from 'react-bootstrap-icons'
 import SearchBar from '../SearchBar/SearchBar'
 import styles from './HighSchoolsList.module.scss'
+import common from '../../styles/common.module.scss'
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
 
 const HighSchoolList = ({ highSchools, onSearch, isLoading }) => {
@@ -29,7 +30,7 @@ const HighSchoolList = ({ highSchools, onSearch, isLoading }) => {
         </form>
       </div>
       <LoadingSpinner isLoading={isLoading} />
-      <table className='custom_table'>
+      <table>
         <thead>
           <tr>
             <th>High School Name</th>
@@ -38,10 +39,10 @@ const HighSchoolList = ({ highSchools, onSearch, isLoading }) => {
         </thead>
         <tbody>
           {highSchools?.map((highSchool, i) => (
-            <tr className='hoverable' key={i}>
+            <tr className={common.hoverable} key={i}>
               <td>
                 <Link
-                  className={`${styles.highSchool_link} link`}
+                  //className={`${styles.highSchool_link} link`}
                   href={`/user/highSchools/${highSchool.id}`}
                 >
                   {highSchool.high_school_name}

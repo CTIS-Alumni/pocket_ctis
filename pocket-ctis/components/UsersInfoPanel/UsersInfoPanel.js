@@ -4,6 +4,7 @@ import SearchBar from '../SearchBar/SearchBar'
 import WorkUpdates from '../WorkUpdates/WorkUpdates'
 import { useRouter } from 'next/router'
 import styles from './UsersInfoPanel.module.scss'
+import common from '../../styles/common.module.scss'
 import departmentConfig from '../../config/departmentConfig'
 
 const UsersInfoPanel = ({work, edu}) => {
@@ -23,8 +24,6 @@ const UsersInfoPanel = ({work, edu}) => {
     <section className={styles.panel}>
       <div className={styles.panel_welcome}>
         <h1 className={styles.welcome_logo}>{departmentConfig.app_name}</h1>
-        <span className={styles.welcome_message}>Welcome back, </span>
-        <span className={styles.welcome_name_surname}>Name Surname</span>
       </div>
       <SearchBar onSubmit={onSearch} />
       <div>

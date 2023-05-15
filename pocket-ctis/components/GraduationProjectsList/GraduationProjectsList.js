@@ -13,7 +13,7 @@ import {getGraduationProjectPicturePath} from "../../helpers/formatHelpers";
 
 const GraduationProjectsList = ({ graduationProjects }) => {
   return (
-    <div className={styles.graduation_projects}>
+    <section className={styles.graduation_projects}>
       <h2 className='custom-table-title'>Graduation Projects</h2>
       <div>
         {graduationProjects.map((graduationProject, i) => (
@@ -31,7 +31,7 @@ const GraduationProjectsList = ({ graduationProjects }) => {
           </a>
         ))}
       </div>
-    </div>
+    </section>
   )
 }
 

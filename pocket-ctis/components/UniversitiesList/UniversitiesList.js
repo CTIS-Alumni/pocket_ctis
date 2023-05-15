@@ -2,6 +2,7 @@ import Link from 'next/link'
 import SearchBar from '../SearchBar/SearchBar'
 import { FilterSquareFill, Check } from 'react-bootstrap-icons'
 import styles from './UniversitiesList.module.scss'
+import common from '../../styles/common.module.scss'
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
 
 const UniversitiesList = ({ universities, isLoading, onSearch }) => {
@@ -29,7 +30,7 @@ const UniversitiesList = ({ universities, isLoading, onSearch }) => {
         </form>
       </div>
       <LoadingSpinner isLoading={isLoading} />
-      <table className='custom_table'>
+      <table>
         <thead>
           <tr>
             <th>University Name</th>
@@ -38,11 +39,11 @@ const UniversitiesList = ({ universities, isLoading, onSearch }) => {
         </thead>
         <tbody>
           {universities.map((university, i) => (
-            <tr className='hoverable' key={i}>
+            <tr className={common.hoverable} key={i}>
               <td>
                 <Link
                   href={`/user/universities/${university.id}`}
-                  className={`${styles.university_link} link`}
+                  // className={`${styles.university_link} link`}
                 >
                   {university.edu_inst_name}
                 </Link>

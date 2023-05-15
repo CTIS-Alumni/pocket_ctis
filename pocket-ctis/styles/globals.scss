@@ -25,6 +25,29 @@ section {
 
     // this might cause problems
     position: absolute;
+
+    @include media-query(large) {
+        width: 70vw;
+        margin-left: calc(22vw + $margin-xxlarge);
+    }
+
+    @include media-query(medium) {
+        width: 80vw;
+        margin-left: 10vw;
+    }
+
+    @include media-query(small) {
+        width: 90vw;
+        margin-left: 2.5vw;
+    }
+}
+
+h1 {
+    font-family: $ff-ctis;
+}
+
+h2, h3 {
+    font-family: $ff-heading;
 }
 
 table {

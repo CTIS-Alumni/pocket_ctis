@@ -102,3 +102,17 @@
         height: 128px;
     }
 }
+
+.table_wrapper {
+    max-width: 100%;
+
+    @include media-query(medium) {
+        max-width: 80vw;
+        overflow-y: auto;
+    }
+
+    @include media-query(small) {
+        max-width: 90vw;
+        overflow-y: auto;
+    }
+}

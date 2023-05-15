@@ -35,10 +35,21 @@
 
 .welcome {
     &_logo {
-        font-weight: $fw-bold;
-        font-size: 3em;
-        letter-spacing: 0.02em;
-        margin-bottom: 0.5em;
+        font-size: 5em;
+
+        // TODO: fix stroke
+        /* $stroke-colour: $ctis-yellow-500;
+        $stroke-width: 3px;
+        
+        text-shadow:
+            $stroke-width $stroke-width 0 $stroke-colour,
+            $stroke-width -$stroke-width 0 $stroke-colour,
+            -$stroke-width $stroke-width 0 $stroke-colour,
+            -$stroke-width -$stroke-width 0 $stroke-colour,
+            $stroke-width 0px 0 $stroke-colour,
+            0px $stroke-width 0 $stroke-colour,
+            -$stroke-width 0px 0 $stroke-colour,
+            0px -$stroke-width 0 $stroke-colour; */
     }
 
     &_name_surname {

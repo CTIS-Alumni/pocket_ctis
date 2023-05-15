@@ -1,6 +1,7 @@
 import React from 'react'
 
 import styles from './AcademicUpdates.module.scss'
+import common from '../../styles/common.module.scss'
 
 const AcademicUpdates = ({edu}) => {
   return (
@@ -25,7 +26,7 @@ const AcademicUpdates = ({edu}) => {
             <tr key={i} className={record.is_current ? 'current' : ""}>
             <td className={styles.data_avatar}>
               <div
-                  className='user_avatar_36'
+                  className={common.user_avatar_36}
                   style={{backgroundImage: "url(" + '/profilepictures/' + (record.pic_visibility ? record.profile_picture  : "defaultuser") + '.png' + ")"}}
                 />
             </td>
