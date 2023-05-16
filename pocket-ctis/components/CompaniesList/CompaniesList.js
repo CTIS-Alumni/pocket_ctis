@@ -238,6 +238,7 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
         </form>
       </div>
       <LoadingSpinner isLoading={isLoading} />
+      <div className={common.table_wrapper}>
       <table>
         <thead>
           <tr>
@@ -308,6 +309,7 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
           ))}
         </tbody>
       </table>
+      </div>
 
       <PaginationFooter
         total={total}

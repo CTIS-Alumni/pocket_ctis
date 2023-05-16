@@ -17,3 +17,25 @@
         font-family: $ff-ctis;
     }
 }
+
+.wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .icon_button {
+        font-size: $fs-big;
+        margin-right: 1em;
+        background: none;
+        border: none;
+        display: none;
+
+        @include attention() {
+            color: $ctis-yellow-100;
+        }
+
+        @include media-query(medium) {
+            display: block;
+        }
+    }
+}

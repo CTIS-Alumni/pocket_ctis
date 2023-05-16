@@ -9,7 +9,8 @@ const AcademicUpdates = ({edu}) => {
       <h3 className='custom_table_title'>
         Academic Updates
       </h3>
-      <table className='custom_table'>
+      <div className={common.table_wrapper}>
+      <table>
         <thead>
           <tr>
             <th className={styles.header_avatar}></th>
@@ -41,6 +42,7 @@ const AcademicUpdates = ({edu}) => {
         )) : ""}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }

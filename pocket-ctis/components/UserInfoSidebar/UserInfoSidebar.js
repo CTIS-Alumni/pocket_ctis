@@ -1,7 +1,7 @@
 import { Container } from 'react-bootstrap'
 import {
   PersonFill,
-  PersonLinesFill,
+  PeopleFill,
   BuildingFill,
   MortarboardFill,
   Easel2Fill,
@@ -44,54 +44,57 @@ const UserInfo = () => {
 
 const UserInfoSidebar = () => {
   return (
-    <aside className={styles.sidebar}>
-      <div className={styles.sidebar_user_wrapper}>
-        <UserImage />
-        <UserInfo />
-      </div>
-      <div className={styles.sidebar_buttons}>
-        <div className={styles.sidebar_button_group_personal}>
-          <Button text='Profile' href='/user/1' icon={<PersonFill />} />
+    <div className={`${styles.sidebar_wrapper}`}>
+      <div className={`${styles.modal_bg} ${styles.visible2}`} />
+      <aside className={`${styles.sidebar} ${styles.visible2}`}>
+        <div className={styles.sidebar_user_wrapper}>
+          <UserImage />
+          <UserInfo />
+        </div>
+        <div className={styles.sidebar_buttons}>
+          <div className={styles.sidebar_button_group_personal}>
+            <Button text='Profile' href='/user/1' icon={<PersonFill />} />
+            {/* <hr className={styles.sidebar_divider} /> */}
+            <Button text='Users' icon={<PeopleFill />} />
+          </div>
           {/* <hr className={styles.sidebar_divider} /> */}
-          <Button text='Users' icon={<PersonLinesFill />} />
+          <div className={styles.sidebar_button_group_career}>
+          <span className={styles.sidebar_button_group_title}>Career</span>
+            <Button
+              text='Companies'
+              icon={<BuildingFill />}
+              href='/user/companies'
+            />
+            <Button text='Sectors' icon={<Easel2Fill />} href='/user/sectors' />
+            <Button
+              text='Internships'
+              icon={<ClipboardFill />}
+              href='/user/internships'
+            />
+          </div>
+          {/* <hr className={styles.sidebar_divider} /> */}
+          <div className={styles.sidebar_button_group_education}>
+          <span className={styles.sidebar_button_group_title}>Education</span>
+            <Button
+              text='Universities'
+              icon={<MortarboardFill />}
+              href='/user/universities'
+            />
+            <Button
+              text='High-schools'
+              icon={<BuildingFill />}
+              href='/user/highSchools'
+            />
+            <Button text='Erasmus' icon={<StarFill />} href='/user/erasmus' />
+            <Button
+              text='Senior Projects'
+              icon={<PersonWorkspace />}
+              href='/user/graduationProjects'
+            />
+          </div>
         </div>
-        {/* <hr className={styles.sidebar_divider} /> */}
-        <div className={styles.sidebar_button_group_career}>
-        <span className={styles.sidebar_button_group_title}>Career</span>
-          <Button
-            text='Companies'
-            icon={<BuildingFill />}
-            href='/user/companies'
-          />
-          <Button text='Sectors' icon={<Easel2Fill />} href='/user/sectors' />
-          <Button
-            text='Internships'
-            icon={<ClipboardFill />}
-            href='/user/internships'
-          />
-        </div>
-        {/* <hr className={styles.sidebar_divider} /> */}
-        <div className={styles.sidebar_button_group_education}>
-        <span className={styles.sidebar_button_group_title}>Education</span>
-          <Button
-            text='Universities'
-            icon={<MortarboardFill />}
-            href='/user/universities'
-          />
-          <Button
-            text='High-schools'
-            icon={<BuildingFill />}
-            href='/user/highSchools'
-          />
-          <Button text='Erasmus' icon={<StarFill />} href='/user/erasmus' />
-          <Button
-            text='Graduation Projects'
-            icon={<PersonWorkspace />}
-            href='/user/graduationProjects'
-          />
-        </div>
-      </div>
-    </aside>
+      </aside>
+    </div>
   )
 }
 

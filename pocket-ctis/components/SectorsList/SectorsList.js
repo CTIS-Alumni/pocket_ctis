@@ -38,6 +38,7 @@ const SectorsList = ({ sectors, isLoading, onSearch }) => {
         </form>
       </div>
       <LoadingSpinner isLoading={isLoading} />
+      <div className={common.table_wrapper}>
       <table>
         <thead>
           <tr>
@@ -59,6 +60,7 @@ const SectorsList = ({ sectors, isLoading, onSearch }) => {
           ))}
         </tbody>
       </table>
+      </div>
     </section>
   )
 }

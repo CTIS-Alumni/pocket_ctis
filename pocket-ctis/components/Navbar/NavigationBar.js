@@ -8,6 +8,12 @@ import {useRouter} from "next/router";
 import { User_data } from '../../context/userContext'
 import {toast} from "react-toastify";
 
+import {
+  List, ThreeDotsVertical,
+} from 'react-bootstrap-icons'
+import Link from 'next/link'
+import {useState} from 'react';
+
 
 const NavigationBar = () => {
   const router = useRouter();
@@ -29,13 +35,31 @@ const NavigationBar = () => {
     router.push('/user/adminLogin')
   }
 
+  const Button = ({ icon, onclick }) => {
+    return (
+      <button onClick={onclick} className={styles.icon_button}>
+        {icon}
+      </button>
+    )
+  }
+
+  //const [toggleSidebar, setToggleSidebar] = useState(false);
+
+  function sidebar() {
+    console.log('climk');
+    
+  }
+
 
   return (
     <>
       <Navbar className={styles.navbar}>
-        <Navbar.Brand href='/user' className={styles.navbar_logo}>
-          {departmentConfig.app_name}
-        </Navbar.Brand>
+        <div className={styles.wrapper}>
+          <Button onclick={sidebar} icon={<ThreeDotsVertical/>}/>
+          <Navbar.Brand href='/user' className={styles.navbar_logo}>
+            {departmentConfig.app_name}
+          </Navbar.Brand>
+        </div>
         <Nav className='d-flex justify-content-end'>
           <NavDropdown
             title='User'

@@ -105,6 +105,8 @@
 
 .table_wrapper {
     max-width: 100%;
+    border: 1px solid $ctis-blue-300;
+    border-radius: $border-radius-small;
 
     @include media-query(medium) {
         max-width: 80vw;

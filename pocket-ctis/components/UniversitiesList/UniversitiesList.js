@@ -30,6 +30,7 @@ const UniversitiesList = ({ universities, isLoading, onSearch }) => {
         </form>
       </div>
       <LoadingSpinner isLoading={isLoading} />
+      <div className={common.table_wrapper}>
       <table>
         <thead>
           <tr>
@@ -61,6 +62,7 @@ const UniversitiesList = ({ universities, isLoading, onSearch }) => {
           ))}
         </tbody>
       </table>
+      </div>
     </section>
   )
 }

@@ -30,6 +30,7 @@ const HighSchoolList = ({ highSchools, onSearch, isLoading }) => {
         </form>
       </div>
       <LoadingSpinner isLoading={isLoading} />
+      <div className={common.table_wrapper}>
       <table>
         <thead>
           <tr>
@@ -53,6 +54,7 @@ const HighSchoolList = ({ highSchools, onSearch, isLoading }) => {
           ))}
         </tbody>
       </table>
+      </div>
     </section>
   )
 }
