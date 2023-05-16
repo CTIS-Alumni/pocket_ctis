@@ -97,7 +97,7 @@ export default async function handler(req, res) {
             case "GET":
                 if(req.query.advisors){
                     try{
-                        const query = "SELECT u.id, u.first_name, u.last_name FROM users u JOIN graduationproject g ON g.advisor_id = u.id WHERE u.id = g.advisor_id GROUP BY u.id";
+                        const query = "SELECT u.id, u.first_name, u.last_name FROM users u JOIN useraccounttype act ON u.id = act.user_id WHERE act.type_id = 3";
                         const {data, errors} = await doqueryNew({query: query, values: []});
                         res.status(200).json({data, errors});
                     }catch(error){

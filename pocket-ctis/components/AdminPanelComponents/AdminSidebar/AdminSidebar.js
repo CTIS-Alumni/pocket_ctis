@@ -5,6 +5,8 @@ import {
   Boxes,
   DatabaseFillAdd,
   PeopleFill,
+  PlusSquare,
+  PlusSquareFill,
   Search,
 } from 'react-bootstrap-icons'
 import { useContext, useState, useEffect } from 'react'
@@ -43,6 +45,9 @@ const AdminSidebar = () => {
       </Button>
       <Button href='/admin/moduleCustomization' icon={<Boxes />}>
         Module Customization
+      </Button>
+      <Button href='/admin/addEntities' icon={<PlusSquare />}>
+        Add Entities
       </Button>
     </div>
   )
