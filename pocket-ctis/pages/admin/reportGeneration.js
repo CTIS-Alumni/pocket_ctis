@@ -1,7 +1,7 @@
 import AdminPageContainer from '../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
 import { Card } from 'react-bootstrap'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { _getFetcher } from '../../helpers/fetchHelpers'
 import SelectClauseCreator from '../../components/SelectClauseCreator/SelectClauseCreator'
 import JoinCreator from '../../components/JoinCreator/JoinCreator'
@@ -10,6 +10,27 @@ import GroupByClauseCreator from '../../components/GroupByClauseCreator/GroupByC
 import SortClauseCreator from '../../components/SortClauseCreator/SortClauseCreator'
 import InterTableWhereClauseCreator from '../../components/InterTableWhereClauseCreator/InterTableWhereClauseCreator'
 import styles from '../../styles/reportGeneration.module.css'
+import Select from 'react-select'
+import { Tables_Data } from '../../context/tablesContext'
+
+const transformTableData = (data) => {
+  const optionsModel = Object.keys(data).map((table) => ({
+    value: table,
+    label: table,
+  }))
+  return optionsModel
+}
+
+const selectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    borderColor: 'rgb(245, 164, 37)',
+  }),
+  menu: (provided, state) => ({
+    ...provided,
+    zIndex: 2,
+  }),
+}
 
 const ReportGeneration = () => {
   const [sqlQuery, setSqlQuery] = useState('')
@@ -20,12 +41,20 @@ const ReportGeneration = () => {
   const [interWhereSchema, setInterWhereSchema] = useState([])
   const [intraWhereSchema, setIntraWhereSchema] = useState([])
 
+  const [tableForJoin, setTableForJoin] = useState([])
+  const [tableOptions, setTableOptions] = useState([])
+
+  const { tableColumns } = useContext(Tables_Data)
+  useEffect(() => {
+    setTableOptions(transformTableData(tableColumns))
+  }, [tableColumns])
+
   useEffect(() => {
     if (selectSchema.columns.length > 0) {
       var sql = 'SELECT '
       sql += selectSchema.columns.join(', ')
       sql += '\nFROM '
-      sql += selectSchema.tables.join(', ')
+      sql += `${selectSchema.tables[0]} ${selectSchema.tables[0]}`
     }
     if (joinSchema.joins.length > 0) {
       sql += '\n'
@@ -67,13 +96,36 @@ const ReportGeneration = () => {
   return (
     <AdminPageContainer>
       <h4>Report Generation</h4>
+      <div className={styles.selectContainer}>
+        <label htmlFor='tablesInUse' className={styles.inputLabel}>
+          Select Tables to be Used
+        </label>
+        <Select
+          name='tablesInUse'
+          id='tablesInUse'
+          className={styles.selectInput}
+          isSearchable={true}
+          options={tableOptions}
+          styles={selectStyles}
+          closeMenuOnSelect={false}
+          isMulti
+          onChange={(value) => {
+            setTableForJoin(value.map((v) => v.value))
+          }}
+        />
+      </div>
       <Card border='light' style={{ padding: 20 }} className='mb-2'>
-        <SelectClauseCreator setSelectSchema={setSelectSchema} />
+        <SelectClauseCreator
+          setSelectSchema={setSelectSchema}
+          tableOptions={tableForJoin.map((t) => ({ value: t, label: t }))}
+        />
       </Card>
       <Card border='light' style={{ padding: 20 }} className='mb-2'>
         <JoinCreator
-          activeTables={selectSchema.tables}
+          activeTables={tableForJoin.filter((t) => t != selectSchema.tables[0])}
+          // activeTables={tableForJoin}
           setJoinSchema={setJoinSchema}
+          selectClauseTable={selectSchema.tables[0]}
         />
       </Card>
       <Card border='light' style={{ padding: 20 }} className='mb-2'>

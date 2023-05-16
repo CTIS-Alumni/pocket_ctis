@@ -86,7 +86,7 @@ const GroupByClauseCreator = ({ activeTables, setGroupSchema }) => {
 
   return (
     <div>
-      <h5>GroupByClauseCreator</h5>
+      <h5>Group By Clause Creator</h5>
       <div
         style={{
           border: '1px solid rgb(245, 164, 37)',

@@ -37,7 +37,7 @@ const SortClauseCreator = ({ activeTables, setSortSchema }) => {
       sortClauses.length > 0 ? (
         <>
           <div className={styles.clauseHolder}>
-            SORT BY&nbsp;
+            ORDER BY&nbsp;
             {sortClauses.map((column, idx) => (
               <span
                 className={styles.removeable}
@@ -52,7 +52,6 @@ const SortClauseCreator = ({ activeTables, setSortSchema }) => {
       ) : (
         ''
       )
-    console.log('here', sortClauses)
     setFormatedSortByStatment(str)
     setSortSchema(sortClauses)
   }, [sortClauses])
@@ -92,7 +91,7 @@ const SortClauseCreator = ({ activeTables, setSortSchema }) => {
 
   return (
     <div>
-      <h5>Sort Clause Creator</h5>
+      <h5>Order Clause Creator</h5>
       <div
         style={{
           border: '1px solid rgb(245, 164, 37)',

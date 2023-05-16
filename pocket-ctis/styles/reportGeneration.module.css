@@ -16,3 +16,19 @@
 .submitButton:disabled{
     background-color: #fbfbfb;
 }
+
+.selectContainer{ position: relative; margin-bottom: 10px;}
+.inputLabel{
+    position: absolute;
+    top: -7px;
+    left: 10px;
+    background-color: white;
+    padding: 0px 5px;
+    text-transform: capitalize;
+    color: #888;
+    font-size: 13px;
+    line-height: 13px;
+    width: fit-content;
+    letter-spacing: 1px;
+    z-index: 1;
+}
