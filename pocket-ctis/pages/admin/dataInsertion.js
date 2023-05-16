@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Papa from "papaparse"
 import AdminPageContainer from '../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner'
 import { Card } from 'react-bootstrap'
+import {ClockFill, ArrowRepeat, Check, Exclamation} from "react-bootstrap-icons";
 import { Formik, Field, Form } from 'formik'
 import {_submitFetcher} from "../../helpers/fetchHelpers";
 import {craftUrl} from "../../helpers/urlHelper";
-import styles from "../../components/AdminPanelComponents/AdminSidebar/AdminSidebar.module.scss";
-import Link from "next/link";
+import {toast, ToastContainer} from "react-toastify";
+
 
 const csvDataTypes = [
     {name: 'Users', api: "users"},
@@ -21,79 +22,112 @@ const csvDataTypes = [
     {name: 'Skills', api: "skills"}, //done
 ]
 
-const sendMail = async (data, type) => {
-   /* const completed_users = new Set();
-    let results = [];
-    await Promise.all(data.map(async (user) => {
-        if(!completed_users.has(user.inserted.user_id)){
-            const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id: user.inserted.user_id, type: type})
-            if(res.data){
-                completed_users.add(user.inserted.user_id);
-                results.push({id: user.inserted.id, index: user.index});
-            }
-        }else results.push({id: user.inserted.id, index: user.index});
-        return {data: results}
-    }));*/
-}
-
 const DataInsertion = () => {
     const [file, setFile] = useState(null)
     const [rows, setRows] = useState(null)
+    const [errors, setErrors] = useState(null)
+    const [success, setSuccess] = useState(null)
+    const [mailResults, setMailResults] = useState(null)
     const [columns, setColumns] = useState(null)
+    const [type, setType] = useState(null)
+
+    const updateMailResults = () => {
+        setMailResults((prevMailResults) => {
+            const updatedMailResults = { ...prevMailResults, ...mail_results };
+            return updatedMailResults;
+        });
+    }
 
     let is_submitted = false;
     let mail_results = {};
+    let completed_users = {};
+
+    const sendMail = async (user, index = null, type) => {
+        const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id: user?.inserted?.user_id ||  success[index], type: type})
+        mail_results[user?.index ||index] = {id: user?.inserted?.id || success[index], index: user?.index || index, data: res.data, errors: res.errors};
+        updateMailResults();
+        completed_users[user?.inserted?.user_id ||  success[index]] = {data: res.data, errors: res.errors};
+    }
+
+    const sendUserMail = async (user, index = null) => {
+        const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "activateAccount", value: 1}]), {user_id: user?.data?.id ||   success[index]})
+        mail_results[user.index || index] = {id: user?.data?.id ||   success[index], index: user?.index || index, data: res.data, errors: res.errors};
+        updateMailResults();
+    }
+
+    const previewFile = async (e) => {
+        e.preventDefault();
+        setErrors(null)
+        setSuccess(null)
+        setMailResults(null)
+        if(file){
+            is_submitted = false;
+            Papa.parse(file, {
+                header: true,
+                encoding: 'utf-8',
+                skipEmptyLines: true,
+                complete: function(data){
+                    if(data?.data?.length){
+                        setRows(data.data);
+                        setColumns(Object.keys(data.data[0]))
+                    }
+                },
+                error: function(err){
+                    toast.error("An error occured while parsing file")
+                }
+            })
+        }
+    }
+
+
 
   const onSubmitHandler = async (values) => {
-    console.log('submission', values)
-    console.log('file', file)
+        setType(values.dataType);
+      setErrors(null)
+      setMailResults(null)
+      is_submitted = true;
+      mail_results = {};
 
-      if(file){
-          is_submitted = false;
-          console.log("values.dat", values.dataType);
-          Papa.parse(file, {
-              header: true,
-              encoding: 'utf-8',
-              skipEmptyLines: true,
-              complete: async function(results){
-                  if(results?.data?.length){
-                      setRows(results.data);
-                      setColumns(Object.keys(results.data[0]))
-                  }
-                  is_submitted = true;
-                  mail_results = [];
-                  const res = await _submitFetcher("POST", craftUrl([values.dataType], [{name: "csv", value: 1}]), {[values.dataType]: results.data})
-                  console.log(res);
+      const res = await _submitFetcher("POST", craftUrl([values.dataType], [{name: "csv", value: 1}]), {[values.dataType]: rows})
+      const success_map = {}
+      res.data.forEach((d) => {
+          success_map[d.index] = d.inserted?.user_id || d.inserted?.id
+      })
+      setSuccess(success_map);
+      if(Object.keys(success_map).length === 0)
+          toast.error("An error occured while uploading file")
 
-                  //const completed_users = [];
+      const errors_map = {}
+      res.errors.forEach((err) => {
+          errors_map[err.index || 0] = err.error;
+      })
+      setErrors(errors_map);
+      if(Object.keys(errors_map).length === 0 && Object.keys(success_map).length === rows.length)
+          toast.success("All records uploaded successfully")
+      else if(Object.keys(errors_map).length === 0 && Object.keys(errors_map).length  !== rows.length && Object.keys(success_map).length !== rows.length)
+          toast.warning("Some records failed to upload")
 
-                  if(res.data?.length && (values.dataType === "internships" || values.dataType === "erasmus")){
-                      //mail_results = await sendMail(res.data);
-                      for(const [i, user] of res.data.entries()) {
-                          if(!completed_users.includes(user.inserted.user_id)){
-                              const results = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id: user.inserted.user_id, type: values.dataType})
-                              mail_results[user.index]({id: user.inserted.id, index: user.index, data: results.data, errors: results.errors});
-                              //completed_users.push(user.inserted.user_id);
-                              //console.log("heres completed users:", completed_users);
-                          }
-                      }
+      completed_users = {};
 
-                      console.log("mail_results:", mail_results);
-                  }
-                  if(res.data?.length && (values.dataType === "users")){
-                      for(const [i, user] of res.data.entries()) {
-                          console.log("hers user", user);
-                              const results = await _submitFetcher("POST",craftUrl(["mail"], [{name: "activateAccount", value: 1}]), {user_id: user.data.id})
-                              mail_results[user.index]({id: user.data.id, index: user.index, data: results.data, errors: results.errors});
-                      }
-                      console.log(errors);
-                      console.log(mail_results);
-                  }
+      if(res.data?.length && (values.dataType === "internships" || values.dataType === "erasmus")){
+          setMailResults(true);
+          for(const [i, user] of res.data.entries()) {
+              if(!Object.keys(completed_users).includes(user.inserted.user_id)){
+                  await sendMail(user,i,values.dataType);
+              }else {
+                  mail_results[user.index] = {id: user.inserted.id, index: user.index, data: completed_users[user.inserted.id].data, errors: completed_users[user.inserted.id].errors};
+                  updateMailResults()
               }
-          })
+          }
       }
-
-    //access selected file from 'file' variable, not from values.
+      if(res.data?.length && (values.dataType === "users")){
+          setMailResults(true);
+          for(const [i, user] of res.data.entries()) {
+              await sendUserMail(user, i)
+          }
+          if(Object.keys(mail_results).length === rows.length)
+              toast.success("All emails were sent successfully")
+      }
   }
 
   return (
@@ -151,7 +185,8 @@ const DataInsertion = () => {
                     )}
                   </Field>
                 </div>
-                  <button type='submit'>Preview</button>
+                  <button onClick={previewFile}>Preview</button>
+                  <button type='submit'>Submit</button>
               </Form>
             )
           }}
@@ -168,6 +203,8 @@ const DataInsertion = () => {
                           <th key={column}>{column}</th>
                       );
                   })}
+                  {errors && <th>Status</th>}
+                  {mailResults && <th>Mail</th>}
               </tr>
               </thead>
               <tbody>
@@ -182,7 +219,24 @@ const DataInsertion = () => {
                                   </td>
                               );
                           })}
-
+                          {errors && <td>{errors[index] || !success[index] ? errors[index] : ( Object.keys(errors).length === 1 ?
+                              <Exclamation size={30} color="red"/>
+                              :
+                              <Check size={30} color="lightgreen"/>
+                          )}</td>}
+                          {mailResults && <td>
+                              {mailResults[index]?.errors?.length === 0 ?
+                                  <Check size={30} color="lightgreen"/>
+                                  : (!mailResults[index] ?
+                                      <ClockFill size={20} color="lightblue"/> :
+                                      <ArrowRepeat style={{cursor: 'pointer'}} onClick={ async ()=> {
+                                          mail_results[index] = false;
+                                          updateMailResults();
+                                          if(type !== "users")
+                                              await sendMail(null, index, type);
+                                          else await sendUserMail(null, index)
+                              }} size={27} color="red"/>) }
+                          </td>}
                       </tr>
                   );
               })}
@@ -190,6 +244,16 @@ const DataInsertion = () => {
           </table>
 
       </Card>}
+        <ToastContainer
+            position='top-right'
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={true}
+            closeOnClick
+            draggable
+            pauseOnHover
+            theme='light'
+        />
     </AdminPageContainer>
   )
 }

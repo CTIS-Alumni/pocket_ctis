@@ -74,7 +74,6 @@ const Profile = ({ userData, session, errors }) => {
                   height={120}
                   style={{ objectFit: 'contain' }}
                   src={getProfilePicturePath(
-                    profile_picture[0]?.visibility,
                     profile_picture[0]?.profile_picture
                   )}
                 />

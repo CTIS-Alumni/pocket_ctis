@@ -3,6 +3,21 @@ import { useFormik } from 'formik'
 import styles from './ChangePasswordForm.module.css'
 import * as Yup from 'yup'
 import { toast } from 'react-toastify'
+import {_submitFetcher} from "../../helpers/fetchHelpers";
+import {craftUrl} from "../../helpers/urlHelper";
+
+const checkPassword = (pass, cnfpass) => {
+  if(pass !== cnfpass)
+    return {errors: [{error: "Passwords do not match"}]};
+  if(pass.length < 8)
+    return {errors: [{error: "Password must be at least 8 characters"}]};
+  return true;
+}
+
+const changePassword = async (current, newPass) => {
+  const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "changeAdminPassword", value: 1}]), {current, newPass})
+  return res;
+}
 
 const ChangePasswordForm = () => {
   const formik = useFormik({
@@ -23,19 +38,26 @@ const ChangePasswordForm = () => {
         .min(8, 'Password must be longer than 8 characters')
         .required('Required'),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+     await onSubmitHandler(values)
     },
   })
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
-    if (vals.newPassword != vals.retypeNewPassword) {
-      toast.error('New password and Cofirm New password do not match!')
-      return
+  const onSubmitHandler = async (values) => {
+    console.log("here",values)
+    const is_valid = checkPassword(values.newPassword, values.confirmPassword);
+    if (is_valid.errors) {
+      toast.error(is_valid.errors[0].error)
+      return false;
     }
 
-    //change password code
+    const res = await changePassword(values.currentPassword, values.newPassword, values.confirmPassword)
+    console.log(res);
+    if (res.data && !res.errors) {
+      toast.success('Admin password has been reset successfully.')
+    }else{
+      toast.error(res.errors[0].error)
+    }
   }
 
   return (
@@ -46,15 +68,15 @@ const ChangePasswordForm = () => {
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>Current Password</label>
             <input
-              value={formik.values.currentPass}
+              value={formik.values.currentPassword}
               onChange={formik.handleChange}
-              id='currentPass'
-              name='currentPass'
+              id='currentPassword'
+              name='currentPassword'
               type='password'
               className={styles.inputField}
             />
-            {formik.touched.currentPass && formik.errors.currentPass ? (
-              <div className={styles.error}>{formik.errors.currentPass}</div>
+            {formik.touched.currentPassword && formik.errors.currentPassword ? (
+              <div className={styles.error}>{formik.errors.currentPassword}</div>
             ) : null}
           </div>
           <div className={styles.inputContainer}>
@@ -74,17 +96,17 @@ const ChangePasswordForm = () => {
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>Confirm New Password</label>
             <input
-              value={formik.values.retypeNewPassword}
+              value={formik.values.confirmPassword}
               onChange={formik.handleChange}
-              id='retypeNewPassword'
-              name='retypeNewPassword'
+              id='confirmPassword'
+              name='confirmPassword'
               type='password'
               className={styles.inputField}
             />
-            {formik.touched.retypeNewPassword &&
-            formik.errors.retypeNewPassword ? (
+            {formik.touched.confirmPassword &&
+            formik.errors.confirmPassword ? (
               <div className={styles.error}>
-                {formik.errors.retypeNewPassword}
+                {formik.errors.confirmPassword}
               </div>
             ) : null}
           </div>

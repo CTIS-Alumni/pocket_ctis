@@ -1,7 +1,7 @@
-import {doquery, doqueryNew} from "../../helpers/dbHelpers";
-import {checkAuth} from "../../helpers/authHelper";
+import {doqueryNew} from "../../helpers/dbHelpers";
+import {checkApiKey} from "./middleware/checkAPIkey";
 
-export default async function handler(req, res) {
+const handler =  async (req, res) => {
         const method = req.method;
         switch (method) {
             case "GET":
@@ -15,3 +15,4 @@ export default async function handler(req, res) {
                 break;
         }
 }
+export default checkApiKey(handler);

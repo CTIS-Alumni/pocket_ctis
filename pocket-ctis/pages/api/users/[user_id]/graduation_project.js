@@ -8,6 +8,7 @@ import {
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import  limitPerUser from '../../../../config/moduleConfig.js';
+import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 
 const field_conditions = {
     must_be_different: ["graduation_project_id"],
@@ -53,7 +54,7 @@ export default async function handler(req, res){
                     }catch(error){
                         res.status(500).json({errors: {error: error.message}});
                     }
-                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "PUT":
                 try {
@@ -76,8 +77,8 @@ export default async function handler(req, res){
                     }catch(error){
                         res.status(500).json({errors: [{error:error.message}]});
                     }
-                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
         }
-    }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+    }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
 }

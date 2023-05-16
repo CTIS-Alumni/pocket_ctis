@@ -2,7 +2,7 @@ import AdminPageContainer from '../../components/AdminPanelComponents/AdminPageC
 import { Card } from 'react-bootstrap'
 import Link from 'next/link'
 import { useState, useEffect, useContext } from 'react'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_submitFetcher} from '../../helpers/fetchHelpers'
 import SelectClauseCreator from '../../components/SelectClauseCreator/SelectClauseCreator'
 import JoinCreator from '../../components/JoinCreator/JoinCreator'
 import WhereClauseCreator from '../../components/WhereClauseCreator/WhereClauseCreator'
@@ -12,6 +12,8 @@ import InterTableWhereClauseCreator from '../../components/InterTableWhereClause
 import styles from '../../styles/reportGeneration.module.css'
 import Select from 'react-select'
 import { Tables_Data } from '../../context/tablesContext'
+import {craftUrl} from "../../helpers/urlHelper";
+import {toast, ToastContainer} from "react-toastify";
 
 const transformTableData = (data) => {
   const optionsModel = Object.keys(data).map((table) => ({
@@ -89,8 +91,15 @@ const ReportGeneration = () => {
     intraWhereSchema,
   ])
 
-  const sendSqlQuery = () => {
-    console.log(sqlQuery + ';')
+  const sendSqlQuery = async () => {
+    const res = await _submitFetcher('POST',craftUrl(['generateReport']), {query: sqlQuery});
+    if(!res.data && res.errors){
+        toast.error(res.errors[0].error);
+    }
+    else {
+        toast.success("Query executed successfully")
+        console.log(res);
+    }
   }
 
   return (
@@ -122,8 +131,7 @@ const ReportGeneration = () => {
       </Card>
       <Card border='light' style={{ padding: 20 }} className='mb-2'>
         <JoinCreator
-          activeTables={tableForJoin.filter((t) => t != selectSchema.tables[0])}
-          // activeTables={tableForJoin}
+          activeTables={tableForJoin}
           setJoinSchema={setJoinSchema}
           selectClauseTable={selectSchema.tables[0]}
         />
@@ -183,6 +191,16 @@ const ReportGeneration = () => {
           Create PDF
         </Link>
       </Card>
+        <ToastContainer
+            position='top-right'
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            draggable
+            pauseOnHover
+            theme='light'
+        />
     </AdminPageContainer>
   )
 }

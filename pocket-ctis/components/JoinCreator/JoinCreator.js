@@ -19,40 +19,49 @@ const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
   const [availableJoins, setAvailableJoins] = useState([])
   const [selectedJoins, setSelectedJoins] = useState([])
   const [formatedJoinStatment, setFormatedJoinStatment] = useState('')
+  const [joinedTablesX, setJoinedTablesX] = useState([])
+
+  useEffect(() => {
+    setJoinedTablesX(prevTables => {
+      const updatedTables = [selectClauseTable, ...prevTables.filter(table => table !== selectClauseTable)];
+      return updatedTables;
+    });
+  }, [selectClauseTable])
 
   const getAvailableJoins = () => {
     const availableJoins = []
     activeTables.forEach((table) => {
-      table_references[table].references.forEach((ref) => {
-        if (
-          activeTables.includes(ref.table) ||
-          ref.table == selectClauseTable
-        ) {
-          availableJoins.push({
-            label: `${table} ${table} ON ${table}.${ref.column} = ${ref.table}.id`,
-            value: {
-              referencedTable: ref.table,
-              referencedColumn: 'id',
-              referencingTable: table,
-              referencingColumn: ref.column,
-            },
-          })
-        }
-      })
+      if(!joinedTablesX.includes(table)){
+        table_references[table].references.forEach((ref) => {
+          if (activeTables.includes(ref.table) && joinedTablesX.includes(ref.table)) {
+            availableJoins.push({
+              label: `${table} ${table} ON ${table}.${ref.column} = ${ref.table}.id`,
+              value: {
+                referencedTable: ref.table,
+                referencedColumn: 'id',
+                referencingTable: table,
+                referencingColumn: ref.column,
+                table: table
+              },
+            })
+          }
+        })
 
-      table_references[table].referenced.forEach((ref) => {
-        if (activeTables.includes(ref.table)) {
-          availableJoins.push({
-            label: `${table} ${table} ON ${table}.${ref.column} = ${ref.table}.id `,
-            value: {
-              referencedTable: table,
-              referencedColumn: ref.column,
-              referencingTable: ref.table,
-              referencingColumn: 'id',
-            },
-          })
-        }
-      })
+        table_references[table].referenced.forEach((ref) => {
+          if (activeTables.includes(ref.table) && joinedTablesX.includes(ref.table)) {
+            availableJoins.push({
+              label: `${table} ${table} ON ${table}.id = ${ref.table}.${ref.column} `,
+              value: {
+                referencedTable: table,
+                referencedColumn: ref.column,
+                referencingTable: ref.table,
+                referencingColumn: 'id',
+                table: table
+              },
+            })
+          }
+        })
+      }
     })
     formik.setFieldValue('joinStatement', null)
     setAvailableJoins([...availableJoins])
@@ -60,7 +69,7 @@ const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
 
   useEffect(() => {
     getAvailableJoins()
-  }, [activeTables, selectClauseTable])
+  }, [activeTables, selectClauseTable, joinedTablesX])
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -79,7 +88,9 @@ const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
 
   const removeJoin = (join) => {
     const temp = selectedJoins.filter((t) => t.text != join.text)
+    const tempTable = joinedTablesX.filter((jt) => jt != join.value.table)
     setSelectedJoins([...temp])
+    setJoinedTablesX([...tempTable])
   }
 
   useEffect(() => {
@@ -122,11 +133,14 @@ const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
     }
 
     const newSelected = [...selectedJoins]
+    const newJoined = [...joinedTablesX]
 
     if (!newSelected.find((datum) => datum.text == temp.text)) {
       newSelected.push(temp)
+      newJoined.push(temp.value.table);
     }
 
+    setJoinedTablesX(newJoined);
     setSelectedJoins(newSelected)
     formik.setFieldValue('joinStatement', null)
     formik.setFieldValue('joinType', {

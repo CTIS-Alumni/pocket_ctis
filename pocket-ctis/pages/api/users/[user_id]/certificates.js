@@ -30,7 +30,7 @@ const validation = (data) => {
     replaceWithNull(data);
     if(data.visibility !== 1 && data.visibility !== 0)
         return "Invalid Values!";
-    if(!data.certificate_name || !data.certificate_name)
+    if(!data.certificate_name || !data.issuing_authority)
         return "Please fill all fields!"
     return true;
 }
@@ -76,5 +76,5 @@ export default async function handler(req, res) {
                 }
                 break;
         }
-    }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+    }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
 }

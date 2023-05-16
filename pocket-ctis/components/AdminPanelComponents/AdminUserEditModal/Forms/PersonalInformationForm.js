@@ -11,6 +11,7 @@ import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/f
 import {craftUrl} from '../../../../helpers/urlHelper'
 import { cloneDeep } from 'lodash'
 import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
+import {toast} from "react-toastify";
 
 const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
   const { locationData } = useContext(Location_data)
@@ -269,6 +270,22 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       basic_info: []
     }
 
+    let errors = []
+    Object.keys(deletedData).forEach((obj) => {
+      for (const [key, value] of Object.entries(responseObj[obj])) {
+        if (value.errors?.length > 0) {
+          errors = [...errors, ...value.errors.map((error) => error)]
+        }
+      }
+    });
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else toast.success('Data successfully saved')
+
+
   }
 
   const {
@@ -308,6 +325,22 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                         id='basic_info[0].first_name'
                         name='basic_info[0].first_name'
                         placeholder='First Name'
+                      />
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div className={`${styles.inputContainer}`}>
+                      <label className={`${styles.inputLabel}`}>
+                        Nee
+                      </label>
+                      <Field
+                          className={`${styles.inputField}`}
+                          style={{ width: '100%' }}
+                          id='basic_info[0].nee'
+                          name='basic_info[0].nee'
+                          placeholder='Nee'
                       />
                     </div>
                   </td>

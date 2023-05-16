@@ -48,7 +48,6 @@ const AdminUsersList = () => {
                               borderRadius: '50%',
                             }}
                             src={getProfilePicturePath(
-                              user.pic_visibility,
                               user.profile_picture
                             )}
                           />

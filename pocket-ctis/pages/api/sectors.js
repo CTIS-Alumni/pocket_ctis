@@ -1,6 +1,7 @@
 import {buildInsertQueries, buildSearchQuery, doMultiQueries, insertToTable} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
+import {checkApiKey} from "./middleware/checkAPIkey";
 
 const columns = {
     sector_name: "sector_name"
@@ -20,7 +21,7 @@ const validation = (data) => {
 
 const table_name = "sector"
 
-export default async function handler(req, res){
+const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     if (session) {
         const method = req.method;
@@ -61,10 +62,11 @@ export default async function handler(req, res){
                     } catch (error) {
                         res.status(500).json({errors: [{error: error.message}]});
                     }
-                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
         }
     }else{
         res.redirect("/401", 401);
     }
 }
+export default checkApiKey(handler);

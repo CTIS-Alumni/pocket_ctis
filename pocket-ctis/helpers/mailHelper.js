@@ -57,7 +57,7 @@ export const sendProfileUpdateEmail = async (user, type) => {
             name: user.first_name,
             surname: user.last_name,
             type: type,
-            link: process.env.NEXT_PUBLIC_ORIGIN_PATH + '/user/' + user.id
+            link: process.env.NEXT_PUBLIC_ORIGIN_PATH + '/login'
         })
 
 

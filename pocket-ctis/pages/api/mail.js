@@ -1,8 +1,9 @@
 import {doqueryNew} from "../../helpers/dbHelpers";
 import {sendActivationMail, sendPasswordResetMail, sendProfileUpdateEmail} from "../../helpers/mailHelper";
 import {checkAuth} from "../../helpers/authHelper";
+import {checkApiKey} from "./middleware/checkAPIkey";
 
-export default async function handler(req, res) {
+const handler =  async (req, res) => {
     if(req.query.forgotPassword){
         try{
             const {email, username} = JSON.parse(req.body);
@@ -43,7 +44,7 @@ export default async function handler(req, res) {
             }catch(err){
                 res.status(500).json({errors: [{error: err.message}]});
             }
-        }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+        }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
     }
 
    else if(req.query.updateProfile) {
@@ -68,7 +69,7 @@ export default async function handler(req, res) {
             } catch (error) {
                 res.status(500).json({errors: [{error: error.message}]});
             }
-        } res.status(403).json({errors: [{error: "Forbidden action!"}]});
+        } res.status(403).json({errors: [{error: "Forbidden request!"}]});
     }
 
    else if(req.query.activateAccount) {
@@ -93,7 +94,9 @@ export default async function handler(req, res) {
             } catch (error) {
                 res.status(500).json({errors: [{error: error.message}]});
             }
-        } res.status(403).json({errors: [{error: "Forbidden action!"}]});
+        } res.status(403).json({errors: [{error: "Forbidden request!"}]});
     }
     else res.redirect("/401", 401);
 }
+
+export default checkApiKey(handler);

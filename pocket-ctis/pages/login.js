@@ -2,11 +2,11 @@ import { Formik, Field, Form } from 'formik'
 import { Col, Container, Row } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import styles from '../styles/login.module.css'
-import { User_data } from '../context/userContext'
-import { useContext,useState } from 'react'
+import { useState } from 'react'
 import {_submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
 import departmentConfig from "../config/departmentConfig";
+import {toast, ToastContainer} from "react-toastify";
 
 const requestLogin = async (authCredentials) => {
   const res = await _submitFetcher("POST", craftUrl(["login"]), authCredentials);
@@ -21,7 +21,7 @@ const requestPasswordReset = async ({username, email}) => {
 
 function checkValues(username, password) {
   if(username.trim() === "" || password.trim() === "")
-    return {errors: [{error: "Please fill all fields"}]};
+    return {errors: [{error: "Please fill all fields!"}]};
   return true;
 }
 
@@ -30,26 +30,30 @@ const Login = () => {
   const onSubmit = async (values) => {
     const is_valid = checkValues(values.username, values.password);
     if(is_valid.errors) {
-      console.log(is_valid);
-      return false; //TODO: TOAST
+      toast.error(is_valid.errors[0].error)
+      return false;
     }
     const res = await requestLogin(values)
-    console.log(res);
     if (res.data && !res.errors) {
+      toast.success('Login successful')
       router.push('/user' )
     }else{
-      //TODO: SHOW ERROR TOAST;
+      toast.error(res.errors[0].error)
     }
   }
 
   const sendMail = async (values) => {
     const is_valid = checkValues(values.username, values.email);
     if(is_valid.errors) {
-      console.log(is_valid);
-      return false; //TODO: TOAST
+      toast.error(is_valid.errors[0].error)
+      return false;
     }
     const res = await requestPasswordReset(values);
-    console.log("here",res);
+    if(res.data && !res.errors){
+      toast.success('Please check your email address for your password reset link.')
+    }else{
+      toast.error(res.errors[0].error)
+    }
   }
 
   const [loginForm, changeLoginForm] = useState(true);
@@ -172,6 +176,16 @@ const Login = () => {
           </Col>
         </Row>
       </Container>
+      <ToastContainer
+          position='top-right'
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+          draggable
+          pauseOnHover
+          theme='light'
+      />
     </div>
   )
 }

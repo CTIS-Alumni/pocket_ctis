@@ -23,7 +23,7 @@ const fields = {
 
 const table_name = "usersocialmedia";
 
-const validation = async (data) => {
+const validation = (data) => {
     replaceWithNull(data)
     if(!data.social_media_id)
         return "Please select a social media site!";
@@ -45,9 +45,12 @@ export default async function handler(req, res){
         switch (method) {
             case "POST":
                 try {
+                    console.log("socisla", socials);
                     const queries = buildInsertQueries(socials, table_name, fields, user_id);
                     const select_queries = buildSelectQueries(socials, table_name, field_conditions);
+                    console.log("queries", queries);
                     const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, limitPerUser.social_media);
+                    console.log("data", data, "err", errors);
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({errors: [{error:error.message}]});
@@ -72,5 +75,5 @@ export default async function handler(req, res){
                 }
                 break;
         }
-    } res.status(403).json({errors: [{error: "Forbidden action!"}]});
+    } res.status(403).json({errors: [{error: "Forbidden request!"}]});
 }

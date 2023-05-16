@@ -14,7 +14,7 @@ const NotFound = () => {
                 justifyContent: 'center',
                 alignItems: 'center'
             }} className='d-flex justify-content-center align-items-center'>
-                <h1 style={{color: '#ffffff'}}>401</h1>
+                <h1 style={{color: '#ffffff'}}>404</h1>
                 <h2 style={{color: '#f5a425'}}>Oops! It seems that the page you requested can't be found!</h2>
                 <div>
                     <Link

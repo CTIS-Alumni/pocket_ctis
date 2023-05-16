@@ -114,8 +114,6 @@ const AdminUserView = ({ user }) => {
     'Expert',
   ]
 
-  let deleted_image = false;
-
   const classifySkills = () => {
     const classifiedSkill = {}
     skills.forEach((skill) => {
@@ -151,15 +149,24 @@ const AdminUserView = ({ user }) => {
     Twitter: <Twitter size={18} fill='#00acee' className='me-3' />,
   }
 
-  const uploadFile = () => {
+  const uploadFile = async () => {
     if (!profileImage) {
       toast.error('Please select an image to upload', {
         containerId: 'modalContainer',
       })
-    }
-    console.log(profileImage)
+    }else{
+      const formData = new FormData();
+      formData.append('profile_picture', basic_info[0].id);
+      formData.append('visibility', 0);
+      formData.append('image', profileImage);
 
-    //continue file upload here
+      const res = await _submitFile('PUT', craftUrl(['users', basic_info[0].id, 'profilepicture']),  formData);
+      console.log(res)
+
+      if(res.data || !res.errors){
+        //setProfilePictureModal(false)
+      }//TODO: PUT TOAST
+    }
   }
 
   const getCurrentWorksString = (works) => {
@@ -175,9 +182,13 @@ const AdminUserView = ({ user }) => {
     }
   }
 
-  const removeProfilePicture = () => {
-    console.log('set to default image')
-    setProfilePictureModal(false)
+  const removeProfilePicture = async () => {
+
+    const res = await _submitFetcher('PUT',craftUrl(['users', basic_info[0].id, 'profilepicture'], [{name: 'removePic', value: 1}]))
+    console.log(res);
+    if(res.data || !res.errors)
+      setProfilePictureModal(null)
+    //TODO: PUT TOAST
   }
 
   const removeImagePopover = (
@@ -727,8 +738,8 @@ const AdminUserView = ({ user }) => {
                       profile_picture[0].visibility,
                       profile_picture[0].profile_picture
                     )}
-                    width={100}
-                    height={100}
+                    width={250}
+                    height={250}
                   />
                 </div>
               </OverlayTrigger>
@@ -743,8 +754,8 @@ const AdminUserView = ({ user }) => {
                 <img
                   className={styles.profileImage}
                   src={preview}
-                  width={100}
-                  height={100}
+                  width={250}
+                  height={250}
                 />
               </div>
             )}

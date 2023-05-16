@@ -27,8 +27,10 @@ const validation = (data) => {
     const currentDate = new Date();
     const examDate = data.start_date ? new Date(data.start_date) : null;
 
-    if(!data.grade === null)
-        return "Invalid Values!";
+    if(!data.exam_id)
+        return "Please select an exam!"
+    if(!data.grade)
+        return "Please enter your grade!";
     if(examDate && examDate > currentDate)
         return "Please do not select future dates!";
     if(data.visibility !== 0 && data.visibility !== 1)
@@ -74,5 +76,5 @@ export default async function handler(req, res){
                 }
                 break;
         }
-    }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+    }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
 }

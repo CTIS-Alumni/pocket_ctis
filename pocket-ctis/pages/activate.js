@@ -6,25 +6,25 @@ import {_submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
 import {verify} from "../helpers/jwtHelper";
 import departmentConfig from "../config/departmentConfig";
+import {toast, ToastContainer} from "react-toastify";
 
 
 const activateAccount = async (username, password, token) => {
     const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "activateAccount", value:1}]), {username, password, token})
-    console.log(res)
     return res;
 }
 
 const activateAdminAccount = async (username, password, token) => {
     const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "activateAdminAccount", value:1}]), {username, password, token})
-    console.log(res)
     return res;
 }
 
 const checkPassword = (pass, cnfpass) => {
     if(pass !== cnfpass)
         return {errors: [{error: "Passwords do not match"}]};
-    if(pass.length < 6)
-        return {errors: [{error: "Password must be at least 6 characters"}]};
+    if(pass.length < 8){
+        return {errors: [{error: "Password must be at least 8 characters"}]};
+    }
     return true;
 }
 
@@ -32,22 +32,28 @@ const ActivateAccount = ({token, type}) => {
     const router = useRouter()
     const onSubmit = async (values) => {
         const is_valid = checkPassword(values.password, values.confirmPassword);
-        //TODO: CHECK IS_VALID AND MAKE TOAST
-        if(is_valid === true){
-            let res;
-            if(type === "activateAccount") {
-                res = await activateAccount(values.username, values.password, token);
-                if (res.data?.changedRows === 1)
-                    router.push('/login'); //TODO: show success message
+        if (is_valid.errors) {
+            toast.error(is_valid.errors[0].error)
+            return false;
+        }
+
+        let res;
+        if (type === "activateAccount") {
+            res = await activateAccount(values.username, values.password, token);
+            if (res.data && !res.errors) {
+                toast.success('Your account has been activated successfully.')
+                router.push('/login');
+            } else {
+                toast.error(res.errors[0])
             }
-            else if(type === "activateAdminAccount"){
-                    res = await activateAdminAccount(values.username, values.password, token);
-                    if(res.data?.insertId)
-                        router.push( '/login'); //TODO: show success message
-                }
+        } else if (type === "activateAdminAccount") {
+            res = await activateAdminAccount(values.username, values.password, token);
+            if (res.data?.insertId && !res.errors) {
+                toast.success('Your admin account has been activated successfully.')
+                router.push('/login');
+            } else {
+                toast.error(res.errors[0])
             }
-        else{
-            console.log(is_valid);
         }
     }
 
@@ -128,6 +134,16 @@ const ActivateAccount = ({token, type}) => {
                         </div>
                     </Col>
                 </Row>
+                <ToastContainer
+                    position='top-right'
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={true}
+                    closeOnClick
+                    draggable
+                    pauseOnHover
+                    theme='light'
+                />
             </Container>
         </div>
     )

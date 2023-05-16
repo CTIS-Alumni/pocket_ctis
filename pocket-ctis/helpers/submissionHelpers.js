@@ -77,11 +77,8 @@ export const handleResponse = (original_data, req, res, values, name, args, tran
             if(index !== -1){
                 const found_in_res = res.POST.data?.find(datum => { // find the index of the id'less version of the data in the form
                       return isEqualFields(toInsert, datum.inserted, args[0], args[1], args[2], args[3]);
-                    }
-
-                );
+                    });
                 if(found_in_res !== undefined){//attach the insert_id's back to records in the form so that you can edit them immediately without refetching data
-
                     if(!values[name][index].hasOwnProperty("id")){
                         values[name][index].id = found_in_res.inserted.id;
                     }

@@ -2,6 +2,9 @@ import mysql from "mysql2/promise";
 import dbconfig from "../config/dbconfig.js";
 import {reFormatDate} from "./formatHelpers";
 import {sendActivationMail, sendAdminActivationMail} from "./mailHelper";
+import formidable from "formidable";
+import fs from "fs/promises";
+import {resizeAndCropImage} from "./imageHelper";
 
 export const createDBConnection = async (namedPlaceholders = false) => {
     const connection = await mysql.createConnection({
@@ -120,7 +123,9 @@ export const buildInsertQueries = (data, table, fields, user_id = null) => {
         fields.date.forEach((field) => {
             datum[field] = reFormatDate(datum[field]);
             if(datum[field]){
-                datum[field] += "T00:00:00.000Z";
+                if(datum[field].includes("T")) {
+                    datum[field] = datum[field].split("T")[0] + "T" + "00:00:00.000Z"
+                }
                 query += `STR_TO_DATE(:${field}, '%Y-%m-%dT%H:%i:%s.000Z'), `;
             }
             else query += `:${field}, `;
@@ -259,6 +264,41 @@ export async function updateTable(queries, validation, select_queries = []) {//p
             errors.push({name: query.name, error: error.message, queries, select_queries});
         }
     }
+    connection.end();
+    return {data, errors};
+}
+
+export const insertWithImage = async (query, obj, validation, file_objs, targetWidth, targetHeight) => { //files: [{file: {filedata}, name: 'newnameyouwant', location: 'foldername' }]
+    const errors = [];
+    const data = [];
+    const connection = await createDBConnection(true);
+
+    try{
+        await connection.beginTransaction();
+
+        let is_valid = validation(obj); //checks for both type fields and user fields
+        if (is_valid !== true)
+            throw {message: is_valid};
+
+
+        const [res] = await connection.execute(query, obj);
+
+        for(const [key, value] of Object.entries(file_objs)){
+            const destinationFilePath = process.env.PUBLIC_IMAGES_PATH + value.location + "/" + value.name + ".png";
+            const resizedBuffer = await resizeAndCropImage(value[key], targetWidth, targetHeight);
+            await fs.writeFile(destinationFilePath, resizedBuffer);
+        }
+
+        data.push(obj);
+
+    }catch(error){
+        error.message = handleDBErrorMessage(error);
+        errors.push({error: error.message});
+        await connection.rollback();
+    }
+
+    await connection.commit();
+
     connection.end();
     return {data, errors};
 }
@@ -419,10 +459,8 @@ export const insertToUserTable = async (queries, table, validation, select_queri
     let is_valid;
 
     const connection = await createDBConnection(true);
-
     if(limit)
         count = await getCountForUser(connection, table, queries[0].user_id);   //how many of that data type does the user already have
-
     for (const [index, query] of queries.entries()){
         try {
             is_valid = "Invalid Values!"
@@ -432,10 +470,8 @@ export const insertToUserTable = async (queries, table, validation, select_queri
 
             if(typeof validation !== "function" || is_valid === true ){
                 let equal = [];
-
                 if(select_queries.length > 0)
                 [equal] = await connection.execute(select_queries[index].query, select_queries[index].values); //is there data that's similar/same as this data
-
                 if (equal.length > 0) {           //if yes then according to whether you checked the entire db or only this particular user give error msg
                     const error_message = select_queries[index].query.includes("user_id") ? "Data is not unique for user!" : "Another User Has Already Taken This";
                     errors.push({index: index, error: error_message});
@@ -451,17 +487,18 @@ export const insertToUserTable = async (queries, table, validation, select_queri
                             count++;
                         }
                     } else {
-                        errors.push({index: index,  error: "Limit Exceeded!"});
+                        errors.push({index: index, error: "Limit Exceeded!"});
                     }
                 }
-            } else errors.push({index: index, error: is_valid})
+            } else {
+                errors.push({index: index, error: is_valid})
+            }
         } catch
             (error) {
             error.message = handleDBErrorMessage(error);
             errors.push({index: index, error: error.message});
         }
     }
-
     connection.end();
     return {data, errors};
 }
@@ -495,7 +532,7 @@ export const insertToTable = async(queries, table, validation = null) => {
             errors.push({index: index, error: error.message});
         }
     }
-    connection.end();f
+    connection.end();
     return {data, errors};
 }
 
