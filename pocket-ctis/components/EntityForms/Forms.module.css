@@ -1,0 +1,82 @@
+.inputContainer{
+    position: relative;
+    margin: 20px 0;
+}
+
+.inputLabel{
+    position: absolute;
+    left: 10px;
+    background-color: white;
+    padding: 0px 5px;
+    text-transform: capitalize;
+    color: #888;
+    vertical-align: top;
+    font-size: 13px;
+    height: 1px;
+    line-height: 0px;
+    width: fit-content;
+    letter-spacing: 1px;
+    z-index: 1;
+    border-radius: 5px 5px 0 0;
+}
+
+.inputField{
+    padding: 10px 5px 5px 5px;
+    width: 100%;
+    border: 1px solid #f5a425;
+    border-radius: 4px;
+    resize: none;
+    color: #666;
+}
+
+.confirmButton{
+    padding: 8px;
+
+    width: 89px;
+    height: 30px;
+
+    background: #FFF9E8;
+    opacity: 0.8;
+
+    border: 1px solid #FF8412;
+    border-radius: 5px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+
+    /* ctis yellow 700 */
+
+    color: #FF8412;
+}
+
+@keyframes errorShow {
+    0%   {height: 0px;}
+    50%  {height: 5px;}
+    70%  {height: 7px;}
+    80%  {height: 8px;}
+    90%  {height: 9px;}
+    100% {height: 10px;}
+  }
+
+.error{
+    padding-left: 10px;
+    overflow: hidden;
+    color: red;
+    font-size: small;
+    animation: errorShow;
+    animation-duration: 0.1s;
+    animation-timing-function:ease-in-out;
+}
+
+.checkBox{
+    position: relative;
+    color: #FF8412;
+    font-weight: bold;
+    font-size: 20px;
+    margin-right: 5px; 
+    /* left: 15px */
+}
