@@ -102,6 +102,7 @@ const SectorsDashboard = () => {
                   }}
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
+                  selectedArray={selectedArray}
                 />
               )}
             </div>

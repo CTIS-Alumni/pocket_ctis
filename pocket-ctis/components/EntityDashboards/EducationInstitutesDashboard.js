@@ -116,6 +116,7 @@ const EducationInstitutesDashboard = () => {
                   }}
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
+                  selectedArray={selectedArray}
                 />
               )}
             </div>

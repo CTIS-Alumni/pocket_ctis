@@ -22,6 +22,7 @@ const DataTable = ({
   editHandler,
   deleteHandler,
   setSelectedArray,
+  selectedArray,
 }) => {
   const [limit, setLimit] = useState(15)
   const [currentPage, setCurrentPage] = useState(1)
@@ -129,6 +130,9 @@ const DataTable = ({
               <tr className={styles.tableRow}>
                 <td className={styles.tableCell}>
                   <input
+                    checked={
+                      selectedArray.find((s) => s.id == d.id) ? true : false
+                    }
                     type='checkbox'
                     onChange={(event) => {
                       if (event.target.checked) {

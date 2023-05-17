@@ -45,6 +45,10 @@ const CompanyDashboard = () => {
     ])
   }, [])
 
+  useEffect(() => {
+    console.log(selectedArray)
+  }, [selectedArray])
+
   const onQuery = (queryParams) => {
     const conditions = buildCondition(queryParams)
     getData(conditions)
@@ -109,6 +113,7 @@ const CompanyDashboard = () => {
                   }}
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
+                  selectedArray={selectedArray}
                 />
               )}
             </div>
