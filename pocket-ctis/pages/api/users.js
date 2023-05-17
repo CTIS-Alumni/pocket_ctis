@@ -103,7 +103,15 @@ export default async function handler(req, res) {
                     }catch(error){
                         res.status(500).json({errors: [{error: error.message}]});
                     }
-                }else{
+                }else if(req.query.students){
+                    try{
+                        const query = "SELECT u.id, u.bilkent_id, u.first_name, u.last_name FROM users u JOIN useraccounttype act ON u.id = act.user_id WHERE act.type_id = 1";
+                        const {data, errors} = await doqueryNew({query: query, values: []});
+                        res.status(200).json({data, errors});
+                    }catch(error){
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                } else{
                     try{
                         let values = [];
                         let query = "SELECT GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.id, upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name" +
