@@ -14,6 +14,7 @@ import ExamForm from '../../components/EntityForms/ExamForm'
 import SkillsForm from '../../components/EntityForms/SkillsForm'
 import GraduationProjectForm from '../../components/EntityForms/GraduationProjectForm'
 import CompanyDashboard from '../../components/EntityDashboards/CompanyDashboard'
+import SectorsDashboard from '../../components/EntityDashboards/SectorsDashboard'
 
 const AddEntitiesDashboard = () => {
   const [activeKey, setActiveKey] = useState('Company')
@@ -30,7 +31,9 @@ const AddEntitiesDashboard = () => {
             Company
           </div>
           <div
-            className={activeKey == 'Company2' ? styles.active : styles.inActive}
+            className={
+              activeKey == 'Company2' ? styles.active : styles.inActive
+            }
             onClick={() => setActiveKey('Company2')}
           >
             Company2
@@ -123,7 +126,7 @@ const AddEntitiesDashboard = () => {
           {activeKey == 'Skill Types' && <SkillTypeForm />}
           {activeKey == 'Degree Types' && <DegreeTypeForm />}
           {activeKey == 'Work Types' && <WorkTypeForm />}
-          {activeKey == 'Sector' && <SectorForm />}
+          {activeKey == 'Sector' && <SectorsDashboard />}
           {activeKey == 'Societies' && <SocietiesForm />}
           {activeKey == 'Exams' && <ExamForm />}
           {activeKey == 'Skills' && <SkillsForm />}
