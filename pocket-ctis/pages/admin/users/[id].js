@@ -186,9 +186,11 @@ const AdminUserView = ({ user }) => {
 
     const res = await _submitFetcher('PUT',craftUrl(['users', basic_info[0].id, 'profilepicture'], [{name: 'removePic', value: 1}]))
     console.log(res);
-    if(res.data || !res.errors)
+    if(res.data || !res.errors){
       setProfilePictureModal(null)
-    //TODO: PUT TOAST
+      toast.success("Profile picture removed successfully")
+    }
+
   }
 
   const removeImagePopover = (
@@ -228,7 +230,6 @@ const AdminUserView = ({ user }) => {
                 <img
                   className={styles.profileImage}
                   src={getProfilePicturePath(
-                    profile_picture[0].visibility,
                     profile_picture[0].profile_picture
                   )}
                   width={100}
@@ -735,7 +736,6 @@ const AdminUserView = ({ user }) => {
                   <img
                     className={styles.profileImage}
                     src={getProfilePicturePath(
-                      profile_picture[0].visibility,
                       profile_picture[0].profile_picture
                     )}
                     width={250}

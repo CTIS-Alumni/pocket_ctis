@@ -6,6 +6,8 @@ import {
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
+import {_getFetcher} from "../../helpers/fetchHelpers";
+import {craftUrl} from "../../helpers/urlHelper";
 
 const table_name = "users";
 
@@ -96,10 +98,23 @@ const handler =  async (req, res) => {
         const method = req.method;
         switch (method) {
             case "GET":
+                if(req.query.advisors){
+                    try{
+                        const query = "SELECT u.id, u.first_name, u.last_name FROM users u JOIN useraccounttype act ON u.id = act.user_id WHERE act.type_id = 3"
+                        const {data, errors} = await doqueryNew({query: query, values: []});
+                        res.status(200).json({data, errors});
+                    }catch(error){
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                }else{
                 try {
                     let values = [];
-                    let query = "SELECT GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.id, upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name" +
-                        " FROM users u JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
+                    let query = "SELECT GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.id, "
+                    if(payload.user === "admin" || payload.user === "owner")
+                        query += "upp.profile_picture, ";
+                    else query += "'defaultuser' AS 'profile_picture', ";
+
+                    query += "u.first_name, u.last_name FROM users u JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
                         "JOIN useraccounttype uat ON (uat.user_id = u.id) " +
                         "JOIN accounttype act ON (act.id = uat.type_id) ";
 
@@ -153,7 +168,7 @@ const handler =  async (req, res) => {
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({errors: [{error: error.message}]});
-                }
+                }}
                 break;
             case "POST":
                 if (payload?.user === "admin") {

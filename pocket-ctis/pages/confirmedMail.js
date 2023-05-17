@@ -1,68 +1,48 @@
-import { Formik, Field, Form } from 'formik'
-import { Col, Container, Row } from 'react-bootstrap'
-import { useRouter } from 'next/router'
-import styles from '../styles/login.module.css'
+import {useRouter} from "next/router";
+import {toast, ToastContainer} from "react-toastify";
+import {Col, Container, Row} from "react-bootstrap";
+import {Field, Form, Formik} from "formik";
+import styles from "../styles/login.module.css";
 import {_submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
 import {verify} from "../helpers/jwtHelper";
-import departmentConfig from "../config/departmentConfig";
-import {toast, ToastContainer} from "react-toastify";
 
-
-const activateAccount = async (username, password, token) => {
-    const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "activateAccount", value:1}]), {username, password, token})
+const confirmEmail = async (username, password, email, token) => {
+    const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "changeEmail", value: 1}]), {username, password, email, token})
     return res;
 }
 
-const activateAdminAccount = async (username, password, token) => {
-    const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "activateAdminAccount", value:1}]), {username, password, token})
-    return res;
-}
 
-const checkPassword = (pass, cnfpass, usr) => {
-    if(pass.trim() === "" || cnfpass.trim() === "" || usr.trim() === "")
+function checkValues(username, password) {
+    if(username.trim() === "" || password.trim() === "")
         return {errors: [{error: "Please fill all fields!"}]};
-    if(pass !== cnfpass)
-        return {errors: [{error: "Passwords do not match"}]};
-    if(pass.length < 8){
-        return {errors: [{error: "Password must be at least 8 characters"}]};
-    }
     return true;
 }
 
-const ActivateAccount = ({token, type}) => {
+const ConfirmNewContactEmail = ({token, email}) => {
     const router = useRouter()
     const onSubmit = async (values) => {
-        const is_valid = checkValues(values.password, values.confirmPassword, values.username);
-        if (is_valid.errors) {
+
+        const is_valid = checkValues(values.username, values.password);
+        if(is_valid.errors) {
             toast.error(is_valid.errors[0].error)
             return false;
         }
 
-        let res;
-        if (type === "activateAccount") {
-            res = await activateAccount(values.username, values.password, token);
-            if (res.data && !res.errors) {
-                toast.success('Your account has been activated successfully.')
-                router.push('/login');
-            } else {
-                toast.error(res.errors[0])
-            }
-        } else if (type === "activateAdminAccount") {
-            res = await activateAdminAccount(values.username, values.password, token);
-            if (res.data?.insertId && !res.errors) {
-                toast.success('Your admin account has been activated successfully.')
-                router.push('/login');
-            } else {
-                toast.error(res.errors[0])
-            }
+        const res = await confirmEmail(values.username, values.password, email,token);
+        console.log(res)
+        if (res.data && !res.errors) {
+            toast.success('Your email has been changed successfully.')
+            router.push('/login');
+        } else {
+            console.log("why doesnt this print")
+            toast.error(res.errors[0].error)
         }
     }
 
     return (
         <div
-            style={type === "activateAdminAccount"? { backgroundColor: '#9a9a9a', height: '100vh' }
-                : { backgroundColor: '#1F272B', height: '100vh' }}
+            style={{ backgroundColor: '#1F272B', height: '100vh' }}
             className='d-flex justify-content-center align-items-center'
         >
             <Container
@@ -77,7 +57,7 @@ const ActivateAccount = ({token, type}) => {
                 <Row style={{ height: '80%', width: '90%' }}>
                     <Col className='d-flex align-items-center'>
                         <Formik
-                            initialValues={{ username: '',password: '', confirmPassword: '' }}
+                            initialValues={{ username: '',password: ''}}
                             enableReinitialize
                             onSubmit={onSubmit}
                         >
@@ -104,20 +84,9 @@ const ActivateAccount = ({token, type}) => {
                                         Enter Password
                                     </label>
                                 </p>
-                                <p className={styles.input_container}>
-                                    <Field
-                                        className={styles.input_field}
-                                        id='confirmPassword'
-                                        name='confirmPassword'
-                                        placeholder='confirmPassword'
-                                    />
-                                    <label className={styles.input_label} htmlFor='confirmPassword'>
-                                        Confirm Password
-                                    </label>
-                                </p>
 
                                 <button type='submit' className={styles.button}>
-                                    Change Password
+                                    Confirm New Email Address
                                 </button>
                             </Form>
                         </Formik>
@@ -127,12 +96,10 @@ const ActivateAccount = ({token, type}) => {
                         className='d-flex align-items-center'
                     >
                         <div>
-                            Welcome to {departmentConfig.app_name}
+                            Your contact email will be changed to {email}.
                             <br />
                             <br />
-                            Please select a username and password to activate your account
-                            <br />
-                            Passwords must be at least 6 characters
+                            Please enter your user account username and password to confirm your new email address.
                         </div>
                     </Col>
                 </Row>
@@ -154,10 +121,11 @@ const ActivateAccount = ({token, type}) => {
 export async function getServerSideProps(context) {
     try{
         const {payload} = await verify(context.query.token, process.env.MAIL_SECRET);
-        return { props: {token: context.query.token, type: payload.type}};
+        console.log()
+        return { props: {token: context.query.token, email: payload.email_address}}; //TODO: CHANGE CONTACT EMAIL IN CONTEXT if this is successful
     }catch(error){
         return {redirect: {permanent: false, destination: "/login"}};
     }
 }
 
-export default ActivateAccount
+export default ConfirmNewContactEmail
