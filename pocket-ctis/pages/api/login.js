@@ -116,7 +116,7 @@ export default async function (req, res) {
                 });
 
                 res.setHeader("Set-Cookie", [serialCookie, refreshCookie]);
-                res.status(200).json({data: {message: "Login successful"}, errors: errors});
+                res.status(200).json({data: {message: "Login successful!"}, errors: errors});
             });
         } catch (error) {
             let code = 500;

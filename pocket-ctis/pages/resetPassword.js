@@ -15,6 +15,8 @@ const changePassword = async (password, confirm, token, type) => {
 }
 
 const checkPassword = (pass, cnfpass) => {
+    if(pass.trim() === "" || cnfpass.trim() === "")
+        return {errors: [{error: "Please fill all fields!"}]}
     if(pass !== cnfpass)
         return {errors: [{error: "Passwords do not match"}]};
     if(pass.length < 8)

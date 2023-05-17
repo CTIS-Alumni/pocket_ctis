@@ -3,9 +3,7 @@ import {verify} from "./helpers/jwtHelper";
 import {refreshToken} from "./helpers/jwtHelper";
 import {parse} from "cookie";
 
-export default async function middleware(req){
-    //WORKS WITH SERVER SIDE RENDERING
-    //every getServerSideProps executed goes through here first
+export default async function middleware(req){ //WORKS WITH SERVER SIDE RENDERING, EVERY GETSERVERSIDEPROPS GOES THROUGH HERE FIRST
     let cookies = null;
     if(req.headers.get('cookie'))
         cookies = parse(req.headers.get('cookie'));
@@ -25,28 +23,24 @@ export default async function middleware(req){
             console.log("An error happened while refreshing access token")
         }
     }
-   //deleted the !includes(login) from here
+
     if(!refresh && (url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user") || url.includes("admin") || url.includes('logout'))){
             return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/login");
     }
 
-    if(access && refresh){
+    if(access && refresh){ //TODO: fix this
         try{
             const {payload} =  await verify(access, process.env.ACCESS_SECRET);
 
             if(url.includes("login") && !url.includes("admin") && payload.mode === "user"){
-                console.log("1")
                 return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user");
             }
             else if(url.includes("login") && payload.mode === "admin"){
-                console.log("2")
                 return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin");
             }
             else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user") && payload.mode === "admin"){
-                console.log("3")
                     return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin");
-            }else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin") && payload.mode === "user"){
-                console.log("4")
+            }else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin") && payload.mode === "user") {
                 return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user");
             }
 
