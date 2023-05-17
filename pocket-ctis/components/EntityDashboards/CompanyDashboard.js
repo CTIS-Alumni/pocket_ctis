@@ -155,7 +155,14 @@ const CompanyDashboard = () => {
 
   useEffect(() => {
     getData()
-    setColumns(tableColumns.company)
+    setColumns([
+      'id',
+      'company_name',
+      'sector_id',
+      'sector_name',
+      'is_internship',
+      'rating',
+    ])
   }, [])
 
   const onQuery = (queryParams) => {
