@@ -6,12 +6,23 @@ import {
   CaretDownFill,
   CaretUp,
   CaretUpFill,
+  Pen,
   Search,
+  Trash,
 } from 'react-bootstrap-icons'
 import { useFormik } from 'formik'
 import styles from './DataTable.module.css'
 
-const DataTable = ({ data, columns, total, onQuery, isLoading = false }) => {
+const DataTable = ({
+  data,
+  columns,
+  total,
+  onQuery,
+  isLoading = false,
+  editHandler,
+  deleteHandler,
+  setSelectedArray,
+}) => {
   const [limit, setLimit] = useState(15)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchString, setSearchString] = useState('')
@@ -84,6 +95,9 @@ const DataTable = ({ data, columns, total, onQuery, isLoading = false }) => {
       <table className={styles.table}>
         <thead>
           <tr>
+            <th style={{ width: 50 }}>
+              <div className={styles.tableHeader}>check</div>
+            </th>
             {columns.map((c) => (
               <th onClick={() => handleSorting(c)}>
                 <div className={styles.tableHeader}>
@@ -104,14 +118,55 @@ const DataTable = ({ data, columns, total, onQuery, isLoading = false }) => {
                 </div>
               </th>
             ))}
+            <th style={{ width: 100 }}>
+              <div className={styles.tableHeader}>Actions</div>
+            </th>
           </tr>
         </thead>
         <tbody>
           {data.map((d) => (
             <tr className={styles.tableRow}>
+              <td className={styles.tableCell}>
+                <input
+                  type='checkbox'
+                  onChange={(event) => {
+                    if (event.target.checked) {
+                      setSelectedArray((prev) => [...prev, d])
+                    } else {
+                      setSelectedArray((prev) => [
+                        ...prev.filter((p) => p.id != d.id),
+                      ])
+                    }
+                  }}
+                />
+              </td>
               {columns.map((c) => (
                 <td className={styles.tableCell}>{d[c]}</td>
               ))}
+              <td
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: 10,
+                }}
+              >
+                {editHandler && (
+                  <span
+                    className={styles.actionBtn}
+                    onClick={() => editHandler(d)}
+                  >
+                    <Pen />
+                  </span>
+                )}
+                {deleteHandler && (
+                  <span
+                    className={styles.actionBtn}
+                    onClick={() => deleteHandler(d)}
+                  >
+                    <Trash />
+                  </span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
