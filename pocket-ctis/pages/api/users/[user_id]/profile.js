@@ -68,9 +68,7 @@ const handler =  async (req, res) => {
                         temp += "AND visibility = 1 ";
                     queries.push({name: "phone_numbers", query: temp, values: [user_id]});
 
-                    temp = "SELECT id, profile_picture, visibility FROM userprofilepicture WHERE user_id = ? ";
-                    if (payload.user !== "admin" && payload.user !== "owner")
-                        temp += "AND visibility = 1 ";
+                    temp = "SELECT id, profile_picture FROM userprofilepicture WHERE user_id = ? ";
                     queries.push({name: "profile_picture", query: temp, values: [user_id]});
 
                     temp = "SELECT ue.id, ex.exam_name, ue.exam_id, ue.grade, ue.exam_date, ue.visibility FROM userexam ue JOIN exam ex ON (ue.exam_id = ex.id) " +
@@ -197,9 +195,6 @@ const handler =  async (req, res) => {
 
                         temp = "UPDATE userphone SET visibility = ? WHERE user_id = ? ";
                         put_queries.push({name: "phone_numbers", query: temp, values: [visibility, user_id]});
-
-                        temp = "UPDATE userprofilepicture SET visibility = ? WHERE user_id = ? ";
-                        put_queries.push({name: "profile_picture", query: temp, values: [visibility, user_id]});
 
                         temp = "UPDATE userexam SET visibility = ? WHERE user_id = ? ";
                         put_queries.push({name: "exams", query: temp, values: [visibility, user_id]});

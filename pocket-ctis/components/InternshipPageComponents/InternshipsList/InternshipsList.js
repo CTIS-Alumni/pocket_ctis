@@ -1,13 +1,14 @@
 import { Container, ListGroupItem, Row, Col } from 'react-bootstrap'
 import styles from './InternshipsList.module.scss'
-import React from 'react'
+import React, {useContext} from 'react'
 import {
   getProfilePicturePath,
   getSemester, getTimePeriod,
 } from '../../../helpers/formatHelpers'
 import ReactStars from "react-stars";
+import { User_data } from '../../../context/userContext'
 
-const Anonymous = () => {
+/*const Anonymous = () => {
   return (
     <ListGroupItem className={styles.listItem}>
       <Container>
@@ -25,13 +26,12 @@ const Anonymous = () => {
       </Container>
     </ListGroupItem>
   )
-}
+}*/ //TODO: REMOVE ANONYMOUS COMPONENTS
 
 const InternshipsList = ({ internships }) => {
   return (
     <div className={styles.internship_students}>
       {internships.map((internship) => {
-        const profilePicture = getProfilePicturePath(internship.profile_picture)
         const internshipSemester = getSemester(internship.semester, internship.start_date)
         const timePeriod = getTimePeriod(internship.start_date, internship.end_date)
         return (
@@ -44,11 +44,7 @@ const InternshipsList = ({ internships }) => {
                   style={{
                     backgroundImage:
                       'url(' +
-                      '/profilepictures/' +
-                      ( internship.pic_visibility
-                          ? internship.profile_picture
-                          : 'defaultuser') +
-                      '.png' +
+                      getProfilePicturePath(internship.profile_picture) +
                       ')',
                   }}
                 />

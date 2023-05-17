@@ -1,6 +1,22 @@
-import {doquery, doqueryNew} from "../../helpers/dbHelpers";
+import {buildInsertQueries, doqueryNew, insertToTable} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
+import {replaceWithNull} from "../../helpers/submissionHelpers";
+
+const table_name = "degreetype"
+
+const fields = {
+    basic: ["degree_type_name"],
+    date: []
+}
+
+const validation = (data) => {
+    replaceWithNull(data);
+    if(!data.degree_type_name)
+        return "Degree type name can't be empty!"
+    return true;
+}
+
 
 const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
@@ -19,15 +35,13 @@ const handler =  async (req, res) => {
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);
-                if (payload?.user === "admin") {
+                if(payload?.user === "admin") { //TODO CHECK WITH USER ADDABLES
                     try {
-                        const {degree_name} = req.body;
-                        const query = "INSERT INTO degreetype(degree_type_name) values (?)";
-                        const data = await doquery({query: query, values: [degree_name]});
-                        if (data.hasOwnProperty("error"))
-                            res.status(500).json({error: data.error.message});
-                        else
-                            res.status(200).json({data});
+                        const {degreetypes} = JSON.parse(req.body);
+                        const queries = buildInsertQueries(degreetypes, table_name, fields);
+                        const {data, errors} = await insertToTable(queries, table_name, validation);
+                        res.status(200).json({data, errors});
+
                     } catch (error) {
                         res.status(500).json({errors: [{error: error.message}]});
                     }

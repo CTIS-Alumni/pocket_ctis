@@ -19,8 +19,12 @@ export const splitFields = (data, fields) => {
 
 export const replaceWithNull = (data) => {
     Object.keys(data).forEach((field) => {
-        if (typeof data[field] === "string" && data[field].trim() === "")
-            data[field] = null;
+        if (typeof data[field] === "string") {
+            data[field] = data[field].trim();
+            if (data[field] === "") {
+                data[field] = null;
+            }
+        }
     });
 }
 

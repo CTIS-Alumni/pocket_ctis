@@ -1,4 +1,4 @@
-import {buildInsertQueries, buildSearchQuery, doMultiQueries, doquery, insertToTable} from "../../helpers/dbHelpers";
+import {buildInsertQueries, buildSearchQuery, doMultiQueries, insertToTable} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";

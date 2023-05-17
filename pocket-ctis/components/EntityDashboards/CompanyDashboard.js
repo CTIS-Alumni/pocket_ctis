@@ -169,7 +169,7 @@ const CompanyDashboard = () => {
         <Tab title='Browse' eventKey='browse'>
           <Container>
             <div>
-              {columns.length > 0 && (
+              {columns?.length > 0 && (
                 <DataTable
                   data={data}
                   columns={columns}

@@ -1,7 +1,7 @@
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
-import { getTimePeriod } from '../../../helpers/formatHelpers'
+import {getProfilePicturePath, getTimePeriod} from '../../../helpers/formatHelpers'
 import React from 'react'
 import { MortarboardFill } from 'react-bootstrap-icons'
 import styles from '../../../styles/universities.module.scss'
@@ -59,7 +59,7 @@ const EducationInstitute = ({ edu_inst, users }) => {
             <div>
               <div
                 className='user_avatar_48'
-                style={{backgroundImage: "url(" + '/profilepictures/' + (user.pic_visibility ? user.profile_picture : "defaultuser") + '.png' + ")"}}
+                style={{backgroundImage: "url(" + getProfilePicturePath(user.profile_pcture)+ ")"}}
               />
 
               <div className={styles.university_people_item_info}>

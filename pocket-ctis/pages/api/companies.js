@@ -11,7 +11,9 @@ import {checkApiKey} from "./middleware/checkAPIkey";
 
 const columns = {
     company_name: "c.company_name",
-    sector_name: "s.sector_name"
+    sector_name: "s.sector_name",
+    sector_id: "c.sector_id",
+    is_internship: "c.is_internship"
 }
 
 const table_name = "company";
@@ -24,9 +26,9 @@ const fields = {
 const validation = (data) => {
     replaceWithNull(data)
     if(!data.company_name)
-        return "Company Name can't be empty!";
+        return "Company name can't be empty!";
     if(isNaN(parseInt(data.sector_id)))
-        return "Sector Id must be a number!";
+        return "Sector ID must be a number!";
     if(isNaN(parseInt(data.is_internship)) || (parseInt(data.is_internship) !== 1 && parseInt(data.is_internship) !== 0))
         return "Invalid value for internship field!";
     return true;
@@ -35,6 +37,7 @@ const validation = (data) => {
 const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     if (session) {
+        console.log("does it comehere", req.query);
         const method = req.method;
         switch (method) {
             case "GET":
@@ -91,14 +94,14 @@ const handler =  async (req, res) => {
                 }
                 break;
             case "POST":
-                try {
-                    const {companies} = JSON.parse(req.body);
-                    const queries = buildInsertQueries(companies, table_name, fields);
-                    const {data, errors} = await insertToTable(queries, table_name, validation);
-                    res.status(200).json({data, errors});
-                } catch (error) {
-                    res.status(500).json({errors: [{error: error.message}]});
-                }
+                    try {
+                        const {companies} = JSON.parse(req.body);
+                        const queries = buildInsertQueries(companies, table_name, fields);
+                        const {data, errors} = await insertToTable(queries, table_name, validation);
+                        res.status(200).json({data, errors});
+                    } catch (error) {
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
         }
     }else {
         res.redirect("/401", 401);

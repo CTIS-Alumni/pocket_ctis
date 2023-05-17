@@ -26,7 +26,7 @@ const table_name = "userproject";
 const validation = (data) => {
     replaceWithNull(data)
     if(data.visibility !== 1 && data.visibility !== 0)
-        return "Invalid Values!";
+        return "Invalid values for visibility!";
     if(!data.project_name)
         return "Project name can't be empty!";
     return true;
@@ -36,13 +36,13 @@ export default async function handler(req, res){
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if(payload?.user === "admin" || payload?.user === "owner") {
-        const projects = JSON.parse(req.body);
         const {user_id} = req.query;
         field_conditions.user.user_id = user_id;
         const method = req.method;
         switch (method) {
             case "POST":
                 try {
+                    const projects = JSON.parse(req.body);
                     const queries = buildInsertQueries(projects, table_name, fields, user_id);
                     const select_queries = buildSelectQueries(projects, table_name,field_conditions);
                     const {data, errors} = await insertToUserTable(queries, table_name, validation,  select_queries, limitPerUser.projects);
@@ -53,6 +53,7 @@ export default async function handler(req, res){
                 break;
             case "PUT":
                 try {
+                    const projects = JSON.parse(req.body);
                     const queries = buildUpdateQueries(projects, table_name, fields);
                     const select_queries = buildSelectQueries(projects, table_name, field_conditions);
                     const {data, errors} = await doMultiQueries(queries, select_queries, validation);
@@ -63,6 +64,7 @@ export default async function handler(req, res){
                 break;
             case "DELETE":
                 try {
+                    const projects = JSON.parse(req.body);
                     const {data, errors} = await doMultiDeleteQueries(projects, table_name);
                     res.status(200).json({data, errors});
                 } catch (error) {

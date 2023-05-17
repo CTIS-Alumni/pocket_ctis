@@ -1,4 +1,11 @@
-import {buildInsertQueries, doquery, doqueryNew, insertToTable} from "../../helpers/dbHelpers";
+import {
+    buildInsertQueries,
+    buildSearchQuery,
+    doMultiQueries,
+    doquery,
+    doqueryNew,
+    insertToTable
+} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
@@ -8,6 +15,11 @@ const table_name = "skill"
 const fields = {
     basic: ["skill_type_id", "skill_name"],
     date: []
+}
+
+const columns = {
+    skill: "s.skill_name",
+    skill_type: "st.skill_type_name"
 }
 
 const validation = (data) => {
@@ -27,33 +39,41 @@ const handler =  async (req, res) => {
         switch (method) {
             case "GET":
                 try {
-                    let id_params = "";
-                    let query = "SELECT s.id, s.skill_name, s.skill_type_id, st.skill_type_name from skill s LEFT OUTER JOIN skilltype st ON (s.skill_type_id = st.id)";
+                    let values = [], length_query = "", length_values = [];
+                    let query = "SELECT s.id, s.skill_name, s.skill_type_id, st.skill_type_name FROM skill s LEFT OUTER JOIN skilltype st ON (s.skill_type_id = st.id) ";
+                    length_query = "SELECT * FROM skill s LEFT OUTER JOIN skilltype st ON (s.skill_type_id = st.id) ";
+
 
                     if (req.query.type_id) {
-                        query += "WHERE skill_type_id = ? ";
-                        id_params = req.query.type_id;
+                        query += " WHERE skill_type_id = ? ";
+                        length_query += " WHERE skill_type_id = ? ";
+                        values.push(req.query.type_id);
+                        length_values.push(req.query.type_id);
                     }
-                    query += "ORDER BY skill_name ASC";
 
-                    const {data, errors} = await doqueryNew({query: query, values: [id_params]});
-                    res.status(200).json({data, errors});
+                    ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
+
+                    const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
+                        {name: "length", query: length_query, values: length_values}]);
+
+                    res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
                 } catch (error) {
                     res.status(500).json({errors: [{error: error.message}]});
                 }
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);
-                if(payload?.user === "admin") {
+                if(payload?.user === "admin") { //TODO CHECK WITH USER ADDABLES
                     try {
                         const {skills} = JSON.parse(req.body);
                         const queries = buildInsertQueries(skills, table_name, fields);
                         const {data, errors} = await insertToTable(queries, table_name, validation);
-                        res.status(200).json({data, errors})
+                        res.status(200).json({data, errors});
+
                     } catch (error) {
                         res.status(500).json({errors: [{error: error.message}]});
                     }
-                } res.status(403).json({errors: [{error: "Forbidden request!"}]});
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
         }
     } else {

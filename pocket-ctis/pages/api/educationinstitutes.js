@@ -3,7 +3,6 @@ import {
     buildInsertQueries,
     buildSearchQuery,
     doMultiQueries,
-    doquery,
     insertToTable
 } from "../../helpers/dbHelpers";
 import {checkAuth} from "../../helpers/authHelper";

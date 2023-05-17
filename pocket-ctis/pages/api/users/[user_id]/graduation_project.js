@@ -31,7 +31,7 @@ const validation = (data) => {
     if(!data.graduation_project_id)
         return "Please select a graduation project!";
     if(data.visibility !== 0 && data.visibility !== 1)
-        return "Invalid Values!";
+        return "Invalid values for visibility!";
     return true;
 }
 
@@ -39,7 +39,6 @@ export default async function handler(req, res){
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if(payload?.user === "admin" || payload?.user === "owner") {
-        const grad_projects = JSON.parse(req.body);
         const {user_id} = req.query;
         field_conditions.user.user_id = user_id;
         const method = req.method;
@@ -47,6 +46,7 @@ export default async function handler(req, res){
             case "POST":
                 if(payload?.user === "admin"){
                     try{
+                        const grad_projects = JSON.parse(req.body);
                         const select_queries = buildSelectQueries(grad_projects, table_name, field_conditions);
                         const queries = buildInsertQueries(grad_projects, table_name, fields, user_id);
                         const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, limitPerUser.graduation_projects);
@@ -61,6 +61,7 @@ export default async function handler(req, res){
                     if(payload?.user === "owner"){
                         fields.basic = ["graduation_project_description", "visibility"];
                         }
+                    const grad_projects = JSON.parse(req.body);
                     const queries = buildUpdateQueries(grad_projects, table_name, fields);
                     const select_queries = buildSelectQueries(grad_projects, table_name,field_conditions);
                     const {data, errors} = await updateTable(queries, validation, select_queries);
@@ -72,6 +73,7 @@ export default async function handler(req, res){
             case "DELETE":
                 if(payload?.user === "admin"){
                     try{
+                        const grad_projects = JSON.parse(req.body);
                         const {data, errors} = await doMultiDeleteQueries(grad_projects, table_name);
                         res.status(200).json({data, errors});
                     }catch(error){

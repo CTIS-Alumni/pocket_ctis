@@ -44,7 +44,7 @@ const validation = (data) => {
     if(data.visibility !== 0 && data.visibility !== 1)
         return "Invalid value for visibility!";
     if(data.rating < 0 || data.rating > 5 || (data.rating % 0.5) !== 0)
-        return "Invalid value for rating!";
+        return "Invalid values for rating!";
     if(!data.semester === null)
         return "Semester can't be empty!";
     return true;
@@ -53,7 +53,6 @@ export default async function handler(req, res){
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if(payload?.user === "admin" || payload?.user === "owner") {
-        const erasmus = JSON.parse(req.body);
         const {user_id} = req.query;
         field_conditions.user.user_id = user_id
         const method = req.method;
@@ -61,6 +60,7 @@ export default async function handler(req, res){
             case "POST":
                 if(payload?.user === "admin"){
                     try {
+                        const erasmus = JSON.parse(req.body);
                         const select_queries = buildSelectQueries(erasmus, table_name,field_conditions);
                         const queries = buildInsertQueries(erasmus, table_name, fields, user_id);
                         const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, limitPerUser.erasmus);
@@ -77,6 +77,7 @@ export default async function handler(req, res){
                         fields.basic = ["rating", "opinion","visibility"];
                         fields.date = [];
                     }
+                    const erasmus = JSON.parse(req.body);
                     const queries = buildUpdateQueries(erasmus, table_name, fields);
                     const select_queries = buildSelectQueries(erasmus, table_name, field_conditions);
                     const {data, errors} = await updateTable(queries, validation, select_queries);
@@ -88,6 +89,7 @@ export default async function handler(req, res){
             case "DELETE":
                 if(payload?.user === "admin"){
                     try{
+                        const erasmus = JSON.parse(req.body);
                         const {data, errors} = await doMultiDeleteQueries(erasmus, table_name);
                         res.status(200).json({data, errors});
                     }catch(error){

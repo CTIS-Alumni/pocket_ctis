@@ -172,6 +172,9 @@ const ReportGeneration = () => {
           <button onClick={sendSqlQuery} className={styles.submitButton}>
             Preview Data
           </button>
+            <button className={styles.closeButton}>
+                Clear Query
+            </button>
         </div>
         <textarea
           style={{

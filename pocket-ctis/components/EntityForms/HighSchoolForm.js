@@ -2,12 +2,13 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
-import { _getFetcher } from '../../helpers/fetchHelpers'
-import { craftUrl } from '../../helpers/urlHelper'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { Check2Square, Square } from 'react-bootstrap-icons'
 import { Location_data } from '../../context/locationContext'
+import {_submitFetcher} from "../../helpers/fetchHelpers";
+import {craftUrl} from "../../helpers/urlHelper";
+import {toast} from "react-toastify";
 
 const selectStyles = {
   control: (provided, state) => ({
@@ -42,16 +43,19 @@ const HighSchoolForm = () => {
     },
     validationSchema: Yup.object({
       high_school_name: Yup.string().required('High School name is required'),
-      country: Yup.object().required('Country is required'),
-      city_id: Yup.object().required('City is required'),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+      await onSubmitHandler(values)
     },
   })
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
+  const onSubmitHandler = async (values) => {
+    values.city_id = values.city_id.value;
+    const res = await _submitFetcher('POST', craftUrl(['highschools']), {highschools: [values]})
+    if(!res.data?.length || res.errors.length){
+      toast.error(res.errors[0].error)
+    }
+    else toast.success("Exam successfully added")
   }
 
   return (

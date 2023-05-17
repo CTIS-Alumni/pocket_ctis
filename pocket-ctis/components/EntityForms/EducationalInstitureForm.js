@@ -2,12 +2,13 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
-import { _getFetcher } from '../../helpers/fetchHelpers'
-import { craftUrl } from '../../helpers/urlHelper'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { Check2Square, Square } from 'react-bootstrap-icons'
 import { Location_data } from '../../context/locationContext'
+import {_submitFetcher} from "../../helpers/fetchHelpers";
+import {craftUrl} from "../../helpers/urlHelper";
+import {toast} from "react-toastify";
 
 const selectStyles = {
   control: (provided, state) => ({
@@ -43,18 +44,26 @@ const EducationalInstitureForm = () => {
       is_erasmus: true,
     },
     validationSchema: Yup.object({
-      edu_inst_name: Yup.string().required('Institure name is required'),
+      edu_inst_name: Yup.string().required('Institute name is required'),
       country: Yup.object().required('Country is required'),
       city_id: Yup.object().required('City is required'),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+      await onSubmitHandler(values)
     },
   })
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
+  const onSubmitHandler = async (values) => {
+    values.city_id = values.city_id.value;
+    values.is_erasmus = values.is_erasmus ? 1 : 0;
+
+    const res = await _submitFetcher('POST', craftUrl(['educationinstitutes']), {educationinstitutes: [values]})
+    if(!res.data?.length || res.errors.length){
+      toast.error(res.errors[0].error)
+    }
+    else toast.success("Education institute successfully added")
   }
+
   return (
     <div>
       <h5>Educational Institure Form</h5>
@@ -62,7 +71,7 @@ const EducationalInstitureForm = () => {
         <form onSubmit={formik.handleSubmit}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>
-              Educationa Institute Name
+              Educational Institute Name
             </label>
             <input
               className={styles.inputField}

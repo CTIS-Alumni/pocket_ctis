@@ -38,7 +38,6 @@ const DataInsertion = () => {
         });
     }
 
-    let is_submitted = false;
     let mail_results = {};
     let completed_users = {};
 
@@ -62,7 +61,6 @@ const DataInsertion = () => {
         setSuccess(null)
         setMailResults(null)
         if(file){
-            is_submitted = false;
             Papa.parse(file, {
                 header: true,
                 encoding: 'utf-8',
@@ -77,16 +75,19 @@ const DataInsertion = () => {
                     toast.error("An error occured while parsing file")
                 }
             })
-        }
+        }else toast.error("Please select a file!")
     }
 
 
 
   const onSubmitHandler = async (values) => {
+        if(!file){
+            toast.error("Please select a file and preview it before submitting!");
+            return;
+        }
         setType(values.dataType);
       setErrors(null)
       setMailResults(null)
-      is_submitted = true;
       mail_results = {};
 
       const res = await _submitFetcher("POST", craftUrl([values.dataType], [{name: "csv", value: 1}]), {[values.dataType]: rows})
@@ -94,7 +95,7 @@ const DataInsertion = () => {
       res.data.forEach((d) => {
           success_map[d.index] = d.inserted?.user_id || d.inserted?.id
       })
-      console.log("heres successmap", success_map);
+
       setSuccess(success_map);
       if(Object.keys(success_map).length === 0)
           toast.error("An error occured while uploading file")
@@ -103,7 +104,7 @@ const DataInsertion = () => {
       res.errors.forEach((err) => {
           errors_map[err.index || 0] = err.error;
       })
-      console.log("heres errors", errors_map);
+
       setErrors(errors_map);
       if(Object.keys(errors_map).length === 0 && Object.keys(success_map).length === rows.length)
           toast.success("All records uploaded successfully")

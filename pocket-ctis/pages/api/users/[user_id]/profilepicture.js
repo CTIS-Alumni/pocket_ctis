@@ -5,17 +5,10 @@ import {
 import { checkAuth, checkUserType } from "../../../../helpers/authHelper";
 import fs from 'fs/promises'
 import {parseFormForDB} from '../../../../helpers/imageHelper';
-import Jimp, {read} from 'jimp';
 
 const fields = {
-    basic: ["profile_picture, visibility"],
+    basic: ["profile_picture"],
     date: []
-}
-
-const validation = (data) => {
-    if(data.visibility != 0 && data.visibility !== 1)
-        return "Invalid values for visibility!";
-    return true;
 }
 
 export const config = {
@@ -52,10 +45,10 @@ export default async function handler(req, res) {
                             }}
 
                         const { obj, file_objects } = await parseFormForDB(req, fields.basic, file_map);
-                        const query = "UPDATE userprofilepicture SET profile_picture = :profile_picture, visibility = :visibility WHERE user_id = :user_id";
+                        const query = "UPDATE userprofilepicture SET profile_picture = :profile_picture WHERE user_id = :user_id";
                         obj.user_id = user_id;
 
-                        const {data, errors} = await insertWithImage(query, obj, validation, file_objects, 250, 250);
+                        const {data, errors} = await insertWithImage(query, obj, null, file_objects, 250, 250);
 
                         res.status(200).json({ data: data || [], errors: errors || [] });
                     }

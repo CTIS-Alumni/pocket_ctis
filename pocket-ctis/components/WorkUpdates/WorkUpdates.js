@@ -1,6 +1,7 @@
 import React from 'react'
 import { Container } from 'react-bootstrap'
 import styles from './WorkUpdates.module.scss'
+import {getProfilePicturePath} from "../../helpers/formatHelpers";
 
 8
 const WorkUpdates = ({work}) => {
@@ -28,7 +29,7 @@ const WorkUpdates = ({work}) => {
                 <td className={styles.data_avatar}>
                   <div
                     className='user_avatar_36'
-                    style={{backgroundImage: "url(" + '/profilepictures/' + (record.pic_visibility ? record.profile_picture :  "defaultuser") + '.png' + ")"}}
+                    style={{backgroundImage: "url(" + getProfilePicturePath(record.profile_pcture) +")"}}
                   />
                 </td>
                 <td className={styles.data_name}>{ record.first_name }</td>

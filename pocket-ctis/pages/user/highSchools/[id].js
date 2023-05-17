@@ -5,6 +5,7 @@ import styles from '../../../styles/highSchools.module.scss'
 import { BuildingFill } from 'react-bootstrap-icons'
 import {_getFetcher} from "../../../helpers/fetchHelpers";
 import {craftUrl} from "../../../helpers/urlHelper";
+import {getProfilePicturePath} from "../../../helpers/formatHelpers";
 
 const HighSchool = ({ high_school, users }) => {
   return (
@@ -43,11 +44,7 @@ const HighSchool = ({ high_school, users }) => {
                   style={{
                     backgroundImage:
                       'url(' +
-                      '/profilepictures/' +
-                      (user.pic_visibility
-                          ? user.profile_picture
-                          : 'defaultuser') +
-                      '.png' +
+                        getProfilePicturePath(user.profile_pcture) +
                       ')',
                   }}
                 />

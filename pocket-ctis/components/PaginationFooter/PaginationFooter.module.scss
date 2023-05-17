@@ -18,9 +18,10 @@
       }
       
     span.active {
-        background-color: rgb(245, 164, 37);
-        color: white;
+        background-color: rgba(37, 45, 49, 0.75);
+        color: rgb(255, 255, 255);
         border-radius: 5px;
+        border: solid 1px rgba(66, 66, 66, 0.93);
       }
       
     span:hover:not(.active) {

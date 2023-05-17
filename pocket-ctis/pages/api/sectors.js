@@ -52,7 +52,7 @@ const handler =  async (req, res) => {
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);
-                if(payload?.user === "admin") {
+                if(payload?.user === "admin") { //TODO CHECK WITH USER ADDABLES
                     try {
                         const {sectors} = JSON.parse(req.body);
                         const queries = buildInsertQueries(sectors, table_name, fields);

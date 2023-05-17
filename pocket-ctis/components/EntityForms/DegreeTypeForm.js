@@ -2,6 +2,9 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
+import {_submitFetcher} from "../../helpers/fetchHelpers";
+import {craftUrl} from "../../helpers/urlHelper";
+import {toast} from "react-toastify";
 
 const DegreeTypeForm = () => {
   const formik = useFormik({
@@ -12,13 +15,17 @@ const DegreeTypeForm = () => {
     validationSchema: Yup.object({
       degree_type_name: Yup.string().required('Degree Type name is required'),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+      await onSubmitHandler(values)
     },
   })
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
+  const onSubmitHandler = async (values) => {
+    const res = await _submitFetcher('POST', craftUrl(['degreetypes']), {degreetypes: [values]})
+    if(!res.data?.length || res.errors.length){
+      toast.error(res.errors[0].error)
+    }
+    else toast.success("Exam successfully added")
   }
   return (
     <div>

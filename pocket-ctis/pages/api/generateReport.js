@@ -52,7 +52,7 @@ const handler =  async (req, res) => {
                     }
 
                     if(blacklisted_word)
-                        throw {code: 403, message: "Forbidden query!"};
+                        throw { message: "Forbidden query!"};
 
                     const connection = await createDBConnection();
                     const [results] = await connection.query(lowercase_query);
@@ -60,10 +60,7 @@ const handler =  async (req, res) => {
                     res.status(200).json({data: results});
 
                 } catch (error) {
-                    let code = 500;
-                    if(error.code)
-                        code = error.code;
-                    res.status(code).json({errors: [{error: error.message}]});
+                    res.status(500).json({errors: [{error: error.message}]});
                 }
                 break;
         }
