@@ -15,6 +15,9 @@ const SectorsDashboard = () => {
   const [showOptions, setShowOptions] = useState(false)
   const [selectedArray, setSelectedArray] = useState([])
 
+  const [activeItem, setActiveItem] = useState(null)
+  const [activeKey, setActiveKey] = useState('browse')
+
   const getData = (
     conditions = [
       { name: 'limit', value: 15 },
@@ -60,7 +63,14 @@ const SectorsDashboard = () => {
 
   return (
     <div>
-      <Tabs defaultActiveKey='browse'>
+      <Tabs
+        defaultActiveKey='browse'
+        activeKey={activeKey}
+        onSelect={(key) => {
+          setActiveKey(key)
+          if (key == 'browse') setActiveItem(null)
+        }}
+      >
         <Tab title='Browse' eventKey='browse'>
           <Container style={{ marginTop: 10 }}>
             <div className={styles.optionsDropdownContainer}>
@@ -90,7 +100,10 @@ const SectorsDashboard = () => {
                   onQuery={onQuery}
                   total={total}
                   isLoading={isLoading}
-                  editHandler={(d) => console.log(d)}
+                  editHandler={(d) => {
+                    setActiveItem(d)
+                    setActiveKey('insert')
+                  }}
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
                 />
@@ -100,7 +113,7 @@ const SectorsDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <SectorForm />
+            <SectorForm activeItem={activeItem} />
           </Container>
         </Tab>
       </Tabs>
