@@ -3,7 +3,6 @@ import {
     buildInsertQueries,
     buildSearchQuery,
     doMultiQueries,
-    doquery,
     insertToTable
 } from "../../helpers/dbHelpers";
 import {checkAuth} from "../../helpers/authHelper";
@@ -40,7 +39,7 @@ export default async function handler(req, res) {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SElECT ei.id, ei.edu_inst_name, ci.city_name, co.country_name, ei.is_erasmus "
+                    let query = "SElECT ei.id, ei.edu_inst_name, ei.city_id, ci.city_name, co.id AS 'country_id', co.country_name, ei.is_erasmus "
                     if(req.query.erasmus) {
                         query += "AVG(er.rating) AS rating ";
                     }
