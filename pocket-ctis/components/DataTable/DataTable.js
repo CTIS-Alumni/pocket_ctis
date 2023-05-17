@@ -92,85 +92,87 @@ const DataTable = ({
           </button>
         </div>
       </form>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th style={{ width: 50 }}>
-              <div className={styles.tableHeader}>check</div>
-            </th>
-            {columns.map((c) => (
-              <th onClick={() => handleSorting(c)}>
-                <div className={styles.tableHeader}>
-                  {c}
-                  <div className={styles.sortContainer}>
-                    {sorting.name == c ? (
-                      sorting.direction == 'asc' ? (
-                        <CaretDownFill size={15} />
-                      ) : (
-                        <CaretUpFill size={15} />
-                      )
-                    ) : (
-                      <>
-                        <CaretUp size={15} /> <CaretDown size={15} />
-                      </>
-                    )}
-                  </div>
-                </div>
+      <div style={{ overflow: 'scroll', paddingBottom: 10 }}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th style={{ width: 50 }}>
+                <div className={styles.tableHeader}>check</div>
               </th>
-            ))}
-            <th style={{ width: 100 }}>
-              <div className={styles.tableHeader}>Actions</div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((d) => (
-            <tr className={styles.tableRow}>
-              <td className={styles.tableCell}>
-                <input
-                  type='checkbox'
-                  onChange={(event) => {
-                    if (event.target.checked) {
-                      setSelectedArray((prev) => [...prev, d])
-                    } else {
-                      setSelectedArray((prev) => [
-                        ...prev.filter((p) => p.id != d.id),
-                      ])
-                    }
-                  }}
-                />
-              </td>
               {columns.map((c) => (
-                <td className={styles.tableCell}>{d[c]}</td>
+                <th onClick={() => handleSorting(c)}>
+                  <div className={styles.tableHeader}>
+                    {c}
+                    <div className={styles.sortContainer}>
+                      {sorting.name == c ? (
+                        sorting.direction == 'asc' ? (
+                          <CaretDownFill size={15} />
+                        ) : (
+                          <CaretUpFill size={15} />
+                        )
+                      ) : (
+                        <>
+                          <CaretUp size={15} /> <CaretDown size={15} />
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </th>
               ))}
-              <td
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: 10,
-                }}
-              >
-                {editHandler && (
-                  <span
-                    className={styles.actionBtn}
-                    onClick={() => editHandler(d)}
-                  >
-                    <Pen />
-                  </span>
-                )}
-                {deleteHandler && (
-                  <span
-                    className={styles.actionBtn}
-                    onClick={() => deleteHandler(d)}
-                  >
-                    <Trash />
-                  </span>
-                )}
-              </td>
+              <th style={{ width: 100 }}>
+                <div className={styles.tableHeader}>Actions</div>
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {data.map((d) => (
+              <tr className={styles.tableRow}>
+                <td className={styles.tableCell}>
+                  <input
+                    type='checkbox'
+                    onChange={(event) => {
+                      if (event.target.checked) {
+                        setSelectedArray((prev) => [...prev, d])
+                      } else {
+                        setSelectedArray((prev) => [
+                          ...prev.filter((p) => p.id != d.id),
+                        ])
+                      }
+                    }}
+                  />
+                </td>
+                {columns.map((c) => (
+                  <td className={styles.tableCell}>{d[c]}</td>
+                ))}
+                <td
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: 10,
+                  }}
+                >
+                  {editHandler && (
+                    <span
+                      className={styles.actionBtn}
+                      onClick={() => editHandler(d)}
+                    >
+                      <Pen />
+                    </span>
+                  )}
+                  {deleteHandler && (
+                    <span
+                      className={styles.actionBtn}
+                      onClick={() => deleteHandler(d)}
+                    >
+                      <Trash />
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <PaginationFooter
         total={total}
         limit={limit}
