@@ -133,29 +133,41 @@ const PaginationFooter = ({
           {pagesNums}
         </select>
       </div>
-      <div>
-        <span onClick={prevPage}>
-          <ChevronLeft />
-        </span>
-        {pages}
-        <span onClick={nextPage}>
-          <ChevronRight />
-        </span>
-        <form style={{ display: 'inline' }}>
-          <select
-            name='pageLimit'
-            id='pageLimit'
-            value={formik.values.pageLimit}
-            onChange={(event) => {
-              formik.setValues(event.target.value)
-              changeLimit(event.target.value)
-              // setNumPages(Math.ceil(total / event.target.value))
-            }}
-          >
-            <option value={15}>15 / pages</option>
-            <option value={30}>30 / pages</option>
-          </select>
-        </form>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'end',
+        }}
+      >
+        {/* <div> */}
+        <div>
+          <span onClick={prevPage}>
+            <ChevronLeft />
+          </span>
+          {pages}
+          <span onClick={nextPage}>
+            <ChevronRight />
+          </span>
+          <form style={{ display: 'inline' }}>
+            <select
+              name='pageLimit'
+              id='pageLimit'
+              value={formik.values.pageLimit}
+              onChange={(event) => {
+                formik.setValues(event.target.value)
+                changeLimit(event.target.value)
+                // setNumPages(Math.ceil(total / event.target.value))
+              }}
+            >
+              <option value={15}>15 / pages</option>
+              <option value={30}>30 / pages</option>
+            </select>
+          </form>
+        </div>
+
+        <div>{total} records found</div>
+        {/* </div> */}
       </div>
     </div>
   )
