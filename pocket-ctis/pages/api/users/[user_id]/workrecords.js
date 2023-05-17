@@ -2,7 +2,7 @@ import {
     buildSelectQueries, buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
     insertToUserTable, updateTable,
 } from "../../../../helpers/dbHelpers";
-import  limitPerUser from '../../../../config/moduleConfig.js';
+import modules from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 
 const field_conditions = {
@@ -67,7 +67,7 @@ export default async function handler(req, res){
                     const work_records = JSON.parse(req.body);
                     const select_queries = buildSelectQueries(work_records, table_name,field_conditions);
                     const queries = buildInsertQueries(work_records, table_name, fields, user_id);
-                    const {data, errors} = await insertToUserTable(queries, table_name, validation,  select_queries, limitPerUser.work_records);
+                    const {data, errors} = await insertToUserTable(queries, table_name, validation,  select_queries, modules.user_profile_data.work_records.limit_per_user);
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({errors: [{error:error.message}]});

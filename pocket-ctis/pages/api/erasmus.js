@@ -6,7 +6,7 @@ import {
     insertToUserRelatedTable
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
-import limitPerUser from "../../config/moduleConfig";
+import modules from "../../config/moduleConfig";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
 
@@ -102,7 +102,7 @@ const handler =  async (req, res) => {
                         const {erasmus} = JSON.parse(req.body);
                         const queries = buildInsertQueries(erasmus, table_name, fields);
                         const select_queries = buildSelectQueries(erasmus, table_name,field_conditions);
-                        const {data, errors} = await insertToUserRelatedTable(queries, table_name, validation, select_queries, limitPerUser.erasmus);
+                        const {data, errors} = await insertToUserRelatedTable(queries, table_name, validation, select_queries, modules.user_profile_data.erasmus.limit_per_user);
                         res.status(200).json({data, errors})
 
                     } catch (error) {

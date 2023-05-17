@@ -2,7 +2,7 @@ import {
     buildSelectQueries, buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
     insertToUserTable, updateTable,
 } from "../../../../helpers/dbHelpers";
-import  limitPerUser from '../../../../config/moduleConfig.js';
+import modules from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 
@@ -46,7 +46,7 @@ export default async function handler(req, res){
                     const societies = JSON.parse(req.body);
                     const select_queries = buildSelectQueries(societies, table_name, field_conditions);
                     const queries = buildInsertQueries(societies, table_name, fields, user_id);
-                    const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, limitPerUser.student_societies);
+                    const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, modules.user_profile_data.student_societies.limit_per_user);
                     res.status(200).json({data, errors});
 
                 } catch (error) {

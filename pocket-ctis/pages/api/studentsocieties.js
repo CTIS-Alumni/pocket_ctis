@@ -1,7 +1,8 @@
-import {buildInsertQueries, doqueryNew, insertToTable} from "../../helpers/dbHelpers";
+import {buildInsertQueries, doMultiDeleteQueries, doqueryNew, insertToTable} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
+import modules from "../../config/moduleConfig";
 
 const table_name = "studentsociety";
 
@@ -35,7 +36,7 @@ const handler =  async (req, res) => {
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);
-                if(payload?.user === "admin") { //TODO CHECK WITH USER ADDABLES
+                if(payload?.user === "admin" || modules.student_societies.user_addable) {
                     try {
                         const {societies} = JSON.parse(req.body);
                         const queries = buildInsertQueries(societies, table_name, fields);
@@ -46,6 +47,18 @@ const handler =  async (req, res) => {
                         res.status(500).json({errors: [{error: error.message}]});
                     }
                 }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
+                break;
+            case "DELETE":
+                payload = await checkUserType(session)
+                if(payload.user === "admin"){
+                    try {
+                        const {societies} = JSON.parse(req.body);
+                        const {data, errors} = await doMultiDeleteQueries(societies, table_name);
+                        res.status(200).json({data, errors});
+                    } catch (error) {
+                        res.status(500).json({errors: [{error:error.message}]});
+                    }
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]})
                 break;
         }
     } else {

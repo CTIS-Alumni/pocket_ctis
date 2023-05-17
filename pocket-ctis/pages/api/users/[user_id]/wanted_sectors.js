@@ -1,9 +1,9 @@
 import {
     insertToUserTable,
-    doMultiQueries, buildInsertQueries, buildSelectQueries, doMultiDeleteQueries, buildUpdateQueries, updateTable,
+    buildInsertQueries, buildSelectQueries, doMultiDeleteQueries, buildUpdateQueries, updateTable,
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
-import limitPerUser from '../../../../config/moduleConfig.js';
+import modules from '../../../../config/moduleConfig.js';
 
 const field_conditions = {
     must_be_different: ["sector_id"],
@@ -40,7 +40,7 @@ export default async function handler(req, res){
                     const sectors = JSON.parse(req.body)
                     const select_queries = buildSelectQueries(sectors, table_name, field_conditions);
                     const queries = buildInsertQueries(sectors, table_name, fields, user_id);
-                    const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, limitPerUser.wanted_sectors)
+                    const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, modules.user_profile_data.wanted_sectors.limit_per_user)
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({errors: [{error:error.message}]});

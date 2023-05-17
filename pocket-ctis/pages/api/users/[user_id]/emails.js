@@ -2,7 +2,7 @@ import {
     buildSelectQueries, buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries, updateTable,
     insertToUserTable
 } from "../../../../helpers/dbHelpers";
-import  limitPerUser from '../../../../config/moduleConfig.js';
+import modules from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 
@@ -35,7 +35,7 @@ export default async function handler(req, res){
                 try {
                     const emails = JSON.parse(req.body);
                     const queries = buildInsertQueries(emails, table_name, fields, user_id);
-                    const {data, errors} = await insertToUserTable(queries, table_name, validation, [], limitPerUser.emails);
+                    const {data, errors} = await insertToUserTable(queries, table_name, validation, [], modules.user_profile_data.emails.limit_per_user);
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({errors: [{error:error.message}]});

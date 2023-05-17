@@ -1,6 +1,6 @@
 .tableHeader{
     height: 34px;
-    background: #97001B;
+    background: #262d31;
     
     padding: 5px 10px;
     color: white;
@@ -33,10 +33,10 @@
     padding: 5px 10px;
 }
 .tableRow:nth-child(even){
-    background-color: #FFF9E8;
+    background-color: rgba(203, 194, 177, 0.36);
 }
 .tableRow:nth-child(odd){
-    background-color: #fcfcfc;
+    background-color: rgba(225, 204, 192, 0);
 }
 
 .searchField{

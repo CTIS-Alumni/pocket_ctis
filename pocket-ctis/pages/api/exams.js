@@ -2,6 +2,7 @@ import {buildInsertQueries, doqueryNew, insertToTable} from "../../helpers/dbHel
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
+import modules from "../../config/moduleConfig";
 
 const table_name = "exam";
 
@@ -34,7 +35,7 @@ const handler =  async (req, res) => {
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);
-                if(payload?.user === "admin") { //TODO CHECK WITH USER ADDABLES
+                if(payload?.user === "admin" || modules.exams.user_addable) {
                     try {
                         const {exams} = JSON.parse(req.body);
                         const queries = buildInsertQueries(exams, table_name, fields);

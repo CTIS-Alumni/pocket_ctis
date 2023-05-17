@@ -1,10 +1,9 @@
 import {
     buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
     insertToUserTable,
-    doMultiQueries, updateTable,
+    updateTable,
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
-import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 
 const table_name = "userlocation";
 

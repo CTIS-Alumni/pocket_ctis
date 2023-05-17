@@ -7,7 +7,7 @@ import {
     insertToUserTable
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
-import  limitPerUser from '../../../../config/moduleConfig.js';
+import modules from '../../../../config/moduleConfig.js';
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 
 const field_conditions = {
@@ -49,7 +49,7 @@ export default async function handler(req, res){
                         const grad_projects = JSON.parse(req.body);
                         const select_queries = buildSelectQueries(grad_projects, table_name, field_conditions);
                         const queries = buildInsertQueries(grad_projects, table_name, fields, user_id);
-                        const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, limitPerUser.graduation_projects);
+                        const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, modules.user_profile_data.graduation_projects.limit_per_user);
                         res.status(200).json({data, errors});
                     }catch(error){
                         res.status(500).json({errors: {error: error.message}});

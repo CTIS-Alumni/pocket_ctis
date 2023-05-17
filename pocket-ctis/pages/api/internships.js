@@ -4,7 +4,7 @@ import {
     buildInsertQueries, buildSelectQueries, buildSearchQuery, doMultiQueries, doqueryNew
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
-import limitPerUser from "../../config/moduleConfig";
+import modules from "../../config/moduleConfig";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
 
@@ -96,7 +96,7 @@ const handler =  async (req, res) => {
                         const {internships} = JSON.parse(req.body);
                         const select_queries = buildSelectQueries(internships, table_name, field_conditions);
                         const queries = buildInsertQueries(internships, table_name, fields);
-                        const {data, errors} = await insertToUserRelatedTable(queries, table_name, validation, select_queries, limitPerUser.internships);
+                        const {data, errors} = await insertToUserRelatedTable(queries, table_name, validation, select_queries, modules.user_profile_data.internships.limit_per_user);
                         res.status(200).json({data, errors});
 
                         let completed_companies = [];

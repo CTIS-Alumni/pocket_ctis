@@ -7,7 +7,7 @@ import {
     insertToUserTable, doqueryNew
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
-import  limitPerUser from '../../../../config/moduleConfig.js';
+import modules from '../../../../config/moduleConfig.js';
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 
 const field_conditions = {
@@ -63,7 +63,7 @@ export default async function handler(req, res){
                         const erasmus = JSON.parse(req.body);
                         const select_queries = buildSelectQueries(erasmus, table_name,field_conditions);
                         const queries = buildInsertQueries(erasmus, table_name, fields, user_id);
-                        const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, limitPerUser.erasmus);
+                        const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, modules.user_profile_data.erasmus.limit_per_user);
                         res.status(200).json({data, errors});
 
                     } catch (error) {

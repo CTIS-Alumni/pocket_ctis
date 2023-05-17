@@ -5,9 +5,11 @@ import {checkApiKey} from "./middleware/checkAPIkey";
 const columns = {
     user: " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
 "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  ",
-    edu_inst: "ei.edu_inst_name",
-    degreetype: "d.degree_type_name",
-    program: "e.name_of_program",
+    edu_inst_name: "ei.edu_inst_name",
+    edu_inst_id: "ei.edu_inst_id",
+    degree_type_name: "d.degree_type_name",
+    degree_type_id: "d.degree_type_id",
+    name_of_program: "e.name_of_program",
 }
 
 const handler =  async (req, res) => {

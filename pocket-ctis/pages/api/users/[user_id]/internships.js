@@ -5,7 +5,7 @@ import {
     insertToUserTable, updateTable, doqueryNew
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
-import  limitPerUser from '../../../../config/moduleConfig.js';
+import modules from '../../../../config/moduleConfig.js';
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 
 const field_conditions = {
@@ -62,7 +62,7 @@ export default async function handler(req, res){
                         const internships = JSON.parse(req.body);
                         const select_queries = buildSelectQueries(internships, table_name, field_conditions);
                         const queries = buildInsertQueries(internships, table_name, fields, user_id);
-                        const {data, errors} = await insertToUserTable(queries, table_name,  validation, select_queries, limitPerUser.internships);
+                        const {data, errors} = await insertToUserTable(queries, table_name,  validation, select_queries, modules.user_profile_data.internships.limit_per_user);
                         res.status(200).json({data, errors });
 
                         let completed_companies = [];

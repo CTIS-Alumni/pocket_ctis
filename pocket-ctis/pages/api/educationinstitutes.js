@@ -1,13 +1,14 @@
 import {
     addAndOrWhere,
     buildInsertQueries,
-    buildSearchQuery,
+    buildSearchQuery, doMultiDeleteQueries,
     doMultiQueries,
     insertToTable
 } from "../../helpers/dbHelpers";
-import {checkAuth} from "../../helpers/authHelper";
+import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
+import modules from "../../config/moduleConfig";
 
 const columns = {
     inst_name: "ei.edu_inst_name",
@@ -34,6 +35,7 @@ const validation = (data) => {
 
 const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
+    let payload;
     if (session) {
         const method = req.method;
         switch (method) {
@@ -81,7 +83,9 @@ const handler =  async (req, res) => {
                 }
                 break;
 
-            case "POST": {
+            case "POST":
+                payload = await checkUserType(session)
+                if(payload.user === "user" || modules.edu_insts.user_addable) {
                     try {
                         const {educationinstitutes} = JSON.parse(req.body);
                         const queries = buildInsertQueries(educationinstitutes, table_name, fields);
@@ -90,7 +94,20 @@ const handler =  async (req, res) => {
                     } catch (error) {
                         res.status(500).json({errors: [{error: error.message}]});
                     }
-            }
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
+                break;
+            case "DELETE":
+                payload = await checkUserType(session)
+                if(payload.user === "admin"){
+                    try {
+                        const {educationinstitutes} = JSON.parse(req.body);
+                        const {data, errors} = await doMultiDeleteQueries(educationinstitutes, table_name);
+                        res.status(200).json({data, errors});
+                    } catch (error) {
+                        res.status(500).json({errors: [{error:error.message}]});
+                    }
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]})
+                break;
         }
     } else {
         res.redirect("/401", 401);
