@@ -106,6 +106,7 @@ const EducationalInstitureForm = ({ activeItem }) => {
               value={formik.values.country}
               onChange={(val) => {
                 formik.setFieldValue('country', val)
+                formik.setFieldValue('city_id', null)
                 const temp = locationData[val.value].map((l) => {
                   const [city_id, city_name] = l.split('-')
                   return { value: city_id, label: city_name }
