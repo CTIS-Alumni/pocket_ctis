@@ -1,12 +1,12 @@
+import { useState, useEffect } from 'react'
 import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
-import {_submitFetcher} from "../../helpers/fetchHelpers";
-import {craftUrl} from "../../helpers/urlHelper";
-import {toast} from "react-toastify";
 
-const ExamForm = () => {
+const ExamForm = ({ activeItem }) => {
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -15,24 +15,31 @@ const ExamForm = () => {
     validationSchema: Yup.object({
       exam_name: Yup.string().required('Exam name is required'),
     }),
-    onSubmit: async (values) => {
-      await onSubmitHandler(values)
+    onSubmit: (vals) => {
+      onSubmitHandler(vals)
     },
   })
 
-  const onSubmitHandler = async (values) => {
-    const res = await _submitFetcher('POST', craftUrl(['exams']), {exams: [values]})
-    if(!res.data?.length || res.errors.length){
-      toast.error(res.errors[0].error)
+  useEffect(() => {
+    if (activeItem) {
+      formik.setValues({
+        exam_name: activeItem.exam_name,
+      })
+    } else {
+      setRefreshKey(Math.random().toString(36))
+      formik.resetForm()
     }
-    else toast.success("Exam successfully added")
+  }, [activeItem])
+
+  const onSubmitHandler = (vals) => {
+    console.log(vals)
   }
 
   return (
     <div>
       <h5>Exams</h5>
       <Container>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>Exam Name</label>
             <input
