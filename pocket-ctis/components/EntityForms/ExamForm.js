@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
@@ -6,7 +7,9 @@ import {_submitFetcher} from "../../helpers/fetchHelpers";
 import {craftUrl} from "../../helpers/urlHelper";
 import {toast} from "react-toastify";
 
-const ExamForm = () => {
+const ExamForm = ({ activeItem }) => {
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -20,6 +23,17 @@ const ExamForm = () => {
     },
   })
 
+  useEffect(() => {
+    if (activeItem) {
+      formik.setValues({
+        exam_name: activeItem.exam_name,
+      })
+    } else {
+      setRefreshKey(Math.random().toString(36))
+      formik.resetForm()
+    }
+  }, [activeItem])
+
   const onSubmitHandler = async (values) => {
     const res = await _submitFetcher('POST', craftUrl(['exams']), {exams: [values]})
     if(!res.data?.length || res.errors.length){
@@ -32,7 +46,7 @@ const ExamForm = () => {
     <div>
       <h5>Exams</h5>
       <Container>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>Exam Name</label>
             <input

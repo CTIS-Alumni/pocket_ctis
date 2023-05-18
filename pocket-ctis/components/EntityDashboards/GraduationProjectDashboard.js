@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Tabs, Tab, Container, Spinner } from 'react-bootstrap'
-import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
+import { Tabs, Tab, Container } from 'react-bootstrap'
+import { _getFetcher } from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
-import EducationalInstitureForm from '../EntityForms/EducationalInstitureForm'
-import { toast } from 'react-toastify'
+import GraduationProjectForm from '../EntityForms/GraduationProjectForm'
 
-const EducationInstitutesDashboard = () => {
+const GraduationProjectDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [data, setData] = useState([])
   const [total, setTotal] = useState(0)
@@ -27,16 +26,17 @@ const EducationInstitutesDashboard = () => {
   ) => {
     setIsLoading(true)
     _getFetcher({
-      educationInstitutes: craftUrl(['educationinstitutes'], conditions),
+      graduationprojects: craftUrl(['graduationprojects'], conditions),
     })
-      .then(({ educationInstitutes }) => {
-        if (educationInstitutes.errors?.length > 0) {
-          console.log(educationInstitutes.errors)
-          educationInstitutes.errors.map((e) => toast.error(e.error))
+      .then(({ graduationprojects }) => {
+        console.log(graduationprojects)
+        if (graduationprojects.errors?.length > 0) {
+          console.log(graduationprojects.errors)
+          graduationprojects.errors.map((e) => toast.error(e.error))
           return
         }
-        setTotal(educationInstitutes.length)
-        setData(educationInstitutes.data)
+        setTotal(graduationprojects.length)
+        setData(graduationprojects.data)
       })
       .finally((_) => setIsLoading(false))
   }
@@ -44,44 +44,41 @@ const EducationInstitutesDashboard = () => {
   useEffect(() => {
     getData()
     setColumns([
+      'advisor',
+      'company_id',
+      'company_name',
+      'graduation_project_name',
       'id',
-      'edu_inst_name',
-      'city_name',
-      'country_name',
-      'is_erasmus',
+      'poster_pic',
+      'project_type',
+      'project_year',
+      'semester',
+      'team_number',
+      'team_pic',
     ])
   }, [])
+
+  useEffect(() => {
+    console.log(selectedArray)
+  }, [selectedArray])
 
   const onQuery = (queryParams) => {
     const conditions = buildCondition(queryParams)
     getData(conditions)
   }
 
-  const deleteHandler = async (data) => {
-    const res = await _submitFetcher("DELETE", craftUrl(["educationinstitutes"]), {educationinstitutes: [data]});
-    if(res?.data[data.id])
-      toast.success("Education institute deleted successfully!")
-    else toast.error(res.data[0].error)
+  const deleteHandler = (data) => {
+    console.log('delete this', data)
+    //for single delete
   }
 
-  const deleteSelected = async () => {
-    const res = await _submitFetcher("DELETE", craftUrl(["educationinstitutes"]), {educationinstitutes: selectedArray});
-    if(res.errors.length)
-      toast.error(res.errors[0].error)
-    else toast.success("Education institutes deleted successfully!")
-  }
-
-  const setIsErasmus = async() => {
-    const newArr = selectedArray.map(s => ({ ...s, is_erasmus: 1 }));
-    const res = await _submitFetcher("PUT", craftUrl(["educationinstitutes"]), {educationinstitutes: newArr});
-    if(res.errors.length)
-      toast.error(res.errors[0].error)
-    else toast.success("Education institutes saved successfully!");
+  const deleteSelected = () => {
+    console.log('delete following', selectedArray)
+    //for multi delete
   }
 
   const selectedArrayOptions = [
     { label: 'Delete All Selected', action: deleteSelected },
-    { label: 'Set Erasmus University', action: setIsErasmus },
   ]
 
   return (
@@ -130,7 +127,7 @@ const EducationInstitutesDashboard = () => {
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
                   selectedArray={selectedArray}
-                  searchCols='edu_inst_name,city_name,country_name'
+                  searchCols=''
                 />
               )}
             </div>
@@ -138,7 +135,7 @@ const EducationInstitutesDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <EducationalInstitureForm activeItem={activeItem} />
+            <GraduationProjectForm activeItem={activeItem} />
           </Container>
         </Tab>
       </Tabs>
@@ -146,4 +143,4 @@ const EducationInstitutesDashboard = () => {
   )
 }
 
-export default EducationInstitutesDashboard
+export default GraduationProjectDashboard

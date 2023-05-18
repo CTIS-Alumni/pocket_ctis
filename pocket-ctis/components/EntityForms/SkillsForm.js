@@ -19,7 +19,8 @@ const selectStyles = {
   }),
 }
 
-const SkillsForm = () => {
+const SkillsForm = ({ activeItem }) => {
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
   const [skillType, setSkillType] = useState([])
 
   useEffect(() => {
@@ -49,6 +50,21 @@ const SkillsForm = () => {
     },
   })
 
+  useEffect(() => {
+    if (activeItem) {
+      formik.setValues({
+        skill_name: activeItem.skill_name,
+        skill_type_name: {
+          value: activeItem.skill_type_id,
+          label: activeItem.skill_type_name,
+        },
+      })
+    } else {
+      setRefreshKey(Math.random().toString(36))
+      formik.resetForm()
+    }
+  }, [activeItem])
+
   const onSubmitHandler = async (values) => {
     values.skill_type_id = values.skill_type_name.value;
     const res = await _submitFetcher('POST', craftUrl(['skills']), {skills: [values]})
@@ -62,7 +78,7 @@ const SkillsForm = () => {
     <div>
       <h5>Skill</h5>
       <Container>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>Skill Name</label>
             <input
