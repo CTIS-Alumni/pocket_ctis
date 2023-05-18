@@ -6,7 +6,9 @@ import { toast, ToastContainer } from 'react-toastify'
 import { Spinner } from 'react-bootstrap'
 
 const WorkRec = () => {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const getData = () => {}
 
   useEffect(() => {
     setIsLoading(true)
@@ -17,11 +19,12 @@ const WorkRec = () => {
           res.workRec.errors.map((err) => toast.error(err.error))
       })
       .catch((err) => toast.error(err.message))
-    //   .finally((_) => setIsLoading(false))
+      .finally((_) => setIsLoading(false))
   }, [])
 
   return (
     <AdminPageContainer>
+      <h4>Work Records</h4>
       <div style={{ position: 'relative', height: '100%' }}>
         {isLoading ? (
           <div
@@ -39,9 +42,7 @@ const WorkRec = () => {
             <Spinner />
           </div>
         ) : (
-          <div>
-            
-          </div>
+          <div></div>
         )}
       </div>
       <ToastContainer
