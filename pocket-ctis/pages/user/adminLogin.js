@@ -34,7 +34,7 @@ const Login = () => {
         }
         const res = await requestAdminLogin(values)
         if (res.data && !res.errors) {
-            toast.success('Login successful!')
+            toast.success('Login successful')
             router.push( '/admin' )
         }else{
             toast.error(res.errors[0].error)

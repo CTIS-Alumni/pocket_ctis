@@ -5,7 +5,14 @@ import * as Yup from 'yup'
 import { toast } from 'react-toastify'
 import {_submitFetcher} from "../../helpers/fetchHelpers";
 import {craftUrl} from "../../helpers/urlHelper";
-import {useState} from "react";
+
+const checkPassword = (pass, cnfpass) => {
+  if(pass !== cnfpass)
+    return {errors: [{error: "Passwords do not match"}]};
+  if(pass.length < 8)
+    return {errors: [{error: "Password must be at least 8 characters"}]};
+  return true;
+}
 
 const changePassword = async (current, newPass) => {
   const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "changeAdminPassword", value: 1}]), {current, newPass})
@@ -13,21 +20,21 @@ const changePassword = async (current, newPass) => {
 }
 
 const ChangePasswordForm = () => {
-  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      currentPassword: null,
+      currentPass: null,
       newPassword: null,
-      confirmPassword: null,
+      retypeNewPassword: null,
     },
     validationSchema: Yup.object({
-      currentPassword: Yup.string()
+      currentPass: Yup.string()
+        .min(8, 'Password must be longer than 8 characters')
         .required('Required'),
       newPassword: Yup.string()
         .min(8, 'Password must be longer than 8 characters')
         .required('Required'),
-      confirmPassword: Yup.string()
+      retypeNewPassword: Yup.string()
         .min(8, 'Password must be longer than 8 characters')
         .required('Required'),
     }),
@@ -37,22 +44,17 @@ const ChangePasswordForm = () => {
   })
 
   const onSubmitHandler = async (values) => {
-    if(values.newPassword !== values.confirmPassword){
-      toast.error("New password and confirm password don't match!")
-      return;
+    console.log("here",values)
+    const is_valid = checkPassword(values.newPassword, values.confirmPassword);
+    if (is_valid.errors) {
+      toast.error(is_valid.errors[0].error)
+      return false;
     }
 
     const res = await changePassword(values.currentPassword, values.newPassword, values.confirmPassword)
+    console.log(res);
     if (res.data && !res.errors) {
       toast.success('Admin password has been reset successfully.')
-      formik.resetForm({
-        values: {
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
-        },
-      })
-      setRefreshKey(Math.random().toString(36))
     }else{
       toast.error(res.errors[0].error)
     }

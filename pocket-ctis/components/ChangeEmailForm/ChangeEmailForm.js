@@ -3,14 +3,6 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { toast } from 'react-toastify'
 import styles from './ChangeEmailForm.module.css'
-import { useState} from "react";
-import { _submitFetcher} from "../../helpers/fetchHelpers";
-import {craftUrl} from "../../helpers/urlHelper";
-
-const changeEmail = async (email) => {
-  const res = await _submitFetcher('POST', craftUrl(['mail'], [{name: "changeEmail", value: 1}]), {email});
-  return res;
-}
 
 const ChangeEmailForm = () => {
   const formik = useFormik({
@@ -20,35 +12,31 @@ const ChangeEmailForm = () => {
       confirmEmail: null,
     },
     validationSchema: Yup.object({
-      email: Yup.string().email('Invalid Email').required('Required'),
-      confirmEmail: Yup.string().email('Invalid Email').required('Required'),
+      email: Yup.string().email('Imvalid Email').required('Required'),
+      confirmEmail: Yup.string().email('Imvalid Email').required('Required'),
     }),
-    onSubmit: async (values) => {
-      await onSubmitHandler(values)
+    onSubmit: (vals) => {
+      onSubmitHandler(vals)
     },
   })
 
-  const onSubmitHandler = async (values) => {
-    if (values.email !== values.confirmEmail) {
-      toast.error('New email address and confirm email do not match!')
+  const onSubmitHandler = (vals) => {
+    console.log(vals)
+    if (vals.email != vals.confirmEmail) {
+      toast.error('New email and Cofirm email do not match!')
       return
     }
 
-    const res = await changeEmail(values.email);
-    if(res.data && !res.errors){
-      toast.success('A verification link has been sent to ' + values.email);
-    }else toast.error(res.errors[0].error);
-
+    //change password code
   }
 
   return (
     <div>
       <h5>Change Email</h5>
       <Container>
-        <label className={styles.inputLabel}>Current Email Address</label>
         <form onSubmit={formik.handleSubmit}>
           <div className={styles.inputContainer}>
-            <label className={styles.inputLabel}>New Email Address</label>
+            <label className={styles.inputLabel}>New Email</label>
             <input
               value={formik.values.email}
               onChange={formik.handleChange}
@@ -83,6 +71,5 @@ const ChangeEmailForm = () => {
     </div>
   )
 }
-
 
 export default ChangeEmailForm
