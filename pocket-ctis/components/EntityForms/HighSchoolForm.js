@@ -2,13 +2,12 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
+import { _getFetcher } from '../../helpers/fetchHelpers'
+import { craftUrl } from '../../helpers/urlHelper'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { Check2Square, Square } from 'react-bootstrap-icons'
 import { Location_data } from '../../context/locationContext'
-import {_submitFetcher} from "../../helpers/fetchHelpers";
-import {craftUrl} from "../../helpers/urlHelper";
-import {toast} from "react-toastify";
 
 const selectStyles = {
   control: (provided, state) => ({
@@ -20,10 +19,11 @@ const selectStyles = {
     zIndex: 2,
   }),
 }
-const HighSchoolForm = () => {
+const HighSchoolForm = ({ activeItem }) => {
   const [countries, setCountries] = useState([])
   const [cities, setCities] = useState([])
   const { locationData } = useContext(Location_data)
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   useEffect(() => {
     setCountries(
@@ -43,26 +43,40 @@ const HighSchoolForm = () => {
     },
     validationSchema: Yup.object({
       high_school_name: Yup.string().required('High School name is required'),
+      country: Yup.object().required('Country is required'),
+      city_id: Yup.object().required('City is required'),
     }),
-    onSubmit: async (values) => {
-      await onSubmitHandler(values)
+    onSubmit: (vals) => {
+      onSubmitHandler(vals)
     },
   })
 
-  const onSubmitHandler = async (values) => {
-    values.city_id = values.city_id.value;
-    const res = await _submitFetcher('POST', craftUrl(['highschools']), {highschools: [values]})
-    if(!res.data?.length || res.errors.length){
-      toast.error(res.errors[0].error)
+  useEffect(() => {
+    console.log(activeItem)
+    if (activeItem) {
+      formik.setValues({
+        high_school_name: activeItem.high_school_name,
+        city_id: { value: activeItem.city_id, label: activeItem.city_name },
+        country: {
+          value: activeItem.country_id,
+          label: activeItem.country_name,
+        },
+      })
+    } else {
+      setRefreshKey(Math.random().toString(36))
+      formik.resetForm()
     }
-    else toast.success("Exam successfully added")
+  }, [activeItem])
+
+  const onSubmitHandler = (vals) => {
+    console.log(vals)
   }
 
   return (
     <div>
       <h5>High School</h5>
       <Container>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>High School Name</label>
             <input

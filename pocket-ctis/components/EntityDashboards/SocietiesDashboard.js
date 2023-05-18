@@ -4,10 +4,9 @@ import { _getFetcher } from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
-import EducationalInstitureForm from '../EntityForms/EducationalInstitureForm'
-import { toast } from 'react-toastify'
+import SocietiesForm from '../EntityForms/SocietiesForm'
 
-const EducationInstitutesDashboard = () => {
+const SocietiesDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [data, setData] = useState([])
   const [total, setTotal] = useState(0)
@@ -26,31 +25,27 @@ const EducationInstitutesDashboard = () => {
     ]
   ) => {
     setIsLoading(true)
-    _getFetcher({
-      educationInstitutes: craftUrl(['educationinstitutes'], conditions),
-    })
-      .then(({ educationInstitutes }) => {
-        if (educationInstitutes.errors?.length > 0) {
-          console.log(educationInstitutes.errors)
-          educationInstitutes.errors.map((e) => toast.error(e.error))
+    _getFetcher({ societies: craftUrl(['studentsocieties'], conditions) })
+      .then(({ societies }) => {
+        if (societies.errors?.length > 0) {
+          console.log(societies.errors)
+          societies.errors.map((e) => toast.error(e.error))
           return
         }
-        setTotal(educationInstitutes.length)
-        setData(educationInstitutes.data)
+        setTotal(societies.length)
+        setData(societies.data)
       })
       .finally((_) => setIsLoading(false))
   }
 
   useEffect(() => {
     getData()
-    setColumns([
-      'id',
-      'edu_inst_name',
-      'city_name',
-      'country_name',
-      'is_erasmus',
-    ])
+    setColumns(['id', 'society_name', 'description'])
   }, [])
+
+  useEffect(() => {
+    console.log(selectedArray)
+  }, [selectedArray])
 
   const onQuery = (queryParams) => {
     const conditions = buildCondition(queryParams)
@@ -117,6 +112,7 @@ const EducationInstitutesDashboard = () => {
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
                   selectedArray={selectedArray}
+                  searchCols=''
                 />
               )}
             </div>
@@ -124,7 +120,7 @@ const EducationInstitutesDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <EducationalInstitureForm activeItem={activeItem} />
+            <SocietiesForm activeItem={activeItem} />
           </Container>
         </Tab>
       </Tabs>
@@ -132,4 +128,4 @@ const EducationInstitutesDashboard = () => {
   )
 }
 
-export default EducationInstitutesDashboard
+export default SocietiesDashboard
