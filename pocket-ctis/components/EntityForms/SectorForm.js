@@ -33,10 +33,17 @@ const SectorForm = ({ activeItem }) => {
   }, [activeItem])
 
   const onSubmitHandler = async (values) => {
-    const res = await _submitFetcher('POST', craftUrl(['sectors']), {sectors: [values]})
-    if (!res.data?.length || res.errors.length) {
-      toast.error(res.errors[0].error)
-    } else toast.success("Sector successfully added")
+    if(activeItem){
+      const res = await _submitFetcher('PUT', craftUrl(['sectors']), {sectors: [values]})
+      if (!res.data[activeItem.id] || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else toast.success("Sector successfully saved")
+    }else{
+      const res = await _submitFetcher('POST', craftUrl(['sectors']), {sectors: [values]})
+      if (!res.data?.length || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else toast.success("Sector successfully added")
+    }
   }
 
 

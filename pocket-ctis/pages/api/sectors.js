@@ -1,9 +1,9 @@
 import {
     buildInsertQueries,
-    buildSearchQuery,
+    buildSearchQuery, buildUpdateQueries,
     doMultiDeleteQueries,
     doMultiQueries,
-    insertToTable
+    insertToTable, updateTable
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
@@ -56,6 +56,19 @@ const handler =  async (req, res) => {
                 } catch (error) {
                     res.status(500).json({errors: [{error: error.message}]});
                 }
+                break;
+            case "PUT":
+                payload = await checkUserType(session, req.query);
+                if(payload?.user === "admin") {
+                    try{
+                        const {sectors} = JSON.parse(req.body);
+                        const queries = buildUpdateQueries(sectors, table_name, fields);
+                        const {data, errors} = await updateTable(queries, validation);
+                        res.status(200).json({data, errors});
+                    }catch (error) {
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                } else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);

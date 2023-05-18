@@ -151,20 +151,20 @@ const DataTable = ({
                 }}
               >
                 {editHandler && (
-                  <span
-                    className={styles.actionBtn}
-                    onClick={() => editHandler(d)}
-                  >
-                    <Pen />
-                  </span>
+                    <button
+                        className={styles.editBtn}
+                        onClick={()=> editHandler(d)}
+                    >
+                      <Pen/>
+                    </button>
                 )}
                 {deleteHandler && (
-                  <span
-                    className={styles.actionBtn}
+                  <button
+                    className={styles.deleteBtn}
                     onClick={() => deleteHandler(d)}
                   >
-                    <Trash />
-                  </span>
+                    <Trash/>
+                  </button>
                 )}
               </td>
             </tr>

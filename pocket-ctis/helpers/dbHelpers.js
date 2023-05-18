@@ -284,7 +284,8 @@ export async function updateTable(queries, validation, select_queries = []) {//p
             }
             }else errors.push({name: query.name, error: is_valid})
         }catch(error){
-            errors.push({name: query.name, error: error.message, queries, select_queries});
+            error.message = handleDBErrorMessage(error);
+            errors.push({index: index, error: error.message});
         }
     }
     connection.end();

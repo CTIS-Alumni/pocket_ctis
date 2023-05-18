@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Tabs, Tab, Container } from 'react-bootstrap'
 import SectorForm from '../EntityForms/SectorForm'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './CompanyDashboard.module.css'
 import DataTable from '../DataTable/DataTable'
@@ -47,8 +47,10 @@ const SectorsDashboard = () => {
     getData(conditions)
   }
 
-  const deleteHandler = (data) => {
-    console.log('delete this', data)
+  const deleteHandler = async (data) => {
+    console.log(data);
+    const res = await _submitFetcher("DELETE", craftUrl(["sectors"]), {sectors: [data]});
+    console.log(res);
     //for single delete
   }
 
@@ -103,6 +105,7 @@ const SectorsDashboard = () => {
                   editHandler={(d) => {
                     setActiveItem(d)
                     setActiveKey('insert')
+                    editHandler(d)
                   }}
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
