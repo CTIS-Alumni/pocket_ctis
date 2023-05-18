@@ -2,15 +2,13 @@ import React from 'react'
 import { Container } from 'react-bootstrap'
 import styles from './WorkUpdates.module.scss'
 import {getProfilePicturePath} from "../../helpers/formatHelpers";
+import common from '../../styles/common.module.scss'
 
 8
 const WorkUpdates = ({work}) => {
   return (
-    <div className={styles.work_updates}>
-      <h3 className='custom_table_title'>
-        Work Updates
-      </h3>
-      <table className='custom_table'>
+    <div className={common.table_wrapper}>
+      <table>
         <thead>
           <tr>
             <th className={styles.header_avatar}></th>
@@ -28,8 +26,8 @@ const WorkUpdates = ({work}) => {
               <tr key={i} className={record.is_current ? 'current' : ""}>
                 <td className={styles.data_avatar}>
                   <div
-                    className='user_avatar_36'
-                    style={{backgroundImage: "url(" + getProfilePicturePath(record.profile_pcture) +")"}}
+                    className={common.user_avatar_36}
+                    style={{backgroundImage: "url(" + '/profilepictures/' + (record.pic_visibility ? record.profile_picture :  "defaultuser") + '.png' + ")"}}
                   />
                 </td>
                 <td className={styles.data_name}>{ record.first_name }</td>
