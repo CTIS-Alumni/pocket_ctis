@@ -2,11 +2,11 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
+import { _getFetcher, _submitFetcher } from '../../helpers/fetchHelpers'
 import { craftUrl } from '../../helpers/urlHelper'
 import Select from 'react-select'
 import * as Yup from 'yup'
-import {toast} from "react-toastify";
+import { toast } from 'react-toastify'
 
 const selectStyles = {
   control: (provided, state) => ({

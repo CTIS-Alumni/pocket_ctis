@@ -3,9 +3,9 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
-import {_submitFetcher} from "../../helpers/fetchHelpers";
-import {craftUrl} from "../../helpers/urlHelper";
-import {toast} from "react-toastify";
+import { _submitFetcher } from '../../helpers/fetchHelpers'
+import { craftUrl } from '../../helpers/urlHelper'
+import { toast } from 'react-toastify'
 
 const SocietiesForm = ({ activeItem }) => {
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))

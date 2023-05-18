@@ -1,14 +1,14 @@
 import {
-    buildInsertQueries,
-    buildSearchQuery, buildUpdateQueries,
-    doMultiDeleteQueries,
-    doMultiQueries,
-    insertToTable, updateTable
-} from "../../helpers/dbHelpers";
-import {checkAuth, checkUserType} from "../../helpers/authHelper";
-import {replaceWithNull} from "../../helpers/submissionHelpers";
-import {checkApiKey} from "./middleware/checkAPIkey";
-import modules from "../../config/moduleConfig";
+  buildInsertQueries,
+  buildSearchQuery,
+  doMultiDeleteQueries,
+  doMultiQueries,
+  insertToTable,
+} from '../../helpers/dbHelpers'
+import { checkAuth, checkUserType } from '../../helpers/authHelper'
+import { replaceWithNull } from '../../helpers/submissionHelpers'
+import { checkApiKey } from './middleware/checkAPIkey'
+import modules from '../../config/moduleConfig'
 
 const columns = {
     high_school_name: "h.high_school_name",
@@ -21,11 +21,11 @@ const columns = {
 }
 
 const fields = {
-    basic: ["high_school_name", "city_id"],
-    date: []
+  basic: ['high_school_name', 'city_id'],
+  date: [],
 }
 
-const table_name = "highschool";
+const table_name = 'highschool'
 
 const validation = (data) => {
     replaceWithNull(data)
