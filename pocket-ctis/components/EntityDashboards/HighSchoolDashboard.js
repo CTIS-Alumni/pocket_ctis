@@ -4,10 +4,9 @@ import { _getFetcher } from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
-import EducationalInstitureForm from '../EntityForms/EducationalInstitureForm'
-import { toast } from 'react-toastify'
+import HighSchoolForm from '../EntityForms/HighSchoolForm'
 
-const EducationInstitutesDashboard = () => {
+const HighSchoolDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [data, setData] = useState([])
   const [total, setTotal] = useState(0)
@@ -26,31 +25,22 @@ const EducationInstitutesDashboard = () => {
     ]
   ) => {
     setIsLoading(true)
-    _getFetcher({
-      educationInstitutes: craftUrl(['educationinstitutes'], conditions),
-    })
-      .then(({ educationInstitutes }) => {
-        if (educationInstitutes.errors?.length > 0) {
-          console.log(educationInstitutes.errors)
-          educationInstitutes.errors.map((e) => toast.error(e.error))
-          return
-        }
-        setTotal(educationInstitutes.length)
-        setData(educationInstitutes.data)
+    _getFetcher({ highSchools: craftUrl(['highschools'], conditions) })
+      .then(({ highSchools }) => {
+        setTotal(highSchools.length)
+        setData(highSchools.data)
       })
       .finally((_) => setIsLoading(false))
   }
 
   useEffect(() => {
     getData()
-    setColumns([
-      'id',
-      'edu_inst_name',
-      'city_name',
-      'country_name',
-      'is_erasmus',
-    ])
+    setColumns(['id', 'high_school_name', 'city_name', 'country_name'])
   }, [])
+
+  useEffect(() => {
+    console.log(selectedArray)
+  }, [selectedArray])
 
   const onQuery = (queryParams) => {
     const conditions = buildCondition(queryParams)
@@ -117,6 +107,7 @@ const EducationInstitutesDashboard = () => {
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
                   selectedArray={selectedArray}
+                  searchCols='high_school_name'
                 />
               )}
             </div>
@@ -124,7 +115,7 @@ const EducationInstitutesDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <EducationalInstitureForm activeItem={activeItem} />
+            <HighSchoolForm activeItem={activeItem} />
           </Container>
         </Tab>
       </Tabs>
@@ -132,4 +123,4 @@ const EducationInstitutesDashboard = () => {
   )
 }
 
-export default EducationInstitutesDashboard
+export default HighSchoolDashboard

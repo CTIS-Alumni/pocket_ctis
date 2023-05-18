@@ -19,10 +19,11 @@ const selectStyles = {
     zIndex: 2,
   }),
 }
-const HighSchoolForm = () => {
+const HighSchoolForm = ({ activeItem }) => {
   const [countries, setCountries] = useState([])
   const [cities, setCities] = useState([])
   const { locationData } = useContext(Location_data)
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   useEffect(() => {
     setCountries(
@@ -50,6 +51,23 @@ const HighSchoolForm = () => {
     },
   })
 
+  useEffect(() => {
+    console.log(activeItem)
+    if (activeItem) {
+      formik.setValues({
+        high_school_name: activeItem.high_school_name,
+        city_id: { value: activeItem.city_id, label: activeItem.city_name },
+        country: {
+          value: activeItem.country_id,
+          label: activeItem.country_name,
+        },
+      })
+    } else {
+      setRefreshKey(Math.random().toString(36))
+      formik.resetForm()
+    }
+  }, [activeItem])
+
   const onSubmitHandler = (vals) => {
     console.log(vals)
   }
@@ -58,7 +76,7 @@ const HighSchoolForm = () => {
     <div>
       <h5>High School</h5>
       <Container>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>High School Name</label>
             <input

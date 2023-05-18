@@ -19,6 +19,8 @@ import EducationInstitutesDashboard from '../../components/EntityDashboards/Educ
 import SkillTypeDashboard from '../../components/EntityDashboards/SkillTypeDashboard'
 import WorkTypeDashboard from '../../components/EntityDashboards/WorkTypeDashboard'
 import DegreeTypeDashboard from '../../components/EntityDashboards/DegreeTypeDashboard'
+import HighSchoolDashboard from '../../components/EntityDashboards/HighSchoolDashboard'
+import SocietiesDashboard from '../../components/EntityDashboards/SocietiesDashboard'
 
 const AddEntitiesDashboard = () => {
   const [activeKey, setActiveKey] = useState('Company')
@@ -128,13 +130,15 @@ const AddEntitiesDashboard = () => {
           {activeKey == 'Educational institute' && (
             <EducationInstitutesDashboard />
           )}
-          {activeKey == 'High Schools' && <HighSchoolForm />}
+          {/* {activeKey == 'High Schools' && <HighSchoolForm />} */}
+          {activeKey == 'High Schools' && <HighSchoolDashboard />}
           {activeKey == 'Skill Types' && <SkillTypeDashboard />}
           {/* {activeKey == 'Degree Types' && <DegreeTypeForm />} */}
           {activeKey == 'Degree Types' && <DegreeTypeDashboard />}
           {activeKey == 'Work Types' && <WorkTypeDashboard />}
           {activeKey == 'Sector' && <SectorsDashboard />}
-          {activeKey == 'Societies' && <SocietiesForm />}
+          {/* {activeKey == 'Societies' && <SocietiesForm />} */}
+          {activeKey == 'Societies' && <SocietiesDashboard />}
           {activeKey == 'Exams' && <ExamForm />}
           {activeKey == 'Skills' && <SkillsForm />}
           {activeKey == 'Graduation Project' && <GraduationProjectForm />}

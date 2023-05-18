@@ -1,9 +1,12 @@
+import { useState, useEffect } from 'react'
 import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 
-const SocietiesForm = () => {
+const SocietiesForm = ({ activeItem }) => {
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -19,6 +22,18 @@ const SocietiesForm = () => {
     },
   })
 
+  useEffect(() => {
+    if (activeItem) {
+      formik.setValues({
+        society_name: activeItem.society_name,
+        description: activeItem.description,
+      })
+    } else {
+      setRefreshKey(Math.random().toString(36))
+      formik.resetForm()
+    }
+  }, [activeItem])
+
   const onSubmitHandler = (vals) => {
     console.log(vals)
   }
@@ -27,7 +42,7 @@ const SocietiesForm = () => {
     <div>
       <h5>Society</h5>
       <Container>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>Society Name</label>
             <input
