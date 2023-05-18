@@ -114,6 +114,7 @@ const CompanyDashboard = () => {
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
                   selectedArray={selectedArray}
+                  searchCols='sector_name,company_name'
                 />
               )}
             </div>

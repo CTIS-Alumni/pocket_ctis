@@ -18,6 +18,7 @@ const DataTable = ({
   columns,
   total,
   onQuery,
+  searchCols = '',
   isLoading = false,
   editHandler,
   deleteHandler,
@@ -59,7 +60,7 @@ const DataTable = ({
     queryParams.order = sorting.direction
     queryParams.offset = (currentPage - 1) * limit
     queryParams.limit = limit
-    queryParams.searchcol = 'sector_name,company_name'
+    queryParams.searchcol = searchCols
     queryParams.search = searchString
 
     onQuery(queryParams)
