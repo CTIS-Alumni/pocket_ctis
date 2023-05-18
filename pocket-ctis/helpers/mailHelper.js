@@ -7,6 +7,39 @@ const fs = require('fs');
 import departmentConfig from '../config/departmentConfig';
 
 
+export const sendChangeEmailMail = async (user, newEmail) => {
+    const transport = nodemailer.createTransport(mailConfig);
+    try{
+        console.log("user that comes to change email mail", user);
+        const confirm_new_email_token = await sign({
+            user_id: user.id, email_address: newEmail, type: "changeEmail"
+        }, process.env.MAIL_SECRET, 60 * 10);
+
+
+        const template = compile(fs.readFileSync('public/views/changeContactEmail.hbs', 'utf-8'));
+
+        const html = template({
+            name: user.first_name,
+            surname: user.last_name,
+            link: process.env.NEXT_PUBLIC_BACKEND_PATH + "/mailredirect/" + confirm_new_email_token
+        })
+
+        const options = {
+            from: mailConfig.auth.user,
+            to: newEmail,
+            subject: `${departmentConfig.app_name} Contact Email Change Request`,
+            html: html
+        }
+
+        await transport.sendMail(options);
+        transport.close();
+        return true;
+    }catch(error){
+        transport.close();
+        return error;
+    }
+}
+
 export const sendPasswordResetMail = async (user, type) => {
     const transport = nodemailer.createTransport(mailConfig);
     try {
@@ -57,7 +90,7 @@ export const sendProfileUpdateEmail = async (user, type) => {
             name: user.first_name,
             surname: user.last_name,
             type: type,
-            link: process.env.NEXT_PUBLIC_ORIGIN_PATH + '/user/' + user.id
+            link: process.env.NEXT_PUBLIC_ORIGIN_PATH + '/login'
         })
 
 

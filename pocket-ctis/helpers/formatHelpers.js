@@ -61,18 +61,18 @@ export const getSemester = (semester, start_date) => {
     }
 }
 
-export const getProfilePicturePath = (visibility = 0, fileName = null) => {
-    if (fileName && visibility == 1) {
-        return '/profilepictures/' + fileName + '.png'
+export const getProfilePicturePath = (fileName = null) => {
+    if (fileName) {
+        return process.env.NEXT_PUBLIC_IMAGES_PATH + "/profilepictures/" + fileName + '.png'
     } else {
-        return '/profilepictures/defaultUser.png'
+        return process.env.NEXT_PUBLIC_IMAGES_PATH + "/profilepictures/defaultuser.png"
     }
 }
 
 export const getGraduationProjectPicturePath = (filename = null, teamOrPoster = "team") => {
         if(filename)
-            return '/graduationprojects/' + teamOrPoster + "/" + filename + '.png';
-        else return '/graduationprojects/' + teamOrPoster + '/defaultTeam.png';
+            return process.env.NEXT_PUBLIC_IMAGES_PATH + "/graduationprojects/" + teamOrPoster + "/" + filename + '.png';
+        else return process.env.NEXT_PUBLIC_IMAGES_PATH + "/graduationprohjcts/" + teamOrPoster + '/defaultTeam.png';
 }
 
 export const getDateString = (date) => {

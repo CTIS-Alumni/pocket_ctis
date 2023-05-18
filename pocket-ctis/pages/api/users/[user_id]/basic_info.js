@@ -1,6 +1,7 @@
 import {buildUpdateQueries, doquery, doqueryNew, updateTable} from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
+import {checkApiKey} from "../../middleware/checkAPIkey";
 
 const fields = {
     basic: ["first_name", "last_name", "is_retired", "is_active", "gender", "nee"],
@@ -14,19 +15,18 @@ const validation = (data) =>{
     if(!data.first_name || !data.last_name )
         return "First name and last name can't be empty!"
     if(data.is_active !== 1 && data.is_active !== 0)
-        return "Invalid Values!";
+        return "Invalid values for activity status!";
     if(data.is_retired !== 1 && data.is_retired !== 0)
-        return "Invalid Values!";
+        return "Invalid values for retirement status!";
     if(data.gender !== 1 && data.gender !== 0)
-        return "Invalid Values!";
+        return "Invalid values for gender!";
     return true;
 }
 
-export default async function handler(req, res) {
+const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if (payload?.user === "admin" || payload?.user === "owner") {
-        const basic_info = JSON.parse(req.body);
         const {user_id} = req.query;
         const method = req.method;
         switch (method) {
@@ -50,6 +50,7 @@ export default async function handler(req, res) {
                     if(payload?.user === "owner"){
                         fields.basic = ["is_retired"];
                     }
+                    const basic_info = JSON.parse(req.body);
                     const queries = buildUpdateQueries(basic_info, table_name, fields);
                     const {data, errors} = await updateTable(queries, validation);
                     res.status(200).json({data, errors});
@@ -62,3 +63,4 @@ export default async function handler(req, res) {
         res.redirect("/401", 401);
     }
 }
+export default checkApiKey(handler);

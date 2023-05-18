@@ -4,17 +4,19 @@ import {
     buildInsertQueries, buildSelectQueries, buildSearchQuery, doMultiQueries, doqueryNew
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
-import limitPerUser from "../../config/moduleConfig";
+import modules from "../../config/moduleConfig";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
+import {checkApiKey} from "./middleware/checkAPIkey";
 
 const columns = {
-    user: "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
+    user: " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
+        "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  ",
     company: "c.company_name"
 }
 
 const field_conditions = {
     must_be_different: ["company_id", "semester"],
-    date_fields: [],
+    date_fields: ["start_date"],
     user: {
         check_user_only: true,
         user_id: null
@@ -51,7 +53,7 @@ const validation = (data) => {
     return true;
 }
 
-export default async function handler(req, res) {
+const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if (session) {
@@ -60,7 +62,7 @@ export default async function handler(req, res) {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT i.id, i.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, " +
+                    let query = "SELECT i.id, i.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.first_name, u.last_name, " +
                         "i.company_id, i.department, c.company_name, i.semester, i.start_date, i.end_date, i.rating, i.opinion " +
                         "FROM internshiprecord i JOIN users u on (i.user_id = u.id) " +
                         "JOIN userprofilepicture upp ON (i.user_id = upp.user_id) " +
@@ -77,13 +79,7 @@ export default async function handler(req, res) {
                         length_values.push(payload.user_id);
                     }
 
-                    ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
-
-                    if(query.includes("LIMIT")){
-                        const split_limit = query.split("LIMIT");
-                        query = split_limit[0] + " GROUP BY i.id LIMIT " + split_limit[1];
-                    }else query += " GROUP BY i.id ";
-
+                    ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns, "i.id"));
 
                     const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
                         {name: "length", query: length_query, values: length_values}]);
@@ -100,7 +96,7 @@ export default async function handler(req, res) {
                         const {internships} = JSON.parse(req.body);
                         const select_queries = buildSelectQueries(internships, table_name, field_conditions);
                         const queries = buildInsertQueries(internships, table_name, fields);
-                        const {data, errors} = await insertToUserRelatedTable(queries, table_name, validation, select_queries, limitPerUser.internships);
+                        const {data, errors} = await insertToUserRelatedTable(queries, table_name, validation, select_queries, modules.user_profile_data.internships.limit_per_user);
                         res.status(200).json({data, errors});
 
                         let completed_companies = [];
@@ -117,7 +113,7 @@ export default async function handler(req, res) {
                     } catch (error) {
                         res.status(500).json({errors: [{error: error.message}]});
                     }
-                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
 
                 break;
         }
@@ -125,3 +121,4 @@ export default async function handler(req, res) {
         res.redirect("/401", 401);
     }
 }
+export default checkApiKey(handler);

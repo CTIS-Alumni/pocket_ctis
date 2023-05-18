@@ -1,9 +1,18 @@
-import {buildInsertQueries, buildSearchQuery, doMultiQueries, insertToTable} from "../../helpers/dbHelpers";
+import {
+    buildInsertQueries,
+    buildSearchQuery, buildUpdateQueries,
+    doMultiDeleteQueries,
+    doMultiQueries,
+    insertToTable, updateTable
+} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
+import {checkApiKey} from "./middleware/checkAPIkey";
+import modules from "../../config/moduleConfig";
 
 const columns = {
-    sector_name: "sector_name"
+    sector_name: "sector_name",
+    id: "id"
 }
 
 const fields = {
@@ -20,7 +29,7 @@ const validation = (data) => {
 
 const table_name = "sector"
 
-export default async function handler(req, res){
+const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     if (session) {
         const method = req.method;
@@ -49,9 +58,22 @@ export default async function handler(req, res){
                     res.status(500).json({errors: [{error: error.message}]});
                 }
                 break;
-            case "POST":
+            case "PUT":
                 payload = await checkUserType(session, req.query);
                 if(payload?.user === "admin") {
+                    try{
+                        const {sectors} = JSON.parse(req.body);
+                        const queries = buildUpdateQueries(sectors, table_name, fields);
+                        const {data, errors} = await updateTable(queries, validation);
+                        res.status(200).json({data, errors});
+                    }catch (error) {
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                } else res.status(403).json({errors: [{error: "Forbidden request!"}]});
+                break;
+            case "POST":
+                payload = await checkUserType(session, req.query);
+                if(payload?.user === "admin" || modules.sectors.user_addable) {
                     try {
                         const {sectors} = JSON.parse(req.body);
                         const queries = buildInsertQueries(sectors, table_name, fields);
@@ -61,10 +83,23 @@ export default async function handler(req, res){
                     } catch (error) {
                         res.status(500).json({errors: [{error: error.message}]});
                     }
-                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
+                break;
+            case "DELETE":
+                payload = await checkUserType(session)
+                if(payload.user === "admin"){
+                    try {
+                        const {sectors} = JSON.parse(req.body);
+                        const {data, errors} = await doMultiDeleteQueries(sectors, table_name);
+                        res.status(200).json({data, errors});
+                    } catch (error) {
+                        res.status(500).json({errors: [{error:error.message}]});
+                    }
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]})
                 break;
         }
     }else{
         res.redirect("/401", 401);
     }
 }
+export default checkApiKey(handler);

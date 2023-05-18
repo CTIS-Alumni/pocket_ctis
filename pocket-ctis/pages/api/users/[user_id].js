@@ -1,7 +1,8 @@
 import {doquery} from "../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../helpers/authHelper";
+import {checkApiKey} from "../middleware/checkAPIkey";
 
-export default async function handler(req, res) {
+const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if (session) {
@@ -53,10 +54,11 @@ export default async function handler(req, res) {
                     } catch (error) {
                         res.status(500).json({error: error.message});
                     }
-                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
         }
     } else {
         res.redirect("/401", 401);
     }
 }
+export default checkApiKey(handler);

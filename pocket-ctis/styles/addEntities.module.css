@@ -17,6 +17,7 @@
     line-height: 19px;
     margin: 10px 0;
     padding: 10px 5px;
+    padding-left: 10px;
     border-radius: 5px 0 0 5px;
     cursor: pointer;
     transition: all 0.2s;
@@ -24,7 +25,7 @@
 
 .sidebar div:hover{
     color: white;
-    background-color: rgb(245, 164, 37);
+    background: rgba(38, 45, 49, 0.71);
 }
 
 .formBody{
@@ -34,7 +35,7 @@
 }
 .active{
     color: white;
-    background-color: rgb(245, 164, 37); 
+    background: #262d31;
 }
 .inActive{
     color: #4A9FC2;

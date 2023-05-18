@@ -1,6 +1,7 @@
 import React from 'react'
 
 import styles from './AcademicUpdates.module.scss'
+import {getProfilePicturePath} from "../../helpers/formatHelpers";
 
 const AcademicUpdates = ({edu}) => {
   return (
@@ -26,7 +27,7 @@ const AcademicUpdates = ({edu}) => {
             <td className={styles.data_avatar}>
               <div
                   className='user_avatar_36'
-                  style={{backgroundImage: "url(" + '/profilepictures/' + (record.pic_visibility ? record.profile_picture  : "defaultuser") + '.png' + ")"}}
+                  style={{backgroundImage: "url(" + getProfilePicturePath(record.profile_picture) + ")"}}
                 />
             </td>
 

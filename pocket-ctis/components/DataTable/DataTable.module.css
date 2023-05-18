@@ -1,6 +1,6 @@
 .tableHeader{
     height: 34px;
-    background: #97001B;
+    background: #262d31;
     
     padding: 5px 10px;
     color: white;
@@ -15,6 +15,54 @@
     justify-content: space-between;
     gap: 20px;
     align-items: center;
+}
+
+.editBtn{
+    cursor: pointer;
+    float: right;
+    margin-top: 4px;
+    display: inline;
+    background: #e5f3c5;
+    border: 1px solid #46640a;
+    color: #46640a;
+
+    padding-bottom: 3px;
+
+    width: 25px;
+    height: 25px;
+    opacity: 0.8;
+    border-radius: 5px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.deleteBtn{
+    cursor: pointer;
+    float: right;
+    margin-top: 4px;
+    display: inline;
+    background: #e3c3c3;
+    border: 1px solid #da4109;
+    color: #da4109;
+
+    padding-bottom: 3px;
+
+    width: 25px;
+    height: 25px;
+    opacity: 0.8;
+    border-radius: 5px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 .sortContainer{
@@ -34,10 +82,10 @@
     padding: 5px 10px;
 }
 .tableRow:nth-child(even){
-    background-color: #FFF9E8;
+    background-color: rgba(203, 194, 177, 0.36);
 }
 .tableRow:nth-child(odd){
-    background-color: #fcfcfc;
+    background-color: rgba(225, 204, 192, 0);
 }
 
 .searchField{
@@ -48,7 +96,7 @@
     padding: '5px';
     height: 35px;
     border-radius: 15px;
-    border: 1px solid rgb(245, 164, 37);
+    border: 1px solid rgb(52, 46, 35);
     overflow: hidden;
 }
 .searchField input{

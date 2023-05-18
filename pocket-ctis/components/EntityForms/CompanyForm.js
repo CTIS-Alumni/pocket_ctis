@@ -2,11 +2,13 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { craftUrl } from '../../helpers/urlHelper'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { Check2Square, Square } from 'react-bootstrap-icons'
+import {replaceWithNull} from "../../helpers/submissionHelpers";
+import {toast} from "react-toastify";
 
 const selectStyles = {
   control: (provided, state) => ({
@@ -62,13 +64,26 @@ const CompanyForm = ({ activeItem }) => {
       company_name: Yup.string().required(),
       sector_id: Yup.object().required(),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+      await onSubmitHandler(values)
     },
   })
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
+  const onSubmitHandler = async (values) => {
+    const temp = {sector_id: values.sector_id.value, is_internship: values.is_internship ? 1 : 0, company_name: values.company_name};
+    if(activeItem){
+      temp.id = activeItem.id;
+      const res = await _submitFetcher('PUT', craftUrl(['companies']), {companies: [temp]})
+      if (!res.data[activeItem.id] || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else toast.success("Company successfully saved")
+    }else{
+      const res = await _submitFetcher('POST', craftUrl(['companies']), {companies: [temp]})
+      if(!res.data?.length || res.errors.length){
+        toast.error(res.errors[0].error)
+      }
+      else toast.success("Company successfully added")
+    }
   }
 
   return (

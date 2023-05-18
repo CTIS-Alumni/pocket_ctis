@@ -25,6 +25,8 @@ export async function getServerSideProps(context) {
             edu: craftUrl(["educationrecords"])
         }, cookie);
 
+    console.log(work);
+
     return {props: {work, edu}}
 }
 

@@ -28,7 +28,7 @@ const AdminSidebar = () => {
   return (
     <div className={styles.sidebar}>
       <img
-        src={getProfilePicturePath(1, userData?.profile_picture)}
+        src={getProfilePicturePath(userData?.profile_picture)}
         className={styles.sidebarImg}
       />
       <div className={styles.userTitle}>

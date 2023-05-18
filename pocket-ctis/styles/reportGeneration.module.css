@@ -17,6 +17,57 @@
     background-color: #fbfbfb;
 }
 
+.closeButton{
+    width: 10%;
+    background-color: rgba(255, 37, 37, 0.26);
+    border: none;
+    color: rgb(197, 66, 54);
+    padding: 5px;
+    height: 38px;
+    border-radius: 4px;
+    transition: all 0.1s ease-in-out;
+    margin-bottom: 5px;
+}
+
+.closeButton:hover:not(:disabled){
+    padding: 3px;
+    border: 2px solid rgba(255, 37, 37, 0.26);
+}
+
+.guideButton{
+    width: 8%;
+    background-color: rgba(11, 111, 222, 0.11);
+    border: none;
+    color: rgb(6, 124, 187);
+    padding: 5px;
+    height: 38px;
+    border-radius: 4px;
+    transition: all 0.1s ease-in-out;
+    margin-bottom: 5px;
+}
+
+.guideButton:hover:not(:disabled){
+    padding: 3px;
+    border: 2px solid rgba(11, 111, 222, 0.11);
+}
+
+.addButton{
+    width: 8%;
+    background-color: rgba(91, 245, 35, 0.18);
+    border: none;
+    color: rgb(58, 164, 30);
+    padding: 5px;
+    height: 38px;
+    border-radius: 4px;
+    transition: all 0.1s ease-in-out;
+    margin-bottom: 5px;
+}
+
+.addButton:hover:not(:disabled){
+    padding: 3px;
+    border: 2px solid rgba(91, 245, 35, 0.18);
+}
+
 .selectContainer{ position: relative; margin-bottom: 10px;}
 .inputLabel{
     position: absolute;

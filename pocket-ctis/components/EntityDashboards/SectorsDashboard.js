@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Tabs, Tab, Container } from 'react-bootstrap'
 import SectorForm from '../EntityForms/SectorForm'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
+import {toast, ToastContainer} from "react-toastify";
 
 const SectorsDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -27,8 +28,8 @@ const SectorsDashboard = () => {
     setIsLoading(true)
     _getFetcher({ sectors: craftUrl(['sectors'], conditions) })
       .then(({ sectors }) => {
-        setTotal(sectors.length)
-        setData(sectors.data)
+        setTotal(sectors?.length)
+        setData(sectors?.data)
       })
       .finally((_) => setIsLoading(false))
   }
@@ -43,13 +44,19 @@ const SectorsDashboard = () => {
     getData(conditions)
   }
 
-  const deleteHandler = (data) => {
-    console.log('delete this', data)
+  const deleteHandler = async (data) => {
+    const res = await _submitFetcher("DELETE", craftUrl(["sectors"]), {sectors: [data]});
+    if(res?.data[data.id])
+      toast.success("Sector deleted successfully!")
+    else toast.error(res.data[0].error)
     //for single delete
   }
 
-  const deleteSelected = () => {
-    console.log('delete following', selectedArray)
+  const deleteSelected = async () => {
+    const res = await _submitFetcher("DELETE", craftUrl(["sectors"]), {sectors: selectedArray});
+    if(res.errors.length)
+      toast.error(res.errors[0].error)
+    else toast.success("Sectors deleted successfully!")
     //for multi delete
   }
 
@@ -103,6 +110,7 @@ const SectorsDashboard = () => {
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
                   selectedArray={selectedArray}
+                  searchCols='sector_name'
                 />
               )}
             </div>

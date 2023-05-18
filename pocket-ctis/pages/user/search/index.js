@@ -8,17 +8,22 @@ import { useRouter } from 'next/router'
 import styles from "../../../components/UserInfoSidebar/UserInfoSidebar.module.scss";
 import {_getFetcher} from "../../../helpers/fetchHelpers";
 import {craftUrl} from "../../../helpers/urlHelper";
+import {getProfilePicturePath} from "../../../helpers/formatHelpers";
 
 const getData = async (search) => {
-  const {companies, eduInsts, gradProjects, users, highSchools} = await _getFetcher({
-    companies: craftUrl(["companies"], [{name: "name", value: search}]),
-    eduInsts: craftUrl(["educationinstitutes"], [{name: "name", value: search}]),
-    gradProjects: craftUrl(["graduationprojects"], [{name: "name", value: search}]),
-    users: craftUrl(["users"], [{name: "name", value: search}]),
-    highSchools: craftUrl(["highschools"], [{name: "name", value: search}]),
-  });
+  try{
+    const {companies, eduInsts, gradProjects, users, highSchools} = await _getFetcher({
+      companies: craftUrl(["companies"], [{name: "name", value: encodeURIComponent(search)}]),
+      eduInsts: craftUrl(["educationinstitutes"], [{name: "name", value:  encodeURIComponent(search)}]),
+      gradProjects: craftUrl(["graduationprojects"], [{name: "name", value:  encodeURIComponent(search)}]),
+      users: craftUrl(["users"], [{name: "name", value:  encodeURIComponent(search)}]),
+      highSchools: craftUrl(["highschools"], [{name: "name", value:  encodeURIComponent(search)}]),
+    });
 
-  return { companies, eduInsts, gradProjects, users, highSchools }
+    return { companies, eduInsts, gradProjects, users, highSchools }
+  }catch(error){
+    console.log(error);
+  }
 }
 
 
@@ -26,7 +31,7 @@ const SearchDataList = ({ searchData }) => {
   const { users, companies, eduInsts, gradProjects, highSchools } = searchData
   return (
     <div className='mt-2'>
-      {users.data.length > 0 && (
+      {users?.data?.length > 0 && (
         <div>
           <h5>Users</h5>
           <ListGroup>
@@ -39,7 +44,7 @@ const SearchDataList = ({ searchData }) => {
                   <div>
                     <h5>
                       <img alt={user.first_name} className={styles.user_avatar_48}
-                           src={'/profilepictures/'+(user.pic_visibility ? user.profile_picture : "defaultuser") +'.png'}/>
+                           src={getProfilePicturePath(user.profile_pcture)}/>
                       {user.first_name} {user.last_name}
                     </h5>
                     <span style={{ fontSize: 12, color: '#999' }}>
@@ -53,7 +58,7 @@ const SearchDataList = ({ searchData }) => {
           <hr style={{ width: '80%' }} className='mx-auto' />
         </div>
       )}
-      {companies.data.length > 0 && (
+      {companies?.data?.length > 0 && (
         <div>
           <h5>Companies</h5>
           <ListGroup>
@@ -81,7 +86,7 @@ const SearchDataList = ({ searchData }) => {
           <hr style={{ width: '80%' }} className='mx-auto' />
         </div>
       )}
-      {highSchools.data.length > 0 && (
+      {highSchools?.data?.length > 0 && (
         <div>
           <h5>High Schools</h5>
           <ListGroup>
@@ -106,7 +111,7 @@ const SearchDataList = ({ searchData }) => {
           <hr style={{ width: '80%' }} className='mx-auto' />
         </div>
       )}
-      {eduInsts.data.length > 0 && (
+      {eduInsts?.data?.length > 0 && (
         <div>
           <h5>Universities</h5>
           <ListGroup>
@@ -136,7 +141,7 @@ const SearchDataList = ({ searchData }) => {
           <hr style={{ width: '80%' }} className='mx-auto' />
         </div>
       )}
-      {gradProjects.data.length > 0 && (
+      {gradProjects?.data?.length > 0 && (
         <div>
           <h5>Graduation Projects</h5>
           <ListGroup>
@@ -177,7 +182,7 @@ const SearchPage = () => {
 
   useEffect(() => {
     if (query.searchValue?.length > 0) {
-      setSearchString(query.searchValue)
+      setSearchString(query.searchValue.trim())
       getData(query.searchValue).then((res) => setSearchData(res))
     }
   }, [])

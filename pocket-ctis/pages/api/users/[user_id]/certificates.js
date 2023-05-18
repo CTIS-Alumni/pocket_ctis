@@ -5,7 +5,7 @@ import {
     buildInsertQueries,
     buildUpdateQueries, doMultiDeleteQueries
 } from "../../../../helpers/dbHelpers";
-import  limitPerUser from '../../../../config/moduleConfig.js';
+import  modules from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 
@@ -29,8 +29,8 @@ const table_name = "usercertificate";
 const validation = (data) => {
     replaceWithNull(data);
     if(data.visibility !== 1 && data.visibility !== 0)
-        return "Invalid Values!";
-    if(!data.certificate_name || !data.certificate_name)
+        return "Invalid values for visibility!";
+    if(!data.certificate_name || !data.issuing_authority)
         return "Please fill all fields!"
     return true;
 }
@@ -39,16 +39,16 @@ export default async function handler(req, res) {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if(payload?.user === "admin" || payload?.user === "owner") {
-        const certificates = JSON.parse(req.body);
         const {user_id} = req.query;
         field_conditions.user.user_id = user_id;
         const method = req.method;
         switch (method) {
             case "POST":
                 try {
+                    const certificates = JSON.parse(req.body);
                     const queries = buildInsertQueries(certificates, table_name, fields, user_id);
                     const select_queries = buildSelectQueries(certificates, table_name, field_conditions);
-                    const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, limitPerUser.certificates);
+                    const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, modules.user_profile_data.certificates.limit_per_user);
                     res.status(200).json({data, errors});
 
                 } catch (error) {
@@ -57,6 +57,7 @@ export default async function handler(req, res) {
                 break;
             case "PUT":
                 try {
+                    const certificates = JSON.parse(req.body);
                     const queries = buildUpdateQueries(certificates, table_name, fields);
                     const select_queries = buildSelectQueries(certificates, table_name,field_conditions);
                     const {data, errors} = await updateTable(queries, validation, select_queries);
@@ -68,6 +69,7 @@ export default async function handler(req, res) {
                 break;
             case "DELETE":
                 try {
+                    const certificates = JSON.parse(req.body);
                     const {data, errors} = await doMultiDeleteQueries(certificates, table_name);
                     res.status(200).json({data, errors});
 
@@ -76,5 +78,5 @@ export default async function handler(req, res) {
                 }
                 break;
         }
-    }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+    }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
 }

@@ -3,6 +3,9 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
+import {_submitFetcher} from "../../helpers/fetchHelpers";
+import {craftUrl} from "../../helpers/urlHelper";
+import {toast} from "react-toastify";
 
 const SectorForm = ({ activeItem }) => {
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
@@ -15,8 +18,8 @@ const SectorForm = ({ activeItem }) => {
     validationSchema: Yup.object({
       sector_name: Yup.string().required('Sector name is required'),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+      await onSubmitHandler(values)
     },
   })
 
@@ -29,9 +32,21 @@ const SectorForm = ({ activeItem }) => {
     }
   }, [activeItem])
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
+  const onSubmitHandler = async (values) => {
+    if(activeItem){
+      values.id = activeItem.id;
+      const res = await _submitFetcher('PUT', craftUrl(['sectors']), {sectors: [values]})
+      if (!res.data[activeItem.id] || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else toast.success("Sector successfully saved")
+    }else{
+      const res = await _submitFetcher('POST', craftUrl(['sectors']), {sectors: [values]})
+      if (!res.data?.length || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else toast.success("Sector successfully added")
+    }
   }
+
 
   return (
     <div>

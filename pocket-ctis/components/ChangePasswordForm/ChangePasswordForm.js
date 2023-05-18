@@ -3,39 +3,59 @@ import { useFormik } from 'formik'
 import styles from './ChangePasswordForm.module.css'
 import * as Yup from 'yup'
 import { toast } from 'react-toastify'
+import {_submitFetcher} from "../../helpers/fetchHelpers";
+import {craftUrl} from "../../helpers/urlHelper";
+import {useState} from "react";
+
+const changePassword = async (current, newPass) => {
+  const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "changeAdminPassword", value: 1}]), {current, newPass})
+  return res;
+}
 
 const ChangePasswordForm = () => {
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      currentPass: null,
+      currentPassword: null,
       newPassword: null,
-      retypeNewPassword: null,
+      confirmPassword: null,
     },
     validationSchema: Yup.object({
-      currentPass: Yup.string()
-        .min(8, 'Password must be longer than 8 characters')
+      currentPassword: Yup.string()
         .required('Required'),
       newPassword: Yup.string()
         .min(8, 'Password must be longer than 8 characters')
         .required('Required'),
-      retypeNewPassword: Yup.string()
+      confirmPassword: Yup.string()
         .min(8, 'Password must be longer than 8 characters')
         .required('Required'),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+     await onSubmitHandler(values)
     },
   })
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
-    if (vals.newPassword != vals.retypeNewPassword) {
-      toast.error('New password and Cofirm New password do not match!')
-      return
+  const onSubmitHandler = async (values) => {
+    if(values.newPassword !== values.confirmPassword){
+      toast.error("New password and confirm password don't match!")
+      return;
     }
 
-    //change password code
+    const res = await changePassword(values.currentPassword, values.newPassword, values.confirmPassword)
+    if (res.data && !res.errors) {
+      toast.success('Admin password has been reset successfully.')
+      formik.resetForm({
+        values: {
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        },
+      })
+      setRefreshKey(Math.random().toString(36))
+    }else{
+      toast.error(res.errors[0].error)
+    }
   }
 
   return (
@@ -46,15 +66,15 @@ const ChangePasswordForm = () => {
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>Current Password</label>
             <input
-              value={formik.values.currentPass}
+              value={formik.values.currentPassword}
               onChange={formik.handleChange}
-              id='currentPass'
-              name='currentPass'
+              id='currentPassword'
+              name='currentPassword'
               type='password'
               className={styles.inputField}
             />
-            {formik.touched.currentPass && formik.errors.currentPass ? (
-              <div className={styles.error}>{formik.errors.currentPass}</div>
+            {formik.touched.currentPassword && formik.errors.currentPassword ? (
+              <div className={styles.error}>{formik.errors.currentPassword}</div>
             ) : null}
           </div>
           <div className={styles.inputContainer}>
@@ -74,17 +94,17 @@ const ChangePasswordForm = () => {
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>Confirm New Password</label>
             <input
-              value={formik.values.retypeNewPassword}
+              value={formik.values.confirmPassword}
               onChange={formik.handleChange}
-              id='retypeNewPassword'
-              name='retypeNewPassword'
+              id='confirmPassword'
+              name='confirmPassword'
               type='password'
               className={styles.inputField}
             />
-            {formik.touched.retypeNewPassword &&
-            formik.errors.retypeNewPassword ? (
+            {formik.touched.confirmPassword &&
+            formik.errors.confirmPassword ? (
               <div className={styles.error}>
-                {formik.errors.retypeNewPassword}
+                {formik.errors.confirmPassword}
               </div>
             ) : null}
           </div>

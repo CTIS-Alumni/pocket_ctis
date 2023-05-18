@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { getProfilePicturePath } from '../../../helpers/formatHelpers'
 import AdminPageContainer from '../../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
 import styles from '../../../styles/adminUsersList.module.css'
-import { ArrowLeft } from 'react-bootstrap-icons'
 import CreateUserForm from '../../../components/AdminPanelComponents/CreateUserForm/CreateUserForm'
 
 const AdminUsersList = () => {
@@ -48,7 +47,6 @@ const AdminUsersList = () => {
                               borderRadius: '50%',
                             }}
                             src={getProfilePicturePath(
-                              user.pic_visibility,
                               user.profile_picture
                             )}
                           />

@@ -1,7 +1,8 @@
 import {doMultiQueries} from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
+import {checkApiKey} from "../../middleware/checkAPIkey";
 
-export default async function handler(req, res) {
+const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if (session && payload) {
@@ -67,9 +68,7 @@ export default async function handler(req, res) {
                         temp += "AND visibility = 1 ";
                     queries.push({name: "phone_numbers", query: temp, values: [user_id]});
 
-                    temp = "SELECT id, profile_picture, visibility FROM userprofilepicture WHERE user_id = ? ";
-                    if (payload.user !== "admin" && payload.user !== "owner")
-                        temp += "AND visibility = 1 ";
+                    temp = "SELECT id, profile_picture FROM userprofilepicture WHERE user_id = ? ";
                     queries.push({name: "profile_picture", query: temp, values: [user_id]});
 
                     temp = "SELECT ue.id, ex.exam_name, ue.exam_id, ue.grade, ue.exam_date, ue.visibility FROM userexam ue JOIN exam ex ON (ue.exam_id = ex.id) " +
@@ -197,9 +196,6 @@ export default async function handler(req, res) {
                         temp = "UPDATE userphone SET visibility = ? WHERE user_id = ? ";
                         put_queries.push({name: "phone_numbers", query: temp, values: [visibility, user_id]});
 
-                        temp = "UPDATE userprofilepicture SET visibility = ? WHERE user_id = ? ";
-                        put_queries.push({name: "profile_picture", query: temp, values: [visibility, user_id]});
-
                         temp = "UPDATE userexam SET visibility = ? WHERE user_id = ? ";
                         put_queries.push({name: "exams", query: temp, values: [visibility, user_id]});
 
@@ -233,10 +229,11 @@ export default async function handler(req, res) {
                     } catch (error) {
                         res.status(500).json({errors: [{error:error.message}]});
                     }
-                } res.status(403).json({errors: [{error: "Forbidden action!"}]});
+                } res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
         }
     } else {
         res.redirect("/401", 401);
     }
 }
+export default checkApiKey(handler);

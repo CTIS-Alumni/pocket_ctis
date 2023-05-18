@@ -5,12 +5,18 @@ import {
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
+import {checkApiKey} from "./middleware/checkAPIkey";
 
 const columns = {
     project_name: "g.graduation_project_name",
-    company: "c.company_name",
-    advisor: "CONCAT(u.first_name, ' ', u.nee, ' ', u.last_name)",
-    year: "g.project_year"
+    company_name: "c.company_name",
+    company_id: "c.id",
+    advisor: " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
+    "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  ",
+    advisor_id: "g.advisor_id",
+    project_year: "g.project_year",
+    project_type: "g.project_type",
+
 }
 
 const fields = {
@@ -51,7 +57,7 @@ const validation = (data) => {
     return true;
 }
 
-export default async function handler(req, res) {
+const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     if (session) {
         let payload
@@ -60,7 +66,7 @@ export default async function handler(req, res) {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT g.id, g.graduation_project_name, g.team_number, g.project_year, g.semester, g.team_pic, g.poster_pic, CONCAT(u.first_name, ' ' ,u.last_name) as advisor, g.project_type, g.company_id, c.company_name " +
+                    let query = "SELECT g.id, g.graduation_project_name, g.team_number, g.project_description, g.project_year, g.semester, g.team_pic, g.poster_pic, g.advisor_id, CONCAT(u.first_name, ' ' ,u.last_name) as advisor, g.project_type, g.company_id, c.company_name " +
                         "FROM graduationproject g LEFT OUTER JOIN company c ON (g.company_id = c.id) JOIN users u ON (u.id = g.advisor_id)";
                     let length_query = "SELECT COUNT(*) as count from graduationproject g LEFT OUTER JOIN company c ON (g.company_id = c.id) " +
                         "JOIN users u ON (u.id = g.advisor_id) ";
@@ -94,7 +100,7 @@ export default async function handler(req, res) {
                     } catch (error) {
                         res.status(500).json({errors: [{error: error.message}]});
                     }
-                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "PUT":
                 payload = await checkUserType(session, req.query);
@@ -108,7 +114,7 @@ export default async function handler(req, res) {
                     } catch (error) {
                         res.status(500).json({errors: [{error: error.message}]});
                     }
-                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "DELETE":
                 payload = await checkUserType(session, req.query);
@@ -127,3 +133,4 @@ export default async function handler(req, res) {
         res.redirect("/401", 401);
     }
 }
+export default checkApiKey(handler);

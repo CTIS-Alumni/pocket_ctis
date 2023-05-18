@@ -5,7 +5,6 @@ export default async function handler(req,res){
     const {token} = req.query;
     try{
         const {payload} = await verify(token, process.env.MAIL_SECRET);
-        console.log(payload);
 
         if(payload.type === "forgotPassword"){
             const refresh_expired = deleteCookie("RefreshJWT");           //logout the user just in case
@@ -15,7 +14,7 @@ export default async function handler(req,res){
             res.redirect('/resetPassword?token='+token, 200);
         }
 
-        if(payload.type === "forgotAdminPassword"){
+        else if(payload.type === "forgotAdminPassword"){
             const refresh_expired = deleteCookie("RefreshJWT");           //logout the user just in case
             const access_expired = deleteCookie("AccessJWT");
             res.setHeader("Set-Cookie", [refresh_expired, access_expired]);
@@ -24,7 +23,6 @@ export default async function handler(req,res){
         }
 
         else if(payload.type === "activateAccount") {
-            console.log("here")
             const refresh_expired = deleteCookie("RefreshJWT");           //logout the user just in case
             const access_expired = deleteCookie("AccessJWT");
             res.setHeader("Set-Cookie", [refresh_expired, access_expired]);
@@ -61,6 +59,18 @@ export default async function handler(req,res){
             } else {
                 res.redirect('/activate?token=' + token, 200);
             }
+        }
+        else if(payload.type == "changeEmail"){
+
+            const {user_id, email_address} = payload
+            const query = "UPDATE users SET contact_email = ? WHERE id = ?";
+            const {data, errors} = await doqueryNew({query: query, values: [email_address, user_id]});
+
+
+            if(errors || !data){
+                res.redirect("/404", 404); //TODO: see if you should create an error page or send them to 404
+            } else res.redirect("/confirmedMail?token=" + token, 200);
+
         } else res.redirect("/404", 404);
 
     }catch(error){

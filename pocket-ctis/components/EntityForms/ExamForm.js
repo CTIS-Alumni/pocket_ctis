@@ -3,10 +3,11 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
+import { _submitFetcher } from '../../helpers/fetchHelpers'
+import { craftUrl } from '../../helpers/urlHelper'
+import { toast } from 'react-toastify'
 
 const ExamForm = ({ activeItem }) => {
-  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
-
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -15,11 +16,19 @@ const ExamForm = ({ activeItem }) => {
     validationSchema: Yup.object({
       exam_name: Yup.string().required('Exam name is required'),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+      await onSubmitHandler(values)
     },
   })
 
+  const onSubmitHandler = async (values) => {
+    const res = await _submitFetcher('POST', craftUrl(['exams']), {
+      exams: [values],
+    })
+    if (!res.data?.length || res.errors.length) {
+      toast.error(res.errors[0].error)
+    } else toast.success('Exam successfully added')
+  }
   useEffect(() => {
     if (activeItem) {
       formik.setValues({
@@ -30,10 +39,6 @@ const ExamForm = ({ activeItem }) => {
       formik.resetForm()
     }
   }, [activeItem])
-
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
-  }
 
   return (
     <div>

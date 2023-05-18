@@ -5,7 +5,7 @@ import {
     insertToUserTable, updateTable, doqueryNew
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
-import  limitPerUser from '../../../../config/moduleConfig.js';
+import modules from '../../../../config/moduleConfig.js';
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 
 const field_conditions = {
@@ -42,9 +42,9 @@ const validation = (data) => {
     if((endDate && endDate > currentDate) || (startDate && startDate > currentDate))
         return "Please do not select future dates!";
     if(data.visibility !== 0 && data.visibility !== 1)
-        return "Invalid Values!";
+        return "Invalid values for visibility!";
     if(data.rating < 0 || data.rating > 5 || (data.rating % 0.5) !== 0)
-        return "Invalid Values!";
+        return "Invalid values for rating!";
     return true;
 }
 
@@ -52,7 +52,6 @@ export default async function handler(req, res){
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if(payload?.user === "admin" || payload?.user === "owner") {
-        const internships = JSON.parse(req.body);
         const {user_id} = req.query;
         field_conditions.user.user_id = user_id;
         const method = req.method;
@@ -60,9 +59,10 @@ export default async function handler(req, res){
             case "POST":
                 if(payload?.user === "admin"){
                     try {
+                        const internships = JSON.parse(req.body);
                         const select_queries = buildSelectQueries(internships, table_name, field_conditions);
                         const queries = buildInsertQueries(internships, table_name, fields, user_id);
-                        const {data, errors} = await insertToUserTable(queries, table_name,  validation, select_queries, limitPerUser.internships);
+                        const {data, errors} = await insertToUserTable(queries, table_name,  validation, select_queries, modules.user_profile_data.internships.limit_per_user);
                         res.status(200).json({data, errors });
 
                         let completed_companies = [];
@@ -79,7 +79,7 @@ export default async function handler(req, res){
                     } catch (error) {
                         res.status(500).json({errors: {error: error.message}});
                     }
-                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "PUT":
                 try{
@@ -87,6 +87,7 @@ export default async function handler(req, res){
                         fields.basic = ["rating", "opinion","visibility"];
                         fields.date = [];
                     }
+                    const internships = JSON.parse(req.body);
                     const queries = buildUpdateQueries(internships, table_name, fields);
                     const select_queries = buildSelectQueries(internships, table_name, field_conditions);
                     const {data, errors} = await updateTable(queries, validation, select_queries);
@@ -98,13 +99,14 @@ export default async function handler(req, res){
             case "DELETE":
                 if(payload?.user === "admin") {
                     try {
+                        const internships = JSON.parse(req.body);
                         const {data, errors} = await doMultiDeleteQueries(internships, table_name);
                         res.status(200).json({data, errors});
                     } catch (error) {
                         res.status(500).json({errors: [{error:error.message}]});
                     }
-                }else res.status(403).json({errors: [{error: "Forbidden action!"}]});
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
         }
-    } res.status(403).json({errors: [{error: "Forbidden action!"}]});
+    } res.status(403).json({errors: [{error: "Forbidden request!"}]});
 }

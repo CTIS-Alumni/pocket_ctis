@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Tabs, Tab, Container } from 'react-bootstrap'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
 import DegreeTypeForm from '../EntityForms/DegreeTypeForm'
+import {toast} from "react-toastify";
 
 const DegreeTypeDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -47,14 +48,18 @@ const DegreeTypeDashboard = () => {
     getData(conditions)
   }
 
-  const deleteHandler = (data) => {
-    console.log('delete this', data)
-    //for single delete
+  const deleteHandler = async (data) => {
+    const res = await _submitFetcher("DELETE", craftUrl(["degreetypes"]), {degreetypes: [data]});
+    if(res?.data[data.id])
+      toast.success("Degree type deleted successfully!")
+    else toast.error(res.data[0].error)
   }
 
-  const deleteSelected = () => {
-    console.log('delete following', selectedArray)
-    //for multi delete
+  const deleteSelected = async () => {
+    const res = await _submitFetcher("DELETE", craftUrl(["degreetypes"]), {degreetypes: selectedArray});
+    if(res.errors.length)
+      toast.error(res.errors[0].error)
+    else toast.success("Degree type deleted successfully!")
   }
 
   const selectedArrayOptions = [
@@ -107,7 +112,7 @@ const DegreeTypeDashboard = () => {
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
                   selectedArray={selectedArray}
-                  searchCols=''
+                  searchCols='degree_type_name'
                 />
               )}
             </div>

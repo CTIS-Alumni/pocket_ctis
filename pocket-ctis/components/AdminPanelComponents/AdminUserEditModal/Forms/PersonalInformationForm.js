@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from 'react'
 import { Location_data } from '../../../../context/locationContext'
 
 import { Field, Formik, Form } from 'formik'
-import { XCircleFill } from 'react-bootstrap-icons'
+import {ToggleOff, ToggleOn, XCircleFill} from 'react-bootstrap-icons'
 import Select from 'react-select'
 
 import styles from './AdminUserFormStyles.module.css'
@@ -11,6 +11,7 @@ import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/f
 import {craftUrl} from '../../../../helpers/urlHelper'
 import { cloneDeep } from 'lodash'
 import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
+import {toast} from "react-toastify";
 
 const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
   const { locationData } = useContext(Location_data)
@@ -54,6 +55,12 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       newData[0].visibility = newData[0].visibility == 1
     }
     return newData
+  }
+
+  const transformBasicInfo = (data) => {
+    let newData = cloneDeep(data)
+    newData[0].is_retired = newData[0].is_retired == 1
+    return newData;
   }
 
   const transformHighSchool = (data) => {
@@ -133,7 +140,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       }
     },
     basic_info: (newData) => {
-      //nothing here
+      newData.basic_info[0].is_retired = newData.basic_info[0].is_retired ? 1 : 0;
     }
   }
 
@@ -162,6 +169,8 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
     values.wanted_sectors = wanted_sectors
 
     let newData = cloneDeep(values)
+
+    transformFuncs.basic_info(newData)
 
     transformFuncs.location(newData)
     if (
@@ -269,6 +278,22 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       basic_info: []
     }
 
+    let errors = []
+    Object.keys(deletedData).forEach((obj) => {
+      for (const [key, value] of Object.entries(responseObj[obj])) {
+        if (value.errors?.length > 0) {
+          errors = [...errors, ...value.errors.map((error) => error)]
+        }
+      }
+    });
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else toast.success('Data successfully saved')
+
+
   }
 
   const {
@@ -284,7 +309,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       enableReinitialize
       onSubmit={onSubmit}
       initialValues={{
-        basic_info: basic_info,
+        basic_info: transformBasicInfo(basic_info),
         career_objective: transformCareer(career_objective),
         location: transformLocation(location),
         wanted_sectors: transformWantedSectors(wanted_sectors),
@@ -308,6 +333,22 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                         id='basic_info[0].first_name'
                         name='basic_info[0].first_name'
                         placeholder='First Name'
+                      />
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div className={`${styles.inputContainer}`}>
+                      <label className={`${styles.inputLabel}`}>
+                        Nee
+                      </label>
+                      <Field
+                          className={`${styles.inputField}`}
+                          style={{ width: '100%' }}
+                          id='basic_info[0].nee'
+                          name='basic_info[0].nee'
+                          placeholder='Nee'
                       />
                     </div>
                   </td>
@@ -342,8 +383,51 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                         placeholder='Enter your career objectives...'
                       />
                     </div>
+                      <div
+                          className={styles.inputContainer}
+                          style={{ width: '49%' }}
+                      >
+                        <Field
+                            name={`basic_info[0].is_retired`}
+                            id={`basic_info[0].is_retired`}
+                        >
+                          {({ field, form, meta }) => {
+                            return (
+                                <label
+                                    className={
+                                      styles.isCurrentCheckbox
+                                    }
+                                >
+                                  {field.value ? (
+                                      <ToggleOn
+                                          size={25}
+                                          className={
+                                            styles.isCurrentTrue
+                                          }
+                                      />
+                                  ) : (
+                                      <ToggleOff size={25} />
+                                  )}
+                                  &nbsp; Are you retired?
+                                  <input
+                                      type='checkbox'
+                                      {...field}
+                                      style={{
+                                        display: 'none',
+                                      }}
+                                  />
+                                </label>
+                            )
+                          }}
+                        </Field>
+                      </div>
                   </td>
                 </tr>
+                <td colSpan={3}>
+                  <div className={styles.formPartitionHeading}>
+                    <span>Sectors You Want To Work In</span>
+                  </div>
+                </td>
                 <tr>
                   <td>
                     <div className={`${styles.inputContainer}`}>
@@ -382,6 +466,11 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                     </div>
                   </td>
                 </tr>
+                <td colSpan={3}>
+                  <div className={styles.formPartitionHeading}>
+                    <span>High School</span>
+                  </div>
+                </td>
                 <tr>
                   <td>
                     <div style={{ display: 'flex' }}>

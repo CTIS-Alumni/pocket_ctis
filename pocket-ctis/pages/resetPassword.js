@@ -2,10 +2,11 @@ import { Formik, Field, Form } from 'formik'
 import { Col, Container, Row } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import styles from '../styles/login.module.css'
-import {_getFetcher, _submitFetcher} from "../helpers/fetchHelpers";
+import {_submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
 import {verify} from "../helpers/jwtHelper";
 import Link from "next/link";
+import {toast} from "react-toastify";
 
 
 const changePassword = async (password, confirm, token, type) => {
@@ -14,10 +15,12 @@ const changePassword = async (password, confirm, token, type) => {
 }
 
 const checkPassword = (pass, cnfpass) => {
+    if(pass.trim() === "" || cnfpass.trim() === "")
+        return {errors: [{error: "Please fill all fields!"}]}
     if(pass !== cnfpass)
         return {errors: [{error: "Passwords do not match"}]};
-    if(pass.length < 6)
-        return {errors: [{error: "Password must be at least 6 characters"}]};
+    if(pass.length < 8)
+        return {errors: [{error: "Password must be at least 8 characters"}]};
     return true;
 }
 
@@ -25,17 +28,17 @@ const ResetPassword = ({token, type}) => {
     const router = useRouter()
     const onSubmit = async (values) => {
         const is_valid = checkPassword(values.password, values.confirmPassword);
-        if(is_valid.errors) {
-            console.log(is_valid);
-            return false; //TODO: TOAST
+        if (is_valid.errors) {
+            toast.error(is_valid.errors[0].error)
+            return false;
         }
         const res = await changePassword(values.password, values.confirmPassword, token, type)
-        if (res.errors)  {
-            console.log(res)
-            return false; //TODO: TOAST
+        if (res.data && !res.errors) {
+            toast.success('Password has been reset successfully.')
+            router.push({ pathname: '/login' })
+        }else{
+        toast.error(res.errors[0].error)
         }
-        router.push({ pathname: '/login' })
-
     }
 
     return (

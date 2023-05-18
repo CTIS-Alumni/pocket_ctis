@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react'
 import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
+import {_submitFetcher} from "../../helpers/fetchHelpers";
+import {craftUrl} from "../../helpers/urlHelper";
+import {toast} from "react-toastify";
+import {useEffect, useState} from "react";
 
 const SkillTypeForm = ({ activeItem }) => {
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
@@ -15,8 +18,8 @@ const SkillTypeForm = ({ activeItem }) => {
     validationSchema: Yup.object({
       skill_type_name: Yup.string().required('Skill Type name is required'),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+      await onSubmitHandler(values)
     },
   })
 
@@ -31,8 +34,19 @@ const SkillTypeForm = ({ activeItem }) => {
     }
   }, [activeItem])
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
+  const onSubmitHandler = async (values) => {
+    if(activeItem){
+      values.id = activeItem.id;
+      const res = await _submitFetcher('PUT', craftUrl(['skilltypes']), {skilltypes: [values]})
+      if (!res.data[activeItem.id] || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else toast.success("Skill type successfully saved")
+    }else{
+      const res = await _submitFetcher('POST', craftUrl(['skilltypes']), {skilltypes: [values]})
+      if (!res.data?.length || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else toast.success("Skill type successfully added!")
+    }
   }
 
   return (
