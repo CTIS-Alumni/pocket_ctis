@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { _getFetcher } from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import { toast, ToastContainer } from 'react-toastify'
-import { Spinner } from 'react-bootstrap'
 import AdminPageContainer from '../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
 import DataTable from '../../components/DataTable/DataTable'
 
