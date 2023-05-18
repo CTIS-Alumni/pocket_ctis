@@ -22,7 +22,7 @@ const handler =  async (req, res) => {
                     const is_admin = payload.user === "admin";
                     let values = [], length_values = [], length_query = "";
                     let query = "SELECT w.id, w.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.first_name, u.last_name, w.company_id, " +
-                        "c.company_name, wt.work_type_name, w.department, w.position, w.work_description, w.rating, w.city_id, ci.city_name," +
+                        "c.company_name, wt.work_type_name, w.department, w.position, w.work_description, w.city_id, ci.city_name," +
                         "w.country_id, co.country_name, w.start_date, w.end_date, w.is_current, w.record_date ";
 
                        const add = "FROM workrecord w JOIN users u ON (w.user_id = u.id) " +
@@ -36,9 +36,7 @@ const handler =  async (req, res) => {
 
                        query += add;
 
-                       if(is_admin){
-                           length_query = "SELECT COUNT(*) as count  " + add;
-                       }
+                       length_query = "SELECT COUNT(*) as count FROM workrecord ";
 
                     if (req.query.company_id) {
                         query += "WHERE w.company_id = ? ";
@@ -68,6 +66,8 @@ const handler =  async (req, res) => {
 
                         const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
                             {name: "length", query: length_query, values: length_values}]);
+
+                        console.log("uery", query, "data:", data, "length:", length_query);
 
                         res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
 

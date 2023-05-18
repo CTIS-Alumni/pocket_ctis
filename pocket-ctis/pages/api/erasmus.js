@@ -75,8 +75,7 @@ const handler =  async (req, res) => {
                         "LEFT OUTER JOIN city ci ON (ci.id = ei.city_id) " +
                         "LEFT OUTER JOIN country co ON (co.id = ci.country_id) ";
 
-                    let length_query = "SELECT COUNT(*) as count FROM erasmusrecord e JOIN users u ON (e.user_id = u.id) JOIN educationinstitute ei " +
-                        "ON (ei.id = e.edu_inst_id) LEFT OUTER JOIN city ci ON (ci.id = ei.city_id) LEFT OUTER JOIN country co ON (co.id = ci.country_id) ";
+                    let length_query = "SELECT COUNT(*) as count FROM erasmusrecord ";
 
                     if (payload.user !== "admin") {
                         query += addAndOrWhere(query, " (e.visibility = 1 OR e.user_id = ?) ");
