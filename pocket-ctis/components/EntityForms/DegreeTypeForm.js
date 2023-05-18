@@ -36,12 +36,20 @@ const DegreeTypeForm = ({ activeItem }) => {
 
 
   const onSubmitHandler = async (values) => {
-    const res = await _submitFetcher('POST', craftUrl(['degreetypes']), {degreetypes: [values]})
-    if(!res.data?.length || res.errors.length){
-      toast.error(res.errors[0].error)
+    if(activeItem){
+      values.id = activeItem.id;
+      const res = await _submitFetcher('PUT', craftUrl(['degreetypes']), {degreetypes: [values]})
+      if (!res.data[activeItem.id] || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else toast.success("Degree type successfully saved")
+    }else{
+      const res = await _submitFetcher('POST', craftUrl(['degreetypes']), {degreetypes: [values]})
+      if (!res.data?.length || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else toast.success("Degree type successfully added!")
     }
-    else toast.success("Exam successfully added")
   }
+
   return (
     <div>
       <h5>Degree Type</h5>

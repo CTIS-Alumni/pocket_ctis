@@ -28,8 +28,8 @@ const SectorsDashboard = () => {
     setIsLoading(true)
     _getFetcher({ sectors: craftUrl(['sectors'], conditions) })
       .then(({ sectors }) => {
-        setTotal(sectors.length)
-        setData(sectors.data)
+        setTotal(sectors?.length)
+        setData(sectors?.data)
       })
       .finally((_) => setIsLoading(false))
   }
@@ -52,8 +52,11 @@ const SectorsDashboard = () => {
     //for single delete
   }
 
-  const deleteSelected = () => {
-    console.log('delete following', selectedArray)
+  const deleteSelected = async () => {
+    const res = await _submitFetcher("DELETE", craftUrl(["sectors"]), {sectors: selectedArray});
+    if(res.errors.length)
+      toast.error(res.errors[0].error)
+    else toast.success("Sectors deleted successfully!")
     //for multi delete
   }
 
@@ -103,11 +106,11 @@ const SectorsDashboard = () => {
                   editHandler={(d) => {
                     setActiveItem(d)
                     setActiveKey('insert')
-                    editHandler(d)
                   }}
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
                   selectedArray={selectedArray}
+                  searchCols='sector_name'
                 />
               )}
             </div>
@@ -119,16 +122,6 @@ const SectorsDashboard = () => {
           </Container>
         </Tab>
       </Tabs>
-      <ToastContainer
-          position='top-right'
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={true}
-          closeOnClick
-          draggable
-          pauseOnHover
-          theme='light'
-      />
     </div>
   )
 }

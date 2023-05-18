@@ -13,7 +13,10 @@ import modules from "../../config/moduleConfig";
 const columns = {
     high_school_name: "h.high_school_name",
     city_name: "ci.city_name",
-    country_name: "co.country_name"
+    country_name: "co.country_name",
+    city_id: "ci.id",
+    country_id: "co.id"
+
 }
 
 const fields = {
@@ -41,7 +44,7 @@ const handler =  async (req, res) => {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT h.id, h.high_school_name, ci.city_name, h.city_id, ci.country_id, co.country_name " +
+                    let query = "SELECT h.id, h.high_school_name, ci.city_name, co.country_name " +
                         "FROM highschool h LEFT OUTER JOIN city ci ON (h.city_id = ci.id) " +
                         "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 

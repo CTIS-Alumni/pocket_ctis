@@ -34,6 +34,7 @@ const SectorForm = ({ activeItem }) => {
 
   const onSubmitHandler = async (values) => {
     if(activeItem){
+      values.id = activeItem.id;
       const res = await _submitFetcher('PUT', craftUrl(['sectors']), {sectors: [values]})
       if (!res.data[activeItem.id] || res.errors.length) {
         toast.error(res.errors[0].error)

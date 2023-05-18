@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Tabs, Tab, Container, Spinner } from 'react-bootstrap'
 import CompanyForm from '../EntityForms/CompanyForm'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
+import {toast} from "react-toastify";
 
 const CompanyDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -41,7 +42,6 @@ const CompanyDashboard = () => {
       'sector_id',
       'sector_name',
       'is_internship',
-      'rating',
     ])
   }, [])
 
@@ -54,18 +54,33 @@ const CompanyDashboard = () => {
     getData(conditions)
   }
 
-  const deleteHandler = (data) => {
-    console.log('delete this', data)
+  const deleteHandler = async (data) => {
+    const res = await _submitFetcher("DELETE", craftUrl(["companies"]), {companies: [data]});
+    if(res?.data[data.id])
+      toast.success("Company deleted successfully!")
+    else toast.error(res.data[0].error)
     //for single delete
   }
 
-  const deleteSelected = () => {
-    console.log('delete following', selectedArray)
+  const deleteSelected = async () => {
+    const res = await _submitFetcher("DELETE", craftUrl(["companies"]), {companies: selectedArray});
+    if(res.errors.length)
+      toast.error(res.errors[0].error)
+    else toast.success("Companies deleted successfully!")
     //for multi delete
+  }
+
+  const setIsInternship = async () => {
+    const newArr = selectedArray.map(s => ({ ...s, is_internship: 1 }));
+    const res = await _submitFetcher("PUT", craftUrl(["companies"]), {companies: newArr});
+    if(res.errors.length)
+      toast.error(res.errors[0].error)
+    else toast.success("Companies saved successfully!");
   }
 
   const selectedArrayOptions = [
     { label: 'Delete All Selected', action: deleteSelected },
+    { label: 'Set Internship Company', action: setIsInternship },
   ]
 
   return (

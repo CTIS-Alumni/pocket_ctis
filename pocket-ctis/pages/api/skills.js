@@ -17,8 +17,10 @@ const fields = {
 }
 
 const columns = {
-    skill: "s.skill_name",
-    skill_type: "st.skill_type_name"
+    skill_name: "s.skill_name",
+    skill_type_name: "st.skill_type_name",
+    skill_type_id: "st.skill_type_id",
+    id: "s.id"
 }
 
 const validation = (data) => {
