@@ -9,9 +9,14 @@ import {checkApiKey} from "./middleware/checkAPIkey";
 
 const columns = {
     project_name: "g.graduation_project_name",
-    company: "c.company_name",
-    advisor: "CONCAT(u.first_name, ' ', '%' ,' ', u.last_name)",
-    year: "g.project_year"
+    company_name: "c.company_name",
+    company_id: "c.id",
+    advisor: " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
+    "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  ",
+    advisor_id: "g.advisor_id",
+    project_year: "g.project_year",
+    project_type: "g.project_type",
+
 }
 
 const fields = {
@@ -61,7 +66,7 @@ const handler =  async (req, res) => {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT g.id, g.graduation_project_name, g.team_number, g.project_year, g.semester, g.team_pic, g.poster_pic, CONCAT(u.first_name, ' ' ,u.last_name) as advisor, g.project_type, g.company_id, c.company_name " +
+                    let query = "SELECT g.id, g.graduation_project_name, g.team_number, g.project_year, g.semester, g.team_pic, g.poster_pic, g.advisor_id, CONCAT(u.first_name, ' ' ,u.last_name) as advisor, g.project_type, g.company_id, c.company_name " +
                         "FROM graduationproject g LEFT OUTER JOIN company c ON (g.company_id = c.id) JOIN users u ON (u.id = g.advisor_id)";
                     let length_query = "SELECT COUNT(*) as count from graduationproject g LEFT OUTER JOIN company c ON (g.company_id = c.id) " +
                         "JOIN users u ON (u.id = g.advisor_id) ";

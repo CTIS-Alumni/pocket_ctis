@@ -130,7 +130,6 @@ const AdminUserView = ({ user }) => {
 
   const refreshProfile = () => {
     setIsLoading(true)
-    console.log(user)
     _getFetcher({
       res: craftUrl(["users",user.userInfo.data.basic_info[0].id, 'profile']),
     })

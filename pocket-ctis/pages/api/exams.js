@@ -1,4 +1,4 @@
-import {buildInsertQueries, doqueryNew, insertToTable} from "../../helpers/dbHelpers";
+import {buildInsertQueries, buildSearchQuery, doMultiQueries, doqueryNew, insertToTable} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
@@ -9,6 +9,10 @@ const table_name = "exam";
 const fields = {
     basic: ["exam_name"],
     date: []
+}
+
+const columns = {
+    exam_name: "exam_name"
 }
 
 const validation = (data) => {
@@ -26,9 +30,16 @@ const handler =  async (req, res) => {
         switch (method) {
             case "GET":
                 try {
-                    const query = "SELECT * FROM exam order by exam_name asc";
-                    const {data, errors} = await doqueryNew({query: query});
-                    res.status(200).json({data, errors});
+                    let values = [], length_values = [];
+                    let query = "SELECT * FROM exam order by exam_name asc ";
+                    let length_query = "SELECT COUNT(*) FROM exam ";
+                    ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
+
+                    const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
+                        {name: "length", query: length_query, values: length_values}]);
+
+                    res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
+
                 } catch (error) {
                     res.status(500).json({errors: [{error: error.message}]});
                 }

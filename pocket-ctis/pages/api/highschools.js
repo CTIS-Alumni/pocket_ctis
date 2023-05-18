@@ -12,8 +12,11 @@ import modules from "../../config/moduleConfig";
 
 const columns = {
     high_school_name: "h.high_school_name",
-    city: "ci.city_name",
-    country: "co.country_name"
+    city_name: "ci.city_name",
+    country_name: "co.country_name",
+    city_id: "ci.id",
+    country_id: "co.id"
+
 }
 
 const fields = {

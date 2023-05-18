@@ -21,7 +21,7 @@ const handler =  async (req, res) => {
                 try {
                     const is_admin = payload.user === "admin";
                     let values = [], length_values = [], length_query = "";
-                    let query = "SELECT w.id, w.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.first_name, u.last_name, w.company_id,\n" +
+                    let query = "SELECT w.id, w.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.first_name, u.last_name, w.company_id, " +
                         "c.company_name, wt.work_type_name, w.department, w.position, w.work_description, w.rating, w.city_id, ci.city_name," +
                         "w.country_id, co.country_name, w.start_date, w.end_date, w.is_current, w.record_date ";
 

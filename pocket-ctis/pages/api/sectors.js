@@ -11,7 +11,8 @@ import {checkApiKey} from "./middleware/checkAPIkey";
 import modules from "../../config/moduleConfig";
 
 const columns = {
-    sector_name: "sector_name"
+    sector_name: "sector_name",
+    id: "id"
 }
 
 const fields = {
