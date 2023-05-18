@@ -110,7 +110,10 @@ const GraduationProjectForm = ({ activeItem }) => {
           }`,
         },
         project_description: activeItem.project_description,
-        advisor_id: activeItem.advisor_id,
+        advisor_id: {
+          value: activeItem.advisor_id,
+          label: activeItem.advisor,
+        },
         project_type: {
           value: activeItem.project_type,
           label: activeItem.project_type,
