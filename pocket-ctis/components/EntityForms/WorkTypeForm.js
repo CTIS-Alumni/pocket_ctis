@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
@@ -6,7 +7,9 @@ import {_submitFetcher} from "../../helpers/fetchHelpers";
 import {craftUrl} from "../../helpers/urlHelper";
 import {toast} from "react-toastify";
 
-const WorkTypeForm = () => {
+const WorkTypeForm = ({ activeItem }) => {
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -20,6 +23,17 @@ const WorkTypeForm = () => {
     },
   })
 
+  useEffect(() => {
+    if (activeItem) {
+      formik.setValues({
+        work_type_name: activeItem.work_type_name,
+      })
+    } else {
+      setRefreshKey(Math.random().toString(36))
+      formik.resetForm()
+    }
+  }, [activeItem])
+
   const onSubmitHandler = async (values) => {
     const res = await _submitFetcher('POST', craftUrl(['worktypes']), {worktypes: [values]})
     if(!res.data?.length || res.errors.length){
@@ -31,7 +45,7 @@ const WorkTypeForm = () => {
     <div>
       <h5>Work Type</h5>
       <Container>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>Work Type Name</label>
             <input

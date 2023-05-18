@@ -129,7 +129,10 @@ const DataTable = ({
           <tbody>
             {data.map((d) => (
               <tr className={styles.tableRow}>
-                <td className={styles.tableCell}>
+                <td
+                  className={styles.tableCell}
+                  style={{ textAlign: 'center' }}
+                >
                   <input
                     checked={
                       selectedArray.find((s) => s.id == d.id) ? true : false
