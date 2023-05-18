@@ -19,20 +19,40 @@ Font.register({family: 'Inter', fonts: [
   { src: 'https://fonts.gstatic.com/s/opensans/v35/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWt06F15M.woff2', fontStyle: 'italic', fontWeight: 900 }, // italic 900
 ]});
 
+// VARIABLES
+let fontSize = 14;
+
+let marginSmall = 4;
+let marginMedium = 8;
+let marginLarge = 10;
+let marginXLarge = 16;
+let marginXXLarge = 24;
+
+let strokeWidth = 2;
+let length = 600;
+
+let mainColour = 'black';
+let accentColour = 'black';
+let lighterColour = 'grey';
+
 const styles = StyleSheet.create({
   body: {
     fontFamily: 'Inter',
-    fontSize: 13,
+    fontSize: fontSize,
     paddingHorizontal: 32,
     paddingVertical: 32,
+    color: mainColour,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: marginXXLarge,
   },
-  sectionTop: {
-    marginBottom: 16,
+  midSection: {
+    marginBottom: marginXLarge,
   },
-  
+  hr: {
+    marginHorizontal: 0,
+  },
+
   
   flex: {
     flexDirection: 'row',
@@ -40,26 +60,29 @@ const styles = StyleSheet.create({
   gapBetween: {
     justifyContent: 'space-between'
   },
+  alignCenter: {
+    alignItems: 'center',
+  },
   
   midTitle: {
     fontWeight: 500,
   },
   boldTitle: {
-    fontSize: 14,
+    fontSize: fontSize + 2,
     fontWeight: 700,
   },
   subtitle: {
-    fontSize: 11,
+    fontSize: fontSize - 2,
   },
   
   
   nameSurname: {
-    fontSize: 20,
+    fontSize: fontSize + 4,
     fontWeight: 900,
-    marginBottom: 2,
+    marginBottom: marginSmall,
   },
   profession: {
-    fontSize: 16,
+    fontSize: fontSize + 4,
     fontWeight: 700,
   },
   
@@ -77,8 +100,8 @@ const styles = StyleSheet.create({
   },
   
   bullet: {
-    marginRight: 10,
-    marginLeft: 12,
+    marginRight: marginMedium,
+    marginLeft: marginLarge,
   },
   
   
@@ -88,7 +111,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     textAlign: 'center',
-    fontSize: 9,
+    fontSize: fontSize - 5,
+    color: lighterColour,
   },
 });
 
@@ -100,7 +124,7 @@ const ReportPDF = ({ data }) => {
         // TOP SECTION
         <View style={styles.section} wrap={false}>
           // name surname profession
-          <View style={[styles.sectionTop]}>
+          <View style={[styles.midSection]}>
             <Text style={styles.nameSurname}>Name Surname</Text>
             <Text style={styles.profession}>Profession</Text>
           </View>
@@ -152,12 +176,15 @@ const ReportPDF = ({ data }) => {
             <Text style={[styles.boldTitle]}>Career Objectives</Text>
             // divider
             <Svg height='2' style={styles.hr}>
-              <Line x1='0' y1='0' x2='595' y2='0' strokeWidth={1} stroke='black' />
+              <Line x1='0' y1='0' x2={`${length}`} y2='0' strokeWidth={`${strokeWidth}`} stroke={`${lighterColour}`} />
             </Svg>
-            // para
-            <Text>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </Text>
+            
+            <View style={[styles.midSection]}>
+              // para
+              <Text>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+              </Text>
+            </View>
           </View>
         </View>
         
@@ -167,69 +194,33 @@ const ReportPDF = ({ data }) => {
             <Text style={[styles.boldTitle]}>Education</Text>
             // divider
             <Svg height='2' style={styles.hr}>
-              <Line x1='0' y1='0' x2='595' y2='0' strokeWidth={1} stroke='black' />
+              <Line x1='0' y1='0' x2={`${length}`} y2='0' strokeWidth={`${strokeWidth}`} stroke={`${lighterColour}`} />
             </Svg>
           </View>
-          
-          // edu 1
-            <View style={[styles.sectionTop]}>
-              <View style={[styles.flex, styles.gapBetween]}>
-                <View style={[styles.flex]}>
-                  
-                  // name of school
-                  <Text style={[styles.midTitle]}>ABC University</Text>
-                  
-                  // grade or cgpa
-                  <View style={[styles.flex]}>
-                    <Text style={[styles.subtitle]}>CGPA:</Text>
-                    <Text style={[styles.subtitle]}>3.45</Text>
-                  </View>
-                  
+
+          // edu
+          <View style={[styles.midSection]}>
+            <View style={[styles.flex, styles.gapBetween]}>
+              <View style={[styles.flex, styles.alignCenter]}>
+                // name of school
+                <Text style={[styles.midTitle]}>ABC University</Text>
+
+                // cgpa
+                <View style={[styles.flex, styles.alignCenter]}>
+                  <Text>, CGPA: </Text>
+                  <Text>3.45</Text>
                 </View>
-                // date
-                <Text>May 1988 - Ay 1992</Text>
               </View>
 
-              <View style={[styles.flex, styles.gapBetween]}>
-                // department
-                <Text>B.Sc. in ABC Department</Text>
-                
-              </View>
+              // date
+              <Text>Month 20XX - Month 20XX</Text>
             </View>
-            
-            // edu 2
-            <View style={[styles.sectionTop]}>
-              <View style={[styles.flex, styles.gapBetween]}>
-                // name of school
-                <Text style={[styles.midTitle]}>ABC High School</Text>
-                // date
-                <Text>May 1988 - Ay 1992</Text>
-              </View>
 
-              <View style={[styles.flex, styles.gapBetween]}>
-                // department
-                <Text>B.Sc. in ABC Department</Text>
-                // grade or cgpa
-                <Text>CGPA: 3.54</Text>
-              </View>
+            <View style={[styles.flex, styles.gapBetween]}>
+              // department
+              <Text style={[styles.subtitle]}>Lorem Ipsum Department</Text>
             </View>
-            
-            // edu 3
-            <View style={[styles.sectionTop]}>
-              <View style={[styles.flex, styles.gapBetween]}>
-                // name of school
-                <Text style={[styles.midTitle]}>ABC High School</Text>
-                // date
-                <Text>May 1988 - Ay 1992</Text>
-              </View>
-
-              <View>
-                // grade or cgpa
-                <Text style={[styles.subtitle]}>CGPA: 3.54</Text>
-                // department
-                <Text>B.Sc. in ABC Department</Text>
-              </View>
-            </View>
+          </View>
         </View>
         
         
@@ -239,7 +230,7 @@ const ReportPDF = ({ data }) => {
             <Text style={[styles.boldTitle]}>Experience</Text>
             // divider
             <Svg height='2' style={styles.hr}>
-              <Line x1='0' y1='0' x2='595' y2='0' strokeWidth={1} stroke='black' />
+              <Line x1='0' y1='0' x2={`${length}`} y2='0' strokeWidth={`${strokeWidth}`} stroke={`${lighterColour}`} />
             </Svg>
           </View>
           
@@ -252,12 +243,11 @@ const ReportPDF = ({ data }) => {
             </View>
             
             // date
-            <Text>May 1988 - Ay 1992</Text>
+            <Text>Month 20XX - Month 20XX</Text>
           </View>
           
           // department
-          <Text style={[styles.subtitle, {marginBottom: 8}]}>IT Department</Text>
-          
+          <Text style={[styles.subtitle, {marginBottom: marginMedium}]}>IT Department</Text>
 
           // job description
           <View>
@@ -292,8 +282,35 @@ const ReportPDF = ({ data }) => {
             <Text style={[styles.boldTitle]}>Projects</Text>
             // divider
             <Svg height='2' style={styles.hr}>
-              <Line x1='0' y1='0' x2='595' y2='0' strokeWidth={1} stroke='black' />
+              <Line x1='0' y1='0' x2={`${length}`} y2='0' strokeWidth={`${strokeWidth}`} stroke={`${lighterColour}`} />
             </Svg>
+          </View>
+          
+          // project title
+          <Text style={[styles.midTitle, {marginBottom: marginSmall}]}>Project Title</Text>
+          
+          // project description
+          <View>
+            // --------------
+            <View style={[styles.flex]}>
+              <Text style={[styles.bullet]}>•</Text>
+              <Text>Lorem ipsum dolor sit amet.</Text>
+            </View>
+            // --------------
+            <View style={[styles.flex]}>
+              <Text style={[styles.bullet]}>•</Text>
+              <Text>Lorem ipsum dolor sit amet.</Text>
+            </View>
+            // --------------
+            <View style={[styles.flex]}>
+              <Text style={[styles.bullet]}>•</Text>
+              <Text>Lorem ipsum dolor sit amet.</Text>
+            </View>
+            // --------------
+            <View style={[styles.flex]}>
+              <Text style={[styles.bullet]}>•</Text>
+              <Text>Lorem ipsum dolor sit amet.</Text>
+            </View>
           </View>
           
         </View>
@@ -305,7 +322,7 @@ const ReportPDF = ({ data }) => {
             <Text style={[styles.boldTitle]}>Skills</Text>
             // divider
             <Svg height='2' style={styles.hr}>
-              <Line x1='0' y1='0' x2='595' y2='0' strokeWidth={1} stroke='black' />
+              <Line x1='0' y1='0' x2={`${length}`} y2='0' strokeWidth={`${strokeWidth}`} stroke={`${lighterColour}`} />
             </Svg>
           </View>
           
