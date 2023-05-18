@@ -36,7 +36,10 @@ const handler =  async (req, res) => {
 
                        query += add;
 
-                       length_query = "SELECT COUNT(*) as count FROM workrecord ";
+                       length_query = "SELECT COUNT(*) as count FROM workrecord w JOIN users u ON (w.user_id = u.id) " +
+                           "LEFT OUTER JOIN company c ON (w.company_id = c.id) JOIN worktype wt ON (w.work_type_id = wt.id) " +
+                           "LEFT OUTER JOIN city ci ON (w.city_id = ci.id) " +
+                           "LEFT OUTER JOIN country co ON (w.country_id = co.id) ";
 
                     if (req.query.company_id) {
                         query += "WHERE w.company_id = ? ";
