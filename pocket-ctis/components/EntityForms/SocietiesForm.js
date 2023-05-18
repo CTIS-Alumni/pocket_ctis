@@ -3,6 +3,9 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
+import { _submitFetcher } from '../../helpers/fetchHelpers'
+import { craftUrl } from '../../helpers/urlHelper'
+import { toast } from 'react-toastify'
 
 const SocietiesForm = ({ activeItem }) => {
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
@@ -15,13 +18,20 @@ const SocietiesForm = ({ activeItem }) => {
     },
     validationSchema: Yup.object({
       society_name: Yup.string().required('Society name is required'),
-      description: Yup.string().required('Society description is required'),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+      await onSubmitHandler(values)
     },
   })
 
+  const onSubmitHandler = async (values) => {
+    const res = await _submitFetcher('POST', craftUrl(['studentsocieties']), {
+      societies: [values],
+    })
+    if (!res.data?.length || res.errors.length) {
+      toast.error(res.errors[0].error)
+    } else toast.success('Exam successfully added')
+  }
   useEffect(() => {
     if (activeItem) {
       formik.setValues({
@@ -33,10 +43,6 @@ const SocietiesForm = ({ activeItem }) => {
       formik.resetForm()
     }
   }, [activeItem])
-
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
-  }
 
   return (
     <div>
