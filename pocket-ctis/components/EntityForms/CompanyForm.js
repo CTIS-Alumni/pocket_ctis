@@ -21,8 +21,9 @@ const selectStyles = {
   }),
 }
 
-const CompanyForm = () => {
+const CompanyForm = ({ activeItem }) => {
   const [sectors, setSectors] = useState([])
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   useEffect(() => {
     _getFetcher({ sectors: craftUrl(['sectors']) })
@@ -35,6 +36,22 @@ const CompanyForm = () => {
       })
       .catch((err) => console.log(err))
   }, [])
+
+  useEffect(() => {
+    if (activeItem) {
+      formik.setValues({
+        company_name: activeItem.company_name,
+        sector_id: {
+          value: activeItem.sector_id,
+          label: activeItem.sector_name,
+        },
+        is_internship: activeItem.is_internship,
+      })
+    } else {
+      setRefreshKey(Math.random().toString(36))
+      formik.resetForm()
+    }
+  }, [activeItem])
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -66,7 +83,7 @@ const CompanyForm = () => {
     <div>
       <h5>Company</h5>
       <Container>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>Company Name</label>
             <input

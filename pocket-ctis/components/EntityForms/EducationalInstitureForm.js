@@ -21,10 +21,11 @@ const selectStyles = {
   }),
 }
 
-const EducationalInstitureForm = () => {
+const EducationalInstitureForm = ({ activeItem }) => {
   const [countries, setCountries] = useState([])
   const [cities, setCities] = useState([])
   const { locationData } = useContext(Location_data)
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   useEffect(() => {
     setCountries(
@@ -34,6 +35,26 @@ const EducationalInstitureForm = () => {
       }))
     )
   }, [locationData])
+
+  useEffect(() => {
+    if (activeItem) {
+      formik.setValues({
+        edu_inst_name: activeItem.edu_inst_name,
+        city_id: {
+          value: `${activeItem.city_id}-${activeItem.city_name}`,
+          label: activeItem.city_name,
+        },
+        country: {
+          value: `${activeItem.country_id}-${activeItem.country_name}`,
+          label: activeItem.country_name,
+        },
+        is_erasmus: activeItem.is_erasmus,
+      })
+    } else {
+      setRefreshKey(Math.random().toString(36))
+      formik.resetForm()
+    }
+  }, [activeItem])
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -68,7 +89,7 @@ const EducationalInstitureForm = () => {
     <div>
       <h5>Educational Institure Form</h5>
       <Container>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>
               Educational Institute Name
