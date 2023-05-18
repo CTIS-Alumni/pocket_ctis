@@ -1,17 +1,20 @@
 import {
     addAndOrWhere,
     buildInsertQueries,
-    buildSearchQuery,
+    buildSearchQuery, doMultiDeleteQueries,
     doMultiQueries,
     insertToTable
 } from "../../helpers/dbHelpers";
-import {checkAuth} from "../../helpers/authHelper";
+import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
+import modules from "../../config/moduleConfig";
 
 const columns = {
     company_name: "c.company_name",
-    sector_name: "s.sector_name"
+    sector_name: "s.sector_name",
+    sector_id: "c.sector_id",
+    is_internship: "c.is_internship"
 }
 
 const table_name = "company";
@@ -24,9 +27,9 @@ const fields = {
 const validation = (data) => {
     replaceWithNull(data)
     if(!data.company_name)
-        return "Company Name can't be empty!";
+        return "Company name can't be empty!";
     if(isNaN(parseInt(data.sector_id)))
-        return "Sector Id must be a number!";
+        return "Sector ID must be a number!";
     if(isNaN(parseInt(data.is_internship)) || (parseInt(data.is_internship) !== 1 && parseInt(data.is_internship) !== 0))
         return "Invalid value for internship field!";
     return true;
@@ -34,6 +37,7 @@ const validation = (data) => {
 
 const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
+    let payload;
     if (session) {
         const method = req.method;
         switch (method) {
@@ -91,14 +95,30 @@ const handler =  async (req, res) => {
                 }
                 break;
             case "POST":
-                try {
-                    const {companies} = JSON.parse(req.body);
-                    const queries = buildInsertQueries(companies, table_name, fields);
-                    const {data, errors} = await insertToTable(queries, table_name, validation);
-                    res.status(200).json({data, errors});
-                } catch (error) {
-                    res.status(500).json({errors: [{error: error.message}]});
-                }
+                payload = await checkUserType(session)
+                if(payload.user === "admin" || modules.companies.user_addable){
+                    try {
+                        const {companies} = JSON.parse(req.body);
+                        const queries = buildInsertQueries(companies, table_name, fields);
+                        const {data, errors} = await insertToTable(queries, table_name, validation);
+                        res.status(200).json({data, errors});
+                    } catch (error) {
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]})
+                break;
+            case "DELETE":
+                payload = await checkUserType(session)
+                if(payload.user === "admin"){
+                    try {
+                        const {companies} = JSON.parse(req.body);
+                        const {data, errors} = await doMultiDeleteQueries(companies, table_name);
+                        res.status(200).json({data, errors});
+                    } catch (error) {
+                        res.status(500).json({errors: [{error:error.message}]});
+                    }
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]})
+                break;
         }
     }else {
         res.redirect("/401", 401);

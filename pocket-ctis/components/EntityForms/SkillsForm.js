@@ -2,10 +2,11 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { craftUrl } from '../../helpers/urlHelper'
 import Select from 'react-select'
 import * as Yup from 'yup'
+import {toast} from "react-toastify";
 
 const selectStyles = {
   control: (provided, state) => ({
@@ -43,13 +44,18 @@ const SkillsForm = () => {
       skill_name: Yup.string().required('Skill name is required'),
       skill_type_name: Yup.object().required('Skill Type is required'),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+      await onSubmitHandler(values)
     },
   })
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
+  const onSubmitHandler = async (values) => {
+    values.skill_type_id = values.skill_type_name.value;
+    const res = await _submitFetcher('POST', craftUrl(['skills']), {skills: [values]})
+    if(!res.data?.length || res.errors.length){
+      toast.error(res.errors[0].error)
+    }
+    else toast.success("Skill successfully added")
   }
 
   return (

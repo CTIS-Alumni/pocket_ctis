@@ -2,7 +2,7 @@ import {
     buildSelectQueries, buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
     insertToUserTable, updateTable,
 } from "../../../../helpers/dbHelpers";
-import  limitPerUser from '../../../../config/moduleConfig.js';
+import modules from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 
 const field_conditions = {
@@ -46,9 +46,9 @@ const validation = (data) => {
     if(endDate && data.is_current) //if its ongoing it cant have endDate
         return "Can't submit an end date for ongoing job!";
     if(data.is_current !== 0 && data.is_current !== 1)
-        return "Invalid Values!";
+        return "Invalid values for ongoing!";
     if(data.visibility !== 0 && data.visibility !== 1)
-        return "Invalid Values!";
+        return "Invalid values for visibility!";
     return true;
 }
 
@@ -57,7 +57,6 @@ export default async function handler(req, res){
     const payload = await checkUserType(session, req.query);
 
     if(payload?.user === "admin" || payload?.user === "owner") {
-        const work_records = JSON.parse(req.body);
         const {user_id} = req.query;
         field_conditions.user.user_id = user_id;
         const method = req.method;
@@ -65,9 +64,10 @@ export default async function handler(req, res){
         switch (method) {
             case "POST":
                 try {
+                    const work_records = JSON.parse(req.body);
                     const select_queries = buildSelectQueries(work_records, table_name,field_conditions);
                     const queries = buildInsertQueries(work_records, table_name, fields, user_id);
-                    const {data, errors} = await insertToUserTable(queries, table_name, validation,  select_queries, limitPerUser.work_records);
+                    const {data, errors} = await insertToUserTable(queries, table_name, validation,  select_queries, modules.user_profile_data.work_records.limit_per_user);
                     res.status(200).json({data, errors});
                 } catch (error) {
                     res.status(500).json({errors: [{error:error.message}]});
@@ -75,6 +75,7 @@ export default async function handler(req, res){
                 break;
             case "PUT":
                 try {
+                    const work_records = JSON.parse(req.body);
                     const queries = buildUpdateQueries(work_records, table_name, fields);
                     const select_queries = buildSelectQueries(work_records, table_name,field_conditions);
                     const {data, errors} = await updateTable(queries, validation, select_queries);
@@ -85,6 +86,7 @@ export default async function handler(req, res){
                 break;
             case "DELETE":
                 try {
+                    const work_records = JSON.parse(req.body);
                     const {data, errors} = await doMultiDeleteQueries(work_records, table_name);
                     res.status(200).json({data, errors});
                 } catch (error) {

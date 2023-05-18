@@ -2,16 +2,17 @@ import {
     addAndOrWhere,
     buildInsertQueries,
     buildSearchQuery, buildSelectQueries,
-    doMultiQueries, doqueryNew,
+    doMultiQueries,
     insertToUserRelatedTable
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
-import limitPerUser from "../../config/moduleConfig";
+import modules from "../../config/moduleConfig";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
 
 const columns = {
-    user: "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
+    user: " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
+        "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  ",
     inst_name: "ei.edu_inst_name",
     country: "co.country_name",
     city: "ci.city_name"
@@ -64,8 +65,8 @@ const handler =  async (req, res) => {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT e.id, e.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name, " +
-                        "e.edu_inst_id, ei.edu_inst_name, ei.city_id, ci.city_name, ci.country_id, co.country_name, e.semester, e.start_date, e.end_date, e.rating, e.opinion, e.visibility as 'record_visibility' " +
+                    let query = "SELECT e.id, e.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.first_name, u.last_name, " +
+                        "e.edu_inst_id, ei.edu_inst_name, ei.city_id, ci.city_name, ci.country_id, co.country_name, e.semester, e.start_date, e.end_date, e.rating, e.opinion, " +
                         "FROM erasmusrecord e JOIN users u on (e.user_id = u.id) " +
                         "JOIN userprofilepicture upp ON (e.user_id = upp.user_id) " +
                         "JOIN useraccounttype uat ON (uat.user_id = e.user_id) " +
@@ -84,12 +85,7 @@ const handler =  async (req, res) => {
                         length_values.push(payload.user_id);
                     }
 
-                    ({query, length_query} = await buildSearchQuery(req, query, values, length_query, length_values, columns));
-
-                    if(query.includes("LIMIT")){
-                        const split_limit = query.split("LIMIT");
-                        query = split_limit[0] + " GROUP BY e.id LIMIT " + split_limit[1];
-                    }else query += " GROUP BY e.id ";
+                    ({query, length_query} = await buildSearchQuery(req, query, values, length_query, length_values, columns, "e.id"));
 
                     const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
                         {name: "length", query: length_query, values: length_values}]);
@@ -106,7 +102,7 @@ const handler =  async (req, res) => {
                         const {erasmus} = JSON.parse(req.body);
                         const queries = buildInsertQueries(erasmus, table_name, fields);
                         const select_queries = buildSelectQueries(erasmus, table_name,field_conditions);
-                        const {data, errors} = await insertToUserRelatedTable(queries, table_name, validation, select_queries, limitPerUser.erasmus);
+                        const {data, errors} = await insertToUserRelatedTable(queries, table_name, validation, select_queries, modules.user_profile_data.erasmus.limit_per_user);
                         res.status(200).json({data, errors})
 
                     } catch (error) {

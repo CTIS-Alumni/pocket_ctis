@@ -3,7 +3,7 @@ import {
     updateTable,
     insertToUserTable
 } from "../../../../helpers/dbHelpers";
-import  limitPerUser from '../../../../config/moduleConfig.js';
+import modules from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 
@@ -49,11 +49,11 @@ const validation = (data) => {
     if(endDate && data.is_current)
         return "Can't submit an end date for ongoing education!";
     if(data.visibility !== 0 && data.visibility !== 1)
-        return "Invalid Values!";
+        return "Invalid values for visibility!";
     if(data.is_current !== 0 && data.is_current !== 1)
-        return "Invalid Values!";
+        return "Invalid values for ongoing!";
     if(data.gpa < 0 || data.gpa > 4)
-        return "Invalid Values!";
+        return "Invalid values for gpa!";
     return true;
 }
 
@@ -61,16 +61,16 @@ export default async function handler(req, res) {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if(payload?.user === "admin" || payload?.user === "owner") {
-        const edu_records = JSON.parse(req.body);
         const {user_id} = req.query;
         field_conditions.user.user_id = user_id;
         const method = req.method;
         switch (method) {
             case "POST":
                 try {
+                    const edu_records = JSON.parse(req.body);
                     const queries = buildInsertQueries(edu_records, table_name, fields ,user_id);
                     const select_queries = buildSelectQueries(edu_records, table_name,field_conditions);
-                    const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, limitPerUser.education_records);
+                    const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, modules.user_profile_data.education_records.limit_per_user);
                     res.status(200).json({data, errors});
 
                 } catch (error) {
@@ -79,6 +79,7 @@ export default async function handler(req, res) {
                 break;
             case "PUT":
                 try {
+                    const edu_records = JSON.parse(req.body);
                     const queries = buildUpdateQueries(edu_records, table_name, fields);
                     const select_queries = buildSelectQueries(edu_records, table_name,field_conditions);
                     const {data, errors} = await updateTable(queries, validation, select_queries);
@@ -89,6 +90,7 @@ export default async function handler(req, res) {
                 break;
             case "DELETE":
                 try {
+                    const edu_records = JSON.parse(req.body);
                     const {data, errors} = await doMultiDeleteQueries(edu_records, table_name);
                     res.status(200).json({data, errors});
 

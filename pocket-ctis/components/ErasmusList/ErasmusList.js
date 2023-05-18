@@ -10,6 +10,7 @@ import {
 import SearchBar from '../SearchBar/SearchBar'
 import styles from './ErasmusList.module.scss'
 import React from "react";
+import {getProfilePicturePath} from "../../helpers/formatHelpers";
 
 const ErasmusList = ({ erasmus }) => {
   return (
@@ -42,7 +43,7 @@ const ErasmusList = ({ erasmus }) => {
                     >
                       <div style={{ width: '100%' }}>
                           <div>
-                              <img alt={erasmus.first_name} className={styles.user_avatar_48} src={'/profilepictures/'+(erasmus.record_visibility ? (erasmus.pic_visibility ? erasmus.profile_picture : "defaultuser") : "defaultuser") +'.png'}/>
+                              <img alt={erasmus.first_name} className={styles.user_avatar_48} src={getProfilePicturePath(erasmus.profile_picture)}/>
                           </div>
                         <div className='d-flex justify-content-between '>
                           <h5>{`${erasmus.first_name} ${erasmus.last_name} - ${erasmus.edu_inst_name}`}</h5>

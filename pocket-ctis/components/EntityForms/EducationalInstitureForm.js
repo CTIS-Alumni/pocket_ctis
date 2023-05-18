@@ -2,12 +2,13 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
-import { _getFetcher } from '../../helpers/fetchHelpers'
-import { craftUrl } from '../../helpers/urlHelper'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { Check2Square, Square } from 'react-bootstrap-icons'
 import { Location_data } from '../../context/locationContext'
+import {_submitFetcher} from "../../helpers/fetchHelpers";
+import {craftUrl} from "../../helpers/urlHelper";
+import {toast} from "react-toastify";
 
 const selectStyles = {
   control: (provided, state) => ({
@@ -20,10 +21,11 @@ const selectStyles = {
   }),
 }
 
-const EducationalInstitureForm = () => {
+const EducationalInstitureForm = ({ activeItem }) => {
   const [countries, setCountries] = useState([])
   const [cities, setCities] = useState([])
   const { locationData } = useContext(Location_data)
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   useEffect(() => {
     setCountries(
@@ -34,6 +36,26 @@ const EducationalInstitureForm = () => {
     )
   }, [locationData])
 
+  useEffect(() => {
+    if (activeItem) {
+      formik.setValues({
+        edu_inst_name: activeItem.edu_inst_name,
+        city_id: {
+          value: `${activeItem.city_id}-${activeItem.city_name}`,
+          label: activeItem.city_name,
+        },
+        country: {
+          value: `${activeItem.country_id}-${activeItem.country_name}`,
+          label: activeItem.country_name,
+        },
+        is_erasmus: activeItem.is_erasmus,
+      })
+    } else {
+      setRefreshKey(Math.random().toString(36))
+      formik.resetForm()
+    }
+  }, [activeItem])
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -43,26 +65,34 @@ const EducationalInstitureForm = () => {
       is_erasmus: true,
     },
     validationSchema: Yup.object({
-      edu_inst_name: Yup.string().required('Institure name is required'),
+      edu_inst_name: Yup.string().required('Institute name is required'),
       country: Yup.object().required('Country is required'),
       city_id: Yup.object().required('City is required'),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+      await onSubmitHandler(values)
     },
   })
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
+  const onSubmitHandler = async (values) => {
+    values.city_id = values.city_id.value;
+    values.is_erasmus = values.is_erasmus ? 1 : 0;
+
+    const res = await _submitFetcher('POST', craftUrl(['educationinstitutes']), {educationinstitutes: [values]})
+    if(!res.data?.length || res.errors.length){
+      toast.error(res.errors[0].error)
+    }
+    else toast.success("Education institute successfully added")
   }
+
   return (
     <div>
       <h5>Educational Institure Form</h5>
       <Container>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>
-              Educationa Institute Name
+              Educational Institute Name
             </label>
             <input
               className={styles.inputField}
@@ -85,6 +115,7 @@ const EducationalInstitureForm = () => {
               value={formik.values.country}
               onChange={(val) => {
                 formik.setFieldValue('country', val)
+                formik.setFieldValue('city_id', null)
                 const temp = locationData[val.value].map((l) => {
                   const [city_id, city_name] = l.split('-')
                   return { value: city_id, label: city_name }

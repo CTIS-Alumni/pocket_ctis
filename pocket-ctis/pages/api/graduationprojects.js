@@ -10,7 +10,7 @@ import {checkApiKey} from "./middleware/checkAPIkey";
 const columns = {
     project_name: "g.graduation_project_name",
     company: "c.company_name",
-    advisor: "CONCAT(u.first_name, ' ', u.nee, ' ', u.last_name)",
+    advisor: "CONCAT(u.first_name, ' ', '%' ,' ', u.last_name)",
     year: "g.project_year"
 }
 

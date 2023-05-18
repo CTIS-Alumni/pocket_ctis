@@ -1,4 +1,5 @@
 import styles from './PeopleWishingList.module.scss'
+import {getProfilePicturePath} from "../../../helpers/formatHelpers";
 
 const PeopleWishingList = ({ peopleWishing }) => {
   return (
@@ -16,11 +17,7 @@ const PeopleWishingList = ({ peopleWishing }) => {
                   style={{
                     backgroundImage:
                       'url(' +
-                      '/profilepictures/' +
-                      (person.pic_visibility
-                          ? person.profile_picture
-                          : 'defaultuser') +
-                      '.png' +
+                        getProfilePicturePath(person.profile_pcture) +
                       ')',
                   }}
                 />

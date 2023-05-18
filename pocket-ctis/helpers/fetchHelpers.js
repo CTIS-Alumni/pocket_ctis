@@ -59,6 +59,7 @@ export const logout = async (queryParams = null) => {
 
 export const _getFetcher = async (apis,  cookies = null) => { // [{name: url}, {name: url}]
     let results = {}
+    console.log("here are the apis", apis);
     try{
         await Promise.all(Object.entries(apis).map(async ([api, url])=>{
             const res = await fetch(craftUrl(['proxy']), {
@@ -71,8 +72,9 @@ export const _getFetcher = async (apis,  cookies = null) => { // [{name: url}, {
             });
             if(res)
                 results[api] = await res.json();
-            else throw {error: "Failed to fetch data"};
+            else throw {message: "Failed to fetch data"};
         }));
+        console.log(results);
         return results;
     }catch(error){
         return {errors: [{error: error.message}]};

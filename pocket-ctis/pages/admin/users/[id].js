@@ -157,7 +157,6 @@ const AdminUserView = ({ user }) => {
     }else{
       const formData = new FormData();
       formData.append('profile_picture', basic_info[0].id);
-      formData.append('visibility', 0);
       formData.append('image', profileImage);
 
       const res = await _submitFile('PUT', craftUrl(['users', basic_info[0].id, 'profilepicture']),  formData);

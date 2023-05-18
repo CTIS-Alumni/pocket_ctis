@@ -28,7 +28,7 @@ export const addAndOrWhere = (query, condition) => {
     return full_condition;
 }
 
-export const buildSearchQuery = async (req, query, values, length_query, length_values, columns) => {
+export const buildSearchQuery = async (req, query, values, length_query, length_values, columns, group_by = null) => {
     if(req.query.searchcol && req.query.search){
         const cols = req.query.searchcol.split(",");
         let searchColumns = [];
@@ -49,6 +49,9 @@ export const buildSearchQuery = async (req, query, values, length_query, length_
         query = query.slice(0,-3) + ") ";
         length_query = length_query.slice(0,-3) + ") ";
     }
+
+    if(group_by)
+        query += " GROUP BY " + group_by + " ";
 
     if (req.query.column && columns.hasOwnProperty(req.query.column) && req.query.order && (req.query.order === "asc" ||req.query.order === "desc")) {
         query += "ORDER BY " + columns[req.query.column] + " " + req.query.order + " ";
@@ -164,12 +167,13 @@ export function buildUpdateQueries(data, table, fields){
 }
 
 export const getCountForUser = async (connection, table, user_id) => { //gets the count of records a user has in a certain table, used for checking limits
-    const query = "SELECT COUNT(id) as count FROM " + table + " WHERE user_id = ? ";
+    const query = "SELECT COUNT(*) as count FROM " + table + " WHERE user_id = ? ";
     const [count_res] = await connection.execute(query, [user_id]);
     return count_res[0].count;
 }
 
 export const doqueryNew = async ({query, values = [], namedPlaceholders = false}) => {
+    console.log("why is it wrong", query, values);
     const connection = await createDBConnection(namedPlaceholders);
     try {
         const [data] = await connection.execute(query, values);
@@ -189,6 +193,25 @@ export const doquery = async ({query, values = []}) => {
     } catch (error) {
         return {error};
     }
+}
+
+export const buildSingleInsertQuery = (data, fields, table) => {
+    let query = `INSERT INTO ${table} (`  +
+        `${fields.basic.concat(fields.date).join(", ")}) values (` +
+        fields.basic.map(field => `:${field}`).join(", ") + ", ";
+
+    fields.date.forEach((field) => {
+        data[field] = reFormatDate(data[field]);
+        if(data[field]){
+            if(data[field].includes("T")) {
+                data[field] = data[field].split("T")[0] + "T" + "00:00:00.000Z"
+            }
+            query += `STR_TO_DATE(:${field}, '%Y-%m-%dT%H:%i:%s.000Z'), `;
+        }
+        else query += `:${field}, `;
+    });
+    query = query.slice(0, -2) + ")"
+    return query;
 }
 
 export const doMultiQueries = async (queries, namedplaceholders = false) => {
@@ -261,7 +284,8 @@ export async function updateTable(queries, validation, select_queries = []) {//p
             }
             }else errors.push({name: query.name, error: is_valid})
         }catch(error){
-            errors.push({name: query.name, error: error.message, queries, select_queries});
+            error.message = handleDBErrorMessage(error);
+            errors.push({index: index, error: error.message});
         }
     }
     connection.end();
@@ -276,11 +300,12 @@ export const insertWithImage = async (query, obj, validation, file_objs, targetW
     try{
         await connection.beginTransaction();
 
-        let is_valid = validation(obj); //checks for both type fields and user fields
-        if (is_valid !== true)
-            throw {message: is_valid};
-
-
+        let is_valid = true;
+        if(typeof validation === "function"){
+            is_valid = validation(obj); //checks for both type fields and user fields
+            if (is_valid !== true)
+                throw {message: is_valid};
+        }
         const [res] = await connection.execute(query, obj);
 
         for(const [key, value] of Object.entries(file_objs)){

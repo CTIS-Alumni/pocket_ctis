@@ -38,12 +38,12 @@ const DataInsertion = () => {
         });
     }
 
-    let is_submitted = false;
     let mail_results = {};
     let completed_users = {};
 
     const sendMail = async (user, index = null, type) => {
         const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id: user?.inserted?.user_id ||  success[index], type: type})
+        console.log(res);
         mail_results[user?.index ||index] = {id: user?.inserted?.id || success[index], index: user?.index || index, data: res.data, errors: res.errors};
         updateMailResults();
         completed_users[user?.inserted?.user_id ||  success[index]] = {data: res.data, errors: res.errors};
@@ -61,7 +61,6 @@ const DataInsertion = () => {
         setSuccess(null)
         setMailResults(null)
         if(file){
-            is_submitted = false;
             Papa.parse(file, {
                 header: true,
                 encoding: 'utf-8',
@@ -76,16 +75,19 @@ const DataInsertion = () => {
                     toast.error("An error occured while parsing file")
                 }
             })
-        }
+        }else toast.error("Please select a file!")
     }
 
 
 
   const onSubmitHandler = async (values) => {
+        if(!file){
+            toast.error("Please select a file and preview it before submitting!");
+            return;
+        }
         setType(values.dataType);
       setErrors(null)
       setMailResults(null)
-      is_submitted = true;
       mail_results = {};
 
       const res = await _submitFetcher("POST", craftUrl([values.dataType], [{name: "csv", value: 1}]), {[values.dataType]: rows})
@@ -93,6 +95,7 @@ const DataInsertion = () => {
       res.data.forEach((d) => {
           success_map[d.index] = d.inserted?.user_id || d.inserted?.id
       })
+
       setSuccess(success_map);
       if(Object.keys(success_map).length === 0)
           toast.error("An error occured while uploading file")
@@ -101,6 +104,7 @@ const DataInsertion = () => {
       res.errors.forEach((err) => {
           errors_map[err.index || 0] = err.error;
       })
+
       setErrors(errors_map);
       if(Object.keys(errors_map).length === 0 && Object.keys(success_map).length === rows.length)
           toast.success("All records uploaded successfully")
@@ -128,6 +132,10 @@ const DataInsertion = () => {
           if(Object.keys(mail_results).length === rows.length)
               toast.success("All emails were sent successfully")
       }
+
+      console.log("success:", success);
+      console.log("errors:", errors)
+      console.log("mail_results:", mail_results)
   }
 
   return (
@@ -219,23 +227,24 @@ const DataInsertion = () => {
                                   </td>
                               );
                           })}
-                          {errors && <td>{errors[index] || !success[index] ? errors[index] : ( Object.keys(errors).length === 1 ?
+                          {errors && <td>{errors[index] && !success[index] ? errors[index] : (success === {} && Object.keys(errors).length === 1 ?
                               <Exclamation size={30} color="red"/>
                               :
                               <Check size={30} color="lightgreen"/>
                           )}</td>}
                           {mailResults && <td>
-                              {mailResults[index]?.errors?.length === 0 ?
+                              {mailResults[index] && mailResults[index]?.errors == undefined ?
                                   <Check size={30} color="lightgreen"/>
-                                  : (!mailResults[index] ?
-                                      <ClockFill size={20} color="lightblue"/> :
-                                      <ArrowRepeat style={{cursor: 'pointer'}} onClick={ async ()=> {
-                                          mail_results[index] = false;
-                                          updateMailResults();
-                                          if(type !== "users")
-                                              await sendMail(null, index, type);
-                                          else await sendUserMail(null, index)
-                              }} size={27} color="red"/>) }
+                                  : (!mailResults[index] && success[index] ?
+                                      <ClockFill size={20} color="lightblue"/> : (errors[index] ? <Exclamation size={30} color="red"/> :
+                                              <ArrowRepeat style={{cursor: 'pointer'}} onClick={ async ()=> {
+                                              mail_results[index] = false;
+                                              updateMailResults();
+                                              if(type !== "users")
+                                                  await sendMail(null, index, type);
+                                              else await sendUserMail(null, index)
+                                          }} size={27} color="red"/>)
+                                      ) }
                           </td>}
                       </tr>
                   );

@@ -1,40 +1,27 @@
 import {
-    addAndOrWhere,
-    insertToUserRelatedTable,
-    buildInsertQueries, buildSelectQueries, buildSearchQuery, doMultiQueries, doqueryNew, doMultiDeleteQueries
+    buildSearchQuery,
+    doMultiDeleteQueries, doMultiQueries, doqueryNew
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
-import limitPerUser from "../../config/moduleConfig";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
 
-const fields = {
-    basic: ["company_id", "department", "semester"],
-    date: ["start_date", "end_date"]
-};
+const columns = {
+    user: "CONCAT(u.first_name, ' ', '%' ,' ', u.last_name)",
+    description: ""
+}
 
 const table_name = "request";
 
 const validation = (data) => {
     replaceWithNull(data);
-    const currentDate = new Date();
-    const startDate = data.start_date ? new Date(data.start_date) : null;
-    const endDate = data.end_date ? new Date(data.end_date) : null;
 
     if(isNaN(parseInt(data.user_id)))
         return "User ID must be a number!";
-    if(isNaN(parseInt(data.company_id)))
-        return "Company ID must be a number!";
-    if(!data.semester)
-        return "Semester can't be empty!";
-    if(!data.department)
-        return "Department can't be empty!";
-    if(!startDate)
-        return "Please enter a start date!";
-    if (endDate && startDate > endDate)
-        return "Start Date can't be after End Date!";
-    if((endDate && endDate > currentDate) || (startDate && startDate > currentDate))
-        return "Dates can't be after current date!";
+    if(!data.type)
+        return "Request type can't be empty!";
+    if(!data.description)
+        return "Request description can't be empty!";
     return true;
 }
 
@@ -45,10 +32,56 @@ const handler =  async (req, res) => {
         const method = req.method;
         switch (method) {
             case "GET":
+                try {
+                    let values = [], length_values = [];
+                    let query = "SELECT u.id, u.first_name, u.last_name, r.type, r.description, r.request_date, r.is_closed FROM request r " +
+                        "LEFT OUTER JOIN users u ON (u.id = r.user_id) "
+                    let length_query = "SELECT COUNT(*) as count FROM request ";
+
+
+                    ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
+
+                    const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
+                        {name: "length", query: length_query, values: length_values}]);
+
+                    res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
+                } catch (error) {
+                    res.status(500).json({errors: [{error: error.message}]});
+                }
+                break;
+
+            case "POST":
+                if(session.payload.mode === "user") {
+                    try {
+                        const {request} = JSON.parse(req.body);
+                        const is_valid = validation(request);
+                        if(is_valid !== true)
+                            throw {message: is_valid};
+
+                        const query = "INSERT INTO request (user_id, type, description) values (?,?,?) ";
+                        const {data, errors} = await doqueryNew({query: query, values: [payload.user_id, request.type, request.description]});
+                        res.status(200).json({data, errors});
+
+                    } catch (error) {
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
+                break;
 
                 break;
             case "PUT":
+                if(session.payload.mode === "admin") {
+                    try {
+                        const {request} = JSON.parse(req.body);
 
+                        const query = "UPDATE request SET is_closed = ? WHERE id = ? ";
+                        const {data, errors} = await doqueryNew({query: query, values: [request.is_closed, request.id]});
+                        res.status(200).json({data, errors});
+
+                    } catch (error) {
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case 'DELETE':
                 try {

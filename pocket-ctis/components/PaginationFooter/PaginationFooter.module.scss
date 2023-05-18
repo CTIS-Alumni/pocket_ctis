@@ -1,0 +1,54 @@
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 12px;
+
+    div{
+        display: flex;
+        align-items: center;
+    }
+
+    span {
+        color: black;
+        float: left;
+        padding: 6px 10px;
+        text-decoration: none;
+      }
+      
+    span.active {
+        background-color: rgba(37, 45, 49, 0.75);
+        color: rgb(255, 255, 255);
+        border-radius: 5px;
+        border: solid 1px rgba(66, 66, 66, 0.93);
+      }
+      
+    span:hover:not(.active) {
+        background-color: #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .hide{
+        visibility: hidden;
+        position: absolute;
+        left: 30%;
+        top: 30%
+    }
+    .ellipsis{
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s;
+        &:hover > .hide{
+            visibility: visible;
+        }
+        &:hover > .ellipsisIcon{
+            visibility: hidden;
+        }
+    }
+
+    select{
+        padding: 0 5px;
+    }
+
+}

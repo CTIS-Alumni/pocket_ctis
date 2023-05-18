@@ -1,5 +1,5 @@
 import styles from './PeopleList.module.scss'
-import { getTimePeriod } from '../../../helpers/formatHelpers'
+import {getProfilePicturePath, getTimePeriod} from '../../../helpers/formatHelpers'
 import Link from 'next/link'
 
 const PeopleList = ({ people }) => {
@@ -21,11 +21,7 @@ const PeopleList = ({ people }) => {
                     style={{
                       backgroundImage:
                         'url(' +
-                        '/profilepictures/' +
-                        (person.pic_visibility
-                            ? person.profile_picture
-                            : 'defaultuser') +
-                        '.png' +
+                        getProfilePicturePath(person.profile_pcture) +
                         ')',
                     }}
                   />

@@ -2,11 +2,13 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { craftUrl } from '../../helpers/urlHelper'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { Check2Square, Square } from 'react-bootstrap-icons'
+import {replaceWithNull} from "../../helpers/submissionHelpers";
+import {toast} from "react-toastify";
 
 const selectStyles = {
   control: (provided, state) => ({
@@ -19,8 +21,9 @@ const selectStyles = {
   }),
 }
 
-const CompanyForm = () => {
+const CompanyForm = ({ activeItem }) => {
   const [sectors, setSectors] = useState([])
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   useEffect(() => {
     _getFetcher({ sectors: craftUrl(['sectors']) })
@@ -34,6 +37,22 @@ const CompanyForm = () => {
       .catch((err) => console.log(err))
   }, [])
 
+  useEffect(() => {
+    if (activeItem) {
+      formik.setValues({
+        company_name: activeItem.company_name,
+        sector_id: {
+          value: activeItem.sector_id,
+          label: activeItem.sector_name,
+        },
+        is_internship: activeItem.is_internship,
+      })
+    } else {
+      setRefreshKey(Math.random().toString(36))
+      formik.resetForm()
+    }
+  }, [activeItem])
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -45,20 +64,26 @@ const CompanyForm = () => {
       company_name: Yup.string().required(),
       sector_id: Yup.object().required(),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (values) => {
+      await onSubmitHandler(values)
     },
   })
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
+  const onSubmitHandler = async (values) => {
+    values.sector_id = values.sector_id.value;
+    values.is_internship = values.is_internship ? 1 : 0;
+    const res = await _submitFetcher('POST', craftUrl(['companies']), {companies: [values]})
+    if(!res.data?.length || res.errors.length){
+      toast.error(res.errors[0].error)
+    }
+    else toast.success("Company successfully added")
   }
 
   return (
     <div>
       <h5>Company</h5>
       <Container>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>Company Name</label>
             <input

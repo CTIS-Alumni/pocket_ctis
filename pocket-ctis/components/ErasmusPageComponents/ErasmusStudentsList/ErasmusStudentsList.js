@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getTimePeriod, getSemester } from '../../../helpers/formatHelpers'
+import {getTimePeriod, getSemester, getProfilePicturePath} from '../../../helpers/formatHelpers'
 import styles from './ErasmusStudentsList.module.scss'
 import ReactStars from "react-stars";
 
@@ -22,11 +22,7 @@ const ErasmusStudentsList = ({ erasmus }) => {
                   style={{
                     backgroundImage:
                       'url(' +
-                      '/profilepictures/' +
-                      (record.pic_visibility
-                          ? record.profile_picture
-                          : 'defaultuser') +
-                      '.png' +
+                      getProfilePicturePath(record.profile_picture) +
                       ')',
                   }}
                 />

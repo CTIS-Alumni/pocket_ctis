@@ -1,7 +1,7 @@
 import NavigationBar from '../../../components/navbar/NavigationBar'
 import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { Container, Badge, ListGroup, ListGroupItem } from 'react-bootstrap'
-import { getTimePeriod } from '../../../helpers/formatHelpers'
+import {getProfilePicturePath, getTimePeriod} from '../../../helpers/formatHelpers'
 import styles from '../../../styles/companies.module.scss'
 import React from 'react'
 import { BuildingFill } from 'react-bootstrap-icons'
@@ -53,7 +53,7 @@ const Company = ({ company, users }) => {
                 <div>
                   <div
                     className='user_avatar_48'
-                    style={{backgroundImage: "url(" + '/profilepictures/' + (user.pic_visibility ? user.profile_picture : "defaultuser") + '.png' + ")"}}
+                    style={{backgroundImage: "url(" + getProfilePicturePath(user.profile_pcture) + ")"}}
                   />
 
                   <div className={styles.company_people_item_info}>

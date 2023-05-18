@@ -1,6 +1,6 @@
 import {
-    addAndOrWhere,
-    buildUpdateQueries, createUser, createUsersWithCSV, doMultiDeleteQueries, doqueryNew,
+    addAndOrWhere, buildSearchQuery,
+    buildUpdateQueries, createUser, createUsersWithCSV, doMultiDeleteQueries, doMultiQueries, doqueryNew,
     updateTable,
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
@@ -8,6 +8,13 @@ import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
 
 const table_name = "users";
+
+const columns = {
+    user: " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
+        "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  ",
+    type: " user_types LIKE CONCAT('%', ?, '%') ",
+
+}
 
 const validation = (data) => {
     const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -98,80 +105,108 @@ const handler =  async (req, res) => {
             case "GET":
                 if(req.query.advisors){
                     try{
-                        const query = "SELECT u.id, u.first_name, u.last_name FROM users u JOIN useraccounttype act ON u.id = act.user_id WHERE act.type_id = 3";
+                        const query = "SELECT u.id, u.first_name, u.nee, u.last_name FROM users u JOIN useraccounttype act ON u.id = act.user_id WHERE act.type_id = 3"
                         const {data, errors} = await doqueryNew({query: query, values: []});
                         res.status(200).json({data, errors});
                     }catch(error){
-                        res.status(500).json({errors: [{error: error.message}]});
-                    }
-                }else if(req.query.students){
-                    try{
-                        const query = "SELECT u.id, u.bilkent_id, u.first_name, u.last_name FROM users u JOIN useraccounttype act ON u.id = act.user_id WHERE act.type_id = 1";
-                        const {data, errors} = await doqueryNew({query: query, values: []});
-                        res.status(200).json({data, errors});
-                    }catch(error){
-                        res.status(500).json({errors: [{error: error.message}]});
-                    }
-                } else{
-                    try{
-                        let values = [];
-                        let query = "SELECT GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.id, upp.profile_picture, upp.visibility as 'pic_visibility', u.first_name, u.last_name" +
-                            " FROM users u JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
-                            "JOIN useraccounttype uat ON (uat.user_id = u.id) " +
-                            "JOIN accounttype act ON (act.id = uat.type_id) ";
-
-                        if (req.query.highschool_id) {
-                            query += "LEFT OUTER JOIN userhighschool uhs ON (uhs.user_id = u.id) WHERE ";
-                            if (payload.user !== "admin") {
-                                query += " uhs.high_school_id = ? AND (uhs.visibility = 1 OR uhs.user_id = ?)";
-                                values.push(req.query.highschool_id, payload.user_id);
-                            } else {
-                                query += " uhs.high_school_id = ? ";
-                                values.push(req.query.highschool_id);
-                            }
-                        }
-
-                        if (req.query.wantsector_id) { //for a specific sectors page
-                            query += "LEFT OUTER JOIN userwantsector uws ON (uws.user_id = u.id) WHERE ";
-                            if (payload.user !== "admin") {
-                                query += " uws.sector_id = ? AND (uws.visibility = 1 OR uws.user_id = ?) ";
-                                values.push(req.query.wantsector_id, payload.user_id);
-                            } else {
-                                query += " uws.sector_id = ? ";
-                                values.push(req.query.wantsector_id);
-                            }
-                        }
-
-                        if (req.query.society_id) {
-                            query += "LEFT OUTER JOIN userstudentsociety uss ON (uss.user_id = u.id) WHERE ";
-                            if (payload.user !== "admin") {
-                                query += " uss.society_id = ? AND (uss.visibility = 1 OR uss.user_id = ?) ";
-                                values.push(req.query.society_id, payload.user_id);
-                            } else {
-                                query += " uss.society_id = ? ";
-                                values.push(req.query.society_id);
-                            }
-
-                        }
-
-                        if (req.query.project_id) {
-                            query += " LEFT OUTER JOIN usergraduationproject ugp ON (ugp.user_id = u.id) WHERE ugp.graduation_project_id = ? ";
-                            values.push(req.query.project_id);
-                        }
-
-                        if (req.query.name) { //for general search
-                            query += addAndOrWhere(query, " CONCAT(u.first_name, ' ', u.nee, ' ', u.last_name) LIKE CONCAT('%',?,'%') ");
-                            values.push(req.query.name);
-                        }
-
-                        query += " GROUP BY uat.user_id ORDER BY u.first_name ASC";
-
-                        const {data, errors} = await doqueryNew({query: query, values: values});
-                        res.status(200).json({data, errors});
-                    } catch (error) {
                         res.status(500).json({errors: [{error: error.message}]});
                     }
                 }
+                else if(req.query.students){
+                    try{
+                        const query = "SELECT u.id, u.bilkent_id, u.first_name, u.nee, u.last_name FROM users u JOIN useraccounttype act ON u.id = act.user_id WHERE act.type_id = 1";
+                        const {data, errors} = await doqueryNew({query: query, values: []});
+                        res.status(200).json({data, errors});
+                    }catch(error){
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                }
+                else{
+                try {
+                    let values = [], length_values = [], length_query = "";
+                    let query = "SELECT GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.id, " +
+                        "upp.profile_picture, u.first_name, u.last_name ";
+
+                    const add = " FROM users u JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
+                        "JOIN useraccounttype uat ON (uat.user_id = u.id) " +
+                        "JOIN accounttype act ON (act.id = uat.type_id) ";
+
+                    query += add;
+                    length_query = "SELECT COUNT(*) " + add;
+
+                    if (req.query.highschool_id) {
+                        query += "LEFT OUTER JOIN userhighschool uhs ON (uhs.user_id = u.id) WHERE ";
+                        length_query += "LEFT OUTER JOIN userhighschool uhs ON (uhs.user_id = u.id) WHERE ";
+                        if (payload.user !== "admin") {
+                            query += " uhs.high_school_id = ? AND (uhs.visibility = 1 OR uhs.user_id = ?)";
+                            length_query += " uhs.high_school_id = ? AND (uhs.visibility = 1 OR uhs.user_id = ?)";
+                            values.push(req.query.highschool_id, payload.user_id);
+                            length_values.push(req.query.highschool_id, payload.user_id);
+                        } else {
+                            query += " uhs.high_school_id = ? ";
+                            length_query += " uhs.high_school_id = ? ";
+                            values.push(req.query.highschool_id);
+                            length_values.push(req.query.highschool_id);
+                        }
+                    }
+
+                    if (req.query.wantsector_id) { //for a specific sectors page
+                        query += "LEFT OUTER JOIN userwantsector uws ON (uws.user_id = u.id) WHERE ";
+                        length_query += "LEFT OUTER JOIN userwantsector uws ON (uws.user_id = u.id) WHERE ";
+                        if (payload.user !== "admin") {
+                            query += " uws.sector_id = ? AND (uws.visibility = 1 OR uws.user_id = ?) ";
+                            length_query += " uws.sector_id = ? AND (uws.visibility = 1 OR uws.user_id = ?) ";
+                            values.push(req.query.wantsector_id, payload.user_id);
+                            length_values.push(req.query.wantsector_id, payload.user_id);
+                        } else {
+                            query += " uws.sector_id = ? ";
+                            length_query += " uws.sector_id = ? ";
+                            values.push(req.query.wantsector_id);
+                            length_values.push(req.query.wantsector_id);
+                        }
+                    }
+
+                    if (req.query.society_id) {
+                        query += "LEFT OUTER JOIN userstudentsociety uss ON (uss.user_id = u.id) WHERE ";
+                        length_query += "LEFT OUTER JOIN userstudentsociety uss ON (uss.user_id = u.id) WHERE ";
+                        if (payload.user !== "admin") {
+                            query += " uss.society_id = ? AND (uss.visibility = 1 OR uss.user_id = ?) ";
+                            length_query += " uss.society_id = ? AND (uss.visibility = 1 OR uss.user_id = ?) ";
+                            values.push(req.query.society_id, payload.user_id);
+                            length_values.push(req.query.society_id, payload.user_id);
+                        } else {
+                            query += " uss.society_id = ? ";
+                            length_query += " uss.society_id = ? ";
+                            values.push(req.query.society_id);
+                            length_values.push(req.query.society_id);
+                        }
+
+                    }
+
+                    if (req.query.project_id) {
+                        query += " LEFT OUTER JOIN usergraduationproject ugp ON (ugp.user_id = u.id) WHERE ugp.graduation_project_id = ? ";
+                        values.push(req.query.project_id);
+                    }
+
+                    if (req.query.name) { //for general search
+                        query += addAndOrWhere(query, " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
+                            "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  " );
+                        values.push(req.query.name);
+                        values.push(req.query.name);
+                    }
+
+                    ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns, "uat.user_id"));
+
+                    const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
+                        {name: "length", query: length_query, values: length_values}]);
+
+                    res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
+                    //const {data, errors} = await doqueryNew({query: query, values: values});
+                    console.log(data);
+                    res.status(200).json({data, errors});
+                } catch (error) {
+                    res.status(500).json({errors: [{error: error.message}]});
+                }}
                 break;
             case "POST":
                 if (payload?.user === "admin") {

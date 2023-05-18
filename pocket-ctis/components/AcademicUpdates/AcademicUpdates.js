@@ -1,7 +1,7 @@
 import React from 'react'
 
 import styles from './AcademicUpdates.module.scss'
-import common from '../../styles/common.module.scss'
+import {getProfilePicturePath} from "../../helpers/formatHelpers";
 
 const AcademicUpdates = ({edu}) => {
   return (
@@ -9,8 +9,7 @@ const AcademicUpdates = ({edu}) => {
       <h3 className='custom_table_title'>
         Academic Updates
       </h3>
-      <div className={common.table_wrapper}>
-      <table>
+      <table className='custom_table'>
         <thead>
           <tr>
             <th className={styles.header_avatar}></th>
@@ -27,8 +26,8 @@ const AcademicUpdates = ({edu}) => {
             <tr key={i} className={record.is_current ? 'current' : ""}>
             <td className={styles.data_avatar}>
               <div
-                  className={common.user_avatar_36}
-                  style={{backgroundImage: "url(" + '/profilepictures/' + (record.pic_visibility ? record.profile_picture  : "defaultuser") + '.png' + ")"}}
+                  className='user_avatar_36'
+                  style={{backgroundImage: "url(" + getProfilePicturePath(record.profile_picture) + ")"}}
                 />
             </td>
 
@@ -42,7 +41,6 @@ const AcademicUpdates = ({edu}) => {
         )) : ""}
         </tbody>
       </table>
-      </div>
     </div>
   )
 }

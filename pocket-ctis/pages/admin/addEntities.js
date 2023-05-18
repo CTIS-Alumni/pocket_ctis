@@ -13,6 +13,12 @@ import SocietiesForm from '../../components/EntityForms/SocietiesForm'
 import ExamForm from '../../components/EntityForms/ExamForm'
 import SkillsForm from '../../components/EntityForms/SkillsForm'
 import GraduationProjectForm from '../../components/EntityForms/GraduationProjectForm'
+import CompanyDashboard from '../../components/EntityDashboards/CompanyDashboard'
+import SectorsDashboard from '../../components/EntityDashboards/SectorsDashboard'
+import EducationInstitutesDashboard from '../../components/EntityDashboards/EducationInstitutesDashboard'
+import SkillTypeDashboard from '../../components/EntityDashboards/SkillTypeDashboard'
+import WorkTypeDashboard from '../../components/EntityDashboards/WorkTypeDashboard'
+import DegreeTypeDashboard from '../../components/EntityDashboards/DegreeTypeDashboard'
 
 const AddEntitiesDashboard = () => {
   const [activeKey, setActiveKey] = useState('Company')
@@ -27,6 +33,14 @@ const AddEntitiesDashboard = () => {
             onClick={() => setActiveKey('Company')}
           >
             Company
+          </div>
+          <div
+            className={
+              activeKey == 'Company2' ? styles.active : styles.inActive
+            }
+            onClick={() => setActiveKey('Company2')}
+          >
+            Company2
           </div>
           <div
             className={activeKey == 'Sector' ? styles.active : styles.inActive}
@@ -110,12 +124,16 @@ const AddEntitiesDashboard = () => {
 
         <div className={styles.formBody}>
           {activeKey == 'Company' && <CompanyForm />}
-          {activeKey == 'Educational institute' && <EducationalInstitureForm />}
+          {activeKey == 'Company2' && <CompanyDashboard />}
+          {activeKey == 'Educational institute' && (
+            <EducationInstitutesDashboard />
+          )}
           {activeKey == 'High Schools' && <HighSchoolForm />}
-          {activeKey == 'Skill Types' && <SkillTypeForm />}
-          {activeKey == 'Degree Types' && <DegreeTypeForm />}
-          {activeKey == 'Work Types' && <WorkTypeForm />}
-          {activeKey == 'Sector' && <SectorForm />}
+          {activeKey == 'Skill Types' && <SkillTypeDashboard />}
+          {/* {activeKey == 'Degree Types' && <DegreeTypeForm />} */}
+          {activeKey == 'Degree Types' && <DegreeTypeDashboard />}
+          {activeKey == 'Work Types' && <WorkTypeDashboard />}
+          {activeKey == 'Sector' && <SectorsDashboard />}
           {activeKey == 'Societies' && <SocietiesForm />}
           {activeKey == 'Exams' && <ExamForm />}
           {activeKey == 'Skills' && <SkillsForm />}
