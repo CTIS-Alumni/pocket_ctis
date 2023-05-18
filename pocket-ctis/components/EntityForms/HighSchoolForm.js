@@ -66,19 +66,25 @@ const HighSchoolForm = ({ activeItem }) => {
   }, [activeItem])
 
   const onSubmitHandler = async (values) => {
-    const temp = {city_id: values?.city_id?.value || null, high_school_name: values.high_school_name};
-    if(activeItem){
-      temp.id = activeItem.id;
-      const res = await _submitFetcher('PUT', craftUrl(['highschools']), {highschools: [temp]})
+    const temp = {
+      city_id: values?.city_id?.value || null,
+      high_school_name: values.high_school_name,
+    }
+    if (activeItem) {
+      temp.id = activeItem.id
+      const res = await _submitFetcher('PUT', craftUrl(['highschools']), {
+        highschools: [temp],
+      })
       if (!res.data[activeItem.id] || res.errors.length) {
         toast.error(res.errors[0].error)
-      } else toast.success("Highschool successfully saved")
-    }else{
-      const res = await _submitFetcher('POST', craftUrl(['highschools']), {highschools: [temp]})
-      if(!res.data?.length || res.errors.length){
+      } else toast.success('Highschool successfully saved')
+    } else {
+      const res = await _submitFetcher('POST', craftUrl(['highschools']), {
+        highschools: [temp],
+      })
+      if (!res.data?.length || res.errors.length) {
         toast.error(res.errors[0].error)
-      }
-      else toast.success("Highschool successfully added")
+      } else toast.success('Highschool successfully added')
     }
   }
 

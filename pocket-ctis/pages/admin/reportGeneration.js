@@ -219,12 +219,18 @@ const ReportGeneration = () => {
                 }}
               >
                 <h5>SQL Query</h5>
-                <button onClick={sendSqlQuery} className={styles.submitButton}>
-                  Preview Data
-                </button>
-                <button className={styles.closeButton} onClick={clearQuery}>
-                  Clear Query
-                </button>
+                <div>
+                  <button
+                    onClick={sendSqlQuery}
+                    className={styles.submitButton}
+                    style={{ marginRight: 15 }}
+                  >
+                    Preview Data
+                  </button>
+                  <button className={styles.closeButton} onClick={clearQuery}>
+                    Clear Query
+                  </button>
+                </div>
               </div>
               <textarea
                 style={{
