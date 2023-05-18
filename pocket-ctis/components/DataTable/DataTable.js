@@ -20,8 +20,8 @@ const DataTable = ({
   onQuery,
   searchCols = '',
   isLoading = false,
-  editHandler,
-  deleteHandler,
+  editHandler = null,
+  deleteHandler = null,
   setSelectedArray,
   selectedArray,
 }) => {
@@ -98,9 +98,11 @@ const DataTable = ({
         <table className={styles.table}>
           <thead>
             <tr>
-              <th style={{ width: 50 }}>
-                <div className={styles.tableHeader}>check</div>
-              </th>
+              {setSelectedArray && (
+                <th style={{ width: 50 }}>
+                  <div className={styles.tableHeader}>check</div>
+                </th>
+              )}
               {columns.map((c) => (
                 <th onClick={() => handleSorting(c)}>
                   <div className={styles.tableHeader}>
@@ -121,34 +123,38 @@ const DataTable = ({
                   </div>
                 </th>
               ))}
-              <th style={{ width: 100 }}>
-                <div className={styles.tableHeader}>Actions</div>
-              </th>
+              {(editHandler || deleteHandler) && (
+                <th style={{ width: 100 }}>
+                  <div className={styles.tableHeader}>Actions</div>
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
             {data.map((d) => (
               <tr className={styles.tableRow}>
-                <td
-                  className={styles.tableCell}
-                  style={{ textAlign: 'center' }}
-                >
-                  <input
-                    checked={
-                      selectedArray.find((s) => s.id == d.id) ? true : false
-                    }
-                    type='checkbox'
-                    onChange={(event) => {
-                      if (event.target.checked) {
-                        setSelectedArray((prev) => [...prev, d])
-                      } else {
-                        setSelectedArray((prev) => [
-                          ...prev.filter((p) => p.id != d.id),
-                        ])
+                {setSelectedArray && (
+                  <td
+                    className={styles.tableCell}
+                    style={{ textAlign: 'center' }}
+                  >
+                    <input
+                      checked={
+                        selectedArray.find((s) => s.id == d.id) ? true : false
                       }
-                    }}
-                  />
-                </td>
+                      type='checkbox'
+                      onChange={(event) => {
+                        if (event.target.checked) {
+                          setSelectedArray((prev) => [...prev, d])
+                        } else {
+                          setSelectedArray((prev) => [
+                            ...prev.filter((p) => p.id != d.id),
+                          ])
+                        }
+                      }}
+                    />
+                  </td>
+                )}
                 {columns.map((c) => (
                   <td className={styles.tableCell}>{d[c]}</td>
                 ))}
@@ -160,20 +166,20 @@ const DataTable = ({
                   }}
                 >
                   {editHandler && (
-                      <button
-                          className={styles.editBtn}
-                          onClick={()=> editHandler(d)}
-                      >
-                        <Pen/>
-                      </button>
+                    <button
+                      className={styles.editBtn}
+                      onClick={() => editHandler(d)}
+                    >
+                      <Pen />
+                    </button>
                   )}
                   {deleteHandler && (
-                      <button
-                          className={styles.deleteBtn}
-                          onClick={() => deleteHandler(d)}
-                      >
-                        <Trash/>
-                      </button>
+                    <button
+                      className={styles.deleteBtn}
+                      onClick={() => deleteHandler(d)}
+                    >
+                      <Trash />
+                    </button>
                   )}
                 </td>
               </tr>
