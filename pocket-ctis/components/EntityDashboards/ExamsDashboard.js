@@ -28,9 +28,8 @@ const ExamsDashboard = () => {
     setIsLoading(true)
     _getFetcher({ exams: craftUrl(['exams'], conditions) })
       .then(({ exams }) => {
-        if (exams.errors?.length > 0) {
-          console.log(exams.errors)
-          exams.errors.map((e) => toast.error(e.error))
+        if (exams?.errors?.length > 0) {
+          exams?.errors.map((e) => toast.error(e.error))
           return
         }
         setTotal(exams.length)

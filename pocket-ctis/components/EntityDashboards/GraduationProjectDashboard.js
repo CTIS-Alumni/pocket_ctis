@@ -30,10 +30,8 @@ const GraduationProjectDashboard = () => {
       graduationprojects: craftUrl(['graduationprojects'], conditions),
     })
       .then(({ graduationprojects }) => {
-        console.log(graduationprojects)
-        if (graduationprojects.errors?.length > 0) {
-          console.log(graduationprojects.errors)
-          graduationprojects.errors.map((e) => toast.error(e.error))
+        if (graduationprojects?.errors?.length > 0) {
+          graduationprojects?.errors.map((e) => toast.error(e.error))
           return
         }
         setTotal(graduationprojects.length)

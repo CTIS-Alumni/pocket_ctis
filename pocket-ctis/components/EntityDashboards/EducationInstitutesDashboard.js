@@ -30,9 +30,8 @@ const EducationInstitutesDashboard = () => {
       educationInstitutes: craftUrl(['educationinstitutes'], conditions),
     })
       .then(({ educationInstitutes }) => {
-        if (educationInstitutes.errors?.length > 0) {
-          console.log(educationInstitutes.errors)
-          educationInstitutes.errors.map((e) => toast.error(e.error))
+        if (educationInstitutes?.errors?.length > 0) {
+          educationInstitutes?.errors.map((e) => toast.error(e.error))
           return
         }
         setTotal(educationInstitutes.length)

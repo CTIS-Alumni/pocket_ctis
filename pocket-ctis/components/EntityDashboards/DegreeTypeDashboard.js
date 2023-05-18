@@ -28,6 +28,10 @@ const DegreeTypeDashboard = () => {
     setIsLoading(true)
     _getFetcher({ degreeTypes: craftUrl(['degreetypes'], conditions) })
       .then(({ degreeTypes }) => {
+        if (degreeTypes?.errors?.length > 0) {
+          degreeTypes?.errors.map((e) => toast.error(e.error))
+          return
+        }
         setTotal(degreeTypes.length)
         setData(degreeTypes.data)
       })

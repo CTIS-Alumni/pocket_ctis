@@ -28,6 +28,10 @@ const SkillTypeDashboard = () => {
     setIsLoading(true)
     _getFetcher({ skillTypes: craftUrl(['skilltypes'], conditions) })
       .then(({ skillTypes }) => {
+        if (skillTypes?.errors?.length > 0) {
+          skillTypes?.errors.map((e) => toast.error(e.error))
+          return
+        }
         setTotal(skillTypes.length)
         setData(skillTypes.data)
       })

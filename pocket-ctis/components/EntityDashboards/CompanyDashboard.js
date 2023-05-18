@@ -28,6 +28,10 @@ const CompanyDashboard = () => {
     setIsLoading(true)
     _getFetcher({ companies: craftUrl(['companies'], conditions) })
       .then(({ companies }) => {
+        if (companies?.errors?.length > 0) {
+          companies?.errors.map((e) => toast.error(e.error))
+          return
+        }
         setTotal(companies.length)
         setData(companies.data)
       })

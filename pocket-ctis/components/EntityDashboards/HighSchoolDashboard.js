@@ -28,6 +28,10 @@ const HighSchoolDashboard = () => {
     setIsLoading(true)
     _getFetcher({ highSchools: craftUrl(['highschools'], conditions) })
       .then(({ highSchools }) => {
+        if (highSchools?.errors?.length > 0) {
+          highSchools?.errors.map((e) => toast.error(e.error))
+          return
+        }
         setTotal(highSchools.length)
         setData(highSchools.data)
       })

@@ -28,6 +28,10 @@ const WorkTypeDashboard = () => {
     setIsLoading(true)
     _getFetcher({ workTypes: craftUrl(['worktypes'], conditions) })
       .then(({ workTypes }) => {
+        if (workTypes?.errors?.length > 0) {
+          workTypes?.errors.map((e) => toast.error(e.error))
+          return
+        }
         setTotal(workTypes.length)
         setData(workTypes.data)
       })

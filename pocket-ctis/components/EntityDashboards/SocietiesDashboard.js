@@ -29,7 +29,6 @@ const SocietiesDashboard = () => {
     _getFetcher({ societies: craftUrl(['studentsocieties'], conditions) })
       .then(({ societies }) => {
         if (societies.errors?.length > 0) {
-          console.log(societies.errors)
           societies.errors.map((e) => toast.error(e.error))
           return
         }

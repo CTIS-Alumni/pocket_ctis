@@ -28,6 +28,10 @@ const SectorsDashboard = () => {
     setIsLoading(true)
     _getFetcher({ sectors: craftUrl(['sectors'], conditions) })
       .then(({ sectors }) => {
+        if (sectors?.errors?.length > 0) {
+          sectors?.errors.map((e) => toast.error(e.error))
+          return
+        }
         setTotal(sectors?.length)
         setData(sectors?.data)
       })
