@@ -7,6 +7,10 @@ import common from '../../styles/common.module.scss'
 8
 const WorkUpdates = ({work}) => {
   return (
+    <div className={styles.work_updates}>
+      <h3 className='custom_table_title'>
+      Work Updates
+    </h3>
     <div className={common.table_wrapper}>
       <table>
         <thead>
@@ -27,7 +31,7 @@ const WorkUpdates = ({work}) => {
                 <td className={styles.data_avatar}>
                   <div
                     className={common.user_avatar_36}
-                    style={{backgroundImage: "url(" + '/profilepictures/' + (record.pic_visibility ? record.profile_picture :  "defaultuser") + '.png' + ")"}}
+                    style={{backgroundImage: "url(" + getProfilePicturePath(record.profile_picture) +")"}}
                   />
                 </td>
                 <td className={styles.data_name}>{ record.first_name }</td>
@@ -41,6 +45,7 @@ const WorkUpdates = ({work}) => {
           )) : ""}
         </tbody>
       </table>
+    </div>
     </div>
   )
 }

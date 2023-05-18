@@ -8,7 +8,7 @@ import ReactPDF, {
 } from '@react-pdf/renderer'
 import { useState, useEffect } from 'react'
 
-Font.register({family: 'Inter', fonts: [
+Font.register({family: 'Open Sans', fonts: [
   { src: 'https://fonts.gstatic.com/s/opensans/v35/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSGmu1aB.woff2' }, // regular 400
   { src: 'https://fonts.gstatic.com/s/opensans/v35/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWt06F15M.woff2', fontStyle: 'italic' }, // italic 400
   { src: 'https://fonts.gstatic.com/s/opensans/v35/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSGmu1aB.woff2', fontWeight: 500 }, // regular 500
@@ -37,7 +37,7 @@ let lighterColour = 'grey';
 
 const styles = StyleSheet.create({
   body: {
-    fontFamily: 'Inter',
+    fontFamily: 'Open Sans',
     fontSize: fontSize,
     paddingHorizontal: 32,
     paddingVertical: 32,
