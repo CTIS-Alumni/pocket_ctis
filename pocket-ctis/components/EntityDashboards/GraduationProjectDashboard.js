@@ -49,12 +49,10 @@ const GraduationProjectDashboard = () => {
       'company_name',
       'graduation_project_name',
       'id',
-      'poster_pic',
       'project_type',
       'project_year',
       'semester',
       'team_number',
-      'team_pic',
     ])
   }, [])
 

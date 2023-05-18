@@ -8,6 +8,8 @@ import { craftUrl } from '../../helpers/urlHelper'
 import { toast } from 'react-toastify'
 
 const ExamForm = ({ activeItem }) => {
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {

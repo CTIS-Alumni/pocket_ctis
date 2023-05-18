@@ -10,7 +10,6 @@ import { toast } from 'react-toastify'
 const SocietiesForm = ({ activeItem }) => {
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
-const SocietiesForm = () => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
