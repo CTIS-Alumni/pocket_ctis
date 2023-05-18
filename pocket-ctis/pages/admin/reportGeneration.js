@@ -240,11 +240,6 @@ const ReportGeneration = () => {
                 spellCheck={false}
               />
             </Card>
-            <Card border='light' style={{ padding: 20 }}>
-              <Link href='/admin/pdfView' target='blank'>
-                Create PDF
-              </Link>
-            </Card>
           </>
         </Tab>
         <Tab eventKey='preview' title='Preview'>
