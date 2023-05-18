@@ -23,6 +23,7 @@ import HighSchoolDashboard from '../../components/EntityDashboards/HighSchoolDas
 import SocietiesDashboard from '../../components/EntityDashboards/SocietiesDashboard'
 import ExamsDashboard from '../../components/EntityDashboards/ExamsDashboard'
 import SkillsDashboard from '../../components/EntityDashboards/SkillsDashboard'
+import GraduationProjectDashboard from '../../components/EntityDashboards/GraduationProjectDashboard'
 
 const AddEntitiesDashboard = () => {
   const [activeKey, setActiveKey] = useState('Company')
@@ -131,7 +132,7 @@ const AddEntitiesDashboard = () => {
           {activeKey == 'Societies' && <SocietiesDashboard />}
           {activeKey == 'Exams' && <ExamsDashboard />}
           {activeKey == 'Skills' && <SkillsDashboard />}
-          {activeKey == 'Graduation Project' && <GraduationProjectForm />}
+          {activeKey == 'Graduation Project' && <GraduationProjectDashboard />}
         </div>
       </div>
       <ToastContainer

@@ -20,7 +20,9 @@ const selectStyles = {
   }),
 }
 
-const GraduationProject = () => {
+const GraduationProjectForm = ({ activeItem }) => {
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
+
   const [supervisors, setSupervisors] = useState([])
   const [years, setYears] = useState([])
   const [companies, setCompanies] = useState([])
@@ -34,8 +36,18 @@ const GraduationProject = () => {
       companies: craftUrl(['companies']),
     })
       .then((res) => {
-        setSupervisors(res.supervisors.data.map(s => ({label: `${s.first_name} ${s.last_name}`, value: s.id})))
-        setCompanies(res.companies.data.map(s => ({label: `${s.company_name}`, value: s.id})))
+        setSupervisors(
+          res.supervisors.data.map((s) => ({
+            label: `${s.first_name} ${s.last_name}`,
+            value: s.id,
+          }))
+        )
+        setCompanies(
+          res.companies.data.map((s) => ({
+            label: `${s.company_name}`,
+            value: s.id,
+          }))
+        )
       })
       .catch((err) => {
         toast.error(err)
@@ -43,8 +55,8 @@ const GraduationProject = () => {
 
     const firstYear = 2007
     const options = []
-    for (let i = 2023; i > firstYear; i--){
-      options.push({value: ` ${i-1} ${i}`, label: `${i-1}-${i}`})
+    for (let i = 2023; i > firstYear; i--) {
+      options.push({ value: ` ${i - 1} ${i}`, label: `${i - 1}-${i}` })
     }
     setYears(options)
   }, [])
@@ -63,17 +75,56 @@ const GraduationProject = () => {
       company_id: null,
     },
     validationSchema: Yup.object({
-      graduation_project_name: Yup.string().required('Project Name is required'),
+      graduation_project_name: Yup.string().required(
+        'Project Name is required'
+      ),
       team_number: Yup.number().required('Team Number is required'),
-      product_name: Yup.string().required('Product Name is required'),
       project_year: Yup.object().required('Project Year is required'),
       semester: Yup.object().required('Project Semester is required'),
-      project_description: Yup.string().required('Project Description is required'),
+      project_description: Yup.string().required(
+        'Project Description is required'
+      ),
       advisor_id: Yup.object().required('Supervisor is required'),
       project_type: Yup.object().required('Project Type is required'),
     }),
     onSubmit: (vals) => onSubmitHandler(vals),
   })
+
+  useEffect(() => {
+    if (activeItem) {
+      formik.setValues({
+        skill_name: activeItem.skill_name,
+        graduation_project_name: activeItem.graduation_project_name,
+        team_number: activeItem.team_number,
+        product_name: activeItem.product_name,
+        project_year: {
+          value: activeItem.project_year,
+          label: `${activeItem.project_year.split(' ')[0]}-${
+            activeItem.project_year.split(' ')[1]
+          }`,
+        },
+        semester: {
+          value: activeItem.semester,
+          label: `${activeItem.semester.split(' ')[0]}-${
+            activeItem.semester.split(' ')[1]
+          }`,
+        },
+        project_description: activeItem.project_description,
+        advisor_id: activeItem.advisor_id,
+        project_type: {
+          value: activeItem.project_type,
+          label: activeItem.project_type,
+        },
+        company_id: {
+          value: activeItem.company_id,
+          label: activeItem.company_name,
+        },
+      })
+    } else {
+      setRefreshKey(Math.random().toString(36))
+      formik.resetForm()
+    }
+  }, [activeItem])
 
   const onSubmitHandler = (vals) => {
     console.log(vals)
@@ -173,8 +224,11 @@ const GraduationProject = () => {
               value={formik.values.project_description}
               onChange={formik.handleChange}
             />
-            {formik.touched.project_description && formik.errors.project_description ? (
-              <div className={styles.error}>{formik.errors.project_description}</div>
+            {formik.touched.project_description &&
+            formik.errors.project_description ? (
+              <div className={styles.error}>
+                {formik.errors.project_description}
+              </div>
             ) : null}
           </div>
           <div className={styles.inputContainer}>
@@ -197,9 +251,10 @@ const GraduationProject = () => {
             <Select
               styles={selectStyles}
               isMulti={false}
-              options={[{value: 'Company', label: 'Company'},
-                {value: 'Instructor', label: 'Instructor'},
-                {value: 'Student', label: 'Student'}
+              options={[
+                { value: 'Company', label: 'Company' },
+                { value: 'Instructor', label: 'Instructor' },
+                { value: 'Student', label: 'Student' },
               ]}
               id='project_type'
               name='project_type'
@@ -269,4 +324,4 @@ const GraduationProject = () => {
   )
 }
 
-export default GraduationProject
+export default GraduationProjectForm
