@@ -41,7 +41,7 @@ const SkillsDashboard = () => {
 
   useEffect(() => {
     getData()
-    setColumns(['id', 'skill_name', 'skill_type_name'])
+    setColumns(['id', 'skill_name', 'skill_type_id', 'skill_type_name'])
   }, [])
 
   useEffect(() => {

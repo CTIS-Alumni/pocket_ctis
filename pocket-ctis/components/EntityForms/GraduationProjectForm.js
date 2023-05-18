@@ -26,6 +26,7 @@ const GraduationProjectForm = ({ activeItem }) => {
   const [supervisors, setSupervisors] = useState([])
   const [years, setYears] = useState([])
   const [companies, setCompanies] = useState([])
+  const [students, setStudents] = useState([])
 
   const [posterPic, setPosterPic] = useState(null)
   const [teamPic, setTeamPic] = useState(null)
@@ -34,6 +35,7 @@ const GraduationProjectForm = ({ activeItem }) => {
     _getFetcher({
       supervisors: craftUrl(['users'], [{ name: 'advisors', value: 1 }]),
       companies: craftUrl(['companies']),
+      students: craftUrl(['users?students=1']),
     })
       .then((res) => {
         setSupervisors(
@@ -45,6 +47,12 @@ const GraduationProjectForm = ({ activeItem }) => {
         setCompanies(
           res.companies.data.map((s) => ({
             label: `${s.company_name}`,
+            value: s.id,
+          }))
+        )
+        setStudents(
+          res.students.data.map((s) => ({
+            label: `${s.bilkent_id} - ${s.first_name} ${s.last_name}`,
             value: s.id,
           }))
         )
@@ -73,6 +81,7 @@ const GraduationProjectForm = ({ activeItem }) => {
       advisor_id: null,
       project_type: null,
       company_id: null,
+      students: null,
     },
     validationSchema: Yup.object({
       graduation_project_name: Yup.string().required(
@@ -91,6 +100,7 @@ const GraduationProjectForm = ({ activeItem }) => {
   })
 
   useEffect(() => {
+    console.log(activeItem)
     if (activeItem) {
       formik.setValues({
         skill_name: activeItem.skill_name,
@@ -138,7 +148,7 @@ const GraduationProjectForm = ({ activeItem }) => {
     <div>
       <h4>Graduation Project</h4>
       <Container>
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>Graduation Project Name</label>
             <input
@@ -167,6 +177,22 @@ const GraduationProjectForm = ({ activeItem }) => {
             />
             {formik.touched.team_number && formik.errors.team_number ? (
               <div className={styles.error}>{formik.errors.team_number}</div>
+            ) : null}
+          </div>
+          <div className={styles.inputContainer}>
+            <label className={styles.inputLabel}>Students</label>
+            <Select
+              styles={selectStyles}
+              isMulti
+              closeMenuOnSelect={false}
+              options={students}
+              id='students'
+              name='students'
+              value={formik.values.students}
+              onChange={(val) => formik.setFieldValue('students', val)}
+            />
+            {formik.touched.project_year && formik.errors.project_year ? (
+              <div className={styles.error}>{formik.errors.project_year}</div>
             ) : null}
           </div>
           <div className={styles.inputContainer}>
