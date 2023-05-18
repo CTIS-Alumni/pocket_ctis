@@ -36,9 +36,7 @@ const handler =  async (req, res) => {
 
                        query += add;
 
-                       if(is_admin){
-                           length_query = "SELECT COUNT(*) as count  " + add;
-                       }
+                       length_query = "SELECT COUNT(*) as count FROM workrecord ";
 
                     if (req.query.company_id) {
                         query += "WHERE w.company_id = ? ";

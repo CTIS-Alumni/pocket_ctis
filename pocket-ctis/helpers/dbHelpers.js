@@ -52,7 +52,6 @@ export const buildSearchQuery = async (req, query, values, length_query, length_
 
     if(group_by){
         query += " GROUP BY " + group_by + " ";
-        length_query += " GROUP BY " + group_by + " ";
     }
 
     if (req.query.column && columns.hasOwnProperty(req.query.column) && req.query.order && (req.query.order === "asc" ||req.query.order === "desc")) {
