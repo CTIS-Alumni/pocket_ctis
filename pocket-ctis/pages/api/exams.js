@@ -1,4 +1,11 @@
-import {buildInsertQueries, buildSearchQuery, doMultiQueries, doqueryNew, insertToTable} from "../../helpers/dbHelpers";
+import {
+    buildInsertQueries,
+    buildSearchQuery,
+    buildUpdateQueries, doMultiDeleteQueries,
+    doMultiQueries,
+    doqueryNew,
+    insertToTable, updateTable
+} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
@@ -12,7 +19,8 @@ const fields = {
 }
 
 const columns = {
-    exam_name: "exam_name"
+    exam_name: "exam_name",
+    id: "id"
 }
 
 const validation = (data) => {
@@ -31,8 +39,8 @@ const handler =  async (req, res) => {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT * FROM exam order by exam_name asc ";
-                    let length_query = "SELECT COUNT(*) FROM exam ";
+                    let query = "SELECT * FROM exam ";
+                    let length_query = "SELECT COUNT(*) as count FROM exam ";
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
 
                     const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
@@ -43,6 +51,19 @@ const handler =  async (req, res) => {
                 } catch (error) {
                     res.status(500).json({errors: [{error: error.message}]});
                 }
+                break;
+            case "PUT":
+                payload = await checkUserType(session, req.query);
+                if(payload?.user === "admin") {
+                    try{
+                        const {exams} = JSON.parse(req.body);
+                        const queries = buildUpdateQueries(exams, table_name, fields);
+                        const {data, errors} = await updateTable(queries, validation);
+                        res.status(200).json({data, errors});
+                    }catch (error) {
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                } else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);
@@ -57,6 +78,18 @@ const handler =  async (req, res) => {
                         res.status(500).json({errors: [{error: error.message}]});
                     }
                 }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
+                break;
+            case "DELETE":
+                payload = await checkUserType(session)
+                if(payload.user === "admin"){
+                    try {
+                        const {exams} = JSON.parse(req.body);
+                        const {data, errors} = await doMultiDeleteQueries(exams, table_name);
+                        res.status(200).json({data, errors});
+                    } catch (error) {
+                        res.status(500).json({errors: [{error:error.message}]});
+                    }
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]})
                 break;
         }
     } else {

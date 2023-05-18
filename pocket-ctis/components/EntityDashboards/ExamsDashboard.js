@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Tabs, Tab, Container, Spinner } from 'react-bootstrap'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
 import ExamForm from '../EntityForms/ExamForm'
+import {toast} from "react-toastify";
 
 const ExamsDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -52,14 +53,18 @@ const ExamsDashboard = () => {
     getData(conditions)
   }
 
-  const deleteHandler = (data) => {
-    console.log('delete this', data)
-    //for single delete
+  const deleteHandler = async (data) => {
+    const res = await _submitFetcher("DELETE", craftUrl(["exams"]), {exams: [data]});
+    if(res?.data[data.id])
+      toast.success("Sector deleted successfully!")
+    else toast.error(res.data[0].error)
   }
 
-  const deleteSelected = () => {
-    console.log('delete following', selectedArray)
-    //for multi delete
+  const deleteSelected = async () => {
+    const res = await _submitFetcher("DELETE", craftUrl(["exams"]), {exams: selectedArray});
+    if(res.errors.length)
+      toast.error(res.errors[0].error)
+    else toast.success("Exams deleted successfully!")
   }
 
   const selectedArrayOptions = [
@@ -112,7 +117,7 @@ const ExamsDashboard = () => {
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
                   selectedArray={selectedArray}
-                  searchCols=''
+                  searchCols='exam_name'
                 />
               )}
             </div>

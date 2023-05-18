@@ -1,8 +1,8 @@
 import {
     buildInsertQueries,
-    buildSearchQuery, doMultiDeleteQueries,
+    buildSearchQuery, buildUpdateQueries, doMultiDeleteQueries,
     doMultiQueries,
-    insertToTable
+    insertToTable, updateTable
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
@@ -42,7 +42,7 @@ const handler =  async (req, res) => {
                 try {
                     let values = [], length_query = "", length_values = [];
                     let query = "SELECT s.id, s.skill_name, s.skill_type_id, st.skill_type_name FROM skill s LEFT OUTER JOIN skilltype st ON (s.skill_type_id = st.id) ";
-                    length_query = "SELECT * FROM skill s LEFT OUTER JOIN skilltype st ON (s.skill_type_id = st.id) ";
+                    length_query = "SELECT COUNT(*) as 'count' FROM skill s LEFT OUTER JOIN skilltype st ON (s.skill_type_id = st.id) ";
 
 
                     if (req.query.type_id) {
@@ -61,6 +61,19 @@ const handler =  async (req, res) => {
                 } catch (error) {
                     res.status(500).json({errors: [{error: error.message}]});
                 }
+                break;
+            case "PUT":
+                payload = await checkUserType(session, req.query);
+                if(payload?.user === "admin") {
+                    try{
+                        const {skills} = JSON.parse(req.body);
+                        const queries = buildUpdateQueries(skills, table_name, fields);
+                        const {data, errors} = await updateTable(queries, validation);
+                        res.status(200).json({data, errors});
+                    }catch (error) {
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                } else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);

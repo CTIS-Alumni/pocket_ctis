@@ -66,12 +66,21 @@ const SkillsForm = ({ activeItem }) => {
   }, [activeItem])
 
   const onSubmitHandler = async (values) => {
-    values.skill_type_id = values.skill_type_name.value;
-    const res = await _submitFetcher('POST', craftUrl(['skills']), {skills: [values]})
-    if(!res.data?.length || res.errors.length){
-      toast.error(res.errors[0].error)
+    const temp = {skill_name: values.skill_name, skill_type_id: values?.skill_type_name?.value || null};
+    if(activeItem){
+      temp.id = activeItem.id;
+      const res = await _submitFetcher('PUT', craftUrl(['skills']), {skills: [temp]})
+      if (!res.data[activeItem.id] || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else toast.success("Skill successfully saved")
+    }else{
+      const res = await _submitFetcher('POST', craftUrl(['skills']), {skills: [temp]})
+      if(!res.data?.length || res.errors.length){
+        toast.error(res.errors[0].error)
+      }
+      else toast.success("Skill successfully added")
     }
-    else toast.success("Skill successfully added")
+
   }
 
   return (

@@ -49,7 +49,6 @@ const SectorsDashboard = () => {
     if(res?.data[data.id])
       toast.success("Sector deleted successfully!")
     else toast.error(res.data[0].error)
-    //for single delete
   }
 
   const deleteSelected = async () => {
@@ -57,7 +56,6 @@ const SectorsDashboard = () => {
     if(res.errors.length)
       toast.error(res.errors[0].error)
     else toast.success("Sectors deleted successfully!")
-    //for multi delete
   }
 
   const selectedArrayOptions = [

@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Tabs, Tab, Container, Spinner } from 'react-bootstrap'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
 import SkillsForm from '../EntityForms/SkillsForm'
+import {toast} from "react-toastify";
 
 const SkillsDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -53,14 +54,18 @@ const SkillsDashboard = () => {
     getData(conditions)
   }
 
-  const deleteHandler = (data) => {
-    console.log('delete this', data)
-    //for single delete
+  const deleteHandler = async (data) => {
+    const res = await _submitFetcher("DELETE", craftUrl(["skills"]), {skills: [data]});
+    if(res?.data[data.id])
+      toast.success("Skill deleted successfully!")
+    else toast.error(res.data[0].error)
   }
 
-  const deleteSelected = () => {
-    console.log('delete following', selectedArray)
-    //for multi delete
+  const deleteSelected = async () => {
+    const res = await _submitFetcher("DELETE", craftUrl(["skills"]), {skills: selectedArray});
+    if(res.errors.length)
+      toast.error(res.errors[0].error)
+    else toast.success("Skills deleted successfully!")
   }
 
   const selectedArrayOptions = [
@@ -113,7 +118,7 @@ const SkillsDashboard = () => {
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
                   selectedArray={selectedArray}
-                  searchCols='sector_name,company_name'
+                  searchCols='skill_name,skill_type_name'
                 />
               )}
             </div>

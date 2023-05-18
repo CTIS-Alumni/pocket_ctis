@@ -5,10 +5,8 @@ import { useContext, useEffect, useState } from 'react'
 import { craftUrl } from '../../helpers/urlHelper'
 import Select from 'react-select'
 import * as Yup from 'yup'
-import { Check2Square, Square } from 'react-bootstrap-icons'
 import { Location_data } from '../../context/locationContext'
 import {_submitFetcher} from "../../helpers/fetchHelpers";
-import {craftUrl} from "../../helpers/urlHelper";
 import {toast} from "react-toastify";
 
 const selectStyles = {
@@ -68,12 +66,20 @@ const HighSchoolForm = ({ activeItem }) => {
   }, [activeItem])
 
   const onSubmitHandler = async (values) => {
-    values.city_id = values.city_id.value;
-    const res = await _submitFetcher('POST', craftUrl(['highschools']), {highschools: [values]})
-    if(!res.data?.length || res.errors.length){
-      toast.error(res.errors[0].error)
+    const temp = {city_id: values?.city_id?.value || null, high_school_name: values.high_school_name};
+    if(activeItem){
+      temp.id = activeItem.id;
+      const res = await _submitFetcher('PUT', craftUrl(['highschools']), {highschools: [temp]})
+      if (!res.data[activeItem.id] || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else toast.success("Highschool successfully saved")
+    }else{
+      const res = await _submitFetcher('POST', craftUrl(['highschools']), {highschools: [temp]})
+      if(!res.data?.length || res.errors.length){
+        toast.error(res.errors[0].error)
+      }
+      else toast.success("Highschool successfully added")
     }
-    else toast.success("Exam successfully added")
   }
 
   return (

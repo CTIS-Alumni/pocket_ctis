@@ -5,6 +5,7 @@ import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
 import GraduationProjectForm from '../EntityForms/GraduationProjectForm'
+import {toast} from "react-toastify";
 
 const GraduationProjectDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)

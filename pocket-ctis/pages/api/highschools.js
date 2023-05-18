@@ -1,9 +1,9 @@
 import {
     buildInsertQueries,
-    buildSearchQuery,
+    buildSearchQuery, buildUpdateQueries,
     doMultiDeleteQueries,
     doMultiQueries,
-    insertToTable
+    insertToTable, updateTable
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
@@ -15,7 +15,8 @@ const columns = {
     city_name: "ci.city_name",
     country_name: "co.country_name",
     city_id: "ci.id",
-    country_id: "co.id"
+    country_id: "co.id",
+    id: "h.id"
 
 }
 
@@ -30,7 +31,7 @@ const validation = (data) => {
     replaceWithNull(data)
     if(!data.high_school_name)
         return "High School Name can't be empty!";
-    if(isNaN(parseInt(data.city_id)))
+    if(data.city_id && isNaN(parseInt(data.city_id)))
         return "City ID must be a number!";
     return true;
 }
@@ -66,6 +67,19 @@ const handler =  async (req, res) => {
                 } catch (error) {
                     res.status(500).json({errors: [{error: error.message}]});
                 }
+                break;
+            case "PUT":
+                payload = await checkUserType(session, req.query);
+                if(payload?.user === "admin") {
+                    try{
+                        const {highschools} = JSON.parse(req.body);
+                        const queries = buildUpdateQueries(highschools, table_name, fields);
+                        const {data, errors} = await updateTable(queries, validation);
+                        res.status(200).json({data, errors});
+                    }catch (error) {
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                } else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);

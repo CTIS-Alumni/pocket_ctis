@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Tabs, Tab, Container, Spinner } from 'react-bootstrap'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
 import SocietiesForm from '../EntityForms/SocietiesForm'
+import {toast} from "react-toastify";
 
 const SocietiesDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -52,14 +53,18 @@ const SocietiesDashboard = () => {
     getData(conditions)
   }
 
-  const deleteHandler = (data) => {
-    console.log('delete this', data)
-    //for single delete
+  const deleteHandler = async (data) => {
+    const res = await _submitFetcher("DELETE", craftUrl(["studentsocieties"]), {societies: [data]});
+    if(res?.data[data.id])
+      toast.success("Student society deleted successfully!")
+    else toast.error(res.data[0].error)
   }
 
-  const deleteSelected = () => {
-    console.log('delete following', selectedArray)
-    //for multi delete
+  const deleteSelected = async () => {
+    const res = await _submitFetcher("DELETE", craftUrl(["studentsocieties"]), {societies: selectedArray});
+    if(res.errors.length)
+      toast.error(res.errors[0].error)
+    else toast.success("Student society deleted successfully!")
   }
 
   const selectedArrayOptions = [
@@ -112,7 +117,7 @@ const SocietiesDashboard = () => {
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
                   selectedArray={selectedArray}
-                  searchCols=''
+                  searchCols='society_name,description'
                 />
               )}
             </div>

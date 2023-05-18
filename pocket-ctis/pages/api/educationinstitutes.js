@@ -31,7 +31,7 @@ const validation = (data) => {
     replaceWithNull(data)
     if(!data.edu_inst_name)
         return "Education Institute Name can't be empty!";
-    if(isNaN(parseInt(data.city_id)))
+    if(data.city_id && isNaN(parseInt(data.city_id)))
         return "City Id must be a number!";
     if(isNaN(parseInt(data.is_erasmus)) || (parseInt(data.is_erasmus) !== 1 && parseInt(data.is_erasmus) !== 0))
         return "Invalid value for erasmus field!";

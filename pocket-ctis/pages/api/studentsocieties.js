@@ -1,9 +1,9 @@
 import {
     buildInsertQueries,
-    buildSearchQuery,
+    buildSearchQuery, buildUpdateQueries,
     doMultiDeleteQueries, doMultiQueries,
     doqueryNew,
-    insertToTable
+    insertToTable, updateTable
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
@@ -19,7 +19,8 @@ const fields = {
 
 const columns ={
     society_name: "society_name",
-    description: "description"
+    description: "description",
+    id: "id"
 }
 
 const validation = (data) => {
@@ -38,8 +39,8 @@ const handler =  async (req, res) => {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT * FROM studentsociety order by society_name asc ";
-                    let length_query = "SELECT COUNT(*) FROM studentsociety ";
+                    let query = "SELECT * FROM studentsociety ";
+                    let length_query = "SELECT COUNT(*) as 'count' FROM studentsociety ";
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
 
@@ -51,6 +52,19 @@ const handler =  async (req, res) => {
                 } catch (error) {
                     res.status(500).json({errors: [{error: error.message}]});
                 }
+                break;
+            case "PUT":
+                payload = await checkUserType(session, req.query);
+                if(payload?.user === "admin") {
+                    try{
+                        const {societies} = JSON.parse(req.body);
+                        const queries = buildUpdateQueries(societies, table_name, fields);
+                        const {data, errors} = await updateTable(queries, validation);
+                        res.status(200).json({data, errors});
+                    }catch (error) {
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                } else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);

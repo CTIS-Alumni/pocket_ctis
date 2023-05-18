@@ -39,7 +39,7 @@ const handler =  async (req, res) => {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT id, degree_type_name FROM degreetype order by degree_type_name asc ";  //for dropboxes
+                    let query = "SELECT id, degree_type_name FROM degreetype  ";  //for dropboxes
                     let length_query = "SELECT COUNT(*) as count FROM degreetype ";
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));

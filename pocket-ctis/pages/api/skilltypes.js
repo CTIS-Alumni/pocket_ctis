@@ -14,7 +14,7 @@ const table_name = "skilltype"
 
 const columns = {
     skill_type_name: "skill_type_name",
-    skill_type_id: "id"
+    id: "id"
 }
 
 const fields = {
@@ -38,7 +38,7 @@ const handler =  async (req, res) => {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT id, skill_type_name FROM skilltype order by skill_type_name asc ";
+                    let query = "SELECT id, skill_type_name FROM skilltype ";
                     let length_query = "SELECT COUNT(*) as count FROM skilltype ";
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
