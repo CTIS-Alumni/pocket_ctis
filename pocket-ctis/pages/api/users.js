@@ -132,7 +132,7 @@ const handler =  async (req, res) => {
                         "JOIN accounttype act ON (act.id = uat.type_id) ";
 
                     query += add;
-                    length_query = "SELECT COUNT(*) " + add;
+                    length_query = "SELECT COUNT(*) as count " + add;
 
                     if (req.query.highschool_id) {
                         query += "LEFT OUTER JOIN userhighschool uhs ON (uhs.user_id = u.id) WHERE ";

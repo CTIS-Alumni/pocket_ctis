@@ -21,7 +21,7 @@ export const replaceWithNull = (data) => {
     Object.keys(data).forEach((field) => {
         if (typeof data[field] === "string") {
             data[field] = data[field].trim();
-            if (data[field] === "") {
+            if (data[field] === "" || data[field] === undefined) {
                 data[field] = null;
             }
         }

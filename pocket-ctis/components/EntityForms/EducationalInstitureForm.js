@@ -66,8 +66,6 @@ const EducationalInstitureForm = ({ activeItem }) => {
     },
     validationSchema: Yup.object({
       edu_inst_name: Yup.string().required('Institute name is required'),
-      country: Yup.object(),
-      city_id: Yup.object()
     }),
     onSubmit: async (values) => {
       await onSubmitHandler(values)
@@ -75,8 +73,7 @@ const EducationalInstitureForm = ({ activeItem }) => {
   })
 
   const onSubmitHandler = async (values) => {
-    console.log(values);
-    const temp = {city_id: values.city_id.value, is_erasmus: values.is_erasmus ? 1 : 0, edu_inst_name: values.edu_inst_name};
+    const temp = {city_id: values?.city_id?.value || null, is_erasmus: values.is_erasmus ? 1 : 0, edu_inst_name: values.edu_inst_name};
     if(activeItem){
       temp.id = activeItem.id;
       temp.city_id = temp.city_id.split("-")[0];

@@ -28,6 +28,10 @@ const CompanyDashboard = () => {
     setIsLoading(true)
     _getFetcher({ companies: craftUrl(['companies'], conditions) })
       .then(({ companies }) => {
+        if (companies?.errors?.length > 0) {
+          companies?.errors.map((e) => toast.error(e.error))
+          return
+        }
         setTotal(companies.length)
         setData(companies.data)
       })
@@ -59,7 +63,6 @@ const CompanyDashboard = () => {
     if(res?.data[data.id])
       toast.success("Company deleted successfully!")
     else toast.error(res.data[0].error)
-    //for single delete
   }
 
   const deleteSelected = async () => {
@@ -67,7 +70,6 @@ const CompanyDashboard = () => {
     if(res.errors.length)
       toast.error(res.errors[0].error)
     else toast.success("Companies deleted successfully!")
-    //for multi delete
   }
 
   const setIsInternship = async () => {

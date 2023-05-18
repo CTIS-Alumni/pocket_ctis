@@ -5,6 +5,7 @@ import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
 import GraduationProjectForm from '../EntityForms/GraduationProjectForm'
+import {toast} from "react-toastify";
 
 const GraduationProjectDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -29,10 +30,8 @@ const GraduationProjectDashboard = () => {
       graduationprojects: craftUrl(['graduationprojects'], conditions),
     })
       .then(({ graduationprojects }) => {
-        console.log(graduationprojects)
-        if (graduationprojects.errors?.length > 0) {
-          console.log(graduationprojects.errors)
-          graduationprojects.errors.map((e) => toast.error(e.error))
+        if (graduationprojects?.errors?.length > 0) {
+          graduationprojects?.errors.map((e) => toast.error(e.error))
           return
         }
         setTotal(graduationprojects.length)
