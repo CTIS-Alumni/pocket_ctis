@@ -15,6 +15,7 @@ import { Tables_Data } from '../../context/tablesContext'
 import { craftUrl } from '../../helpers/urlHelper'
 import { toast, ToastContainer } from 'react-toastify'
 import ReportDataPreviewTable from '../../components/ReportDataPreviewTable/ReportDataPreviewTable'
+import ExcelJS from 'exceljs';
 
 const transformTableData = (data) => {
   const optionsModel = Object.keys(data).map((table) => ({
@@ -113,14 +114,34 @@ const ReportGeneration = () => {
   }
 
   const clearQuery = () => {
-    console.log('clear')
     setRefreshKey(Math.random().toString(36))
     setSqlQuery('')
     setTableForJoin([])
   }
 
-  const exportData = () => {
-    console.log('export')
+  const exportData = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Sheet 1');
+
+
+    const headers = Object.keys(data[0]);
+    worksheet.addRow(headers);
+
+    data.forEach((row) => {
+      const values = Object.values(row);
+      worksheet.addRow(values);
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    const fileName = 'report.xlsx';
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+    const downloadLink = document.createElement('a');
+
+    downloadLink.href = URL.createObjectURL(blob);
+    downloadLink.download = fileName;
+    downloadLink.click();
     //the SQL response is saved in data
   }
 
