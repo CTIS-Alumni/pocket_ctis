@@ -6,9 +6,9 @@ import Select from 'react-select'
 import * as Yup from 'yup'
 import { Check2Square, Square } from 'react-bootstrap-icons'
 import { Location_data } from '../../context/locationContext'
-import {_submitFetcher} from "../../helpers/fetchHelpers";
-import {craftUrl} from "../../helpers/urlHelper";
-import {toast} from "react-toastify";
+import { _submitFetcher } from '../../helpers/fetchHelpers'
+import { craftUrl } from '../../helpers/urlHelper'
+import { toast } from 'react-toastify'
 
 const selectStyles = {
   control: (provided, state) => ({
@@ -38,6 +38,15 @@ const EducationalInstitureForm = ({ activeItem }) => {
 
   useEffect(() => {
     if (activeItem) {
+      if (activeItem.country_id && activeItem.country_name) {
+        const temp = locationData[
+          `${activeItem.country_id}-${activeItem.country_name}`
+        ].map((l) => {
+          const [city_id, city_name] = l.split('-')
+          return { value: city_id, label: city_name }
+        })
+        setCities(temp)
+      }
       formik.setValues({
         edu_inst_name: activeItem.edu_inst_name,
         city_id: {
@@ -73,20 +82,31 @@ const EducationalInstitureForm = ({ activeItem }) => {
   })
 
   const onSubmitHandler = async (values) => {
-    const temp = {city_id: values?.city_id?.value || null, is_erasmus: values.is_erasmus ? 1 : 0, edu_inst_name: values.edu_inst_name};
-    if(activeItem){
-      temp.id = activeItem.id;
-      temp.city_id = temp.city_id.split("-")[0];
-      const res = await _submitFetcher('PUT', craftUrl(['educationinstitutes']), {educationinstitutes: [temp]})
+    const temp = {
+      city_id: values?.city_id?.value || null,
+      is_erasmus: values.is_erasmus ? 1 : 0,
+      edu_inst_name: values.edu_inst_name,
+    }
+    if (activeItem) {
+      temp.id = activeItem.id
+      temp.city_id = temp.city_id.split('-')[0]
+      const res = await _submitFetcher(
+        'PUT',
+        craftUrl(['educationinstitutes']),
+        { educationinstitutes: [temp] }
+      )
       if (!res.data[activeItem.id] || res.errors.length) {
         toast.error(res.errors[0].error)
-      } else toast.success("Education institute successfully saved")
-    }else{
-      const res = await _submitFetcher('POST', craftUrl(['educationinstitutes']), {educationinstitutes: [temp]})
-      if(!res.data?.length || res.errors.length){
+      } else toast.success('Education institute successfully saved')
+    } else {
+      const res = await _submitFetcher(
+        'POST',
+        craftUrl(['educationinstitutes']),
+        { educationinstitutes: [temp] }
+      )
+      if (!res.data?.length || res.errors.length) {
         toast.error(res.errors[0].error)
-      }
-      else toast.success("Education institute successfully added")
+      } else toast.success('Education institute successfully added')
     }
   }
 
