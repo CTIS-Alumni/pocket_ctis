@@ -72,9 +72,10 @@ const EducationInstitutesDashboard = () => {
       craftUrl(['educationinstitutes']),
       { educationinstitutes: [data] }
     )
-    if (res?.data[data.id])
+    if (res?.data[data.id]) {
       toast.success('Education institute deleted successfully!')
-    else toast.error(res.data[0].error)
+      getData()
+    } else toast.error(res.data[0].error)
   }
 
   const deleteSelected = async () => {
@@ -84,7 +85,10 @@ const EducationInstitutesDashboard = () => {
       { educationinstitutes: selectedArray }
     )
     if (res.errors.length) toast.error(res.errors[0].error)
-    else toast.success('Education institutes deleted successfully!')
+    else {
+      toast.success('Education institutes deleted successfully!')
+      getData()
+    }
   }
 
   const setIsErasmus = async () => {
@@ -93,7 +97,10 @@ const EducationInstitutesDashboard = () => {
       educationinstitutes: newArr,
     })
     if (res.errors.length) toast.error(res.errors[0].error)
-    else toast.success('Education institutes saved successfully!')
+    else {
+      toast.success('Education institutes saved successfully!')
+      getData()
+    }
   }
 
   const selectedArrayOptions = [
@@ -171,6 +178,7 @@ const EducationInstitutesDashboard = () => {
             <EducationalInstitureForm
               key={refreshKey}
               activeItem={activeItem}
+              updateData={getData}
             />
           </Container>
         </Tab>

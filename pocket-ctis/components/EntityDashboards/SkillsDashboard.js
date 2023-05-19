@@ -67,8 +67,10 @@ const SkillsDashboard = () => {
     const res = await _submitFetcher('DELETE', craftUrl(['skills']), {
       skills: [data],
     })
-    if (res?.data[data.id]) toast.success('Skill deleted successfully!')
-    else toast.error(res.data[0].error)
+    if (res?.data[data.id]) {
+      toast.success('Skill deleted successfully!')
+      getData()
+    } else toast.error(res.data[0].error)
   }
 
   const deleteSelected = async () => {
@@ -76,7 +78,10 @@ const SkillsDashboard = () => {
       skills: selectedArray,
     })
     if (res.errors.length) toast.error(res.errors[0].error)
-    else toast.success('Skills deleted successfully!')
+    else {
+      toast.success('Skills deleted successfully!')
+      getData()
+    }
   }
 
   const selectedArrayOptions = [
@@ -144,7 +149,11 @@ const SkillsDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <SkillsForm key={refreshKey} activeItem={activeItem} />
+            <SkillsForm
+              key={refreshKey}
+              activeItem={activeItem}
+              updateData={getData}
+            />
           </Container>
         </Tab>
       </Tabs>

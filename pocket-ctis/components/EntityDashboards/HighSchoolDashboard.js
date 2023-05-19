@@ -66,8 +66,10 @@ const HighSchoolDashboard = () => {
     const res = await _submitFetcher('DELETE', craftUrl(['highschools']), {
       highschools: [data],
     })
-    if (res?.data[data.id]) toast.success('Highschools deleted successfully!')
-    else toast.error(res.data[0].error)
+    if (res?.data[data.id]) {
+      toast.success('Highschools deleted successfully!')
+      getData()
+    } else toast.error(res.data[0].error)
   }
 
   const deleteSelected = async () => {
@@ -75,7 +77,10 @@ const HighSchoolDashboard = () => {
       highschools: selectedArray,
     })
     if (res.errors.length) toast.error(res.errors[0].error)
-    else toast.success('Highschool deleted successfully!')
+    else {
+      toast.success('Highschool deleted successfully!')
+      getData()
+    }
   }
 
   const selectedArrayOptions = [
@@ -143,7 +148,11 @@ const HighSchoolDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <HighSchoolForm key={refreshKey} activeItem={activeItem} />
+            <HighSchoolForm
+              key={refreshKey}
+              activeItem={activeItem}
+              updateData={getData}
+            />
           </Container>
         </Tab>
       </Tabs>

@@ -84,7 +84,10 @@ const CompanyDashboard = () => {
       companies: selectedArray,
     })
     if (res.errors.length) toast.error(res.errors[0].error)
-    else toast.success('Companies deleted successfully!')
+    else {
+      toast.success('Companies deleted successfully!')
+      getData()
+    }
   }
 
   const setIsInternship = async () => {
@@ -93,7 +96,10 @@ const CompanyDashboard = () => {
       companies: newArr,
     })
     if (res.errors.length) toast.error(res.errors[0].error)
-    else toast.success('Companies saved successfully!')
+    else {
+      toast.success('Companies saved successfully!')
+      getData()
+    }
   }
 
   const selectedArrayOptions = [
@@ -167,7 +173,11 @@ const CompanyDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <CompanyForm key={refreshKey} activeItem={activeItem} />
+            <CompanyForm
+              key={refreshKey}
+              activeItem={activeItem}
+              updateData={getData}
+            />
           </Container>
         </Tab>
       </Tabs>

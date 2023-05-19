@@ -21,7 +21,7 @@ const selectStyles = {
   }),
 }
 
-const EducationalInstitureForm = ({ activeItem }) => {
+const EducationalInstitureForm = ({ activeItem, updateData }) => {
   const [countries, setCountries] = useState([])
   const [cities, setCities] = useState([])
   const { locationData } = useContext(Location_data)
@@ -97,7 +97,12 @@ const EducationalInstitureForm = ({ activeItem }) => {
       )
       if (!res.data[activeItem.id] || res.errors.length) {
         toast.error(res.errors[0].error)
-      } else toast.success('Education institute successfully saved')
+      } else {
+        toast.success('Education institute successfully saved')
+        updateData()
+        formik.resetForm()
+        setRefreshKey(Math.random().toString(36))
+      }
     } else {
       const res = await _submitFetcher(
         'POST',
@@ -106,7 +111,12 @@ const EducationalInstitureForm = ({ activeItem }) => {
       )
       if (!res.data?.length || res.errors.length) {
         toast.error(res.errors[0].error)
-      } else toast.success('Education institute successfully added')
+      } else {
+        toast.success('Education institute successfully added')
+        updateData()
+        formik.resetForm()
+        setRefreshKey(Math.random().toString(36))
+      }
     }
   }
 

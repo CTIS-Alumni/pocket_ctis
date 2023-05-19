@@ -66,9 +66,10 @@ const SocietiesDashboard = () => {
     const res = await _submitFetcher('DELETE', craftUrl(['studentsocieties']), {
       societies: [data],
     })
-    if (res?.data[data.id])
+    if (res?.data[data.id]) {
       toast.success('Student society deleted successfully!')
-    else toast.error(res.data[0].error)
+      getData()
+    } else toast.error(res.data[0].error)
   }
 
   const deleteSelected = async () => {
@@ -76,7 +77,10 @@ const SocietiesDashboard = () => {
       societies: selectedArray,
     })
     if (res.errors.length) toast.error(res.errors[0].error)
-    else toast.success('Student society deleted successfully!')
+    else {
+      toast.success('Student society deleted successfully!')
+      getData()
+    }
   }
 
   const selectedArrayOptions = [
@@ -144,7 +148,11 @@ const SocietiesDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <SocietiesForm key={refreshKey} activeItem={activeItem} />
+            <SocietiesForm
+              key={refreshKey}
+              activeItem={activeItem}
+              updateData={getData}
+            />
           </Container>
         </Tab>
       </Tabs>

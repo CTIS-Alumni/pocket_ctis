@@ -66,8 +66,10 @@ const ExamsDashboard = () => {
     const res = await _submitFetcher('DELETE', craftUrl(['exams']), {
       exams: [data],
     })
-    if (res?.data[data.id]) toast.success('Sector deleted successfully!')
-    else toast.error(res.data[0].error)
+    if (res?.data[data.id]) {
+      toast.success('Sector deleted successfully!')
+      getData()
+    } else toast.error(res.data[0].error)
   }
 
   const deleteSelected = async () => {
@@ -75,7 +77,10 @@ const ExamsDashboard = () => {
       exams: selectedArray,
     })
     if (res.errors.length) toast.error(res.errors[0].error)
-    else toast.success('Exams deleted successfully!')
+    else {
+      toast.success('Exams deleted successfully!')
+      getData()
+    }
   }
 
   const selectedArrayOptions = [
@@ -143,7 +148,11 @@ const ExamsDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <ExamForm key={refreshKey} activeItem={activeItem} />
+            <ExamForm
+              key={refreshKey}
+              activeItem={activeItem}
+              updateData={getData}
+            />
           </Container>
         </Tab>
       </Tabs>

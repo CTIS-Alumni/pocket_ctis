@@ -66,8 +66,10 @@ const WorkTypeDashboard = () => {
     const res = await _submitFetcher('DELETE', craftUrl(['worktypes']), {
       worktypes: [data],
     })
-    if (res?.data[data.id]) toast.success('Work type deleted successfully!')
-    else toast.error(res.data[0].error)
+    if (res?.data[data.id]) {
+      toast.success('Work type deleted successfully!')
+      getData()
+    } else toast.error(res.data[0].error)
   }
 
   const deleteSelected = async () => {
@@ -75,7 +77,10 @@ const WorkTypeDashboard = () => {
       worktypes: selectedArray,
     })
     if (res.errors.length) toast.error(res.errors[0].error)
-    else toast.success('Work types deleted successfully!')
+    else {
+      toast.success('Work types deleted successfully!')
+      getData()
+    }
   }
 
   const selectedArrayOptions = [
@@ -143,7 +148,11 @@ const WorkTypeDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <WorkTypeForm key={refreshKey} activeItem={activeItem} />
+            <WorkTypeForm
+              key={refreshKey}
+              activeItem={activeItem}
+              updateData={getData}
+            />
           </Container>
         </Tab>
       </Tabs>

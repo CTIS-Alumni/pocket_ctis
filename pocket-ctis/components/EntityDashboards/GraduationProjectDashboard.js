@@ -150,7 +150,11 @@ const GraduationProjectDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <GraduationProjectForm key={refreshKey} activeItem={activeItem} />
+            <GraduationProjectForm
+              key={refreshKey}
+              activeItem={activeItem}
+              updateData={getData}
+            />
           </Container>
         </Tab>
       </Tabs>
