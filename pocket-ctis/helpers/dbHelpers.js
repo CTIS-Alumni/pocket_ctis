@@ -60,7 +60,9 @@ export const buildSearchQuery = async (req, query, values, length_query, length_
     }
 
     if (req.query.column && columns.hasOwnProperty(req.query.column) && req.query.order && (req.query.order === "asc" ||req.query.order === "desc")) {
-        query += "ORDER BY " + columns[req.query.column] + " " + req.query.order + " ";
+        if(columns[req.query.column].includes("LIKE CONCAT")){
+            query += "ORDER BY " + columns[req.query.column].split("LIKE CONCAT")[0] + " " + req.query.order + " ";
+        }else query += "ORDER BY " + columns[req.query.column] + " " + req.query.order + " ";
     }
 
     if (req.query.offset && req.query.limit) {
