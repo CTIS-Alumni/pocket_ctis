@@ -7,14 +7,15 @@ import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 
 const columns = {
-    project_name: "g.graduation_project_name",
+    graduation_project_name: "g.graduation_project_name",
     company_name: "c.company_name",
     company_id: "c.id",
-    advisor: " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
-    "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  ",
-    advisor_id: "g.advisor_id",
+    advisor: "CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
     project_year: "g.project_year",
     project_type: "g.project_type",
+    id: "g.id",
+    semester: "g.semester",
+    team_number: "g.team_number",
 
 }
 
@@ -26,6 +27,7 @@ const handler =  async (req, res) => {
         switch (method) {
             case "GET":
                 try {
+                    console.log("does it even cpme here");
                     let values = [], length_values = [];
                     let query = "SELECT g.id, g.graduation_project_name, g.team_number, g.project_description, g.project_year, g.semester, g.team_pic, g.poster_pic, g.advisor_id, CONCAT(u.first_name, ' ' ,u.last_name) as advisor, g.project_type, g.company_id, c.company_name, " +
                         " ( SELECT GROUP_CONCAT(CONCAT(users.id,'-',users.first_name, ' ', users.last_name, '-', users.bilkent_id) SEPARATOR ', ') " +
@@ -41,7 +43,12 @@ const handler =  async (req, res) => {
                         values.push(req.query.name);
                     }
 
+                    if(req.query.searchcol)
+                        query += " WHERE 1 = 1 ";
+
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
+
+                    console.log(query,"-------------------------", values);
 
                     const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
                         {name: "length", query: length_query, values: length_values}]);

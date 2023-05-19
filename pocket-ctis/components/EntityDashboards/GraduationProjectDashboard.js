@@ -65,9 +65,7 @@ const GraduationProjectDashboard = () => {
   }
 
   const deleteHandler = async (data) => {
-    console.log("dataa", data);
     const res = await _submitFetcher("DELETE", craftUrl(["graduationprojects"]), {graduationprojects: [data]});
-    console.log(res);
     if(!res.errors.length)
       toast.success("Graduation project deleted successfully!")
     else toast.error(res.errors[0].error)
@@ -130,7 +128,7 @@ const GraduationProjectDashboard = () => {
                   deleteHandler={(d) => deleteHandler(d)}
                   setSelectedArray={setSelectedArray}
                   selectedArray={selectedArray}
-                  searchCols=''
+                  searchCols='graduation_project_name,company_name,company_id,advisor,project_year,project_type,id,semester,team_number'
                 />
               )}
             </div>

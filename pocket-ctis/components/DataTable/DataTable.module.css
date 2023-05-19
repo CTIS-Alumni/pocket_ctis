@@ -11,6 +11,8 @@
 }
 .popoverDeleteBtn{
     padding: 5px;
+    padding-right: 10px;
+    padding-left: 10px;
     border-radius: 5px;
     border: none;
     margin: 0 10px 10px 10px;
@@ -74,7 +76,7 @@
     float: right;
     margin-top: 4px;
     display: inline;
-    background: #e3c3c3;
+    background: #f5dad2;
     border: 1px solid #da4109;
     color: #da4109;
 

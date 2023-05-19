@@ -85,7 +85,7 @@ const DataTable = ({
     () => (
       <Popover title='Delete?'>
         <div className={styles.popoverBody}>
-          Are you sure you want to delete this?
+          Are you sure you want to delete this record? All associated records will be deleted.
         </div>
         <button
           className={styles.popoverDeleteBtn}
@@ -111,12 +111,23 @@ const DataTable = ({
       <form onSubmit={formik.handleSubmit}>
         <div className={styles.searchField}>
           <input
-            type='search'
             name='searchString'
             id='searchString'
             value={formik.values.searchString}
             onChange={formik.handleChange}
           />
+          {!!!!formik.values.searchString && (
+            <button
+              className={styles.clearBtn}
+              type='button'
+              onClick={() => {
+                formik.setFieldValue('searchString', '')
+                handleSearch({ searchString: ' ' })
+              }}
+            >
+              &#xD7;
+            </button>
+          )}
           <button type='submit' className={styles.searchBtn}>
             <Search />
           </button>

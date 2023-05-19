@@ -124,7 +124,6 @@ const CompanyDashboard = () => {
             <div>
               {columns?.length > 0 && (
                 <DataTable
-                  key={data}
                   data={data}
                   columns={columns}
                   onQuery={onQuery}
