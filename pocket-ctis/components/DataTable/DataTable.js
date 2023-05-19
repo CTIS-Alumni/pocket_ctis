@@ -24,6 +24,8 @@ const DataTable = ({
   deleteHandler = null,
   setSelectedArray,
   selectedArray,
+  clickable,
+  clickHandler,
 }) => {
   const [limit, setLimit] = useState(15)
   const [currentPage, setCurrentPage] = useState(1)

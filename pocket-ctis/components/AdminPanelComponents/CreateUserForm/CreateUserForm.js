@@ -10,37 +10,16 @@ import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { clone } from 'lodash'
-import {
-  replaceWithNull,
-} from '../../../helpers/submissionHelpers'
+import { replaceWithNull } from '../../../helpers/submissionHelpers'
 
 const customStyles = {
   control: (provided, state) => ({
     ...provided,
-    border: 'none',
-    minHeight: '30px',
-    height: '30px',
-    borderRadius: '3px',
-    backgroundColor: '#fff1c9',
-    boxShadow: state.isFocused ? null : null,
+    borderColor: 'rgb(245, 164, 37)',
   }),
-
-  valueContainer: (provided, state) => ({
+  menu: (provided, state) => ({
     ...provided,
-    height: '30px',
-    padding: '0 6px',
-  }),
-
-  input: (provided, state) => ({
-    ...provided,
-    margin: '0px',
-  }),
-  indicatorSeparator: (state) => ({
-    display: 'none',
-  }),
-  indicatorsContainer: (provided, state) => ({
-    ...provided,
-    height: '30px',
+    zIndex: 2,
   }),
 }
 
@@ -78,10 +57,12 @@ const CreateUserForm = ({ goBack }) => {
     data.user[0].gender = data.user[0].gender.value == 'Male' ? 1 : 0
     replaceWithNull(data)
 
-    const res = await _submitFetcher('POST', craftUrl(['users']), {users: data.user});
-    console.log(res);
-    if(res.data['0']?.data?.mail_status && !res.errors?.length){
-      toast.success("User saved successfully!")
+    const res = await _submitFetcher('POST', craftUrl(['users']), {
+      users: data.user,
+    })
+    console.log(res)
+    if (res.data['0']?.data?.mail_status && !res.errors?.length) {
+      toast.success('User saved successfully!')
       formik.resetForm({
         values: {
           user: [
@@ -97,7 +78,7 @@ const CreateUserForm = ({ goBack }) => {
         },
       })
       setRefreshKey(Math.random().toString(36))
-    }else{
+    } else {
       toast.error(res.errors[0].error)
     }
   }
@@ -171,15 +152,13 @@ const CreateUserForm = ({ goBack }) => {
           <div className={styles.formContainer}>
             <div style={{ display: 'flex', gap: 10 }}>
               <div style={{ width: '50%' }}>
-                <div>
+                <div className={styles.inputContainer}>
                   <label
                     htmlFor='user[0].first_name'
                     className={styles.inputLabel}
                   >
                     First Name
                   </label>
-                </div>
-                <div>
                   <input
                     value={formik.values.user?.[0].first_name}
                     onChange={formik.handleChange}
@@ -198,12 +177,10 @@ const CreateUserForm = ({ goBack }) => {
               </div>
               {/* ------ */}
               <div style={{ width: '50%' }}>
-                <div>
+                <div className={styles.inputContainer}>
                   <label htmlFor='last_name' className={styles.inputLabel}>
                     Last Name
                   </label>
-                </div>
-                <div>
                   <input
                     value={formik.values.user?.[0].last_name}
                     onChange={formik.handleChange}
@@ -224,12 +201,10 @@ const CreateUserForm = ({ goBack }) => {
             {/* ------ */}
             <div style={{ display: 'flex', gap: 10 }} className='my-2'>
               <div style={{ width: '50%' }}>
-                <div>
+                <div className={styles.inputContainer}>
                   <label htmlFor='bilkent_id' className={styles.inputLabel}>
                     BILKENT ID
                   </label>
-                </div>
-                <div>
                   <input
                     value={formik.values.user?.[0].bilkent_id}
                     onChange={formik.handleChange}
@@ -248,12 +223,10 @@ const CreateUserForm = ({ goBack }) => {
               </div>
               {/* ------ */}
               <div style={{ width: '50%' }}>
-                <div>
+                <div className={styles.inputContainer}>
                   <label htmlFor='gender' className={styles.inputLabel}>
                     Gender
                   </label>
-                </div>
-                <div>
                   <Select
                     value={formik.values.user?.[0].gender}
                     onChange={(val) =>
@@ -278,12 +251,10 @@ const CreateUserForm = ({ goBack }) => {
             </div>
             {/* ------ */}
             <div className='my-2'>
-              <div>
+              <div className={styles.inputContainer}>
                 <label htmlFor='contact_email' className={styles.inputLabel}>
                   Email Address
                 </label>
-              </div>
-              <div>
                 <input
                   value={formik.values.user?.[0].contact_email}
                   onChange={formik.handleChange}
@@ -300,7 +271,7 @@ const CreateUserForm = ({ goBack }) => {
                 ) : null}
               </div>
             </div>
-            <div>
+            <div className={styles.inputContainer}>
               <label htmlFor='types' className={styles.inputLabel}>
                 Account Types
               </label>
