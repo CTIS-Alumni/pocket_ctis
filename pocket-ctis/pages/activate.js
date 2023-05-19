@@ -33,7 +33,7 @@ const checkPassword = (pass, cnfpass, usr) => {
 const ActivateAccount = ({token, type}) => {
     const router = useRouter()
     const onSubmit = async (values) => {
-        const is_valid = checkValues(values.password, values.confirmPassword, values.username);
+        const is_valid = checkPassword(values.password, values.confirmPassword, values.username);
         if (is_valid.errors) {
             toast.error(is_valid.errors[0].error)
             return false;

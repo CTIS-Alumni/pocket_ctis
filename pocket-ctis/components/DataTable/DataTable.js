@@ -85,7 +85,7 @@ const DataTable = ({
     () => (
       <Popover title='Delete?'>
         <div className={styles.popoverBody}>
-          Are you sure you want to delete this?
+          Are you sure you want to delete this record? All associated records will be deleted.
         </div>
         <button
           className={styles.popoverDeleteBtn}
