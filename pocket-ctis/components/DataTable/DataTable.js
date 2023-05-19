@@ -81,24 +81,21 @@ const DataTable = ({
     setToDelete(d)
   }
 
-  const deletePopover = useMemo(
-    () => (
-      <Popover title='Delete?'>
-        <div className={styles.popoverBody}>
-          Are you sure you want to delete this?
-        </div>
-        <button
-          className={styles.popoverDeleteBtn}
-          onClick={() => {
-            deleteHandler(toDelete)
-            document.body.click()
-          }}
-        >
-          Confirm
-        </button>
-      </Popover>
-    ),
-    []
+  const deletePopover = (
+    <Popover title='Delete?'>
+      <div className={styles.popoverBody}>
+        Are you sure you want to delete this?
+      </div>
+      <button
+        className={styles.popoverDeleteBtn}
+        onClick={() => {
+          deleteHandler(toDelete)
+          document.body.click()
+        }}
+      >
+        Confirm
+      </button>
+    </Popover>
   )
 
   return (
