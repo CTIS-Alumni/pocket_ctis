@@ -23,7 +23,7 @@ const customStyles = {
   }),
 }
 
-const CreateUserForm = ({ goBack }) => {
+const CreateUserForm = ({ activeItem, goBack }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [accountTypes, setAccountTypes] = useState([])
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
@@ -122,6 +122,34 @@ const CreateUserForm = ({ goBack }) => {
       onSubmitHandler(values)
     },
   })
+
+  useEffect(() => {
+    if (activeItem) {
+      const acTypes = activeItem.user_types.split(',').map((t) => {
+        return accountTypes.find((a) => a.label == t)
+      })
+      formik.setValues({
+        user: [
+          {
+            company_name: activeItem.company_name,
+            types: acTypes,
+            gender:
+              activeItem.gender == 1
+                ? { value: 'Female', label: 'Female' }
+                : { value: 'Male', label: 'Male' },
+            first_name: activeItem.first_name,
+            last_name: activeItem.last_name,
+            bilkent_id: activeItem.bilkent_id,
+            contact_email: activeItem.contact_email,
+          },
+        ],
+      })
+      console.log(formik.values)
+    } else {
+      formik.resetForm()
+      setRefreshKey(Math.random().toString(36))
+    }
+  }, [activeItem])
 
   const goBackHandler = () => {
     formik.resetForm({

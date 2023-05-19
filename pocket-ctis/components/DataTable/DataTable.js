@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { Spinner, Popover, OverlayTrigger } from 'react-bootstrap'
 import PaginationFooter from '../PaginationFooter/PaginationFooter'
 import {

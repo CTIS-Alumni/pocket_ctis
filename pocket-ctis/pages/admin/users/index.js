@@ -11,6 +11,7 @@ import { useRouter } from 'next/router'
 
 const AdminUsersList = () => {
   const [activeKey, setActiveKey] = useState('display')
+  const [activeItem, setActiveItem] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState([])
   const [columns, setColumns] = useState([])
@@ -79,6 +80,15 @@ const AdminUsersList = () => {
     },
   ]
 
+  const editHandler = (data) => {
+    setActiveItem(data)
+    setActiveKey('create')
+  }
+
+  const deleteHandler = (data) => {
+    console.log('delete', data)
+  }
+
   return (
     <AdminPageContainer>
       <Container>
@@ -120,13 +130,18 @@ const AdminUsersList = () => {
               isLoading={isLoading}
               searchCols=''
               clickable={true}
+              editHandler={editHandler}
+              deleteHandler={deleteHandler}
               clickHandler={handleClick}
               setSelectedArray={setSelectedArray}
               selectedArray={selectedArray}
             />
           </Tab>
           <Tab eventKey='create' title='create'>
-            <CreateUserForm goBack={() => setActiveKey('display')} />
+            <CreateUserForm
+              activeItem={activeItem}
+              goBack={() => setActiveKey('display')}
+            />
           </Tab>
         </Tabs>
       </Container>
