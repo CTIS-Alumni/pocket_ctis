@@ -144,7 +144,6 @@ const CreateUserForm = ({ activeItem, goBack }) => {
           },
         ],
       })
-      console.log(formik.values)
     } else {
       formik.resetForm()
       setRefreshKey(Math.random().toString(36))
