@@ -16,7 +16,6 @@ const handleErrorMessages = (error) => {
 export default async function handler(req, res) {
     if(req.query.changeEmail){
         try{
-
             const {username, password, token} = JSON.parse(req.body);
             const {payload} = await verify(token, process.env.MAIL_SECRET);
 
@@ -36,10 +35,8 @@ export default async function handler(req, res) {
             res.status(200).json({data:d, errors:err});
 
         }catch(error){
-            console.log("heres the damn eror and its tyoe", error, "tyoe", typeof error)
             if(!error.message)
                 error = handleErrorMessages(error);
-            console.log(error);
             res.status(500).json({errors: [{error: error.message}]});
         }
     }

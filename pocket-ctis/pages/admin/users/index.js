@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { _getFetcher } from '../../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../../helpers/fetchHelpers'
 import { craftUrl, buildCondition } from '../../../helpers/urlHelper'
 import { Container, Tabs, Tab, Modal, Button } from 'react-bootstrap'
 import { toast, ToastContainer } from 'react-toastify'
@@ -40,6 +40,7 @@ const AdminUsersList = () => {
     setIsLoading(true)
     _getFetcher({ users: craftUrl(['users'], conditions) })
       .then(({ users }) => {
+        console.log("users:", users);
         if (users?.errors?.length > 0) {
           users?.errors.map((e) => toast.error(e.error))
           return
@@ -52,7 +53,7 @@ const AdminUsersList = () => {
 
   useEffect(() => {
     getData()
-    setColumns(['id', 'first_name', 'last_name', 'user_types'])
+    setColumns(['id', 'bilkent_id', 'first_name', 'last_name', 'user_types', 'is_active', 'contact_email'])
   }, [])
 
   const onQuery = (queryParams) => {
@@ -64,16 +65,47 @@ const AdminUsersList = () => {
     router.push(`/admin/users/${user.id}`)
   }
 
-  const deleteSelected = () => {
-    console.log('delete selected')
+  const deleteSelected = async () => {
+    const res = await _submitFetcher('DELETE', craftUrl(['users']), {
+      users: selectedArray,
+    })
+    if (res.errors.length) toast.error(res.errors[0].error)
+    else {
+      toast.success('Users deleted successfully!')
+      setSelectedArray([])
+      setShowOptions(false)
+      getData()
+    }
 
     setSelectedArray([])
     setShowOptions(false)
     getData()
   }
 
-  const deactivateSelected = () =>{
+  const deactivateSelected = async () => {
+    const res = await _submitFetcher('PUT', craftUrl(['users'], [{name: "deactivated", value: 1}]), {
+      users: selectedArray,
+    })
+    if (res.errors.length) toast.error(res.errors[0].error)
+    else {
+      toast.success('Users deactivated successfully!')
+      setSelectedArray([])
+      setShowOptions(false)
+      getData()
+    }
+  }
 
+  const activateSelected = async () => {
+    const res = await _submitFetcher('PUT', craftUrl(['users'], [{name: "activated", value: 1}]), {
+      users: selectedArray,
+    })
+    if (res.errors.length) toast.error(res.errors[0].error)
+    else {
+      toast.success('Users activated successfully!')
+      setSelectedArray([])
+      setShowOptions(false)
+      getData()
+    }
   }
 
   const selectedArrayOptions = [
@@ -83,9 +115,14 @@ const AdminUsersList = () => {
       action: deleteSelected,
     },
     {
-      label: 'Deactivate',
+      label: 'Deactivate All Selected',
       warning: 'Are you sure you want to deactivate all selected users? ',
       action: deactivateSelected
+    },
+    {
+      label: 'Activate All Selected',
+      warning: 'Are you sure you want to activate all selected users? ',
+      action: activateSelected
     }
   ]
 
@@ -94,8 +131,14 @@ const AdminUsersList = () => {
     setActiveKey('create')
   }
 
-  const deleteHandler = (data) => {
-    console.log('delete', data)
+  const deleteHandler = async (data) => {
+    const res = await _submitFetcher('DELETE', craftUrl(['users']), {
+      users: [data],
+    })
+    if (res?.data[data.id]) {
+      toast.success('User deleted successfully!')
+      getData()
+    } else toast.error(res.data[0].error)
   }
 
   return (
@@ -137,7 +180,7 @@ const AdminUsersList = () => {
               onQuery={onQuery}
               total={total}
               isLoading={isLoading}
-              searchCols='user'
+              searchCols='user,bilkent_id,contact_email'
               clickable={true}
               editHandler={editHandler}
               deleteHandler={deleteHandler}

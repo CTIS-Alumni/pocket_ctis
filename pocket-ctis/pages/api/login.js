@@ -72,7 +72,8 @@ export default async function (req, res) {
     } else {
         try {
             const {username, password} = JSON.parse(req.body);
-            const query = "SELECT * FROM usercredential WHERE username = ? AND is_admin_auth = 0 ";
+            const query = "SELECT uc.user_id, uc.hashed FROM usercredential uc LEFT OUTER JOIN users u ON (u.id = uc.user_id) " +
+                " WHERE username = ? AND is_admin_auth = 0 AND u.is_active = 1 ";
             const {data, errors} = await doqueryNew({query: query, values: [username]});
             const user = data;
 

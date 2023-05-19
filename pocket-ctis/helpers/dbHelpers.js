@@ -1,8 +1,7 @@
 import mysql from "mysql2/promise";
 import dbconfig from "../config/dbconfig.js";
 import {reFormatDate} from "./formatHelpers";
-import {sendActivationMail, sendAdminActivationMail} from "./mailHelper";
-import formidable from "formidable";
+import {sendActivationMail, sendAdminActivationMail, sendReActivationMail} from "./mailHelper";
 import { promises as fsPromises } from 'fs';
 import fs from 'fs';
 import {resizeAndCropImage} from "./imageHelper";
@@ -202,25 +201,6 @@ export const doquery = async ({query, values = []}) => {
     }
 }
 
-export const buildSingleInsertQuery = (data, fields, table) => {
-    let query = `INSERT INTO ${table} (`  +
-        `${fields.basic.concat(fields.date).join(", ")}) values (` +
-        fields.basic.map(field => `:${field}`).join(", ") + ", ";
-
-    fields.date.forEach((field) => {
-        data[field] = reFormatDate(data[field]);
-        if(data[field]){
-            if(data[field].includes("T")) {
-                data[field] = data[field].split("T")[0] + "T" + "00:00:00.000Z"
-            }
-            query += `STR_TO_DATE(:${field}, '%Y-%m-%dT%H:%i:%s.000Z'), `;
-        }
-        else query += `:${field}, `;
-    });
-    query = query.slice(0, -2) + ")"
-    return query;
-}
-
 export const doMultiQueries = async (queries, namedplaceholders = false) => {
     let data = {};
     let errors = [];
@@ -236,6 +216,152 @@ export const doMultiQueries = async (queries, namedplaceholders = false) => {
             errors.push({name: query.name, error: error.message});
         }
     }));
+    connection.end();
+    return {data, errors};
+}
+
+export const createPutQueryForVisibility = (visibility, user_id) => {
+    let temp;
+    let put_queries = [];
+    temp = "UPDATE usergraduationproject SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "graduation_project", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE usercareerobjective SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "career_objective", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE usercertificate SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "certificates", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE userproject SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "projects", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE useremail SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "emails", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE userhighschool SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "high_school", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE userlocation SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "location", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE userphone SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "phone_numbers", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE userexam SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "exams", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE userskill SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "skills", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE usersocialmedia SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "socials", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE userstudentsociety SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "societies", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE userwantsector SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "wanted_sectors", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE workrecord SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "work_records", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE internshiprecord SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "internships", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE erasmusrecord SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "erasmus", query: temp, values: [visibility, user_id]});
+
+    temp = "UPDATE educationrecord SET visibility = ? WHERE user_id = ? ";
+    put_queries.push({name: "edu_records", query: temp, values: [visibility, user_id]});
+
+    return put_queries;
+}
+
+export const deactivateMultiUsers = async (records) => {
+    const tempDeactivateQuery = "UPDATE users SET is_active = 0 WHERE id = ? ";
+    let queries = [];
+    const data = {}, errors = [];
+
+    const connection = await createDBConnection();
+    console.log("1");
+
+    try{
+        records.forEach((record) => {
+            queries.push({
+                name: record.id,
+                deactivate_query: tempDeactivateQuery,
+                visibility_queries: createPutQueryForVisibility(0, record.id),
+                values: [record.id]
+            });
+        });
+
+        console.log("2");
+
+        await connection.beginTransaction();
+
+        console.log("3");
+        await Promise.all(queries.map(async (query) => {
+
+            console.log("4");
+            const [res] = await connection.query(query.deactivate_query, query.values);
+
+            console.log("5");
+            await Promise.all(query.visibility_queries.map(async (v_q) => {
+                console.log("vq", v_q);
+                const [visibility_res] = await connection.query(v_q.query, v_q.values)
+                console.log("6");
+            }));
+            data[query.name] = res;
+            console.log("7");
+        }));
+
+        console.log("8");
+
+    } catch (error) {
+        console.log("9");
+        errors.push({error: error.message});
+        console.log("10");
+        await connection.rollback();
+    }
+
+    console.log("11");
+    await connection.commit();
+
+    connection.end();
+    return {data, errors};
+
+}
+
+export const activateMultiUsers = async (records) => {
+    const tempActivateQuery = "UPDATE users SET is_active = 1 WHERE id = ? ";
+    let queries = [];
+    const data = {}, errors = [];
+
+    records.forEach((record) => {
+        queries.push({
+            name: record.id,
+            deactivate_query: tempActivateQuery,
+            values: [record.id],
+            user_data: record
+        });
+    });
+
+    const connection = await createDBConnection();
+
+    await connection.beginTransaction();
+    await Promise.all(queries.map(async (query) => {
+        try {
+            const [res] = await connection.query(query.deactivate_query, query.values);
+            const mail_status = await sendReActivationMail(query.user_data)
+            data[query.name] = mail_status;
+        } catch (error) {
+            errors.push({name: query.name, error: error.message});
+            await connection.rollback();
+        }
+    }));
+
+    await connection.commit();
+
     connection.end();
     return {data, errors};
 }
@@ -312,7 +438,6 @@ export const deleteGraduationProjectsWithImage = async (graduationprojects) =>{
         const delete_user_query = "DELETE FROM usergraduationproject WHERE graduation_project_id = ? ";
 
         for (const [i, g] of graduationprojects.entries()){
-            console.log("g", g)
             const [res] = await connection.execute(delete_query,[g.id]);
             const [user_res] = await connection.execute(delete_user_query, [g.id]);
             if(g.team_pic !== "defaulteam" && fs.existsSync(process.env.SAVE_IMAGES_PATH + "/graduationprojects/team/" + g.team_pic + ".png"))
@@ -355,13 +480,12 @@ export const updateGraduationProjectWithImage = async (query, obj,students, vali
 
         let deleted = [], added = [];
 
-        if(member_res.length){
-            const fromDB = member_res.map(obj => obj.user_id);
-            deleted = fromDB.filter(userId => !students.includes(userId));
-            added = students.filter(num => {
-                return !fromDB.some(obj => obj.user_id === num);
-            });
-        }
+        const fromDB = member_res.map(obj => obj.user_id);
+        deleted = fromDB.filter(userId => !students.includes(userId));
+        added = students.filter(num => {
+            return !fromDB.some(obj => obj.user_id === num);
+        });
+
         const delete_user_query = "DELETE FROM usergraduationproject WHERE user_id = ? ";
         const add_user_query = "INSERT INTO usergraduationproject (user_id, graduation_project_id) " +
             "values (?, ?)";
@@ -370,7 +494,7 @@ export const updateGraduationProjectWithImage = async (query, obj,students, vali
             const [deleted_res] = await connection.execute(delete_user_query, [id]);
         }
 
-        for(const [id] of added){
+        for(const i of added){
             const [added_res] = await connection.execute(add_user_query, [id, obj.id]);
         }
 
@@ -538,6 +662,66 @@ export const createUser = async(user, validation) => {
         errors.push({error: error.message});
         await connection.rollback();
     }
+
+    connection.end();
+    return {data, errors};
+
+}
+
+export const updateUsers = async (query, user, types, validation) => {
+    const connection = await createDBConnection(true);
+    let errors = [], data;
+    try{
+
+        let is_valid = validation(user); //checks for both type fields, user fields and edu_record fields
+        if(is_valid !== true)
+            throw {message: is_valid};
+
+        await connection.beginTransaction();
+        const [res] = await connection.execute(query,user);
+
+        const types_query = "SELECT type_id FROM useraccounttype WHERE user_id = :user_id ";
+        const [type_res] = await connection.execute(types_query, {user_id: user.id});
+
+
+        const fromDB = type_res.map(obj => obj.type_id);
+        const deleted = fromDB.filter(typeId => !types.includes(typeId));
+        const added = types.filter(typeId => !fromDB.includes(typeId));
+
+
+        const delete_type_query = "DELETE FROM useraccounttype WHERE user_id = :user_id AND type_id = :type_id ";
+        const add_type_query = "INSERT INTO useraccounttype (user_id, type_id) " +
+            "values (:user_id, :type_id)";
+
+        for(const id of deleted){
+            const [deleted_res] = await connection.execute(delete_type_query, {user_id: user.id, type_id: id});
+        }
+
+        for(const id of added){
+            const [added_res] = await connection.execute(add_type_query, {user_id: user.id, type_id: id});
+        }
+
+        if(deleted.includes(4) || deleted.includes('4')){
+            const delete_admin_credentials_query = "DELETE FROM usercredential WHERE user_id = :user_id AND is_admin_auth = 1 ";
+            const [delete_res] = await connection.execute(delete_admin_credentials_query, {user_id: user.id});
+        }
+
+        let mail_status = "Not an admin";
+        if(added.includes(4) || added.includes('4')){
+             mail_status = await sendAdminActivationMail(user);
+            if (mail_status !== true) {
+                throw {message: "Could not send admin account activation mail to user.", details: mail_status};
+            }
+        }
+        data = mail_status;
+
+    }catch(error){
+        error.message = handleDBErrorMessage(error);
+        errors.push({error: error.message});
+        await connection.rollback();
+    }
+
+    await connection.commit();
 
     connection.end();
     return {data, errors};

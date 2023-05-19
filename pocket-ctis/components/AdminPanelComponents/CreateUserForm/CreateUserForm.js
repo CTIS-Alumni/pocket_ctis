@@ -50,14 +50,23 @@ const CreateUserForm = ({ activeItem, goBack }) => {
   }, [])
 
   const onSubmitHandler = async (values) => {
+    const data = clone(values)
+    data.user[0].types = data.user[0].types.map(
+        (role) => Number(role.value.split('-')[0])
+    )
+    data.user[0].gender = data.user[0].gender.value == 'Female' ? 1 : 0
+    replaceWithNull(data)
     if(activeItem){
-      const data = clone(values)
-      data.user[0].types = data.user[0].types.map(
-          (role) => role.value.split('-')[0]
-      )
-      data.user[0].gender = data.user[0].gender.value == 'Male' ? 1 : 0
-      replaceWithNull(data)
-
+      data.user[0].id = activeItem.id;
+      const res = await _submitFetcher('PUT', craftUrl(['users']), {user: data.user[0]})
+      if(res?.errors?.length && !res.data){
+        toast.error(res.errors[0].error)
+      }else{
+        toast.success("User saved successfully")
+        if(res.data === true)
+          toast.success("Admin account activation mail successfully sent to user!");
+      }
+    }else{
       const res = await _submitFetcher('POST', craftUrl(['users']), {
         users: data.user,
       })
@@ -66,8 +75,6 @@ const CreateUserForm = ({ activeItem, goBack }) => {
       } else {
         toast.error(res.errors[0].error)
       }
-    }else{
-      console.log(activeItem);
     }
   }
 
@@ -80,6 +87,7 @@ const CreateUserForm = ({ activeItem, goBack }) => {
           gender: null,
           first_name: null,
           last_name: null,
+          nee: null,
           bilkent_id: null,
           contact_email: null,
         },
@@ -119,7 +127,6 @@ const CreateUserForm = ({ activeItem, goBack }) => {
       formik.setValues({
         user: [
           {
-            company_name: activeItem.company_name,
             types: acTypes,
             gender:
               activeItem.gender == 1
@@ -127,6 +134,7 @@ const CreateUserForm = ({ activeItem, goBack }) => {
                 : { value: 'Male', label: 'Male' },
             first_name: activeItem.first_name,
             last_name: activeItem.last_name,
+            nee: activeItem.nee,
             bilkent_id: activeItem.bilkent_id,
             contact_email: activeItem.contact_email,
           },
@@ -166,7 +174,7 @@ const CreateUserForm = ({ activeItem, goBack }) => {
         <form onSubmit={formik.handleSubmit}>
           <div className={styles.formContainer}>
             <div style={{ display: 'flex', gap: 10 }}>
-              <div style={{ width: '50%' }}>
+              <div style={{ width: '35%' }}>
                 <div className={styles.inputContainer}>
                   <label
                     htmlFor='user[0].first_name'
@@ -191,7 +199,23 @@ const CreateUserForm = ({ activeItem, goBack }) => {
                 </div>
               </div>
               {/* ------ */}
-              <div style={{ width: '50%' }}>
+              <div style={{ width: '30%' }}>
+                <div className={styles.inputContainer}>
+                  <label htmlFor='nee' className={styles.inputLabel}>
+                    Nee
+                  </label>
+                  <input
+                      value={formik.values.user?.[0].nee}
+                      onChange={formik.handleChange}
+                      type='text'
+                      name='user[0].nee'
+                      id='nee'
+                      className={styles.inputField}
+                  />
+                </div>
+              </div>
+              {/* ------ */}
+              <div style={{ width: '35%' }}>
                 <div className={styles.inputContainer}>
                   <label htmlFor='last_name' className={styles.inputLabel}>
                     Last Name
@@ -317,18 +341,6 @@ const CreateUserForm = ({ activeItem, goBack }) => {
           </div>
         </form>
       </Card>
-      <ToastContainer
-        position='top-right'
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme='light'
-      />
     </>
   )
 }
