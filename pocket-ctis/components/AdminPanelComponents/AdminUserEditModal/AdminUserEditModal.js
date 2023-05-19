@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
 import { PencilSquare } from 'react-bootstrap-icons'
-import { Modal, Button, Accordion } from 'react-bootstrap'
+import {
+  Modal,
+  Button,
+  Accordion,
+  Popover,
+  OverlayTrigger,
+} from 'react-bootstrap'
 import styles from './AdminUserEditModal.module.css'
 import PersonalInformationForm from './Forms/PersonalInformationForm'
 import WorkInformationForm from './Forms/WorkInformationForm'
@@ -68,6 +74,27 @@ const AdminUserEditModal = ({ user, refreshProfile }) => {
     setShow(false)
   }
   const handleShow = () => setShow(true)
+
+  const hideAllUserData = () => {
+    console.log('hide all data')
+    document.body.click()
+  }
+
+  const hideAllDataPopover = (
+    <Popover title='Hide All Data?'>
+      <div className='p-2'>
+        Are you sure you would like to hide all your data?
+        <div className='d-flex justify-content-end'>
+          <Button
+            style={{ fontSize: 'small', padding: '2px 5px' }}
+            onClick={hideAllUserData}
+          >
+            Confirm
+          </Button>
+        </div>
+      </div>
+    </Popover>
+  )
 
   return (
     <>
@@ -206,6 +233,14 @@ const AdminUserEditModal = ({ user, refreshProfile }) => {
           </Accordion>
         </Modal.Body>
         <Modal.Footer>
+          <OverlayTrigger
+            trigger='click'
+            placement='top'
+            overlay={hideAllDataPopover}
+            rootClose
+          >
+            <Button>Hide All Data</Button>
+          </OverlayTrigger>
           <Button variant='secondary' onClick={handleClose}>
             Close
           </Button>

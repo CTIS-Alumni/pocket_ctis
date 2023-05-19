@@ -1,4 +1,8 @@
-import {_getFetcher, _submitFetcher, _submitFile} from '../../../helpers/fetchHelpers'
+import {
+  _getFetcher,
+  _submitFetcher,
+  _submitFile,
+} from '../../../helpers/fetchHelpers'
 import { craftUrl } from '../../../helpers/urlHelper'
 import AdminPageContainer from '../../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
 import {
@@ -11,6 +15,7 @@ import {
   Popover,
   Button,
   OverlayTrigger,
+  Spinner,
 } from 'react-bootstrap'
 import {
   EnvelopeFill,
@@ -131,7 +136,7 @@ const AdminUserView = ({ user }) => {
   const refreshProfile = () => {
     setIsLoading(true)
     _getFetcher({
-      res: craftUrl(["users",user.userInfo.data.basic_info[0].id, 'profile']),
+      res: craftUrl(['users', user.userInfo.data.basic_info[0].id, 'profile']),
     })
       .then(({ res }) => setUserData(res))
       .finally(() => {
@@ -153,17 +158,21 @@ const AdminUserView = ({ user }) => {
       toast.error('Please select an image to upload', {
         containerId: 'modalContainer',
       })
-    }else{
-      const formData = new FormData();
-      formData.append('profile_picture', basic_info[0].id);
-      formData.append('image', profileImage);
+    } else {
+      const formData = new FormData()
+      formData.append('profile_picture', basic_info[0].id)
+      formData.append('image', profileImage)
 
-      const res = await _submitFile('PUT', craftUrl(['users', basic_info[0].id, 'profilepicture']),  formData);
+      const res = await _submitFile(
+        'PUT',
+        craftUrl(['users', basic_info[0].id, 'profilepicture']),
+        formData
+      )
       console.log(res)
 
-      if(res.data || !res.errors){
+      if (res.data || !res.errors) {
         //setProfilePictureModal(false)
-      }//TODO: PUT TOAST
+      } //TODO: PUT TOAST
     }
   }
 
@@ -181,14 +190,18 @@ const AdminUserView = ({ user }) => {
   }
 
   const removeProfilePicture = async () => {
-
-    const res = await _submitFetcher('PUT',craftUrl(['users', basic_info[0].id, 'profilepicture'], [{name: 'removePic', value: 1}]))
-    console.log(res);
-    if(res.data || !res.errors){
+    const res = await _submitFetcher(
+      'PUT',
+      craftUrl(
+        ['users', basic_info[0].id, 'profilepicture'],
+        [{ name: 'removePic', value: 1 }]
+      )
+    )
+    console.log(res)
+    if (res.data || !res.errors) {
       setProfilePictureModal(null)
-      toast.success("Profile picture removed successfully")
+      toast.success('Profile picture removed successfully')
     }
-
   }
 
   const removeImagePopover = (
@@ -215,9 +228,26 @@ const AdminUserView = ({ user }) => {
           justifyContent: 'space-between',
           gap: '20px 20px',
           flexWrap: 'wrap',
+          position: 'relative',
         }}
       >
-        <LoadingSpinner isLoading={isLoading} />
+        {isLoading && (
+          <div
+            style={{
+              zIndex: 2,
+              position: 'absolute',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              width: '100%',
+              background: '#ccc',
+              opacity: '0.5',
+            }}
+          >
+            <Spinner />
+          </div>
+        )}
         <Card border='light' style={{ padding: 20, flexGrow: '3' }}>
           <div
             style={{ display: 'flex', justifyContent: 'space-between' }}
@@ -538,12 +568,7 @@ const AdminUserView = ({ user }) => {
                 </>
               )}
               {high_school.length != 0 && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: 10,
-                  }}
-                >
+                <div style={{ marginTop: 10 }}>
                   High School: {high_school[0].high_school_name}
                 </div>
               )}
@@ -797,10 +822,12 @@ const AdminUserView = ({ user }) => {
 export default AdminUserView
 
 export async function getServerSideProps(context) {
-  const {cookie} = context.req.headers;
+  const { cookie } = context.req.headers
 
   const userInfo = await _getFetcher(
-    { userInfo: craftUrl(["users", context.params.id, 'profile']) }, cookie)
+    { userInfo: craftUrl(['users', context.params.id, 'profile']) },
+    cookie
+  )
 
   return { props: { user: userInfo } }
 }

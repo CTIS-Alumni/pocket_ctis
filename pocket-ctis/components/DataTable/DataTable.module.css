@@ -1,3 +1,24 @@
+.clearBtn{
+    font-size: larger;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    padding: 5px
+}
+
+.popoverBody{
+    padding: 10px
+}
+.popoverDeleteBtn{
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    margin: 0 10px 10px 10px;
+    float: right;
+    color: #CE171A;
+    background-color: #FFE9E2;
+}
+
 .clickable{
     cursor: pointer;
 }
@@ -112,7 +133,7 @@
     height: 25px;
     padding-left: 15px;
 }
-.searchField button{
+.searchBtn{
     width: 50px;
     background-color: white;
     border: none;
@@ -120,7 +141,7 @@
     border-radius: 12.5px;
     transition: all 0.2s;
 }
-.searchField button:hover{
+.searchBtn:hover{
     background-color: #F1F1F1;
 }
 
