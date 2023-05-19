@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Spinner } from 'react-bootstrap'
+import { useState, useEffect, useMemo } from 'react'
+import { Spinner, Popover, OverlayTrigger } from 'react-bootstrap'
 import PaginationFooter from '../PaginationFooter/PaginationFooter'
 import {
   CaretDown,
@@ -32,6 +32,8 @@ const DataTable = ({
   const [currentPage, setCurrentPage] = useState(1)
   const [searchString, setSearchString] = useState('')
   const [sorting, setSorting] = useState({ name: '', direction: '' })
+  const [toDelete, setToDelete] = useState(null)
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   const handleSorting = (columnName) => {
     if (sorting.name == columnName) {
@@ -52,7 +54,7 @@ const DataTable = ({
   }
   const handlePageChange = (newPage) => setCurrentPage(newPage)
   const handleSearch = ({ searchString }) => {
-    setSearchString(searchString.trim())
+    setSearchString(searchString?.trim())
     setCurrentPage(1)
   }
 
@@ -75,6 +77,30 @@ const DataTable = ({
     onSubmit: handleSearch,
   })
 
+  const onDelete = (d) => {
+    setToDelete(d)
+  }
+
+  const deletePopover = useMemo(
+    () => (
+      <Popover title='Delete?'>
+        <div className={styles.popoverBody}>
+          Are you sure you want to delete this?
+        </div>
+        <button
+          className={styles.popoverDeleteBtn}
+          onClick={() => {
+            deleteHandler(toDelete)
+            document.body.click()
+          }}
+        >
+          Confirm
+        </button>
+      </Popover>
+    ),
+    []
+  )
+
   return (
     <div className={styles.tableContainer}>
       {isLoading && (
@@ -85,14 +111,13 @@ const DataTable = ({
       <form onSubmit={formik.handleSubmit}>
         <div className={styles.searchField}>
           <input
-            onReset={() => console.log('reset')}
             type='search'
             name='searchString'
             id='searchString'
             value={formik.values.searchString}
             onChange={formik.handleChange}
           />
-          <button type='submit'>
+          <button type='submit' className={styles.searchBtn}>
             <Search />
           </button>
         </div>
@@ -141,14 +166,11 @@ const DataTable = ({
                 className={`${styles.tableRow} ${
                   clickable ? styles.clickable : ''
                 }`}
-                onClick={() => {
-                  if (clickable) clickHandler(d)
-                }}
               >
                 {setSelectedArray && (
                   <td
                     className={styles.tableCell}
-                    style={{ textAlign: 'center' }}
+                    style={{ textAlign: 'center', zIndex: 2 }}
                   >
                     <input
                       checked={
@@ -168,7 +190,12 @@ const DataTable = ({
                   </td>
                 )}
                 {columns.map((c) => (
-                  <td className={styles.tableCell}>
+                  <td
+                    className={styles.tableCell}
+                    onClick={() => {
+                      if (clickable) clickHandler(d)
+                    }}
+                  >
                     {d[c] != null && d[c] != undefined && d[c]?.length > 75
                       ? `${d[c].slice(0, 50)} ...`
                       : d[c]}
@@ -190,12 +217,19 @@ const DataTable = ({
                     </button>
                   )}
                   {deleteHandler && (
-                    <button
-                      className={styles.deleteBtn}
-                      onClick={() => deleteHandler(d)}
+                    <OverlayTrigger
+                      trigger='click'
+                      placement='top'
+                      rootClose
+                      overlay={deletePopover}
                     >
-                      <Trash />
-                    </button>
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={() => onDelete(d)}
+                      >
+                        <Trash />
+                      </button>
+                    </OverlayTrigger>
                   )}
                 </td>
               </tr>
