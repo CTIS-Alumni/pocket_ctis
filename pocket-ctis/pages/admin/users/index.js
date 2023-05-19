@@ -1,22 +1,55 @@
 import { useState, useEffect } from 'react'
 import { _getFetcher } from '../../../helpers/fetchHelpers'
-import { craftUrl } from '../../../helpers/urlHelper'
+import { craftUrl, buildCondition } from '../../../helpers/urlHelper'
 import { Container, ListGroup, ListGroupItem, Tabs, Tab } from 'react-bootstrap'
 import Link from 'next/link'
 import { getProfilePicturePath } from '../../../helpers/formatHelpers'
+import { toast, ToastContainer } from 'react-toastify'
 import AdminPageContainer from '../../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
 import styles from '../../../styles/adminUsersList.module.css'
 import CreateUserForm from '../../../components/AdminPanelComponents/CreateUserForm/CreateUserForm'
+import DataTable from '../../../components/DataTable/DataTable'
 
 const AdminUsersList = () => {
   const [activeKey, setActiveKey] = useState('display')
-  const [users, setUsers] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [data, setData] = useState([])
+  const [columns, setColumns] = useState([])
+  const [total, setTotal] = useState()
+
+  const getData = (
+    conditions = [
+      { name: 'limit', value: 15 },
+      { name: 'offset', value: 0 },
+    ]
+  ) => {
+    setIsLoading(true)
+    _getFetcher({ users: craftUrl(['users'], conditions) })
+      .then(({ users }) => {
+        console.log(users)
+        if (users?.errors?.length > 0) {
+          users?.errors.map((e) => toast.error(e.error))
+          return
+        }
+        setTotal(users.length)
+        setData(users.data)
+      })
+      .finally((_) => setIsLoading(false))
+  }
 
   useEffect(() => {
-    _getFetcher({ users: craftUrl(['users']) })
-      .then((res) => setUsers(res.users.data))
-      .catch((err) => console.log(err))
+    getData()
+    setColumns(['id', 'first_name', 'last_name', 'user_types'])
   }, [])
+
+  const onQuery = (queryParams) => {
+    const conditions = buildCondition(queryParams)
+    getData(conditions)
+  }
+
+  const handleClick = (user) => {
+    console.log(user)
+  }
 
   return (
     <AdminPageContainer>
@@ -32,7 +65,17 @@ const AdminUsersList = () => {
                 Create User
               </button>
             </div>
-            {users.length > 0 && (
+            <DataTable
+              data={data}
+              columns={columns}
+              onQuery={onQuery}
+              total={total}
+              isLoading={isLoading}
+              searchCols=''
+              clickable={true}
+              clickHandler={handleClick}
+            />
+            {/* {users.length > 0 && (
               <ListGroup variant='flush'>
                 {users.map((user, i) => {
                   return (
@@ -46,9 +89,7 @@ const AdminUsersList = () => {
                               objectFit: 'contain',
                               borderRadius: '50%',
                             }}
-                            src={getProfilePicturePath(
-                              user.profile_picture
-                            )}
+                            src={getProfilePicturePath(user.profile_picture)}
                           />
                           <div
                             style={{
@@ -69,13 +110,23 @@ const AdminUsersList = () => {
                   )
                 })}
               </ListGroup>
-            )}
+            )} */}
           </Tab>
           <Tab eventKey='create' title='create'>
             <CreateUserForm goBack={() => setActiveKey('display')} />
           </Tab>
         </Tabs>
       </Container>
+      <ToastContainer
+        position='top-right'
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        draggable
+        pauseOnHover
+        theme='light'
+      />
     </AdminPageContainer>
   )
 }

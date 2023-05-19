@@ -37,7 +37,6 @@ const EduRec = () => {
       'id',
       'user_id',
       'user_types',
-      'profile_picture',
       'first_name',
       'last_name',
       'edu_inst_id',
