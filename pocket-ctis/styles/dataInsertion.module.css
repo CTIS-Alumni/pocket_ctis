@@ -58,29 +58,6 @@
     width: 89px;
     height: 30px;
 
-    background: #BFEAF3;
-    opacity: 0.8;
-
-    border: 1px solid #0054A1;
-    border-radius: 5px;
-
-    font-style: normal;
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 14px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-right: 10px;
-    /* ctis yellow 700 */
-    float: right;
-    color: #0054A1;
-}
-.submitButton{
-    padding: 8px;
-    float: right;
-    width: 89px;
-    height: 30px;
-
     background: #FFF9E8;
     opacity: 0.8;
 
@@ -93,8 +70,31 @@
     line-height: 14px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
+    margin-right: 10px;
+    /* ctis yellow 700 */
+    float: right;
+    color: #FF8412;
+}
+.submitButton{
+    padding: 8px;
+    float: right;
+    width: 83px;
+    height: 30px;
+
+    background: #e5f3c5;
+    opacity: 0.8;
+
+    border: 1px solid #46640a;
+    border-radius: 5px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 
     /* ctis yellow 700 */
 
-    color: #FF8412;
+    color:#46640a;
 }
