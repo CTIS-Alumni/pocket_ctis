@@ -134,7 +134,14 @@ const DataTable = ({
           </thead>
           <tbody>
             {data.map((d) => (
-              <tr className={styles.tableRow}>
+              <tr
+                className={`${styles.tableRow} ${
+                  clickable ? styles.clickable : ''
+                }`}
+                onClick={() => {
+                  if (clickable) clickHandler(d)
+                }}
+              >
                 {setSelectedArray && (
                   <td
                     className={styles.tableCell}

@@ -9,6 +9,7 @@ import AdminPageContainer from '../../../components/AdminPanelComponents/AdminPa
 import styles from '../../../styles/adminUsersList.module.css'
 import CreateUserForm from '../../../components/AdminPanelComponents/CreateUserForm/CreateUserForm'
 import DataTable from '../../../components/DataTable/DataTable'
+import { useRouter } from 'next/router'
 
 const AdminUsersList = () => {
   const [activeKey, setActiveKey] = useState('display')
@@ -16,6 +17,8 @@ const AdminUsersList = () => {
   const [data, setData] = useState([])
   const [columns, setColumns] = useState([])
   const [total, setTotal] = useState()
+
+  const router = useRouter()
 
   const getData = (
     conditions = [
@@ -26,7 +29,6 @@ const AdminUsersList = () => {
     setIsLoading(true)
     _getFetcher({ users: craftUrl(['users'], conditions) })
       .then(({ users }) => {
-        console.log(users)
         if (users?.errors?.length > 0) {
           users?.errors.map((e) => toast.error(e.error))
           return
@@ -48,7 +50,7 @@ const AdminUsersList = () => {
   }
 
   const handleClick = (user) => {
-    console.log(user)
+    router.push(`/admin/users/${user.id}`)
   }
 
   return (
