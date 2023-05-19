@@ -149,7 +149,10 @@ const AdminUsersList = () => {
           <Tab eventKey='create' title='create'>
             <CreateUserForm
               activeItem={activeItem}
-              goBack={() => setActiveKey('display')}
+              goBack={() => {
+                setActiveKey('display')
+                setActiveItem(null)
+              }}
             />
           </Tab>
         </Tabs>

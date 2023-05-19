@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Tabs, Tab, Container } from 'react-bootstrap'
-import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
+import { _getFetcher, _submitFetcher } from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
 import WorkTypeForm from '../EntityForms/WorkTypeForm'
-import {toast} from "react-toastify";
+import { toast } from 'react-toastify'
 
 const WorkTypeDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -18,6 +18,8 @@ const WorkTypeDashboard = () => {
 
   const [activeItem, setActiveItem] = useState(null)
   const [activeKey, setActiveKey] = useState('browse')
+
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   const getData = (
     conditions = [
@@ -53,17 +55,19 @@ const WorkTypeDashboard = () => {
   }
 
   const deleteHandler = async (data) => {
-    const res = await _submitFetcher("DELETE", craftUrl(["worktypes"]), {worktypes: [data]});
-    if(res?.data[data.id])
-      toast.success("Work type deleted successfully!")
+    const res = await _submitFetcher('DELETE', craftUrl(['worktypes']), {
+      worktypes: [data],
+    })
+    if (res?.data[data.id]) toast.success('Work type deleted successfully!')
     else toast.error(res.data[0].error)
   }
 
   const deleteSelected = async () => {
-    const res = await _submitFetcher("DELETE", craftUrl(["worktypes"]), {worktypes: selectedArray});
-    if(res.errors.length)
-      toast.error(res.errors[0].error)
-    else toast.success("Work types deleted successfully!")
+    const res = await _submitFetcher('DELETE', craftUrl(['worktypes']), {
+      worktypes: selectedArray,
+    })
+    if (res.errors.length) toast.error(res.errors[0].error)
+    else toast.success('Work types deleted successfully!')
   }
 
   const selectedArrayOptions = [
@@ -77,7 +81,10 @@ const WorkTypeDashboard = () => {
         activeKey={activeKey}
         onSelect={(key) => {
           setActiveKey(key)
-          if (key == 'browse') setActiveItem(null)
+          if (key == 'browse') {
+            setActiveItem(null)
+            setRefreshKey(Math.random().toString(36))
+          }
         }}
       >
         <Tab title='Browse' eventKey='browse'>
