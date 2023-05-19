@@ -8,29 +8,37 @@ import styles from './AdminUserFormStyles.module.css'
 
 import { cloneDeep } from 'lodash'
 import {
-  convertToIso, handleResponse,
-  replaceWithNull, splitFields,
+  convertToIso,
+  handleResponse,
+  replaceWithNull,
+  splitFields,
 } from '../../../../helpers/submissionHelpers'
-import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import { craftUrl} from '../../../../helpers/urlHelper'
-import {toast} from "react-toastify";
+import {
+  _getFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../../helpers/urlHelper'
+import { toast } from 'react-toastify'
+import { Spinner } from 'react-bootstrap'
 
 const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [examTypes, setExamTypes] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   let deletedData = []
 
   useEffect(() => {
     _getFetcher({ exams: craftUrl(['exams']) }).then(({ exams }) =>
-        setExamTypes(
-            exams.data.map((datum) => {
-              return {
-                ...datum,
-                exam: `${datum.id}-${datum.exam_name}`,
-              }
-            })
-        )
+      setExamTypes(
+        exams.data.map((datum) => {
+          return {
+            ...datum,
+            exam: `${datum.id}-${datum.exam_name}`,
+          }
+        })
+      )
     )
   }, [])
 
@@ -62,30 +70,31 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
   }
 
   const args = [['exam'], [], ['id', 'user_id'], ['exam_date']]
-  const url = craftUrl(["users",user_id, 'exams'])
+  const url = craftUrl(['users', user_id, 'exams'])
 
   const onSubmit = async (values) => {
+    setIsLoading(true)
     setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
     const send_to_req = { exams: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
     const requestObj = createReqObject(
-        send_to_req.exams,
-        newData.exams,
-        deletedData,
-        args[4]
+      send_to_req.exams,
+      newData.exams,
+      deletedData,
+      args[4]
     )
     const responseObj = await submitChanges(url, requestObj)
 
     const new_data = handleResponse(
-        send_to_req.exams,
-        requestObj,
-        responseObj,
-        values,
-        'exams',
-        args,
-        transformDataForSubmission
+      send_to_req.exams,
+      requestObj,
+      responseObj,
+      values,
+      'exams',
+      args,
+      transformDataForSubmission
     )
     applyNewData(new_data)
     console.log('req, ', requestObj, 'res', responseObj)
@@ -103,23 +112,41 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
         toast.error(errorInfo.error)
       })
     } else if (
-        responseObj.POST.data ||
-        responseObj.PUT.data ||
-        responseObj.DELETE.data
+      responseObj.POST.data ||
+      responseObj.PUT.data ||
+      responseObj.DELETE.data
     ) {
       toast.success('Data successfully saved')
     }
+    setIsLoading(false)
   }
 
   return (
-      <Formik
-          initialValues={{ exams: transformData(data) }}
-          enableReinitialize
-          onSubmit={onSubmit}
+    <Formik
+      initialValues={{ exams: transformData(data) }}
+      enableReinitialize
+      onSubmit={onSubmit}
     >
       {(props) => {
         return (
-          <Form>
+          <Form style={{ position: 'relative' }}>
+            {isLoading && (
+              <div
+                style={{
+                  zIndex: 2,
+                  position: 'absolute',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '100%',
+                  width: '100%',
+                  background: '#ccc',
+                  opacity: '0.5',
+                }}
+              >
+                <Spinner />
+              </div>
+            )}
             <table className={styles.formTable}>
               <tbody>
                 <FieldArray
@@ -263,11 +290,13 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
                               <button
                                 className={styles.bigAddBtn}
                                 type='button'
-                                onClick={() => arrayHelpers.push({
-                                  exam: '',
-                                  grade: '',
-                                  exam_date: null,
-                                })}
+                                onClick={() =>
+                                  arrayHelpers.push({
+                                    exam: '',
+                                    grade: '',
+                                    exam_date: null,
+                                  })
+                                }
                               >
                                 Add an Exam
                               </button>

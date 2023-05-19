@@ -2,15 +2,26 @@ import { useState, useEffect } from 'react'
 import { FieldArray, Field, Formik, Form } from 'formik'
 import styles from './AdminUserFormStyles.module.css'
 import { PlusCircleFill, XCircleFill } from 'react-bootstrap-icons'
-import {_getFetcher, _submitFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl} from '../../../../helpers/urlHelper'
-import {cloneDeep} from "lodash";
-import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
-import {toast} from "react-toastify";
+import {
+  _getFetcher,
+  _submitFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../../helpers/urlHelper'
+import { cloneDeep } from 'lodash'
+import {
+  handleResponse,
+  replaceWithNull,
+  splitFields,
+} from '../../../../helpers/submissionHelpers'
+import { toast } from 'react-toastify'
+import { Spinner } from 'react-bootstrap'
 
 const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [graduationProjects, setGraduationProjects] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   const applyNewData = (data) => {
     setDataAfterSubmit(data)
@@ -19,8 +30,12 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
   let deletedData = { projects: [], graduation_project: [] }
 
   const sendMail = async () => {
-    const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id, type: "graduation project"})
-    return res;
+    const res = await _submitFetcher(
+      'POST',
+      craftUrl(['mail'], [{ name: 'updateProfile', value: 1 }]),
+      { user_id, type: 'graduation project' }
+    )
+    return res
   }
 
   useEffect(() => {
@@ -37,11 +52,11 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const transformGraduationProject = (data) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
-      datum.graduation_project = `${datum.id}-${datum.graduation_project_name}`;
-      datum.visibility = datum.visibility == 1;
-      return datum;
+      datum.graduation_project = `${datum.id}-${datum.graduation_project_name}`
+      datum.visibility = datum.visibility == 1
+      return datum
     })
-    return newData;
+    return newData
   }
 
   const transformData = (data) => {
@@ -59,8 +74,8 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
         val.visibility = val.visibility ? 1 : 0
         val.project_name = val.project_name ? val.project_name : null
         val.project_description = val.project_description
-            ? val.project_description
-            : null
+          ? val.project_description
+          : null
         replaceWithNull(val)
         return val
       })
@@ -68,10 +83,10 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
     graduation_project: (newData) => {
       newData.graduation_project = newData.graduation_project.map((val) => {
         val.graduation_project_description = val.graduation_project_description
-            ? val.graduation_project_description
-            : null
+          ? val.graduation_project_description
+          : null
         val.visibility = val.visibility ? 1 : 0
-        splitFields(val, ["graduation_project"])
+        splitFields(val, ['graduation_project'])
         replaceWithNull(val)
         return val
       })
@@ -79,6 +94,7 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
   }
 
   const onSubmit = async (values) => {
+    setIsLoading(true)
     setIsUpdated(true)
     let newData = cloneDeep(values)
     transformFuncs.projects(newData)
@@ -95,27 +111,27 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
 
     const final_data = { graduation_project: [], projects: [] }
     await Promise.all(
-        Object.keys(dataAfterSubmit).map(async (key) => {
-          const send_to_req = {}
-          send_to_req[key] = cloneDeep(dataAfterSubmit[key])
-          transformFuncs[key](send_to_req)
-          requestObj[key] = createReqObject(
-              send_to_req[key],
-              newData[key],
-              deletedData[key]
-          )
-          const url = craftUrl(["users",user_id, key])
-          responseObj[key] = await submitChanges(url, requestObj[key])
-          final_data[key] = handleResponse(
-              send_to_req[key],
-              requestObj[key],
-              responseObj[key],
-              values,
-              key,
-              args[key],
-              transformFuncs[key]
-          )
-        })
+      Object.keys(dataAfterSubmit).map(async (key) => {
+        const send_to_req = {}
+        send_to_req[key] = cloneDeep(dataAfterSubmit[key])
+        transformFuncs[key](send_to_req)
+        requestObj[key] = createReqObject(
+          send_to_req[key],
+          newData[key],
+          deletedData[key]
+        )
+        const url = craftUrl(['users', user_id, key])
+        responseObj[key] = await submitChanges(url, requestObj[key])
+        final_data[key] = handleResponse(
+          send_to_req[key],
+          requestObj[key],
+          responseObj[key],
+          values,
+          key,
+          args[key],
+          transformFuncs[key]
+        )
+      })
     )
     console.log('req', requestObj, 'res', responseObj)
     applyNewData(final_data)
@@ -128,7 +144,7 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
           errors = [...errors, ...value.errors.map((error) => error)]
         }
       }
-    });
+    })
 
     if (errors.length > 0) {
       errors.forEach((errorInfo) => {
@@ -136,14 +152,13 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
       })
     } else toast.success('Data successfully saved')
 
-    if(responseObj.POST.data?.length){
-      const {data, errors} = await sendMail();
-      if(data)
-        toast.success("Profile update mail sent to user")
-      else toast.error("Failed to send profile update mail to user")
+    if (responseObj.POST.data?.length) {
+      const { data, errors } = await sendMail()
+      if (data) toast.success('Profile update mail sent to user')
+      else toast.error('Failed to send profile update mail to user')
     }
+    setIsLoading(false)
   }
-
 
   const { projects, graduation_project } = data
 
@@ -159,7 +174,24 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
       {(props) => {
         return (
           <>
-            <Form>
+            <Form style={{ position: 'relative' }}>
+              {isLoading && (
+                <div
+                  style={{
+                    zIndex: 2,
+                    position: 'absolute',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100%',
+                    width: '100%',
+                    background: '#ccc',
+                    opacity: '0.5',
+                  }}
+                >
+                  <Spinner />
+                </div>
+              )}
               <table style={{ width: '100%' }}>
                 <tbody>
                   <FieldArray
@@ -196,12 +228,16 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               type='button'
                                               onClick={() => {
                                                 arrayHelpers.remove(index)
-                                                if (project.hasOwnProperty('id')) {
-                                                  deletedData.graduation_project.push({
-                                                    name: project.graduation_project_name,
-                                                    id: project.id,
-                                                    data: project,
-                                                  })
+                                                if (
+                                                  project.hasOwnProperty('id')
+                                                ) {
+                                                  deletedData.graduation_project.push(
+                                                    {
+                                                      name: project.graduation_project_name,
+                                                      id: project.id,
+                                                      data: project,
+                                                    }
+                                                  )
                                                 }
                                               }}
                                             >
@@ -277,7 +313,12 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                 <button
                                   className={styles.bigAddBtn}
                                   type='button'
-                                  onClick={() => arrayHelpers.push({graduation_project: '', graduation_project_description: ''})}
+                                  onClick={() =>
+                                    arrayHelpers.push({
+                                      graduation_project: '',
+                                      graduation_project_description: '',
+                                    })
+                                  }
                                 >
                                   Add a Project
                                 </button>
@@ -392,10 +433,11 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                 <button
                                   className={styles.bigAddBtn}
                                   type='button'
-                                  onClick={() => arrayHelpers.push( {
-                                    project_name: '',
-                                    project_description: '',
-                                  })
+                                  onClick={() =>
+                                    arrayHelpers.push({
+                                      project_name: '',
+                                      project_description: '',
+                                    })
                                   }
                                 >
                                   Add a Project
