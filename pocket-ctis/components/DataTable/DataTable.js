@@ -111,12 +111,23 @@ const DataTable = ({
       <form onSubmit={formik.handleSubmit}>
         <div className={styles.searchField}>
           <input
-            type='search'
             name='searchString'
             id='searchString'
             value={formik.values.searchString}
             onChange={formik.handleChange}
           />
+          {!!!!formik.values.searchString && (
+            <button
+              className={styles.clearBtn}
+              type='button'
+              onClick={() => {
+                formik.setFieldValue('searchString', '')
+                handleSearch({ searchString: ' ' })
+              }}
+            >
+              &#xD7;
+            </button>
+          )}
           <button type='submit' className={styles.searchBtn}>
             <Search />
           </button>
