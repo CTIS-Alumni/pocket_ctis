@@ -19,7 +19,7 @@ export const buildCondition = (queryParams) => {
     let conditions = [];
     for(const [key, value] of Object.entries(queryParams)){
         if(value !== "")
-            conditions.push({name: key, value: value});
+            conditions.push({name: key, value: encodeURIComponent(value)});
 
     }
     return conditions;

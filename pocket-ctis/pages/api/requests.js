@@ -5,10 +5,17 @@ import {
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
+import {sendResolvedRequestMail} from "../../helpers/mailHelper";
 
 const columns = {
-    user: "CONCAT(u.first_name, ' ', '%' ,' ', u.last_name)",
-    description: ""
+    user: "CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
+    subject: "r.subject",
+    description: "r.description",
+    id: "r.id",
+    user_id: "r.user_id",
+    request_date: "r.request_date",
+    type: "r.type",
+    is_closed: "r.is_closed"
 }
 
 const table_name = "request";
@@ -34,7 +41,7 @@ const handler =  async (req, res) => {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT r.id, r.user_id, u.first_name, u.bilkent_id, u.last_name, r.type, r.description, r.request_date, r.is_closed FROM request r " +
+                    let query = "SELECT r.id, r.user_id, u.first_name, u.bilkent_id, u.contact_email, u.last_name, r.type, r.description, r.request_date, r.is_closed FROM request r " +
                         "LEFT OUTER JOIN users u ON (u.id = r.user_id) "
                     let length_query = "SELECT COUNT(*) as count FROM request ";
 
@@ -72,12 +79,18 @@ const handler =  async (req, res) => {
             case "PUT":
                 if(session.payload.mode === "admin") {
                     try {
-                        const {request} = JSON.parse(req.body);
+                        if(req.query.close){
+                            const {request} = JSON.parse(req.body);
+                            console.log("here is request", request);
+                            const query = "UPDATE request SET is_closed = ? WHERE id = ? ";
+                            const {data, errors} = await doqueryNew({query: query, values: [request.is_closed, request.id]});
 
-                        const query = "UPDATE request SET is_closed = ? WHERE id = ? ";
-                        const {data, errors} = await doqueryNew({query: query, values: [request.is_closed, request.id]});
-                        res.status(200).json({data, errors});
+                            if(errors)
+                                throw {message: errors[0].error}
 
+                            const mail_status = await sendResolvedRequestMail(request);
+                            res.status(200).json({data: mail_status, errors: errors});
+                        }
                     } catch (error) {
                         res.status(500).json({errors: [{error: error.message}]});
                     }

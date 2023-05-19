@@ -15,6 +15,8 @@ const WorkRec = () => {
     conditions = [
       { name: 'limit', value: 15 },
       { name: 'offset', value: 0 },
+        { name: 'column', value: 'record_date'},
+        {name: 'order', value: 'desc'}
     ]
   ) => {
     setIsLoading(true)
@@ -37,6 +39,7 @@ const WorkRec = () => {
       'id',
       'user_id',
       'user_types',
+      'bilkent_id',
       'first_name',
       'last_name',
       'company_id',
@@ -70,7 +73,7 @@ const WorkRec = () => {
               onQuery={onQuery}
               total={total}
               isLoading={isLoading}
-              searchCols=''
+              searchCols='user,company_name,department,position,city_name,country_name,work_type_name,bilkent_id'
             />
           </div>
         )}

@@ -3,12 +3,24 @@ import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 
 const columns = {
-    user: " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
-        "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  ",
-    company: "c.company",
+    user: "CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
+    company_name: "c.company_name",
     department: "w.department",
-    position: "w.position"
-
+    position: "w.position",
+    country_name: "co.country_name",
+    city_name: "ci.city_name",
+    id: "w.id",
+    first_name: "u.first_name",
+    last_name: "u.last_name",
+    company_id: "c.id",
+    work_type_name: "wt.id",
+    start_date: "w.start_date",
+    end_date: "e.end_date",
+    is_current: "w.is_current",
+    record_date: "w.record_date",
+    user_id: "w.user_id",
+    user_types: "user_types",
+    bilkent_id: "u.bilkent_id"
 }
 
 const handler =  async (req, res) => {
@@ -21,7 +33,7 @@ const handler =  async (req, res) => {
                 try {
                     const is_admin = payload.user === "admin";
                     let values = [], length_values = [], length_query = "";
-                    let query = "SELECT w.id, w.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.first_name, u.last_name, w.company_id, " +
+                    let query = "SELECT w.id, w.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.bilkent_id, u.first_name, u.last_name, w.company_id, " +
                         "c.company_name, wt.work_type_name, w.department, w.position, w.work_description, w.city_id, ci.city_name," +
                         "w.country_id, co.country_name, w.start_date, w.end_date, w.is_current, w.record_date ";
 
@@ -70,9 +82,8 @@ const handler =  async (req, res) => {
                         const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
                             {name: "length", query: length_query, values: length_values}]);
 
-                        console.log("uery", query, "data:", data, "length:", length_query);
 
-                        res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
+                        res.status(200).json({data:data.data, length: data?.length[0].count, errors: errors});
 
                     }else {
                         query += " GROUP BY w.id ORDER BY w.record_date DESC LIMIT 15"

@@ -3,13 +3,23 @@ import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 
 const columns = {
-    user: " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
-"CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  ",
+    user: "CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
     edu_inst_name: "ei.edu_inst_name",
     edu_inst_id: "ei.edu_inst_id",
     degree_type_name: "d.degree_type_name",
-    degree_type_id: "d.degree_type_id",
     name_of_program: "e.name_of_program",
+    city_name: "ci.city_name",
+    country_name: "co.country_name",
+    id: "e.id",
+    user_types: "user_types",
+    start_date: "e.start_date",
+    end_date: "e.end_date",
+    is_current: "e.is_current",
+    record_date: "e.record_date",
+    user_id: "e.user_id",
+    first_name: "u.first_name",
+    last_name: "u.last_name",
+    bilkent_id: "u.bilkent_id"
 }
 
 const handler =  async (req, res) => {
@@ -22,7 +32,7 @@ const handler =  async (req, res) => {
                 try {
                     const is_admin = payload.user === "admin";
                     let values = [], length_values = [], length_query = "";
-                    let query = "select e.id, e.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.first_name, u.last_name, e.edu_inst_id, ei.edu_inst_name," +
+                    let query = "select e.id, e.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.bilkent_id, u.first_name, u.last_name, e.edu_inst_id, ei.edu_inst_name," +
                         "ci.city_name, co.country_name, d.degree_type_name, e.name_of_program, e.start_date, e.end_date, e.is_current, e.record_date ";
 
                     const add = "FROM educationrecord e JOIN users u ON (e.user_id = u.id) " +

@@ -32,8 +32,8 @@ const SectorsDashboard = () => {
           sectors?.errors.map((e) => toast.error(e.error))
           return
         }
-        setTotal(sectors?.length)
-        setData(sectors?.data)
+        setTotal(sectors.length)
+        setData(sectors.data)
       })
       .finally((_) => setIsLoading(false))
   }

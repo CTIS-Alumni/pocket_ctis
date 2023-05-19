@@ -6,6 +6,7 @@ import {
   ClipboardData,
   DatabaseFillAdd,
   PeopleFill,
+    Mailbox,
   PlusSquare,
   PlusSquareFill,
   Search,
@@ -35,6 +36,9 @@ const AdminSidebar = () => {
       <div className={styles.userTitle}>
         {userData?.first_name} {userData?.last_name}
       </div>
+        <Button href='/admin' icon={<Mailbox />}>
+            Requests & Reports
+        </Button>
       <Button href='/admin/users' icon={<PeopleFill />}>
         Users
       </Button>

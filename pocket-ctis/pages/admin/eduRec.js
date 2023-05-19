@@ -15,6 +15,8 @@ const EduRec = () => {
     conditions = [
       { name: 'limit', value: 15 },
       { name: 'offset', value: 0 },
+        { name: 'column', value: 'record_date'},
+        {name: 'order', value: 'desc'}
     ]
   ) => {
     setIsLoading(true)
@@ -36,6 +38,7 @@ const EduRec = () => {
     setColumns([
       'id',
       'user_id',
+      'bilkent_id',
       'user_types',
       'first_name',
       'last_name',
@@ -69,7 +72,7 @@ const EduRec = () => {
               onQuery={onQuery}
               total={total}
               isLoading={isLoading}
-              searchCols='skill_name,skill_type_name'
+              searchCols='user,edu_inst_name,degree_type_name,name_of_program,city_name,country_name,bilkent_id'
             />
           </div>
         )}

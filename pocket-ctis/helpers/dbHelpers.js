@@ -3,7 +3,8 @@ import dbconfig from "../config/dbconfig.js";
 import {reFormatDate} from "./formatHelpers";
 import {sendActivationMail, sendAdminActivationMail} from "./mailHelper";
 import formidable from "formidable";
-import fs from "fs/promises";
+import { promises as fsPromises } from 'fs';
+import fs from 'fs';
 import {resizeAndCropImage} from "./imageHelper";
 
 export const createDBConnection = async (namedPlaceholders = false) => {
@@ -40,10 +41,14 @@ export const buildSearchQuery = async (req, query, values, length_query, length_
         query += addAndOrWhere(query, "(");
         length_query += addAndOrWhere(length_query, "(");
         searchColumns.forEach(function(column){
-            query += column + " LIKE CONCAT('%', ?, '%') OR "
-            length_query += column + " LIKE CONCAT('%', ?, '%') OR ";
-            values.push(req.query.search);
-            length_values.push(req.query.search);
+                query += column + " LIKE CONCAT('%', ?, '%') OR "
+                length_query += column + " LIKE CONCAT('%', ?, '%') OR ";
+                values.push(req.query.search);
+                length_values.push(req.query.search);
+                if(column.includes("CONCAT(u.first_name")){
+                    values.push(req.query.search);
+                    length_values.push(req.query.search);
+                }
         });
 
         query = query.slice(0,-3) + ") ";
@@ -174,7 +179,6 @@ export const getCountForUser = async (connection, table, user_id) => { //gets th
 }
 
 export const doqueryNew = async ({query, values = [], namedPlaceholders = false}) => {
-    console.log("why is it wrong", query, values);
     const connection = await createDBConnection(namedPlaceholders);
     try {
         const [data] = await connection.execute(query, values);
@@ -293,6 +297,153 @@ export async function updateTable(queries, validation, select_queries = []) {//p
     return {data, errors};
 }
 
+export const deleteGraduationProjectsWithImage = async (graduationprojects) =>{
+    const errors = [];
+    const data = {};
+    const connection = await createDBConnection(true);
+
+    console.log(graduationprojects)
+
+    try{
+        await connection.beginTransaction();
+        const delete_query = "DELETE FROM graduationproject WHERE id = ? ";
+        const delete_user_query = "DELETE FROM usergraduationproject WHERE graduation_project_id = ? ";
+
+        for (const [i, g] of graduationprojects.entries()){
+            console.log("g", g)
+            const [res] = await connection.execute(delete_query,[g.id]);
+            const [user_res] = await connection.execute(delete_user_query, [g.id]);
+            if(g.team_pic !== "defaulteam" && fs.existsSync(process.env.SAVE_IMAGES_PATH + "/graduationprojects/team/" + g.team_pic + ".png"))
+                await fsPromises.unlink(process.env.SAVE_IMAGES_PATH + "/graduationprojects/team/" + g.team_pic + ".png");
+            if(g.poster_pic !== "defaultposter" && fs.existsSync(process.env.SAVE_IMAGES_PATH + "/graduationprojects/poster/" + g.poster_pic + ".png"))
+                await fsPromises.unlink(process.env.SAVE_IMAGES_PATH + "/graduationprojects/poster/" + g.poster_pic + ".png");
+        }
+
+    }catch(error){
+        error.message = handleDBErrorMessage(error);
+        errors.push({error: error.message});
+        await connection.rollback();
+    }
+
+    await connection.commit();
+
+    connection.end();
+    return {data, errors};
+}
+
+export const updateGraduationProjectWithImage = async (query, obj,students, validation, file_objs, oldTeamPic, oldPosterPic) => {
+    const errors = [];
+    const data = {};
+    const connection = await createDBConnection(true);
+
+    try{
+        await connection.beginTransaction();
+
+        let is_valid = true;
+        if (typeof validation === "function") {
+            is_valid = validation(obj);
+            if (is_valid !== true)
+                throw {message: is_valid};
+        }
+
+        const [res] = await connection.execute(query.query, query.values);
+
+        const team_members_query = "SELECT user_id FROM usergraduationproject WHERE graduation_project_id = ? ";
+        const [member_res] = await connection.execute(team_members_query, [obj.id]);
+
+        let deleted = [], added = [];
+
+        if(member_res.length){
+            const fromDB = member_res.map(obj => obj.user_id);
+            deleted = fromDB.filter(userId => !students.includes(userId));
+            added = students.filter(num => {
+                return !fromDB.some(obj => obj.user_id === num);
+            });
+        }
+        const delete_user_query = "DELETE FROM usergraduationproject WHERE user_id = ? ";
+        const add_user_query = "INSERT INTO usergraduationproject (user_id, graduation_project_id) " +
+            "values (?, ?)";
+
+        for(const id of deleted){
+            const [deleted_res] = await connection.execute(delete_user_query, [id]);
+        }
+
+        for(const [id] of added){
+            const [added_res] = await connection.execute(add_user_query, [id, obj.id]);
+        }
+
+        if(oldPosterPic !== "defaultposter"){
+            await fsPromises.unlink(process.env.SAVE_IMAGES_PATH + "/graduationprojects/poster/" + oldPosterPic + ".png");
+        }
+        if(oldTeamPic !== "defaultteam"){
+            await fsPromises.unlink(process.env.SAVE_IMAGES_PATH + "/graduationprojects/team/" + oldTeamPic + ".png");
+        }
+
+        for (const [key, value] of Object.entries(file_objs)) {
+            const destinationFilePath = process.env.SAVE_IMAGES_PATH + value.location + "/" + value.name + ".png";
+            const resizedBuffer = await resizeAndCropImage(value[key], 1280, 720);
+            await fsPromises.writeFile(destinationFilePath, resizedBuffer);
+            data[key] = value.name;
+        }
+
+    }catch(error){
+        error.message = handleDBErrorMessage(error);
+        errors.push({error: error.message});
+        await connection.rollback();
+    }
+    await connection.commit();
+
+    connection.end();
+    return {data, errors};
+}
+
+export const insertGraduationProjectWithImage = async (query, obj,students, validation, file_objs) =>{
+    const errors = [];
+    const data = [];
+    const connection = await createDBConnection(true);
+
+    try{
+        await connection.beginTransaction();
+
+        let is_valid = true;
+        if (typeof validation === "function") {
+            is_valid = validation(obj);
+            if (is_valid !== true)
+                throw {message: is_valid};
+        }
+
+        const [res] = await connection.execute(query.query, query.values);
+
+        const inserted_id = res.insertId;
+        const users_query = "INSERT INTO usergraduationproject(user_id, graduation_project_id) " +
+            " values (?, ?)";
+
+        for (const student of students) {
+            const [user_res] = await connection.execute(users_query, [student, inserted_id]);
+        }
+        data.push(inserted_id);
+
+        for (const [key, value] of Object.entries(file_objs)) {
+            const destinationFilePath = process.env.SAVE_IMAGES_PATH + value.location + "/" + value.name.trim() + ".png";
+            const resizedBuffer = await resizeAndCropImage(value[key], 1280, 720);
+            await fsPromises.writeFile(destinationFilePath, resizedBuffer);
+        }
+
+    } catch (error) {
+        if(error.message.includes("usergraduationproject.user_id_UNIQUE")){
+            errors.push({error: "User already has graduation project!"})
+        }else {
+            error.message = handleDBErrorMessage(error);
+            errors.push({error: error.message});
+        }
+        await connection.rollback();
+    }
+    await connection.commit();
+
+    connection.end();
+    return {data, errors};
+}
+
 export const insertWithImage = async (query, obj, validation, file_objs, targetWidth, targetHeight) => { //files: [{file: {filedata}, name: 'newnameyouwant', location: 'foldername' }]
     const errors = [];
     const data = [];
@@ -310,9 +461,9 @@ export const insertWithImage = async (query, obj, validation, file_objs, targetW
         const [res] = await connection.execute(query, obj);
 
         for(const [key, value] of Object.entries(file_objs)){
-            const destinationFilePath = process.env.PUBLIC_IMAGES_PATH + value.location + "/" + value.name + ".png";
+            const destinationFilePath = process.env.SAVE_IMAGES_PATH + value.location + "/" + value.name + ".png";
             const resizedBuffer = await resizeAndCropImage(value[key], targetWidth, targetHeight);
-            await fs.writeFile(destinationFilePath, resizedBuffer);
+            await fsPromises.writeFile(destinationFilePath, resizedBuffer);
         }
 
         data.push(obj);

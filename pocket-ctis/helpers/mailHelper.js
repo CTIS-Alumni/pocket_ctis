@@ -10,7 +10,6 @@ import departmentConfig from '../config/departmentConfig';
 export const sendChangeEmailMail = async (user, newEmail) => {
     const transport = nodemailer.createTransport(mailConfig);
     try{
-        console.log("user that comes to change email mail", user);
         const confirm_new_email_token = await sign({
             user_id: user.id, email_address: newEmail, type: "changeEmail"
         }, process.env.MAIL_SECRET, 60 * 10);
@@ -38,6 +37,39 @@ export const sendChangeEmailMail = async (user, newEmail) => {
         transport.close();
         return error;
     }
+}
+
+export const sendResolvedRequestMail = async (request) => {
+    const transport = nodemailer.createTransport(mailConfig);
+
+    try{
+        const template = compile(fs.readFileSync('public/views/resolvedRequest.hbs', 'utf-8'));
+
+        const html = template({
+            name: request.first_name,
+            surname: request.last_name,
+            subject: request.subject,
+            description: request.description
+        })
+
+        const options = {
+            from: mailConfig.auth.user,
+            to: request.contact_email,
+            subject: `${departmentConfig.app_name} Resolved Request`,
+            html: html
+        }
+
+        await transport.sendMail(options);
+        transport.close();
+        return true;
+
+    }catch(error){
+        transport.close();
+        return error;
+    }
+
+
+
 }
 
 export const sendPasswordResetMail = async (user, type) => {

@@ -72,7 +72,7 @@ export const getProfilePicturePath = (fileName = null) => {
 export const getGraduationProjectPicturePath = (filename = null, teamOrPoster = "team") => {
         if(filename)
             return process.env.NEXT_PUBLIC_IMAGES_PATH + "/graduationprojects/" + teamOrPoster + "/" + filename + '.png';
-        else return process.env.NEXT_PUBLIC_IMAGES_PATH + "/graduationprohjcts/" + teamOrPoster + '/defaultTeam.png';
+        else return process.env.NEXT_PUBLIC_IMAGES_PATH + "/graduationprohjcts/" + teamOrPoster + '/defaultteam.png';
 }
 
 export const getDateString = (date) => {

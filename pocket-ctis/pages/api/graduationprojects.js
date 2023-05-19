@@ -1,10 +1,9 @@
 import {
-    doMultiDeleteQueries,
-    updateTable,
-    buildSelectQueries, buildInsertQueries, buildUpdateQueries, buildSearchQuery, doMultiQueries, insertToTable
+    buildSearchQuery,
+    doMultiQueries,
+    deleteGraduationProjectsWithImage
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
-import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
 
 const columns = {
@@ -17,44 +16,6 @@ const columns = {
     project_year: "g.project_year",
     project_type: "g.project_type",
 
-}
-
-const fields = {
-    basic: ["graduation_project_name",
-        "team_number",
-        "product_name",
-        "project_year",
-        "semester",
-        "project_description",
-        "advisor_id",
-        "project_type",
-        "company_id"],
-    date: []
-};
-
-const table_name = "graduationproject";
-
-const validation = (data) => {
-    replaceWithNull(data)
-    if(!data.graduation_project_name)
-        return "Project Name can't be empty!";
-    if(isNaN(parseInt(data.team_number)))
-        return "Team Number must be a number!";
-    if(!data.project_year)
-        return "Project Year can't be empty!";
-    if(data.project_year.length !== 9)
-        return "Invalid value for Project Year!";
-    if(!data.semester)
-        return "Semester can't be empty!";
-    if(isNaN(parseInt(data.advisor_id)))
-        return "Advisor ID must be a number!";
-    if(!data.project_type)
-        return "Project Type can't be empty!";
-    if (data.project_type === "Company" && isNaN(parseInt(data.company_id)))
-        return "Company projects must have a valid Company ID!";
-    if (data.project_type !== "Company" && data.company_id !== null)
-        return "Instructor or student projects can't have a Company ID!";
-    return true;
 }
 
 const handler =  async (req, res) => {
@@ -80,8 +41,6 @@ const handler =  async (req, res) => {
                         values.push(req.query.name);
                     }
 
-                    console.log(query);
-
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
 
                     const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
@@ -93,39 +52,15 @@ const handler =  async (req, res) => {
                     res.status(500).json({errors: [{error: error.message}]});
                 }
                 break;
-            case "POST":
-                payload = await checkUserType(session, req.query);
-                if (payload?.user === "admin") {
-                    try {
-                        const {graduationprojects} = JSON.parse(req.body);
-                        const queries = buildInsertQueries(graduationprojects, table_name, fields);
-                        const {data, errors} = await insertToTable(queries, table_name, validation);
-                        res.status(200).json({data, errors});
-                    } catch (error) {
-                        res.status(500).json({errors: [{error: error.message}]});
-                    }
-                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
-                break;
-            case "PUT":
-                payload = await checkUserType(session, req.query);
-                if (payload?.user === "admin") {
-                    try {
-                        const {graduationprojects} = JSON.parse(req.body);
-                        const queries = buildUpdateQueries(graduationprojects,table_name, fields);
-                        const select_queries = buildSelectQueries(graduationprojects, table_name, field_conditions);
-                        const {data, errors} = await updateTable(queries, validation, select_queries);
-                        res.status(200).json({data, errors});
-                    } catch (error) {
-                        res.status(500).json({errors: [{error: error.message}]});
-                    }
-                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
-                break;
             case "DELETE":
                 payload = await checkUserType(session, req.query);
                 if(payload?.user === "admin"){
                     try{
+                        console.log(req.body)
+                        console.log("-----------------------")
+                        console.log(JSON.parse(req.body));
                         const {graduationprojects} = JSON.parse(req.body);
-                        const {data, errors} = await doMultiDeleteQueries(graduationprojects, table_name);
+                        const {data, errors} = await deleteGraduationProjectsWithImage(graduationprojects);
                         res.status(200).json({data, errors});
                     }catch(error){
                         res.status(500).json({errors: [{error: error.message}]});

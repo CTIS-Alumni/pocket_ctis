@@ -2,7 +2,7 @@ import { useFormik } from 'formik'
 import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useEffect, useState } from 'react'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher, _submitFile} from '../../helpers/fetchHelpers'
 import { craftUrl } from '../../helpers/urlHelper'
 import Select from 'react-select'
 import * as Yup from 'yup'
@@ -96,14 +96,13 @@ const GraduationProjectForm = ({ activeItem }) => {
       advisor_id: Yup.object().required('Supervisor is required'),
       project_type: Yup.object().required('Project Type is required'),
     }),
-    onSubmit: (vals) => onSubmitHandler(vals),
+    onSubmit: async (values) => onSubmitHandler(values),
   })
 
   useEffect(() => {
     console.log(activeItem)
     if (activeItem) {
       formik.setValues({
-        skill_name: activeItem.skill_name,
         graduation_project_name: activeItem.graduation_project_name,
         team_number: activeItem.team_number,
         product_name: activeItem.product_name,
@@ -146,9 +145,62 @@ const GraduationProjectForm = ({ activeItem }) => {
     }
   }, [activeItem])
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
-    //get images from posterPic and teamPic useStates
+  const onSubmitHandler = async (values) => {
+    if(!teamPic){
+      toast.error("Please select a team picture!");
+      return;
+    }
+    console.log("heres values", values);
+    const temp = {
+      advisor_id: values.advisor_id.value,
+      company_id: values?.company_id?.value || null,
+      graduation_project_name: values.graduation_project_name,
+      product_name: values?.product_name || null,
+      project_description: values?.project_description,
+      project_type: values.project_type.value,
+      project_year: values.project_year.value,
+      semester: values.semester.value,
+      team_number: values.team_number,
+      team_pic: teamPic ? "tempteam" : "defaultteam",
+      poster_pic: posterPic ? "tempposter" : "defaultposter",
+      };
+
+
+    if(activeItem){
+      temp.old_team_pic = activeItem.team_pic;
+      temp.id = activeItem.id;
+      temp.old_poster_pic =  activeItem.poster_pic;
+    }
+
+    const formData = new FormData();
+    Object.keys(temp).forEach((key)=>{
+      formData.append(key, temp[key])
+    })
+
+    const studentValues = values.students.map(student => student.value);
+    formData.set('students', studentValues);
+
+    if(teamPic){
+      formData.append('teamImage', teamPic);
+    }
+    if(posterPic){
+      formData.append('posterImage', posterPic);
+    }
+
+    if(activeItem){
+      const res = await _submitFile('PUT', craftUrl(['graduationprojectsImages']),  formData);
+      if(!res.errors.length){
+        toast.success("Graduation project saved successfully!")
+        console.log(res);
+        //TODO: SET THE RETURNING PICTURES ACCORDINLY; IF THERE'S NO posterImage in res.data, set it to "defaultuser"
+      }else toast.error(res.errors[0].error);
+    }else{
+      const res = await _submitFile('POST', craftUrl(['graduationprojectsImages']),  formData);
+      if(!res.errors.length){
+        toast.success("Graduation project added successfully!")
+      }else toast.error(res.errors[0].error);
+    }
+
   }
 
   return (
@@ -340,10 +392,10 @@ const GraduationProjectForm = ({ activeItem }) => {
             <Select
               styles={selectStyles}
               isMulti={false}
-              options={companies}
+              options={[{ label: 'No Company', value: null }, ...companies]}
               id='company_id'
               name='company_id'
-              value={formik.values.company_id}
+              value={formik.values.company_id || null}
               onChange={(val) => formik.setFieldValue('company_id', val)}
             />
             {formik.touched.company_id && formik.errors.company_id ? (

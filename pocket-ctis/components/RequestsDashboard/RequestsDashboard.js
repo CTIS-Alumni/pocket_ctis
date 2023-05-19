@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import styles from './RequestsDashboard.module.css'
 import DataTable from '../DataTable/DataTable'
-import { _getFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { craftUrl } from '../../helpers/urlHelper'
 import { toast, ToastContainer } from 'react-toastify'
 import { Modal, Button, Popover, OverlayTrigger } from 'react-bootstrap'
@@ -30,6 +30,8 @@ const RequestsDashboard = () => {
     conditions = [
       { name: 'limit', value: 15 },
       { name: 'offset', value: 0 },
+      { name: 'column', value: 'request_date'},
+      {name: 'order', value: 'desc'}
     ]
   ) => {
     setIsLoading(true)
@@ -64,8 +66,19 @@ const RequestsDashboard = () => {
     ])
   }, [])
 
-  const closeRequest = () => {
-    console.log('close', activeItem)
+  const closeRequest = async () => {
+    console.log("active Item", activeItem)
+    const temp = {...activeItem, is_closed: 1}
+    const res = await _submitFetcher('PUT',craftUrl(["requests"], [{name: "close", value: 1}]), {request: temp});
+    console.log(res)
+    if(res.errors || !res.data){
+      toast.error("An error happened while resolving request!");
+    }else {
+    //TODO: CLOSE THEM AUTOMATICALLY AFTER SUCCESS
+      setShow(false);
+      toast.success("Request resolved successfully");
+    }
+
   }
 
   const popover = (
@@ -82,7 +95,7 @@ const RequestsDashboard = () => {
   return (
     <>
       <div>
-        <h4>Requests</h4>
+        <h4>Requests & Reports</h4>
         <DataTable
           isLoading={isLoading}
           columns={columns}
