@@ -7,7 +7,7 @@ import { _submitFetcher } from '../../helpers/fetchHelpers'
 import { craftUrl } from '../../helpers/urlHelper'
 import { toast } from 'react-toastify'
 
-const ExamForm = ({ activeItem }) => {
+const ExamForm = ({ activeItem, updateData }) => {
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   const formik = useFormik({
@@ -35,17 +35,31 @@ const ExamForm = ({ activeItem }) => {
   }, [activeItem])
 
   const onSubmitHandler = async (values) => {
-    if(activeItem){
-      values.id = activeItem.id;
-      const res = await _submitFetcher('PUT', craftUrl(['exams']), {exams: [values]})
+    if (activeItem) {
+      values.id = activeItem.id
+      const res = await _submitFetcher('PUT', craftUrl(['exams']), {
+        exams: [values],
+      })
       if (!res.data[activeItem.id] || res.errors.length) {
         toast.error(res.errors[0].error)
-      } else toast.success("Exam successfully saved")
-    }else{
-      const res = await _submitFetcher('POST', craftUrl(['exams']), {exams: [values]})
+      } else {
+        toast.success('Exam successfully saved')
+        updateData()
+        formik.resetForm()
+        setRefreshKey(Math.random().toString(36))
+      }
+    } else {
+      const res = await _submitFetcher('POST', craftUrl(['exams']), {
+        exams: [values],
+      })
       if (!res.data?.length || res.errors.length) {
         toast.error(res.errors[0].error)
-      } else toast.success("Exam successfully added")
+      } else {
+        toast.success('Exam successfully added')
+        updateData()
+        formik.resetForm()
+        setRefreshKey(Math.random().toString(36))
+      }
     }
   }
 

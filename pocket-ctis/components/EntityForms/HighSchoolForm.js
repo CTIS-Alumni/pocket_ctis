@@ -19,7 +19,7 @@ const selectStyles = {
     zIndex: 2,
   }),
 }
-const HighSchoolForm = ({ activeItem }) => {
+const HighSchoolForm = ({ activeItem, updateData }) => {
   const [countries, setCountries] = useState([])
   const [cities, setCities] = useState([])
   const { locationData } = useContext(Location_data)
@@ -80,20 +80,31 @@ const HighSchoolForm = ({ activeItem }) => {
       high_school_name: values.high_school_name,
     }
     if (activeItem) {
+      console.log(values)
       temp.id = activeItem.id
       const res = await _submitFetcher('PUT', craftUrl(['highschools']), {
         highschools: [temp],
       })
       if (!res.data[activeItem.id] || res.errors.length) {
         toast.error(res.errors[0].error)
-      } else toast.success('Highschool successfully saved')
+      } else {
+        toast.success('Highschool successfully saved')
+        updateData()
+        formik.resetForm()
+        setRefreshKey(Math.random().toString(36))
+      }
     } else {
       const res = await _submitFetcher('POST', craftUrl(['highschools']), {
         highschools: [temp],
       })
       if (!res.data?.length || res.errors.length) {
         toast.error(res.errors[0].error)
-      } else toast.success('Highschool successfully added')
+      } else {
+        toast.success('Highschool successfully added')
+        updateData()
+        formik.resetForm()
+        setRefreshKey(Math.random().toString(36))
+      }
     }
   }
 
