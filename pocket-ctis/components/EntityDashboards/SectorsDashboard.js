@@ -22,6 +22,8 @@ const SectorsDashboard = () => {
   const [show, setShow] = useState(false)
   const [selectedOption, setSelectedOption] = useState(null)
 
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
+
   const onClose = () => setShow(false)
   const onOpen = (opt) => {
     setSelectedOption(opt)
@@ -95,7 +97,10 @@ const SectorsDashboard = () => {
         activeKey={activeKey}
         onSelect={(key) => {
           setActiveKey(key)
-          if (key == 'browse') setActiveItem(null)
+          if (key == 'browse') {
+            setActiveItem(null)
+            setRefreshKey(Math.random().toString(36))
+          }
         }}
       >
         <Tab title='Browse' eventKey='browse'>
@@ -142,7 +147,11 @@ const SectorsDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <SectorForm activeItem={activeItem} updateData={getData} />
+            <SectorForm
+              key={refreshKey}
+              activeItem={activeItem}
+              updateData={getData}
+            />
           </Container>
         </Tab>
       </Tabs>

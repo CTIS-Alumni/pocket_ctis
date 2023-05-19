@@ -19,6 +19,8 @@ const CompanyDashboard = () => {
   const [activeItem, setActiveItem] = useState(null)
   const [activeKey, setActiveKey] = useState('browse')
 
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
+
   const getData = (
     conditions = [
       { name: 'limit', value: 15 },
@@ -97,7 +99,10 @@ const CompanyDashboard = () => {
         activeKey={activeKey}
         onSelect={(key) => {
           setActiveKey(key)
-          if (key == 'browse') setActiveItem(null)
+          if (key == 'browse') {
+            setActiveItem(null)
+            setRefreshKey(Math.random().toString(36))
+          }
         }}
       >
         <Tab title='Browse' eventKey='browse'>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Tabs, Tab, Container, Spinner } from 'react-bootstrap'
-import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
+import { _getFetcher, _submitFetcher } from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
@@ -18,6 +18,8 @@ const EducationInstitutesDashboard = () => {
 
   const [activeItem, setActiveItem] = useState(null)
   const [activeKey, setActiveKey] = useState('browse')
+
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   const getData = (
     conditions = [
@@ -57,25 +59,33 @@ const EducationInstitutesDashboard = () => {
   }
 
   const deleteHandler = async (data) => {
-    const res = await _submitFetcher("DELETE", craftUrl(["educationinstitutes"]), {educationinstitutes: [data]});
-    if(res?.data[data.id])
-      toast.success("Education institute deleted successfully!")
+    const res = await _submitFetcher(
+      'DELETE',
+      craftUrl(['educationinstitutes']),
+      { educationinstitutes: [data] }
+    )
+    if (res?.data[data.id])
+      toast.success('Education institute deleted successfully!')
     else toast.error(res.data[0].error)
   }
 
   const deleteSelected = async () => {
-    const res = await _submitFetcher("DELETE", craftUrl(["educationinstitutes"]), {educationinstitutes: selectedArray});
-    if(res.errors.length)
-      toast.error(res.errors[0].error)
-    else toast.success("Education institutes deleted successfully!")
+    const res = await _submitFetcher(
+      'DELETE',
+      craftUrl(['educationinstitutes']),
+      { educationinstitutes: selectedArray }
+    )
+    if (res.errors.length) toast.error(res.errors[0].error)
+    else toast.success('Education institutes deleted successfully!')
   }
 
-  const setIsErasmus = async() => {
-    const newArr = selectedArray.map(s => ({ ...s, is_erasmus: 1 }));
-    const res = await _submitFetcher("PUT", craftUrl(["educationinstitutes"]), {educationinstitutes: newArr});
-    if(res.errors.length)
-      toast.error(res.errors[0].error)
-    else toast.success("Education institutes saved successfully!");
+  const setIsErasmus = async () => {
+    const newArr = selectedArray.map((s) => ({ ...s, is_erasmus: 1 }))
+    const res = await _submitFetcher('PUT', craftUrl(['educationinstitutes']), {
+      educationinstitutes: newArr,
+    })
+    if (res.errors.length) toast.error(res.errors[0].error)
+    else toast.success('Education institutes saved successfully!')
   }
 
   const selectedArrayOptions = [
@@ -90,7 +100,10 @@ const EducationInstitutesDashboard = () => {
         activeKey={activeKey}
         onSelect={(key) => {
           setActiveKey(key)
-          if (key == 'browse') setActiveItem(null)
+          if (key == 'browse') {
+            setActiveItem(null)
+            setRefreshKey(Math.random().toString(36))
+          }
         }}
       >
         <Tab title='Browse' eventKey='browse'>
