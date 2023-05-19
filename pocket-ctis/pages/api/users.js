@@ -10,9 +10,12 @@ import {checkApiKey} from "./middleware/checkAPIkey";
 const table_name = "users";
 
 const columns = {
-    user: " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
-        "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  ",
+    user: "CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
     type: " user_types LIKE CONCAT('%', ?, '%') ",
+    first_name: "u.first_name",
+    last_name: "u.last_name",
+    user_types: "user_types",
+    id: "u.id"
 
 }
 

@@ -50,36 +50,24 @@ const CreateUserForm = ({ activeItem, goBack }) => {
   }, [])
 
   const onSubmitHandler = async (values) => {
-    const data = clone(values)
-    data.user[0].types = data.user[0].types.map(
-      (role) => role.value.split('-')[0]
-    )
-    data.user[0].gender = data.user[0].gender.value == 'Male' ? 1 : 0
-    replaceWithNull(data)
+    if(activeItem){
+      const data = clone(values)
+      data.user[0].types = data.user[0].types.map(
+          (role) => role.value.split('-')[0]
+      )
+      data.user[0].gender = data.user[0].gender.value == 'Male' ? 1 : 0
+      replaceWithNull(data)
 
-    const res = await _submitFetcher('POST', craftUrl(['users']), {
-      users: data.user,
-    })
-    console.log(res)
-    if (res.data['0']?.data?.mail_status && !res.errors?.length) {
-      toast.success('User saved successfully!')
-      formik.resetForm({
-        values: {
-          user: [
-            {
-              types: null,
-              gender: null,
-              first_name: null,
-              last_name: null,
-              bilkent_id: null,
-              contact_email: null,
-            },
-          ],
-        },
+      const res = await _submitFetcher('POST', craftUrl(['users']), {
+        users: data.user,
       })
-      setRefreshKey(Math.random().toString(36))
-    } else {
-      toast.error(res.errors[0].error)
+      if (res.data['0']?.data?.mail_status && !res.errors?.length) {
+        toast.success('User saved successfully!')
+      } else {
+        toast.error(res.errors[0].error)
+      }
+    }else{
+      console.log(activeItem);
     }
   }
 

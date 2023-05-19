@@ -72,12 +72,21 @@ const AdminUsersList = () => {
     getData()
   }
 
+  const deactivateSelected = () =>{
+
+  }
+
   const selectedArrayOptions = [
     {
       label: 'Delete All Selected',
-      warning: 'Are you sure you want to delete all selected sectors?',
+      warning: 'Are you sure you want to delete all selected users?',
       action: deleteSelected,
     },
+    {
+      label: 'Deactivate',
+      warning: 'Are you sure you want to deactivate all selected users? ',
+      action: deactivateSelected
+    }
   ]
 
   const editHandler = (data) => {
@@ -128,7 +137,7 @@ const AdminUsersList = () => {
               onQuery={onQuery}
               total={total}
               isLoading={isLoading}
-              searchCols=''
+              searchCols='user'
               clickable={true}
               editHandler={editHandler}
               deleteHandler={deleteHandler}
