@@ -125,11 +125,12 @@ const handler =  async (req, res) => {
                 try {
                     let values = [], length_values = [], length_query = "";
                     let query = "SELECT GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.id, " +
-                        "upp.profile_picture, u.first_name, u.last_name ";
-
-                    const add = " FROM users u JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
+                        "upp.profile_picture, u.first_name, u.last_name FROM users u JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
                         "JOIN useraccounttype uat ON (uat.user_id = u.id) " +
                         "JOIN accounttype act ON (act.id = uat.type_id) ";
+
+                    length_query = "SELECT COUNT(DISTINCT u.id) as count FROM users u JOIN useraccounttype uat ON " +
+                        " (uat.user_id = u.id) JOIN accounttype act ON (act.id = uat.type_id) ";
 
                     query += add;
                     length_query = "SELECT COUNT(*) as count " + add;
