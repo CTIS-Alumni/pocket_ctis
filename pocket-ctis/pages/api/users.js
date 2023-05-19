@@ -124,7 +124,7 @@ const handler =  async (req, res) => {
                 else{
                 try {
                     let values = [], length_values = [], length_query = "";
-                    let query = "SELECT GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.id, " +
+                    let query = "SELECT GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.id, u.bilkent_id, u.contact_email, u.gender, " +
                         "upp.profile_picture, u.first_name, u.last_name FROM users u JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
                         "JOIN useraccounttype uat ON (uat.user_id = u.id) " +
                         "JOIN accounttype act ON (act.id = uat.type_id) ";
