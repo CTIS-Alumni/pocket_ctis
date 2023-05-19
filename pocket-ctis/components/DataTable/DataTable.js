@@ -22,6 +22,7 @@ const DataTable = ({
   isLoading = false,
   editHandler = null,
   deleteHandler = null,
+  sortable = true,
   setSelectedArray,
   selectedArray,
   clickable,
@@ -109,19 +110,21 @@ const DataTable = ({
                 <th onClick={() => handleSorting(c)}>
                   <div className={styles.tableHeader}>
                     {c}
-                    <div className={styles.sortContainer}>
-                      {sorting.name == c ? (
-                        sorting.direction == 'asc' ? (
-                          <CaretDownFill size={15} />
+                    {sortable && (
+                      <div className={styles.sortContainer}>
+                        {sorting.name == c ? (
+                          sorting.direction == 'asc' ? (
+                            <CaretDownFill size={15} />
+                          ) : (
+                            <CaretUpFill size={15} />
+                          )
                         ) : (
-                          <CaretUpFill size={15} />
-                        )
-                      ) : (
-                        <>
-                          <CaretUp size={15} /> <CaretDown size={15} />
-                        </>
-                      )}
-                    </div>
+                          <>
+                            <CaretUp size={15} /> <CaretDown size={15} />
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </th>
               ))}
@@ -134,7 +137,14 @@ const DataTable = ({
           </thead>
           <tbody>
             {data.map((d) => (
-              <tr className={styles.tableRow}>
+              <tr
+                className={`${styles.tableRow} ${
+                  clickable ? styles.clickable : ''
+                }`}
+                onClick={() => {
+                  if (clickable) clickHandler(d)
+                }}
+              >
                 {setSelectedArray && (
                   <td
                     className={styles.tableCell}
@@ -158,7 +168,11 @@ const DataTable = ({
                   </td>
                 )}
                 {columns.map((c) => (
-                  <td className={styles.tableCell}>{d[c]}</td>
+                  <td className={styles.tableCell}>
+                    {d[c] != null && d[c] != undefined && d[c]?.length > 75
+                      ? `${d[c].slice(0, 50)} ...`
+                      : d[c]}
+                  </td>
                 ))}
                 <td
                   style={{
