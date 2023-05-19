@@ -34,7 +34,7 @@ const handler =  async (req, res) => {
             case "GET":
                 try {
                     let values = [], length_values = [];
-                    let query = "SELECT u.id, u.first_name, u.last_name, r.type, r.description, r.request_date, r.is_closed FROM request r " +
+                    let query = "SELECT r.id, r.user_id, u.first_name, u.bilkent_id, u.last_name, r.type, r.description, r.request_date, r.is_closed FROM request r " +
                         "LEFT OUTER JOIN users u ON (u.id = r.user_id) "
                     let length_query = "SELECT COUNT(*) as count FROM request ";
 

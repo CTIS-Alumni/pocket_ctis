@@ -5,6 +5,7 @@ import { _getFetcher } from '../../helpers/fetchHelpers'
 import { craftUrl } from '../../helpers/urlHelper'
 import { toast, ToastContainer } from 'react-toastify'
 import { Modal, Button, Popover, OverlayTrigger } from 'react-bootstrap'
+import {getDateString} from "../../helpers/formatHelpers";
 
 const RequestsDashboard = () => {
   const [data, setData] = useState([])
@@ -53,6 +54,7 @@ const RequestsDashboard = () => {
     getData()
     setColumns([
       'id',
+      'user_id',
       'first_name',
       'last_name',
       'type',
@@ -110,10 +112,19 @@ const RequestsDashboard = () => {
         <Modal.Body>
           <div>
             <div className={styles.inputContainer}>
+              <label className={styles.inputLabel}>Bilkent ID</label>
+              <input
+                  className={styles.inputField}
+                  value={activeItem?.bilkent_id}
+                  disabled
+              />
+            </div>
+            <div className={styles.inputContainer}>
               <label className={styles.inputLabel}>Name</label>
               <input
                 className={styles.inputField}
                 value={`${activeItem?.first_name} ${activeItem?.last_name}`}
+                disabled
               />
             </div>
             <div className={styles.inputContainer}>
@@ -121,11 +132,14 @@ const RequestsDashboard = () => {
               <input
                 className={styles.inputField}
                 value={`${activeItem?.type}`}
+                disabled
               />
             </div>
             <div className={styles.inputContainer}>
               <label className={styles.inputLabel}>Request date</label>
-              <input className={styles.inputField} value={activeItem?.date} />
+              <input className={styles.inputField} value={getDateString(activeItem?.request_date)}
+                     disabled
+              />
             </div>
             <div className={styles.inputContainer}>
               <label className={styles.inputLabel}>Description</label>
@@ -133,6 +147,7 @@ const RequestsDashboard = () => {
                 className={styles.inputField}
                 value={activeItem?.description}
                 rows={5}
+                disabled
               />
             </div>
           </div>
