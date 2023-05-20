@@ -71,3 +71,14 @@
     animation-duration: 0.1s;
     animation-timing-function:ease-in-out;
 }
+
+.loading{
+    position: absolute;
+    z-index: 2;
+    background-color: rgba(136, 136, 136, 0.25);
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
