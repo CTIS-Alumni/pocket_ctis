@@ -115,6 +115,7 @@ const DataInsertion = () => {
     setType(values.dataType)
     setErrors(null)
     setMailResults(null)
+    setIsLoading(true)
     mail_results = {}
 
     const res = await _submitFetcher(
@@ -123,7 +124,7 @@ const DataInsertion = () => {
       { [values.dataType]: rows }
     )
     const success_map = {}
-    if(res?.data){
+    if (res?.data) {
       res.data.forEach((d) => {
         success_map[d.index] = d.inserted?.user_id || d.inserted?.id
       })
@@ -135,7 +136,7 @@ const DataInsertion = () => {
       toast.error('An error occured while uploading file')
 
     const errors_map = {}
-    if(res?.errors){
+    if (res?.errors) {
       res.errors.forEach((err) => {
         errors_map[err.index || 0] = err.error
       })
@@ -155,7 +156,7 @@ const DataInsertion = () => {
       toast.warning('Some records failed to upload')
 
     completed_users = {}
-
+    setIsLoading(false)
     if (
       res.data?.length &&
       (values.dataType === 'internships' || values.dataType === 'erasmus')
@@ -196,8 +197,7 @@ const DataInsertion = () => {
         <Formik
           enableReinitialize
           onSubmit={(values) => {
-            setIsLoading(true)
-            onSubmitHandler(values).then(() => setIsLoading(false))
+            onSubmitHandler(values)
           }}
           initialValues={{ dataType: 'users', file: null }}
         >
