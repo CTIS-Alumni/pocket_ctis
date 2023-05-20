@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Tabs, Tab, Container } from 'react-bootstrap'
-import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
+import { _getFetcher, _submitFetcher } from '../../helpers/fetchHelpers'
 import { Tabs, Tab, Container, Modal, Button } from 'react-bootstrap'
-import { _getFetcher } from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
@@ -77,17 +75,24 @@ const GraduationProjectDashboard = () => {
   }
 
   const deleteHandler = async (data) => {
-    const res = await _submitFetcher("DELETE", craftUrl(["graduationprojects"]), {graduationprojects: [data]});
-    if(!res.errors.length)
-      toast.success("Graduation project deleted successfully!")
+    const res = await _submitFetcher(
+      'DELETE',
+      craftUrl(['graduationprojects']),
+      { graduationprojects: [data] }
+    )
+    if (!res.errors.length)
+      toast.success('Graduation project deleted successfully!')
     else toast.error(res.errors[0].error)
   }
 
   const deleteSelected = async () => {
-    const res = await _submitFetcher("DELETE", craftUrl(["graduationprojects"]), {graduationprojects: selectedArray});
-    if(res.errors.length)
-      toast.error(res.errors[0].error)
-    else toast.success("Graduation projects deleted successfully!")
+    const res = await _submitFetcher(
+      'DELETE',
+      craftUrl(['graduationprojects']),
+      { graduationprojects: selectedArray }
+    )
+    if (res.errors.length) toast.error(res.errors[0].error)
+    else toast.success('Graduation projects deleted successfully!')
   }
 
   const selectedArrayOptions = [

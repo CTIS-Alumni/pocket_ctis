@@ -71,7 +71,7 @@ const EducationalInstitureForm = ({ activeItem, updateData }) => {
       edu_inst_name: null,
       city_id: null,
       country: null,
-      is_erasmus: true,
+      is_erasmus: false,
     },
     validationSchema: Yup.object({
       edu_inst_name: Yup.string().required('Institute name is required'),

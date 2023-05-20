@@ -121,7 +121,7 @@ const handler =  async (req, res) => {
             case "GET":
                 if(req.query.advisors){
                     try{
-                        const query = "SELECT u.id, u.first_name, u.nee, u.last_name, FROM users u JOIN useraccounttype act ON u.id = act.user_id WHERE act.type_id = 3"
+                        const query = "SELECT u.id, u.first_name, u.nee, u.last_name FROM users u JOIN useraccounttype act ON u.id = act.user_id WHERE act.type_id = 3"
                         const {data, errors} = await doqueryNew({query: query, values: []});
                         res.status(200).json({data, errors});
                     }catch(error){
