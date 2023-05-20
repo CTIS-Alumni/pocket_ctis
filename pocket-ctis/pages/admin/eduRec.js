@@ -72,7 +72,7 @@ const EduRec = () => {
               onQuery={onQuery}
               total={total}
               isLoading={isLoading}
-              searchCols='user,edu_inst_name,degree_type_name,name_of_program,city_name,country_name,bilkent_id'
+              searchCols='user,edu_inst_name,degree_type_name,name_of_program,city_name,country_name,bilkent_id,type'
             />
           </div>
         )}

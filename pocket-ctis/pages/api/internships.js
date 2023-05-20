@@ -73,7 +73,9 @@ const handler =  async (req, res) => {
 
                         let length_query = "SELECT COUNT(*) as count " +
                             "FROM internshiprecord i JOIN users u on (i.user_id = u.id) " +
-                            "JOIN company c ON (i.company_id = c.id) ";
+                            "JOIN company c ON (i.company_id = c.id) " +
+                            "JOIN useraccounttype uat ON (uat.user_id = i.user_id)  " +
+                            "JOIN accounttype act ON (act.id = uat.type_id) ";
 
                         if (payload.user !== "admin") {
                             query += addAndOrWhere(query, " (i.visibility = 1 OR i.user_id = ?) ");

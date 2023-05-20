@@ -152,7 +152,7 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
                             className={styles.formPartitionHeading}
                             style={{ marginTop: 0 }}
                           >
-                            <span>Societies</span>
+                            <span>Clubs & Societies</span>
                             <button
                               className={styles.addButton}
                               type='button'

@@ -143,7 +143,7 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
                             className={styles.formPartitionHeading}
                             style={{ marginTop: 0 }}
                           >
-                            <span>Certificates</span>
+                            <span>Certificates & Awards</span>
                             <button
                               className={styles.addButton}
                               type='button'
@@ -189,7 +189,7 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
                                     <div style={{ flexGrow: '1' }}>
                                       <div className={styles.inputContainer}>
                                         <label className={styles.inputLabel}>
-                                          Certificate Name
+                                          Certificate/Award Name
                                         </label>
                                         <Field
                                           className={styles.inputField}

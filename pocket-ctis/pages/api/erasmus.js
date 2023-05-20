@@ -67,7 +67,7 @@ const handler =  async (req, res) => {
                     try {
                         let values = [], length_values = [];
                         let query = "SELECT e.id, e.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.first_name, u.last_name, " +
-                            "e.edu_inst_id, ei.edu_inst_name, ei.city_id, ci.city_name, ci.country_id, co.country_name, e.semester, e.start_date, e.end_date, e.rating, e.opinion, " +
+                            "e.edu_inst_id, ei.edu_inst_name, ei.city_id, ci.city_name, ci.country_id, co.country_name, e.semester, e.start_date, e.end_date, e.rating, e.opinion " +
                             "FROM erasmusrecord e JOIN users u on (e.user_id = u.id) " +
                             "JOIN userprofilepicture upp ON (e.user_id = upp.user_id) " +
                             "JOIN useraccounttype uat ON (uat.user_id = e.user_id) " +
@@ -80,7 +80,10 @@ const handler =  async (req, res) => {
                             "FROM erasmusrecord e JOIN users u on (e.user_id = u.id) " +
                             "JOIN educationinstitute ei ON (e.edu_inst_id = ei.id) " +
                             "LEFT OUTER JOIN city ci ON (ci.id = ei.city_id) " +
-                            "LEFT OUTER JOIN country co ON (co.id = ci.country_id) ";
+                            "LEFT OUTER JOIN country co ON (co.id = ci.country_id) " +
+                            "JOIN useraccounttype uat ON (uat.user_id = e.user_id)  " +
+                            "JOIN accounttype act ON (act.id = uat.type_id) ";
+
 
                         if (payload.user !== "admin") {
                             query += addAndOrWhere(query, " (e.visibility = 1 OR e.user_id = ?) ");
@@ -91,8 +94,12 @@ const handler =  async (req, res) => {
 
                         ({query, length_query} = await buildSearchQuery(req, query, values, length_query, length_values, columns, "e.id"));
 
+                        console.log("hers query", query, "heres length query", length_query)
+
                         const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
                             {name: "length", query: length_query, values: length_values}]);
+
+                        console.log("heres data", data);
 
                         res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
 

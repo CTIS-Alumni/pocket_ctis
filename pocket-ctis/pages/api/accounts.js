@@ -135,6 +135,7 @@ export default async function handler(req, res) {
     else if(req.query.forgotPassword){
         try{
             const {password, confirm, token} = JSON.parse(req.body);
+            console.log(password, confirm, token);
             if(password !== confirm)
                 throw {message: "Passwords don't match!"};
 

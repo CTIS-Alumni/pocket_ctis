@@ -59,7 +59,6 @@ const CreateUserForm = ({ activeItem, goBack }) => {
     if(activeItem){
       data.user[0].id = activeItem.id;
       const res = await _submitFetcher('PUT', craftUrl(['users']), {user: data.user[0]})
-      console.log("heres res", res);
       if(res?.errors?.length && !res.data){
         toast.error(res.errors[0].error)
       }else{
@@ -72,7 +71,8 @@ const CreateUserForm = ({ activeItem, goBack }) => {
         users: data.user,
       })
       if (res.data['0']?.data?.mail_status && !res.errors?.length) {
-        toast.success('User saved successfully!')
+        toast.success('User created successfully!')
+        toast.success('Activation mail successfully sent to user!')
       } else {
         toast.error(res.errors[0].error)
       }
@@ -170,7 +170,7 @@ const CreateUserForm = ({ activeItem, goBack }) => {
         <span className={styles.backButton}>
           <ChevronLeft />
         </span>
-        <h4 className='m-0'>Create User</h4>
+        <h4 className='m-0'>{activeItem ? 'Edit User': 'Create User'}</h4>
       </div>
       <Card className={styles.defaultCard} border='light' key={refreshKey}>
         <form onSubmit={formik.handleSubmit}>
@@ -337,7 +337,7 @@ const CreateUserForm = ({ activeItem, goBack }) => {
 
             <div style={{ textAlign: 'center' }}>
               <button type='submit' className={styles.submitButton}>
-                Create User
+                {activeItem ? 'Save User' : 'Create User'}
               </button>
             </div>
           </div>

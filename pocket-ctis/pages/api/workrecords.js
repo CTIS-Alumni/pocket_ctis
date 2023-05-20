@@ -20,6 +20,7 @@ const columns = {
     record_date: "w.record_date",
     user_id: "w.user_id",
     user_types: "user_types",
+    type: "act.type_name",
     bilkent_id: "u.bilkent_id"
 }
 
@@ -51,6 +52,8 @@ const handler =  async (req, res) => {
                        length_query = "SELECT COUNT(*) as count FROM workrecord w JOIN users u ON (w.user_id = u.id) " +
                            "LEFT OUTER JOIN company c ON (w.company_id = c.id) JOIN worktype wt ON (w.work_type_id = wt.id) " +
                            "LEFT OUTER JOIN city ci ON (w.city_id = ci.id) " +
+                           "LEFT OUTER JOIN useraccounttype uat ON (w.user_id = uat.user_id) " +
+                           "LEFT OUTER JOIN accounttype act ON (uat.type_id = act.id) "+
                            "LEFT OUTER JOIN country co ON (w.country_id = co.id) ";
 
                     if (req.query.company_id) {
@@ -79,8 +82,12 @@ const handler =  async (req, res) => {
                     if(is_admin){
                         ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns, "w.id"));
 
+                        console.log("heres query", query, "heres values", values, "hers length query", length_query, "lenght values", length_values);
+
                         const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
                             {name: "length", query: length_query, values: length_values}]);
+
+                        console.log("hers teh data", data);
 
 
                         res.status(200).json({data:data.data, length: data?.length[0].count, errors: errors});

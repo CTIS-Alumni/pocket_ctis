@@ -108,7 +108,7 @@ const DataInsertion = () => {
   }
 
   const onSubmitHandler = async (values) => {
-    if (!file) {
+    if (!file || !rows?.length) {
       toast.error('Please select a file and preview it before submitting!')
       return
     }
@@ -123,20 +123,23 @@ const DataInsertion = () => {
       { [values.dataType]: rows }
     )
 
-    console.log("heres res", res);
     const success_map = {}
-    res.data.forEach((d) => {
-      success_map[d.index] = d.inserted?.user_id || d.inserted?.id
-    })
+    if(res?.data?.length){
+      res.data.forEach((d) => {
+        success_map[d.index] = d.inserted?.user_id || d.inserted?.id
+      })
+    }
 
     setSuccess(success_map)
     if (Object.keys(success_map).length === 0)
       toast.error('An error occured while uploading file')
 
     const errors_map = {}
-    res.errors.forEach((err) => {
-      errors_map[err.index || 0] = err.error
-    })
+    if(res?.errors?.length){
+      res.errors.forEach((err) => {
+        errors_map[err.index || 0] = err.error
+      })
+    }
 
     setErrors(errors_map)
     if (

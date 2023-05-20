@@ -180,7 +180,7 @@ const AdminUsersList = () => {
               onQuery={onQuery}
               total={total}
               isLoading={isLoading}
-              searchCols='user,bilkent_id,contact_email'
+              searchCols='user,bilkent_id,contact_email,type'
               clickable={true}
               editHandler={editHandler}
               deleteHandler={deleteHandler}

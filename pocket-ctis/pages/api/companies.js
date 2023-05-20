@@ -38,7 +38,7 @@ const validation = (data) => {
 
 const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
-    let payload;
+    const payload = await checkUserType(session, req.query);
     if (session) {
         const method = req.method;
         switch (method) {
@@ -48,8 +48,8 @@ const handler =  async (req, res) => {
                 try {
                     let query = "SELECT c.id, c.company_name, c.sector_id, s.sector_name, c.is_internship ";
 
-                        if(req.query.internship){
-                            query += " AVG(i.rating) AS rating ";
+                        if(req.query.internship && (payload.user === "admin" || (payload.user !== "admin" && modules.internships.user_visible))){
+                            query += ", AVG(i.rating) AS rating ";
                     }
                         query += "FROM company c JOIN sector s ON (c.sector_id = s.id) ";
 
@@ -62,7 +62,7 @@ const handler =  async (req, res) => {
                         length_values.push(req.query.sector_id);
                     }
 
-                    if (req.query.internship) {//for the internships page
+                    if (req.query.internship && (payload.user === "admin" || (payload.user !== "admin" && modules.internships.user_visible))) {//for the internships page
                         query += " LEFT OUTER JOIN internshiprecord i ON (i.company_id = c.id) ";
                         query += addAndOrWhere(query," c.is_internship = ? ");
                         length_query += " LEFT OUTER JOIN internshiprecord i ON (i.company_id = c.id) ";
@@ -79,7 +79,7 @@ const handler =  async (req, res) => {
                         length_values.push(req.query.name);
                     }
 
-                    if(req.query.internship){
+                    if(req.query.internship && (payload.user === "admin" || (payload.user !== "admin" && modules.internships.user_visible))){
                         query += " GROUP BY c.id";
                         length_query += " GROUP BY c.id";
                     }
@@ -98,7 +98,6 @@ const handler =  async (req, res) => {
                 }
                 break;
             case "PUT":
-                payload = await checkUserType(session, req.query);
                 if(payload?.user === "admin") {
                     try{
                         const {companies} = JSON.parse(req.body);
@@ -111,7 +110,6 @@ const handler =  async (req, res) => {
                 } else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "POST":
-                payload = await checkUserType(session)
                 if(payload.user === "admin" || modules.companies.user_addable){
                     try {
                         const {companies} = JSON.parse(req.body);
@@ -124,7 +122,6 @@ const handler =  async (req, res) => {
                 }else res.status(403).json({errors: [{error: "Forbidden request!"}]})
                 break;
             case "DELETE":
-                payload = await checkUserType(session)
                 if(payload.user === "admin"){
                     try {
                         const {companies} = JSON.parse(req.body);

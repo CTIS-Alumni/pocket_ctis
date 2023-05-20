@@ -3,9 +3,10 @@ import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { toast } from 'react-toastify'
 import styles from './ChangeEmailForm.module.css'
-import { useState} from "react";
+import {useContext, useState} from "react";
 import { _submitFetcher} from "../../helpers/fetchHelpers";
 import {craftUrl} from "../../helpers/urlHelper";
+import {User_data} from "../../context/userContext";
 
 const changeEmail = async (email) => {
   const res = await _submitFetcher('POST', craftUrl(['mail'], [{name: "changeEmail", value: 1}]), {email});
@@ -13,6 +14,7 @@ const changeEmail = async (email) => {
 }
 
 const ChangeEmailForm = () => {
+  const { userData } = useContext(User_data)
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -45,7 +47,6 @@ const ChangeEmailForm = () => {
     <div>
       <h5>Change Email</h5>
       <Container>
-        <label className={styles.inputLabel}>Current Email Address</label>
         <form onSubmit={formik.handleSubmit}>
           <div className={styles.inputContainer}>
             <label className={styles.inputLabel}>New Email Address</label>

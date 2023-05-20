@@ -6,7 +6,7 @@ const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query)
     if (session && payload) {
-        const method = req.query.method;
+        const method = req.method;
         switch (method){
             case "GET":
                 try {

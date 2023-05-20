@@ -662,7 +662,7 @@ const AdminUserView = ({ user }) => {
                 </>
               )}
             </Tab>
-            <Tab eventKey='societies' title='Societies'>
+            <Tab eventKey='societies' title='Clubs & Societies'>
               {societies.length == 0 ? (
                 <div>No data available</div>
               ) : (
@@ -696,7 +696,7 @@ const AdminUserView = ({ user }) => {
           }}
         >
           <Tabs defaultActiveKey='certificates' className='mb-3'>
-            <Tab eventKey='certificates' title='Certificates'>
+            <Tab eventKey='certificates' title='Certificates & Awards'>
               {certificates.length == 0 ? (
                 <div>No data available</div>
               ) : (

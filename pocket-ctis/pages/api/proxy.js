@@ -9,12 +9,16 @@ export default async function handler(req, res){
             Cookie: cookies
         };
 
+        console.log("heres the url", url)
+
         const results = await fetch(url, {
             headers: headers,
             credentials: 'include',
         });
 
         const {data, errors, length} = await results.json();
+
+        console.log("heres the data and errors from tehre", data, errors);
 
         res.status(results.status).json({data, length, errors});
     } catch (error) {

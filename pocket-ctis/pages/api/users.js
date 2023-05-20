@@ -20,15 +20,14 @@ const table_name = "users";
 
 const columns = {
     user: "CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
-    type: " user_types LIKE CONCAT('%', ?, '%') ",
     first_name: "u.first_name",
     last_name: "u.last_name",
     user_types: "user_types",
     id: "u.id",
     is_active: "u.is_active",
     contact_email: "u.contact_email",
-    bilkent_id: "u.bilkent_id"
-
+    bilkent_id: "u.bilkent_id",
+    type: "act.type_name"
 }
 
 const validation = (data) => {
