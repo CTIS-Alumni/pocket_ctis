@@ -40,7 +40,6 @@ const AdminUsersList = () => {
     setIsLoading(true)
     _getFetcher({ users: craftUrl(['users'], conditions) })
       .then(({ users }) => {
-        console.log("users:", users);
         if (users?.errors?.length > 0) {
           users?.errors.map((e) => toast.error(e.error))
           return
