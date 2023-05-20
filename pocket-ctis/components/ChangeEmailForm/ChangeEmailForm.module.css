@@ -5,8 +5,10 @@
 
 .inputLabel{
     position: absolute;
-    top: -10px;
+    top: 0px;
     left: 10px;
+    height: 1px;
+    line-height: 0px;
     background-color: white;
     padding: 0px 5px;
     text-transform: capitalize;
