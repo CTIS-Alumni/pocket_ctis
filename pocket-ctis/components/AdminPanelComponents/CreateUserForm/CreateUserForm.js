@@ -1,6 +1,6 @@
 import { ChevronLeft } from 'react-bootstrap-icons'
 import styles from './CreateUserForm.module.css'
-import { Card } from 'react-bootstrap'
+import { Card, Spinner } from 'react-bootstrap'
 import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
 import { _getFetcher, _submitFetcher } from '../../../helpers/fetchHelpers'
@@ -50,23 +50,28 @@ const CreateUserForm = ({ activeItem, goBack }) => {
   }, [])
 
   const onSubmitHandler = async (values) => {
+    setIsLoading(true)
     const data = clone(values)
-    data.user[0].types = data.user[0].types.map(
-        (role) => Number(role.value.split('-')[0])
+    data.user[0].types = data.user[0].types.map((role) =>
+      Number(role.value.split('-')[0])
     )
     data.user[0].gender = data.user[0].gender.value == 'Female' ? 1 : 0
     replaceWithNull(data)
-    if(activeItem){
-      data.user[0].id = activeItem.id;
-      const res = await _submitFetcher('PUT', craftUrl(['users']), {user: data.user[0]})
-      if(res?.errors?.length && !res.data){
+    if (activeItem) {
+      data.user[0].id = activeItem.id
+      const res = await _submitFetcher('PUT', craftUrl(['users']), {
+        user: data.user[0],
+      })
+      if (res?.errors?.length && !res.data) {
         toast.error(res.errors[0].error)
-      }else{
-        toast.success("User saved successfully")
-        if(res.data === true)
-          toast.success("Admin account activation mail successfully sent to user!");
+      } else {
+        toast.success('User saved successfully')
+        if (res.data === true)
+          toast.success(
+            'Admin account activation mail successfully sent to user!'
+          )
       }
-    }else{
+    } else {
       const res = await _submitFetcher('POST', craftUrl(['users']), {
         users: data.user,
       })
@@ -76,6 +81,7 @@ const CreateUserForm = ({ activeItem, goBack }) => {
         toast.error(res.errors[0].error)
       }
     }
+    setIsLoading(false)
   }
 
   const formik = useFormik({
@@ -163,14 +169,37 @@ const CreateUserForm = ({ activeItem, goBack }) => {
 
   return (
     <>
-      <LoadingSpinner isLoading={isLoading} />
       <div className={styles.headerContainer} onClick={goBackHandler}>
         <span className={styles.backButton}>
           <ChevronLeft />
         </span>
         <h4 className='m-0'>Create User</h4>
       </div>
-      <Card className={styles.defaultCard} border='light' key={refreshKey}>
+      <Card
+        className={styles.defaultCard}
+        style={{ position: 'relative' }}
+        border='light'
+        key={refreshKey}
+      >
+        {isLoading && (
+          <div
+            style={{
+              position: 'absolute',
+              background: '#ccc',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              opacity: 0.25,
+              top: '0',
+              left: '0',
+              zIndex: 3,
+            }}
+          >
+            <Spinner />
+          </div>
+        )}
         <form onSubmit={formik.handleSubmit}>
           <div className={styles.formContainer}>
             <div style={{ display: 'flex', gap: 10 }}>
@@ -205,12 +234,12 @@ const CreateUserForm = ({ activeItem, goBack }) => {
                     Nee
                   </label>
                   <input
-                      value={formik.values.user?.[0].nee}
-                      onChange={formik.handleChange}
-                      type='text'
-                      name='user[0].nee'
-                      id='nee'
-                      className={styles.inputField}
+                    value={formik.values.user?.[0].nee}
+                    onChange={formik.handleChange}
+                    type='text'
+                    name='user[0].nee'
+                    id='nee'
+                    className={styles.inputField}
                   />
                 </div>
               </div>
