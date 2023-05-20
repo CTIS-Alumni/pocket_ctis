@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`sector` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `sector_name` (`sector_name` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 544
+AUTO_INCREMENT = 591
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`company` (
     REFERENCES `pocketctisschema`.`sector` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 11384
+AUTO_INCREMENT = 11433
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`degreetype` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `degree_name` (`degree_type_name` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 9
+AUTO_INCREMENT = 14
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`educationinstitute` (
     REFERENCES `pocketctisschema`.`city` (`id`)
     ON DELETE SET NULL)
 ENGINE = InnoDB
-AUTO_INCREMENT = 28
+AUTO_INCREMENT = 38
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`users` (
   UNIQUE INDEX `bilkent_id` (`bilkent_id` ASC) VISIBLE,
   UNIQUE INDEX `contact_email_UNIQUE` (`contact_email` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 245
+AUTO_INCREMENT = 256
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -190,7 +190,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`educationrecord` (
     REFERENCES `pocketctisschema`.`users` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 106
+AUTO_INCREMENT = 108
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -221,7 +221,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`erasmusrecord` (
     REFERENCES `pocketctisschema`.`users` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 83
+AUTO_INCREMENT = 86
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -235,7 +235,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`exam` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `exam_name` (`exam_name` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 11
+AUTO_INCREMENT = 16
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -253,8 +253,8 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`graduationproject` (
   `project_description` MEDIUMTEXT CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_520_ci' NULL DEFAULT NULL,
   `advisor_id` INT UNSIGNED NOT NULL,
   `project_type` VARCHAR(20) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_520_ci' NOT NULL,
-  `team_pic` VARCHAR(50) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_520_ci' NULL DEFAULT 'defaultproject',
-  `poster_pic` VARCHAR(50) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_520_ci' NULL DEFAULT 'defaultproject',
+  `team_pic` VARCHAR(50) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_520_ci' NULL DEFAULT 'defaultteam',
+  `poster_pic` VARCHAR(50) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_520_ci' NULL DEFAULT 'defaultposter',
   `company_id` INT UNSIGNED NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `project_title` (`graduation_project_name` ASC) VISIBLE,
@@ -268,7 +268,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`graduationproject` (
     FOREIGN KEY (`advisor_id`)
     REFERENCES `pocketctisschema`.`users` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 47
+AUTO_INCREMENT = 78
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -288,7 +288,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`highschool` (
     REFERENCES `pocketctisschema`.`city` (`id`)
     ON DELETE SET NULL)
 ENGINE = InnoDB
-AUTO_INCREMENT = 22
+AUTO_INCREMENT = 31
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -320,7 +320,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`internshiprecord` (
     REFERENCES `pocketctisschema`.`users` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 298
+AUTO_INCREMENT = 318
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -343,6 +343,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`request` (
     REFERENCES `pocketctisschema`.`users` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
+AUTO_INCREMENT = 3
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -356,7 +357,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`skilltype` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `type_name` (`skill_type_name` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 9
+AUTO_INCREMENT = 19
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -376,7 +377,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`skill` (
     REFERENCES `pocketctisschema`.`skilltype` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 78
+AUTO_INCREMENT = 84
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -406,7 +407,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`studentsociety` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `society_name` (`society_name` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 16
+AUTO_INCREMENT = 21
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -430,7 +431,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`useraccounttype` (
     REFERENCES `pocketctisschema`.`users` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 287
+AUTO_INCREMENT = 313
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -493,7 +494,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`usercredential` (
     REFERENCES `pocketctisschema`.`users` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 53
+AUTO_INCREMENT = 58
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -514,7 +515,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`useremail` (
     REFERENCES `pocketctisschema`.`users` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 61
+AUTO_INCREMENT = 62
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -541,7 +542,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`userexam` (
     REFERENCES `pocketctisschema`.`users` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 104
+AUTO_INCREMENT = 105
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -559,7 +560,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`usergraduationproject` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 15
+AUTO_INCREMENT = 141
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -677,7 +678,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`userprofilepicture` (
     REFERENCES `pocketctisschema`.`users` (`id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 38
+AUTO_INCREMENT = 42
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
@@ -811,7 +812,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`worktype` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `type_name` (`work_type_name` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 8
+AUTO_INCREMENT = 13
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 

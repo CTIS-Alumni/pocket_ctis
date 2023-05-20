@@ -146,7 +146,7 @@ const GraduationProjectForm = ({ activeItem }) => {
           value: activeItem.company_id,
           label: activeItem.company_name,
         },
-        students: activeItem.students?.split(',').map((m) => {
+        students: activeItem.team_members?.split(',').map((m) => {
           return {
             value: m.trim().split('-')[0],
             label: `${m.trim().split('-')[2]} - ${m.trim().split('-')[1]}`,

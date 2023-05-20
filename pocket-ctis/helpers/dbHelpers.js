@@ -285,7 +285,6 @@ export const deactivateMultiUsers = async (records) => {
     const data = {}, errors = [];
 
     const connection = await createDBConnection();
-    console.log("1");
 
     try{
         records.forEach((record) => {
@@ -297,36 +296,24 @@ export const deactivateMultiUsers = async (records) => {
             });
         });
 
-        console.log("2");
-
         await connection.beginTransaction();
 
-        console.log("3");
         await Promise.all(queries.map(async (query) => {
 
-            console.log("4");
             const [res] = await connection.query(query.deactivate_query, query.values);
 
-            console.log("5");
             await Promise.all(query.visibility_queries.map(async (v_q) => {
-                console.log("vq", v_q);
                 const [visibility_res] = await connection.query(v_q.query, v_q.values)
-                console.log("6");
             }));
             data[query.name] = res;
-            console.log("7");
         }));
 
-        console.log("8");
 
     } catch (error) {
-        console.log("9");
         errors.push({error: error.message});
-        console.log("10");
         await connection.rollback();
     }
 
-    console.log("11");
     await connection.commit();
 
     connection.end();
@@ -432,7 +419,6 @@ export const deleteGraduationProjectsWithImage = async (graduationprojects) =>{
     const data = {};
     const connection = await createDBConnection(true);
 
-    console.log(graduationprojects)
 
     try{
         await connection.beginTransaction();
@@ -496,7 +482,7 @@ export const updateGraduationProjectWithImage = async (query, obj,students, vali
             const [deleted_res] = await connection.execute(delete_user_query, [id]);
         }
 
-        for(const i of added){
+        for(const id of added){
             const [added_res] = await connection.execute(add_user_query, [id, obj.id]);
         }
 
