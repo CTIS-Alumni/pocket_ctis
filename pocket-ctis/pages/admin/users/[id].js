@@ -109,7 +109,9 @@ const AdminUserView = ({ user }) => {
     certificates,
     wanted_sectors,
     socials,
+    projects,
   } = userData.data
+  console.log('here', projects)
 
   const text_skill_level = [
     'Beginner',
@@ -170,7 +172,9 @@ const AdminUserView = ({ user }) => {
       )
       console.log(res)
 
-      if (res.data || !res.errors) {
+      if (res.errors.length > 0) {
+        toast.error(res?.errors[0].error)
+      } else if (res.data || !res.errors) {
         //setProfilePictureModal(false)
       } //TODO: PUT TOAST
     }
@@ -509,6 +513,17 @@ const AdminUserView = ({ user }) => {
                     })}
                   </>
                 )}
+                {projects?.length > 0 &&
+                  projects.map((p, i) => {
+                    return (
+                      <div key={i} style={{ marginTop: 10 }}>
+                        <div>{p.project_name}</div>
+                        <Container style={{ color: '#999', fontSize: '14px' }}>
+                          <div>{p.project_description || 'No description'}</div>
+                        </Container>
+                      </div>
+                    )
+                  })}
               </>
             </Tab>
           </Tabs>

@@ -8,19 +8,31 @@ import {
   XCircleFill,
 } from 'react-bootstrap-icons'
 import DatePickerField from '../../../DatePickers/DatePicker'
+import { Spinner } from 'react-bootstrap'
 
 import styles from './AdminUserFormStyles.module.css'
 
 import { cloneDeep } from 'lodash'
-import {_getFetcher, _submitFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl} from '../../../../helpers/urlHelper'
-import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
-import {toast} from "react-toastify";
+import {
+  _getFetcher,
+  _submitFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../../helpers/urlHelper'
+import {
+  convertToIso,
+  handleResponse,
+  replaceWithNull,
+  splitFields,
+} from '../../../../helpers/submissionHelpers'
+import { toast } from 'react-toastify'
 
 const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [eduInsts, setEduInsts] = useState([])
   const [degreeTypes, setDegreeTypes] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     _getFetcher({
@@ -37,8 +49,12 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
   }
 
   const sendMail = async () => {
-    const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id, type: "education"})
-    return res;
+    const res = await _submitFetcher(
+      'POST',
+      craftUrl(['mail'], [{ name: 'updateProfile', value: 1 }]),
+      { user_id, type: 'education' }
+    )
+    return res
   }
 
   let deletedData = []
@@ -63,12 +79,13 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
       val.visibility = val.visibility ? 1 : 0
       val.is_current = val.is_current ? 1 : 0
       if (val.is_current && val.end_date) val.end_date = null
-      val.start_date = val.start_date != null ? convertToIso(val.start_date) : null
+      val.start_date =
+        val.start_date != null ? convertToIso(val.start_date) : null
       val.end_date = val.end_date != null ? convertToIso(val.end_date) : null
       val.name_of_program = val.name_of_program ? val.name_of_program : null
       val.education_description = val.education_description
-          ? val.education_description
-          : null
+        ? val.education_description
+        : null
       val.gpa = val.gpa ? val.gpa : null
       replaceWithNull(val)
       splitFields(val, ['edu_inst', 'degree_type'])
@@ -83,9 +100,10 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
     ['start_date', 'end_date'],
   ]
 
-  const url = craftUrl(["users",user_id, 'educationrecords'])
+  const url = craftUrl(['users', user_id, 'educationrecords'])
 
   const onSubmit = async (values) => {
+    setIsLoading(true)
     setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
@@ -93,20 +111,20 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
     const send_to_req = { edu_records: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
     const requestObj = createReqObject(
-        send_to_req.edu_records,
-        newData.edu_records,
-        deletedData
+      send_to_req.edu_records,
+      newData.edu_records,
+      deletedData
     )
 
     const responseObj = await submitChanges(url, requestObj)
     const new_data = handleResponse(
-        send_to_req.edu_records,
-        requestObj,
-        responseObj,
-        values,
-        'edu_records',
-        args,
-        transformDataForSubmission
+      send_to_req.edu_records,
+      requestObj,
+      responseObj,
+      values,
+      'edu_records',
+      args,
+      transformDataForSubmission
     )
     applyNewData(new_data)
     console.log('req:', requestObj, 'res', responseObj)
@@ -124,19 +142,19 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
         toast.error(errorInfo.error)
       })
     } else if (
-        responseObj.POST.data ||
-        responseObj.PUT.data ||
-        responseObj.DELETE.data
+      responseObj.POST.data ||
+      responseObj.PUT.data ||
+      responseObj.DELETE.data
     ) {
       toast.success('Data successfully saved')
     }
 
-    if(responseObj.POST.data?.length){
-      const {data, errors} = await sendMail();
-      if(data)
-        toast.success("Profile update mail sent to user")
-      else toast.error("Failed to send profile update mail to user")
+    if (responseObj.POST.data?.length) {
+      const { data, errors } = await sendMail()
+      if (data) toast.success('Profile update mail sent to user')
+      else toast.error('Failed to send profile update mail to user')
     }
+    setIsLoading(false)
   }
 
   return (
@@ -149,7 +167,24 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
     >
       {(props) => {
         return (
-          <Form>
+          <Form style={{ position: 'relative' }}>
+            {isLoading && (
+              <div
+                style={{
+                  zIndex: 2,
+                  position: 'absolute',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '100%',
+                  width: '100%',
+                  background: '#ccc',
+                  opacity: '0.5',
+                }}
+              >
+                <Spinner />
+              </div>
+            )}
             <table className={styles.formTable}>
               <tbody>
                 <FieldArray
@@ -192,7 +227,8 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                 <td>
                                   <div style={{ display: 'flex' }}>
                                     <div className={styles.removeBtnContainer}>
-                                      {edu_record.id}<button
+                                      {edu_record.id}
+                                      <button
                                         className={styles.removeBtn}
                                         type='button'
                                         onClick={() => {
@@ -200,7 +236,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           if (edu_record.hasOwnProperty('id'))
                                             deletedData.push({
                                               id: edu_record.id,
-                                              data: edu_record
+                                              data: edu_record,
                                             })
                                         }}
                                       >
@@ -426,15 +462,17 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push( {
-                                edu_inst: '',
-                                start_date: null,
-                                end_date: null,
-                                education_description: '',
-                                degree_type: '',
-                                name_of_program: '',
-                                gpa: '',
-                              })}
+                              onClick={() =>
+                                arrayHelpers.push({
+                                  edu_inst: '',
+                                  start_date: null,
+                                  end_date: null,
+                                  education_description: '',
+                                  degree_type: '',
+                                  name_of_program: '',
+                                  gpa: '',
+                                })
+                              }
                             >
                               Add an Education Record
                             </button>
