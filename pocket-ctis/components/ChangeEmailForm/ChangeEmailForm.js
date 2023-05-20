@@ -54,7 +54,7 @@ const ChangeEmailForm = () => {
     <div>
       <h5>Change Email</h5>
       <Container style={{ position: 'relative' }}>
-        {!isLoading && (
+        {isLoading && (
           <div className={styles.loading}>
             <Spinner />
           </div>
