@@ -2,11 +2,13 @@ import { useFormik } from 'formik'
 import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useEffect, useState } from 'react'
-import {_getFetcher, _submitFetcher, _submitFile} from '../../helpers/fetchHelpers'
+import {
+  _getFetcher,
+  _submitFile,
+} from '../../helpers/fetchHelpers'
 import { craftUrl } from '../../helpers/urlHelper'
 import Select from 'react-select'
 import * as Yup from 'yup'
-import { Check2Square, Square } from 'react-bootstrap-icons'
 import { toast } from 'react-toastify'
 
 const selectStyles = {
@@ -38,24 +40,38 @@ const GraduationProjectForm = ({ activeItem }) => {
       students: craftUrl(['users'], [{name: 'students', value: 1}]),
     })
       .then((res) => {
-        setSupervisors(
-          res.supervisors.data.map((s) => ({
-            label: `${s.first_name} ${s.last_name}`,
-            value: s.id,
-          }))
-        )
-        setCompanies(
-          res.companies.data.map((s) => ({
-            label: `${s.company_name}`,
-            value: s.id,
-          }))
-        )
-        setStudents(
-          res.students.data.map((s) => ({
-            label: `${s.bilkent_id} - ${s.first_name} ${s.last_name}`,
-            value: s.id,
-          }))
-        )
+        if (res.supervisors?.errors?.length > 0) {
+          toast.error(res.supervisors.errors[0].error)
+        } else {
+          setSupervisors(
+            res.supervisors.data.map((s) => ({
+              label: `${s.first_name} ${s.last_name}`,
+              value: s.id,
+            }))
+          )
+        }
+        if (res.companies?.errors?.length == 0) {
+          setCompanies(
+            res.companies.data.map((s) => ({
+              label: `${s.company_name}`,
+              value: s.id,
+            }))
+          )
+        } else {
+          toast.error(res.companies.errors[0].error)
+        }
+        if (res.students?.errors?.length > 0) {
+          toast.error(res.students.errors[0].error)
+        } else {
+          setStudents(
+            res.students.data.map((s) => {
+              return {
+                label: `${s.bilkent_id} - ${s.first_name} ${s.last_name}`,
+                value: s.id,
+              }
+            })
+          )
+        }
       })
       .catch((err) => {
         toast.error(err)
@@ -131,7 +147,6 @@ const GraduationProjectForm = ({ activeItem }) => {
           label: activeItem.company_name,
         },
         students: activeItem.students?.split(',').map((m) => {
-          console.log(m.split('-'))
           return {
             value: m.trim().split('-')[0],
             label: `${m.trim().split('-')[2]} - ${m.trim().split('-')[1]}`,
@@ -145,9 +160,9 @@ const GraduationProjectForm = ({ activeItem }) => {
   }, [activeItem])
 
   const onSubmitHandler = async (values) => {
-    if(!teamPic){
-      toast.error("Please select a team picture!");
-      return;
+    if (!teamPic) {
+      toast.error('Please select a team picture!')
+      return
     }
     if(!values.students || !values.students.length){
       toast.error("Please choose team members!");
@@ -164,46 +179,52 @@ const GraduationProjectForm = ({ activeItem }) => {
       project_year: values.project_year.value,
       semester: values.semester.value,
       team_number: values.team_number,
-      team_pic: teamPic ? "tempteam" : "defaultteam",
-      poster_pic: posterPic ? "tempposter" : "defaultposter",
-      };
-
-
-    if(activeItem){
-      temp.old_team_pic = activeItem.team_pic;
-      temp.id = activeItem.id;
-      temp.old_poster_pic =  activeItem.poster_pic;
+      team_pic: teamPic ? 'tempteam' : 'defaultteam',
+      poster_pic: posterPic ? 'tempposter' : 'defaultposter',
     }
 
-    const formData = new FormData();
-    Object.keys(temp).forEach((key)=>{
+    if (activeItem) {
+      temp.old_team_pic = activeItem.team_pic
+      temp.id = activeItem.id
+      temp.old_poster_pic = activeItem.poster_pic
+    }
+
+    const formData = new FormData()
+    Object.keys(temp).forEach((key) => {
       formData.append(key, temp[key])
     })
 
-    const studentValues = values.students.map(student => student.value);
-    formData.set('students', studentValues);
+    const studentValues = values.students.map((student) => student.value)
+    formData.set('students', studentValues)
 
-    if(teamPic){
-      formData.append('teamImage', teamPic);
+    if (teamPic) {
+      formData.append('teamImage', teamPic)
     }
-    if(posterPic){
-      formData.append('posterImage', posterPic);
+    if (posterPic) {
+      formData.append('posterImage', posterPic)
     }
 
-    if(activeItem){
-      const res = await _submitFile('PUT', craftUrl(['graduationprojectsImages']),  formData);
-      if(!res.errors.length){
-        toast.success("Graduation project saved successfully!")
-        console.log(res);
+    if (activeItem) {
+      const res = await _submitFile(
+        'PUT',
+        craftUrl(['graduationprojectsImages']),
+        formData
+      )
+      if (!res.errors.length) {
+        toast.success('Graduation project saved successfully!')
+        console.log(res)
         //TODO: SET THE RETURNING PICTURES ACCORDINLY; IF THERE'S NO posterImage in res.data, set it to "defaultuser"
-      }else toast.error(res.errors[0].error);
-    }else{
-      const res = await _submitFile('POST', craftUrl(['graduationprojectsImages']),  formData);
-      if(!res.errors.length){
-        toast.success("Graduation project added successfully!")
-      }else toast.error(res.errors[0].error);
+      } else toast.error(res.errors[0].error)
+    } else {
+      const res = await _submitFile(
+        'POST',
+        craftUrl(['graduationprojectsImages']),
+        formData
+      )
+      if (!res.errors.length) {
+        toast.success('Graduation project added successfully!')
+      } else toast.error(res.errors[0].error)
     }
-
   }
 
   return (
@@ -395,7 +416,8 @@ const GraduationProjectForm = ({ activeItem }) => {
             <Select
               styles={selectStyles}
               isMulti={false}
-              options={[{ label: 'No Company', value: null }, ...companies]}
+              isClearable
+              options={companies}
               id='company_id'
               name='company_id'
               value={formik.values.company_id || null}
