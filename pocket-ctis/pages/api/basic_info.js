@@ -10,7 +10,7 @@ const handler =  async (req, res) => {
         switch (method){
             case "GET":
                 try {
-                    const query = "SELECT u.id, u.first_name, u.last_name, u.is_active, upp.profile_picture, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types' " +
+                    const query = "SELECT u.id, u.first_name, u.last_name, u.is_active, u.contact_email, upp.profile_picture, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types' " +
                         "FROM users u LEFT OUTER JOIN usercredential uc ON (u.id = uc.user_id) JOIN useraccounttype uat ON (uat.user_id = u.id) " +
                         "JOIN accounttype act ON (act.id = uat.type_id) " +
                         "LEFT OUTER JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
