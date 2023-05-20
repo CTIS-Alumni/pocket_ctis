@@ -4,6 +4,9 @@ import { Card, Container } from 'react-bootstrap'
 import styles from '../../styles/moduleCustomization.module.css'
 import modules from '../../config/moduleConfig'
 import { useFormik } from 'formik'
+import {_submitFetcher} from "../../helpers/fetchHelpers";
+import {craftUrl} from "../../helpers/urlHelper";
+import {toast, ToastContainer} from "react-toastify";
 
 const CollapsibleMenu = ({ itemKey, activeKey, setActiveKey, children }) => {
   return (
@@ -29,8 +32,11 @@ const CollapsibleMenu = ({ itemKey, activeKey, setActiveKey, children }) => {
 const ModuleCustomization = () => {
   const [activeKey, setActiveKey] = useState('')
 
-  const onSubmitHandler = (val) => {
-    console.log(val)
+  const onSubmitHandler = async (val) => {
+    const {data, errors} = await _submitFetcher('POST', craftUrl(['modulecustomization']), {modules: val});
+    if(data)
+      toast.success("Modules saved successfully!");
+    else toast.error(errors[0].error);
   }
 
   const formik = useFormik({
@@ -416,6 +422,16 @@ const ModuleCustomization = () => {
           </button>
         </form>
       </Card>
+      <ToastContainer
+          position='top-right'
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          draggable
+          pauseOnHover
+          theme='light'
+      />
     </AdminPageContainer>
   )
 }

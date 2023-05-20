@@ -1,72 +1,70 @@
-const modules = {
-    graduation_projects: {
-        user_visible: true,
+module.exports = {
+  "graduation_projects": {
+    "user_visible": false
+  },
+  "sectors": {
+    "user_addable": false
+  },
+  "companies": {
+    "user_addable": false
+  },
+  "edu_insts": {
+    "user_addable": false
+  },
+  "highschool": {
+    "user_addable": false
+  },
+  "exams": {
+    "user_addable": false
+  },
+  "student_societies": {
+    "user_addable": false
+  },
+  "skills": {
+    "user_addable": false
+  },
+  "internships": {
+    "user_visible": false
+  },
+  "erasmus": {
+    "user_visible": false
+  },
+  "user_profile_data": {
+    "graudation_projects": {
+      "limit_per_user": 1
     },
-    sectors: {
-      user_addable: false
+    "phone_numbers": {
+      "limit_per_user": 2
     },
-    companies: {
-        user_addable: false
+    "exams": {
+      "limit_per_user": 4
     },
-    edu_insts: {
-        user_addable: false
+    "emails": {
+      "limit_per_user": 2
     },
-    highschool: {
-        user_addable: false
+    "education_records": {
+      "limit_per_user": null
     },
-    exams: {
-        user_addable: false
+    "certificates": {
+      "limit_per_user": 10
     },
-    student_societies: {
-        user_addable: false
+    "projects": {
+      "limit_per_user": 10
     },
-    skills: {
-        user_addable: false
+    "wanted_sectors": {
+      "limit_per_user": 6
     },
-    internships: {
-        user_visible: true,
+    "social_media": {
+      "limit_per_user": 5
     },
-    erasmus: {
-        user_visible: true,
+    "student_societies": {
+      "limit_per_user": 8
     },
-    user_profile_data: {
-        graudation_projects: {
-            limit_per_user: 2
-        },
-        phone_numbers: {
-            limit_per_user: 2
-        },
-        exams: {
-            limit_per_user: 4,
-        },
-        emails: {
-            limit_per_user: 3
-        },
-        education_records: {
-            limit_per_user: null
-        },
-        certificates: {
-            limit_per_user: 10
-        },
-        projects: {
-            limit_per_user: 10
-        },
-        wanted_sectors: {
-            limit_per_user: 6
-        },
-        social_media: {
-            limit_per_user: 5
-        },
-        student_societies: {
-            limit_per_user: 8
-        },
-        work_records: {
-            limit_per_user: null
-        },
-        skills: {
-            limit_per_user: 20
-        }
+    "work_records": {
+      "limit_per_user": null
+    },
+    "skills": {
+      "limit_per_user": 20
     }
-}
-
-module.exports = modules
+  }
+};

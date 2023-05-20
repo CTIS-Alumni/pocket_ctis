@@ -2,8 +2,6 @@ import {
     buildInsertQueries,
     buildSearchQuery, buildUpdateQueries, doMultiDeleteQueries,
     doMultiQueries,
-    doquery,
-    doqueryNew,
     insertToTable, updateTable
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
