@@ -151,6 +151,7 @@ export const sendReActivationMail = async (user) => {
 
     const template = compile(fs.readFileSync('public/views/reactivateAccount.hbs', 'utf-8'));
 
+    console.log(user.contact_email);
     try {
         const html = template({
             name: user.first_name,
@@ -166,6 +167,8 @@ export const sendReActivationMail = async (user) => {
             subject: `${departmentConfig.app_name} Account Activation`,
             html: html
         }
+
+        console.log("here");
 
         await transport.sendMail(options);
         transport.close();

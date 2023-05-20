@@ -6,7 +6,7 @@ const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query)
     if (session && payload) {
-        const method = query.method;
+        const method = req.query.method;
         switch (method){
             case "GET":
                 try {
@@ -19,13 +19,6 @@ const handler =  async (req, res) => {
                     const {data,errors} = await doqueryNew({query: query, values: [payload.user_id]});
                     res.status(200).json({data, errors});
                 } catch (error) {
-                    res.status(500).json({errors: [{error: error.message}]});
-                }
-                break;
-            case "PUT":
-                try{
-
-                }catch(error){
                     res.status(500).json({errors: [{error: error.message}]});
                 }
                 break;

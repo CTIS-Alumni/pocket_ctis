@@ -122,6 +122,8 @@ const DataInsertion = () => {
       craftUrl([values.dataType], [{ name: 'csv', value: 1 }]),
       { [values.dataType]: rows }
     )
+
+    console.log("heres res", res);
     const success_map = {}
     res.data.forEach((d) => {
       success_map[d.index] = d.inserted?.user_id || d.inserted?.id

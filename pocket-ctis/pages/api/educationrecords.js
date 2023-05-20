@@ -5,7 +5,7 @@ import {checkApiKey} from "./middleware/checkAPIkey";
 const columns = {
     user: "CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
     edu_inst_name: "ei.edu_inst_name",
-    edu_inst_id: "ei.edu_inst_id",
+    edu_inst_id: "e.edu_inst_id",
     degree_type_name: "d.degree_type_name",
     name_of_program: "e.name_of_program",
     city_name: "ci.city_name",

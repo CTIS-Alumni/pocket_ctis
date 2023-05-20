@@ -35,7 +35,7 @@ const GraduationProjectForm = ({ activeItem }) => {
     _getFetcher({
       supervisors: craftUrl(['users'], [{ name: 'advisors', value: 1 }]),
       companies: craftUrl(['companies']),
-      students: craftUrl(['users?students=1']),
+      students: craftUrl(['users'], [{name: 'students', value: 1}]),
     })
       .then((res) => {
         setSupervisors(
@@ -100,7 +100,6 @@ const GraduationProjectForm = ({ activeItem }) => {
   })
 
   useEffect(() => {
-    console.log(activeItem)
     if (activeItem) {
       formik.setValues({
         graduation_project_name: activeItem.graduation_project_name,
@@ -131,7 +130,7 @@ const GraduationProjectForm = ({ activeItem }) => {
           value: activeItem.company_id,
           label: activeItem.company_name,
         },
-        students: activeItem.team_members?.split(',').map((m) => {
+        students: activeItem.students?.split(',').map((m) => {
           console.log(m.split('-'))
           return {
             value: m.trim().split('-')[0],
@@ -150,7 +149,11 @@ const GraduationProjectForm = ({ activeItem }) => {
       toast.error("Please select a team picture!");
       return;
     }
-    console.log("heres values", values);
+    if(!values.students || !values.students.length){
+      toast.error("Please choose team members!");
+      return;
+    }
+
     const temp = {
       advisor_id: values.advisor_id.value,
       company_id: values?.company_id?.value || null,

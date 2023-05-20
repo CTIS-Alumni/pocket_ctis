@@ -27,7 +27,7 @@ export const addAndOrWhere = (query, condition) => {
     full_condition += condition + " ";
     return full_condition;
 }
-
+//Written only by Sila Yapici and Iqbal Karim
 export const buildSearchQuery = async (req, query, values, length_query, length_values, columns, group_by = null) => {
     if(req.query.searchcol && req.query.search){
         const cols = req.query.searchcol.split(",");
@@ -40,6 +40,7 @@ export const buildSearchQuery = async (req, query, values, length_query, length_
         query += addAndOrWhere(query, "(");
         length_query += addAndOrWhere(length_query, "(");
         searchColumns.forEach(function(column){
+            if(Object.values(columns).includes(column)){
                 query += column + " LIKE CONCAT('%', ?, '%') OR "
                 length_query += column + " LIKE CONCAT('%', ?, '%') OR ";
                 values.push(req.query.search);
@@ -48,6 +49,7 @@ export const buildSearchQuery = async (req, query, values, length_query, length_
                     values.push(req.query.search);
                     length_values.push(req.query.search);
                 }
+            }
         });
 
         query = query.slice(0,-3) + ") ";

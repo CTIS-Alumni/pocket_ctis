@@ -15,7 +15,7 @@ const columns = {
     company_id: "c.id",
     work_type_name: "wt.id",
     start_date: "w.start_date",
-    end_date: "e.end_date",
+    end_date: "w.end_date",
     is_current: "w.is_current",
     record_date: "w.record_date",
     user_id: "w.user_id",

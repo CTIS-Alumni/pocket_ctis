@@ -33,6 +33,12 @@ module.exports = {
     "graudation_projects": {
       "limit_per_user": 1
     },
+    "internships": {
+      "limit_per_user": 2
+    },
+    "erasmus": {
+      "limit_per_user": 1
+    },
     "phone_numbers": {
       "limit_per_user": 2
     },

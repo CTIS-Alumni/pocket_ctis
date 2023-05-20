@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Tabs, Tab, Container } from 'react-bootstrap'
 import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { Tabs, Tab, Container, Modal, Button } from 'react-bootstrap'
-import { _getFetcher } from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'

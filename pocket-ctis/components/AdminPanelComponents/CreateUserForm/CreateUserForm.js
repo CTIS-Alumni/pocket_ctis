@@ -4,7 +4,7 @@ import { Card } from 'react-bootstrap'
 import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
 import { _getFetcher, _submitFetcher } from '../../../helpers/fetchHelpers'
-import { ToastContainer, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import { craftUrl } from '../../../helpers/urlHelper'
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
 import Select from 'react-select'
@@ -59,6 +59,7 @@ const CreateUserForm = ({ activeItem, goBack }) => {
     if(activeItem){
       data.user[0].id = activeItem.id;
       const res = await _submitFetcher('PUT', craftUrl(['users']), {user: data.user[0]})
+      console.log("heres res", res);
       if(res?.errors?.length && !res.data){
         toast.error(res.errors[0].error)
       }else{
@@ -152,6 +153,7 @@ const CreateUserForm = ({ activeItem, goBack }) => {
         types: null,
         gender: null,
         first_name: null,
+        nee: null,
         last_name: null,
         bilkent_id: null,
         contact_email: null,

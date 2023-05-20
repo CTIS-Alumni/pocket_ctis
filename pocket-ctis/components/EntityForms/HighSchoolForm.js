@@ -85,6 +85,7 @@ const HighSchoolForm = ({ activeItem, updateData }) => {
       const res = await _submitFetcher('PUT', craftUrl(['highschools']), {
         highschools: [temp],
       })
+      console.log(res);
       if (!res.data[activeItem.id] || res.errors.length) {
         toast.error(res.errors[0].error)
       } else {
@@ -102,7 +103,8 @@ const HighSchoolForm = ({ activeItem, updateData }) => {
       } else {
         toast.success('Highschool successfully added')
         updateData()
-        formik.resetForm()
+        if(!activeItem)
+          formik.resetForm()
         setRefreshKey(Math.random().toString(36))
       }
     }

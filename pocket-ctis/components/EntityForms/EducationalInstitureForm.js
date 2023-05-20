@@ -89,7 +89,7 @@ const EducationalInstitureForm = ({ activeItem, updateData }) => {
     }
     if (activeItem) {
       temp.id = activeItem.id
-      temp.city_id = temp.city_id.split('-')[0]
+      temp.city_id = temp.city_id ? temp.city.split('-')[0] : null
       const res = await _submitFetcher(
         'PUT',
         craftUrl(['educationinstitutes']),

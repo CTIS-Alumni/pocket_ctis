@@ -254,6 +254,38 @@ const ModuleCustomization = () => {
               </div>
             </div>
             <div className={styles.section}>
+              <div>Internships</div>
+              <div className={styles.inputContainer}>
+                <label>Limit per user</label>
+                <input
+                    type='number'
+                    name='user_profile_data.internships.limit_per_user'
+                    id='user_profile_data.internships.limit_per_user'
+                    value={
+                      formik.values.user_profile_data.internships
+                          .limit_per_user
+                    }
+                    onChange={formik.handleChange}
+                />
+              </div>
+            </div>
+            <div className={styles.section}>
+              <div>Erasmus</div>
+              <div className={styles.inputContainer}>
+                <label>Limit per user</label>
+                <input
+                    type='number'
+                    name='user_profile_data.erasmus.limit_per_user'
+                    id='user_profile_data.erasmus.limit_per_user'
+                    value={
+                      formik.values.user_profile_data.erasmus
+                          .limit_per_user
+                    }
+                    onChange={formik.handleChange}
+                />
+              </div>
+            </div>
+            <div className={styles.section}>
               <div>Phone numbers</div>
               <div className={styles.inputContainer}>
                 <label>Limit per user</label>

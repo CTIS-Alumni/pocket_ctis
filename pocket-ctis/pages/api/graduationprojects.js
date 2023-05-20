@@ -1,11 +1,12 @@
 import {
     buildSearchQuery,
     doMultiQueries,
-    deleteGraduationProjectsWithImage
+    deleteGraduationProjectsWithImage, buildInsertQueries, insertToTable
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 import modules from "../../config/moduleConfig";
+import {replaceWithNull} from "../../helpers/submissionHelpers";
 
 const columns = {
     graduation_project_name: "g.graduation_project_name",
@@ -19,6 +20,37 @@ const columns = {
     team_number: "g.team_number",
 
 }
+
+const fields = {
+    basic: ["graduation_project_name", "product_name", "company_id", "advisor_id", "project_year", "project_type", "semester", "team_number",
+        "project_description"],
+    date: []
+}
+
+const validation = (data) => {
+    replaceWithNull(data)
+    if(!data.graduation_project_name)
+        return "Project Name can't be empty!";
+    if(isNaN(parseInt(data.team_number)))
+        return "Team Number must be a number!";
+    if(!data.project_year)
+        return "Project Year can't be empty!";
+    if(data.project_year.length !== 9)
+        return "Invalid value for Project Year!";
+    if(!data.semester)
+        return "Semester can't be empty!";
+    if(isNaN(parseInt(data.advisor_id)))
+        return "Supervisor ID must be a number!";
+    if(!data.project_type)
+        return "Project Type can't be empty!";
+    if (data.project_type === "Company" && isNaN(parseInt(data.company_id)))
+        return "Company projects must have a valid Company ID!";
+    if (data.project_type !== "Company" && data.company_id !== null)
+        return "Instructor or student projects can't have a Company ID!";
+    return true;
+}
+
+const table_name = "graduationproject"
 
 const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
@@ -60,6 +92,18 @@ const handler =  async (req, res) => {
                     }
                 }else res.status(200).json({data: [], errors: []});
                 break;
+            case "POST":
+                if(payload?.user === "admin"){
+                    try{
+                        const {graduationprojects} = JSON.parse(req.body);
+                        const queries = buildInsertQueries(graduationprojects, table_name, fields)
+                        const {data, errors} = await insertToTable(queries, table_name, validation);
+                        res.status(200).json({data, errors});
+                    }catch(error){
+                        res.status(500).json({errors: [{error: error.message}]});
+                    }
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
+                break;
             case "DELETE":
                 if(payload?.user === "admin"){
                     try{
@@ -69,7 +113,7 @@ const handler =  async (req, res) => {
                     }catch(error){
                         res.status(500).json({errors: [{error: error.message}]});
                     }
-                }else
+                }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
         }
     } else {
