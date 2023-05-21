@@ -14,6 +14,9 @@ import Image from 'next/image'
 
 import styles from './UserInfoSidebar.module.scss'
 import common from '../../styles/common.module.scss'
+import { useContext } from 'react'
+import { User_data } from '../../context/userContext'
+import { getProfilePicturePath } from '../../helpers/formatHelpers'
 
 const Button = ({ text, icon, href }) => {
   return (
@@ -24,32 +27,49 @@ const Button = ({ text, icon, href }) => {
   )
 }
 
-const UserImage = () => {
+const UserImage = ({ img }) => {
   return (
-    <div 
+    <div
       className={`${styles.sidebar_user_avatar} ${common.user_avatar_128}`}
-      style={{backgroundImage : `URL('https://i.pinimg.com/564x/86/6c/1e/866c1e4c27cc640e24838b0a0769dfa2.jpg')`}}
+      style={{
+        // backgroundImage: `URL('https://i.pinimg.com/564x/86/6c/1e/866c1e4c27cc640e24838b0a0769dfa2.jpg')`,
+        backgroundImage: `URL('${getProfilePicturePath(img)}')`,
+      }}
     />
   )
 }
 
-const UserInfo = () => {
+const UserInfo = ({ info }) => {
   return (
     <div className={styles.sidebar_user_info}>
-      <span className={styles.user_name_surname}>Name Surname</span>
-      <span className={styles.user_role}>Undergraduate</span>
+      <span
+        className={styles.user_name_surname}
+      >{`${info?.first_name} ${info?.last_name}`}</span>
+      <span className={styles.user_role}>
+        {info?.user_types.split(',').join(', ')}
+      </span>
     </div>
   )
 }
 
-const UserInfoSidebar = () => {
+const UserInfoSidebar = ({ toggleSidebar, setToggleSidebar }) => {
+  const context = useContext(User_data)
+
   return (
     <div className={`${styles.sidebar_wrapper}`}>
       <div className={`${styles.modal_bg} ${styles.visible2}`} />
-      <aside className={`${styles.sidebar} ${styles.visible2}`}>
+      <aside className={`${styles.sidebar} ${toggleSidebar && styles.visible}`}>
+        {toggleSidebar && (
+          <div
+            className={styles.sidebar_closeBtn}
+            onClick={() => setToggleSidebar((prev) => !prev)}
+          >
+            &#xD7;
+          </div>
+        )}
         <div className={styles.sidebar_user_wrapper}>
-          <UserImage />
-          <UserInfo />
+          <UserImage img={context.userData?.profile_picture[0]} />
+          <UserInfo info={context.userData} />
         </div>
         <div className={styles.sidebar_buttons}>
           <div className={styles.sidebar_button_group_personal}>
@@ -59,7 +79,7 @@ const UserInfoSidebar = () => {
           </div>
           {/* <hr className={styles.sidebar_divider} /> */}
           <div className={styles.sidebar_button_group_career}>
-          <span className={styles.sidebar_button_group_title}>Career</span>
+            <span className={styles.sidebar_button_group_title}>Career</span>
             <Button
               text='Companies'
               icon={<BuildingFill />}
@@ -74,7 +94,7 @@ const UserInfoSidebar = () => {
           </div>
           {/* <hr className={styles.sidebar_divider} /> */}
           <div className={styles.sidebar_button_group_education}>
-          <span className={styles.sidebar_button_group_title}>Education</span>
+            <span className={styles.sidebar_button_group_title}>Education</span>
             <Button
               text='Universities'
               icon={<MortarboardFill />}

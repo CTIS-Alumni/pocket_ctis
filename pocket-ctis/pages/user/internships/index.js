@@ -1,18 +1,15 @@
 import { Tab, Tabs } from 'react-bootstrap'
-import NavigationBar from '../../../components/navbar/NavigationBar'
-import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import InternshipsList from '../../../components/InternshipPageComponents/InternshipsList/InternshipsList'
 import InternshipCompaniesList from '../../../components/InternshipPageComponents/InternshipCompaniesList/InternshipCompaniesList'
 
 import styles from '../../../styles/internships.module.scss'
-import {_getFetcher} from "../../../helpers/fetchHelpers";
-import {craftUrl} from "../../../helpers/urlHelper";
+import { _getFetcher } from '../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../helpers/urlHelper'
+import UserPageContainer from '../../../components/UserPageContainer/UserPageContainer'
 
 const InternshipsDashboard = ({ internships, companies }) => {
   return (
-    <main>
-      <NavigationBar />
-      <UserInfoSidebar />
+    <UserPageContainer>
       <section className={styles.internships_wrapper}>
         <h2 className={styles.internships_title}>Internships</h2>
         <Tabs defaultActiveKey='students' className='mb-3'>
@@ -24,16 +21,19 @@ const InternshipsDashboard = ({ internships, companies }) => {
           </Tab>
         </Tabs>
       </section>
-    </main>
+    </UserPageContainer>
   )
 }
 
 export async function getServerSideProps(context) {
-  const {cookie} = context.req.headers
-  const {internships, companies} = await _getFetcher({
-    internships: craftUrl(["internships"]),
-    companies: craftUrl(["companies"], [{name: "is_internship", value: 1}])
-  }, cookie);
+  const { cookie } = context.req.headers
+  const { internships, companies } = await _getFetcher(
+    {
+      internships: craftUrl(['internships']),
+      companies: craftUrl(['companies'], [{ name: 'is_internship', value: 1 }]),
+    },
+    cookie
+  )
   return { props: { internships, companies } }
 }
 export default InternshipsDashboard

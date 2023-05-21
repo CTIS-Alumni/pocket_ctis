@@ -1,12 +1,16 @@
 import Link from 'next/link'
-import {getTimePeriod, getSemester, getProfilePicturePath} from '../../../helpers/formatHelpers'
+import {
+  getTimePeriod,
+  getSemester,
+  getProfilePicturePath,
+} from '../../../helpers/formatHelpers'
 import styles from './ErasmusStudentsList.module.scss'
-import ReactStars from "react-stars";
+import ReactStars from 'react-stars'
 
 const ErasmusStudentsList = ({ erasmus }) => {
   return (
     <div className={styles.erasmus_students}>
-      {erasmus.map((record) => {
+      {erasmus?.map((record) => {
         const timePeriod = getTimePeriod(record.start_date, record.end_date)
         const semester = getSemester(record.semester, record.start_date)
 
@@ -39,15 +43,15 @@ const ErasmusStudentsList = ({ erasmus }) => {
                   <span className={styles.erasmus_students_item_time_period}>
                     {timePeriod}
                   </span>
-                  {record.rating &&
-                      <ReactStars
-                          count={5}
-                          value={record.rating}
-                          size={20}
-                          color2={'#c79d34'}
-                          edit={false}
-                      />
-                  }
+                  {record.rating && (
+                    <ReactStars
+                      count={5}
+                      value={record.rating}
+                      size={20}
+                      color2={'#c79d34'}
+                      edit={false}
+                    />
+                  )}
                 </div>
               </div>
               <div className={styles.erasmus_students_item_badge}>

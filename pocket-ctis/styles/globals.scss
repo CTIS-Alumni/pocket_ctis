@@ -19,17 +19,8 @@ main {
 }
 
 section {
-    width: 60vw;
-    margin-left: calc(20vw + $margin-xxlarge);
     margin-top: $navbar-height;
-
-    // this might cause problems
-    position: absolute;
-
-    @include media-query(large) {
-        width: 70vw;
-        margin-left: calc(22vw + $margin-xxlarge);
-    }
+    padding: 0 50px 50px 50px;
 
     @include media-query(medium) {
         width: 80vw;

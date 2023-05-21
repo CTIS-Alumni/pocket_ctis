@@ -1,32 +1,29 @@
-import React, {useContext} from 'react'
+import React, { useContext } from 'react'
 import { Nav, NavDropdown, Navbar } from 'react-bootstrap'
 import departmentConfig from '../../config/departmentConfig'
 
 import styles from './NavigationBar.module.scss'
-import { logout} from "../../helpers/fetchHelpers";
-import {useRouter} from "next/router";
+import { logout } from '../../helpers/fetchHelpers'
+import { useRouter } from 'next/router'
 import { User_data } from '../../context/userContext'
-import {toast} from "react-toastify";
+import { toast } from 'react-toastify'
 
-import {
-  List, ThreeDotsVertical,
-} from 'react-bootstrap-icons'
+import { List, ThreeDotsVertical } from 'react-bootstrap-icons'
 import Link from 'next/link'
-import {useState} from 'react';
+import { useState } from 'react'
 
-
-const NavigationBar = () => {
-  const router = useRouter();
+const NavigationBar = ({ setToggleSidebar }) => {
+  const router = useRouter()
   const { setUserData } = useContext(User_data)
 
   const requestLogout = async () => {
-    const res = await logout();
+    const res = await logout()
     if (res.data && !res.errors) {
       toast.success('Logged out successfully.')
       setUserData(null)
-      router.push('/login' )
-      return false;
-    }else{
+      router.push('/login')
+      return false
+    } else {
       toast.error(res.errors[0].error)
     }
   }
@@ -43,19 +40,17 @@ const NavigationBar = () => {
     )
   }
 
-  //const [toggleSidebar, setToggleSidebar] = useState(false);
+  // const [toggleSidebar, setToggleSidebar] = useState(false);
 
   function sidebar() {
-    console.log('climk');
-    
+    setToggleSidebar((prev) => !prev)
   }
-
 
   return (
     <>
       <Navbar className={styles.navbar}>
         <div className={styles.wrapper}>
-          <Button onclick={sidebar} icon={<ThreeDotsVertical/>}/>
+          <Button onclick={sidebar} icon={<ThreeDotsVertical />} />
           <Navbar.Brand href='/user' className={styles.navbar_logo}>
             {departmentConfig.app_name}
           </Navbar.Brand>
@@ -68,7 +63,9 @@ const NavigationBar = () => {
           >
             <NavDropdown.Item href='#action4'>Settings</NavDropdown.Item>
             <NavDropdown.Divider />
-            <NavDropdown.Item onClick={adminLoginPage}>Admin Panel</NavDropdown.Item>
+            <NavDropdown.Item onClick={adminLoginPage}>
+              Admin Panel
+            </NavDropdown.Item>
             <NavDropdown.Divider />
             <NavDropdown.Item onClick={requestLogout}>Logout</NavDropdown.Item>
           </NavDropdown>

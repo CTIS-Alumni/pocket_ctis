@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import CompaniesList from '../../../components/CompaniesList/CompaniesList'
-import NavigationBar from '../../../components/navbar/NavigationBar'
-import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { _getFetcher } from '../../../helpers/fetchHelpers'
 import { craftUrl, buildCondition } from '../../../helpers/urlHelper'
+import UserPageContainer from '../../../components/UserPageContainer/UserPageContainer'
 
 const CompaniesDashboard = ({ res }) => {
   const [companies, setCompanies] = useState([])
@@ -27,26 +26,29 @@ const CompaniesDashboard = ({ res }) => {
 
   return (
     <main>
-      <NavigationBar />
-      <UserInfoSidebar />
-      <CompaniesList
-        companies={companies}
-        onQuery={onQuery}
-        isLoading={isLoading}
-        total={total}
-      />
+      <UserPageContainer>
+        <CompaniesList
+          companies={companies}
+          onQuery={onQuery}
+          isLoading={isLoading}
+          total={total}
+        />
+      </UserPageContainer>
     </main>
   )
 }
 
 export async function getServerSideProps(context) {
-    const {cookie} = context.req.headers
+  const { cookie } = context.req.headers
   const { companies } = await _getFetcher(
     {
-      companies: craftUrl(['companies'], [
-        { name: 'limit', value: 15 },
-        { name: 'offset', value: 0 },
-      ]),
+      companies: craftUrl(
+        ['companies'],
+        [
+          { name: 'limit', value: 15 },
+          { name: 'offset', value: 0 },
+        ]
+      ),
     },
     cookie
   )

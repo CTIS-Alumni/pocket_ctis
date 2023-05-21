@@ -1,21 +1,20 @@
 import { Easel2Fill } from 'react-bootstrap-icons'
 
 import { Tab, Tabs } from 'react-bootstrap'
-import NavigationBar from '../../../components/navbar/NavigationBar'
-import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
+import UserPageContainer from '../../../components/UserPageContainer/UserPageContainer'
 import PeopleList from '../../../components/SectorPageComponents/PeopleList/PeopleList'
 import PeopleWishingList from '../../../components/SectorPageComponents/PeopleWishingList/PeopleWIshingList'
 import CompaniesList from '../../../components/SectorPageComponents/CompaniesList/CompaniesList'
 
 import styles from '../../../styles/sectors.module.scss'
-import {_getFetcher} from "../../../helpers/fetchHelpers";
-import {craftUrl} from "../../../helpers/urlHelper";
+import { _getFetcher } from '../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../helpers/urlHelper'
 
 const Sector = ({ sector, companies, work, users }) => {
   return (
-    <main>
-      <NavigationBar />
-      <UserInfoSidebar />
+    <UserPageContainer>
+      {/* <NavigationBar />
+      <UserInfoSidebar /> */}
       <div className={styles.main_div}>
         <div className={styles.sector_info}>
           <div className={styles.sector_icon}>
@@ -35,18 +34,30 @@ const Sector = ({ sector, companies, work, users }) => {
           </Tab>
         </Tabs>
       </div>
-    </main>
+    </UserPageContainer>
   )
 }
 
 export async function getServerSideProps(context) {
-  const {cookie} = context.req.headers
-  const {companies, work, users, sector} = await _getFetcher({
-    companies: craftUrl(["companies"], [{name: "sector_id", value: context.params.id}]),
-    work: craftUrl(["workrecords"], [{name: "sector_id", value: context.params.id}]),
-    users: craftUrl(["users"], [{name: "wantsector_id", value: context.params.id}]),
-    sector: craftUrl(["sectors", context.params.id])
-  }, cookie);
+  const { cookie } = context.req.headers
+  const { companies, work, users, sector } = await _getFetcher(
+    {
+      companies: craftUrl(
+        ['companies'],
+        [{ name: 'sector_id', value: context.params.id }]
+      ),
+      work: craftUrl(
+        ['workrecords'],
+        [{ name: 'sector_id', value: context.params.id }]
+      ),
+      users: craftUrl(
+        ['users'],
+        [{ name: 'wantsector_id', value: context.params.id }]
+      ),
+      sector: craftUrl(['sectors', context.params.id]),
+    },
+    cookie
+  )
 
   return {
     props: {

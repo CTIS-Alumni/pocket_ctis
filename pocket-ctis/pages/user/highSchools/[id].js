@@ -1,17 +1,14 @@
-import NavigationBar from '../../../components/navbar/NavigationBar'
-import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
+import UserPageContainer from '../../../components/UserPageContainer/UserPageContainer'
 import React from 'react'
 import styles from '../../../styles/highSchools.module.scss'
 import { BuildingFill } from 'react-bootstrap-icons'
-import {_getFetcher} from "../../../helpers/fetchHelpers";
-import {craftUrl} from "../../../helpers/urlHelper";
-import {getProfilePicturePath} from "../../../helpers/formatHelpers";
+import { _getFetcher } from '../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../helpers/urlHelper'
+import { getProfilePicturePath } from '../../../helpers/formatHelpers'
 
 const HighSchool = ({ high_school, users }) => {
   return (
-    <main>
-      <NavigationBar />
-      <UserInfoSidebar />
+    <UserPageContainer>
       <div className={styles.highschool}>
         <div className={styles.highschool_info}>
           <div>
@@ -43,40 +40,41 @@ const HighSchool = ({ high_school, users }) => {
                   className='user_avatar_48'
                   style={{
                     backgroundImage:
-                      'url(' +
-                        getProfilePicturePath(user.profile_pcture) +
-                      ')',
+                      'url(' + getProfilePicturePath(user.profile_pcture) + ')',
                   }}
                 />
                 <div className={styles.highschool_students_item_info}>
                   <span className={styles.highschool_students_name}>
-                      {user.first_name} {user.last_name}
-
+                    {user.first_name} {user.last_name}
                   </span>
                 </div>
               </div>
 
               <div className={styles.highschool_students_item_badge}>
-                {user.user_types
-                    .split(',')
-                    .map((type, i) => (
-                      <span key={i}>{type.toLocaleUpperCase()}</span>
-                    ))}
+                {user.user_types.split(',').map((type, i) => (
+                  <span key={i}>{type.toLocaleUpperCase()}</span>
+                ))}
               </div>
             </div>
           )
         })}
       </div>
-    </main>
+    </UserPageContainer>
   )
 }
 
 export async function getServerSideProps(context) {
-  const {cookie} = context.req.headers
-  const {high_school, users} = await _getFetcher({
-    high_school: craftUrl(["highschools", context.params.id]),
-    users: craftUrl(["users"], [{name: "highschool_id", value: context.params.id}])
-  }, cookie);
+  const { cookie } = context.req.headers
+  const { high_school, users } = await _getFetcher(
+    {
+      high_school: craftUrl(['highschools', context.params.id]),
+      users: craftUrl(
+        ['users'],
+        [{ name: 'highschool_id', value: context.params.id }]
+      ),
+    },
+    cookie
+  )
 
   return { props: { high_school, users } }
 }

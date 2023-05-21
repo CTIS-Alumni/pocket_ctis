@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import { MortarboardFill } from 'react-bootstrap-icons'
 import styles from './ErasmusUnisList.module.scss'
-import ReactStars from "react-stars";
-import React from "react";
+import ReactStars from 'react-stars'
+import React from 'react'
 
 const ErasmusUnisList = ({ universities }) => {
   return (
     <div className={styles.erasmus_universities}>
-      {universities.map((university) => (
+      {universities?.map((university) => (
         <div className={styles.erasmus_universities_item} key={university.id}>
           <Link
             className={styles.university_link}

@@ -1,17 +1,14 @@
 import { Tab, Tabs } from 'react-bootstrap'
-import NavigationBar from '../../../components/navbar/NavigationBar'
-import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import ErasmusStudentsList from '../../../components/ErasmusPageComponents/ErasmusStudentsList/ErasmusStudentsList'
 import ErasmusUnisList from '../../../components/ErasmusPageComponents/ErasmusUnisList/ErasmusUnisList'
 import styles from '../../../styles/erasmus.module.scss'
-import {_getFetcher} from "../../../helpers/fetchHelpers";
-import {craftUrl} from "../../../helpers/urlHelper";
+import { _getFetcher } from '../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../helpers/urlHelper'
+import UserPageContainer from '../../../components/UserPageContainer/UserPageContainer'
 
 const ErasmusDashboard = ({ erasmus, eduInsts }) => {
   return (
-    <main>
-      <NavigationBar />
-      <UserInfoSidebar />
+    <UserPageContainer>
       <section className={styles.erasmus_wrapper}>
         <h2 className={styles.erasmus_title}>Erasmus</h2>
         <Tabs defaultActiveKey='students' className='mb-3'>
@@ -23,16 +20,22 @@ const ErasmusDashboard = ({ erasmus, eduInsts }) => {
           </Tab>
         </Tabs>
       </section>
-    </main>
+    </UserPageContainer>
   )
 }
 
 export async function getServerSideProps(context) {
-  const {cookie} = context.req.headers
-  const {erasmus, eduInsts} = await _getFetcher({
-    erasmus: craftUrl(["erasmus"]),
-    eduInsts: craftUrl(["educationinstitutes"], [{name: "erasmus", value: 1}])
-  }, cookie);
+  const { cookie } = context.req.headers
+  const { erasmus, eduInsts } = await _getFetcher(
+    {
+      erasmus: craftUrl(['erasmus']),
+      eduInsts: craftUrl(
+        ['educationinstitutes'],
+        [{ name: 'erasmus', value: 1 }]
+      ),
+    },
+    cookie
+  )
 
   return { props: { erasmus, eduInsts } }
 }

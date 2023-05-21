@@ -1,31 +1,45 @@
-import NavigationBar from '../../../components/navbar/NavigationBar'
-import UserInfoSidebar from '../../../components/UserInfoSidebar/UserInfoSidebar'
 import { useState, useEffect } from 'react'
 import SearchBar from '../../../components/SearchBar/SearchBar'
 import { Container, ListGroup, ListGroupItem, Badge } from 'react-bootstrap'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import styles from "../../../components/UserInfoSidebar/UserInfoSidebar.module.scss";
-import {_getFetcher} from "../../../helpers/fetchHelpers";
-import {craftUrl} from "../../../helpers/urlHelper";
-import {getProfilePicturePath} from "../../../helpers/formatHelpers";
+import styles from '../../../components/UserInfoSidebar/UserInfoSidebar.module.scss'
+import { _getFetcher } from '../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../helpers/urlHelper'
+import { getProfilePicturePath } from '../../../helpers/formatHelpers'
+import UserPageContainer from '../../../components/UserPageContainer/UserPageContainer'
 
 const getData = async (search) => {
-  try{
-    const {companies, eduInsts, gradProjects, users, highSchools} = await _getFetcher({
-      companies: craftUrl(["companies"], [{name: "name", value: encodeURIComponent(search)}]),
-      eduInsts: craftUrl(["educationinstitutes"], [{name: "name", value:  encodeURIComponent(search)}]),
-      gradProjects: craftUrl(["graduationprojects"], [{name: "name", value:  encodeURIComponent(search)}]),
-      users: craftUrl(["users"], [{name: "name", value:  encodeURIComponent(search)}]),
-      highSchools: craftUrl(["highschools"], [{name: "name", value:  encodeURIComponent(search)}]),
-    });
+  try {
+    const { companies, eduInsts, gradProjects, users, highSchools } =
+      await _getFetcher({
+        companies: craftUrl(
+          ['companies'],
+          [{ name: 'name', value: encodeURIComponent(search) }]
+        ),
+        eduInsts: craftUrl(
+          ['educationinstitutes'],
+          [{ name: 'name', value: encodeURIComponent(search) }]
+        ),
+        gradProjects: craftUrl(
+          ['graduationprojects'],
+          [{ name: 'name', value: encodeURIComponent(search) }]
+        ),
+        users: craftUrl(
+          ['users'],
+          [{ name: 'name', value: encodeURIComponent(search) }]
+        ),
+        highSchools: craftUrl(
+          ['highschools'],
+          [{ name: 'name', value: encodeURIComponent(search) }]
+        ),
+      })
 
     return { companies, eduInsts, gradProjects, users, highSchools }
-  }catch(error){
-    console.log(error);
+  } catch (error) {
+    console.log(error)
   }
 }
-
 
 const SearchDataList = ({ searchData }) => {
   const { users, companies, eduInsts, gradProjects, highSchools } = searchData
@@ -43,8 +57,11 @@ const SearchDataList = ({ searchData }) => {
                 >
                   <div>
                     <h5>
-                      <img alt={user.first_name} className={styles.user_avatar_48}
-                           src={getProfilePicturePath(user.profile_pcture)}/>
+                      <img
+                        alt={user.first_name}
+                        className={styles.user_avatar_48}
+                        src={getProfilePicturePath(user.profile_pcture)}
+                      />
                       {user.first_name} {user.last_name}
                     </h5>
                     <span style={{ fontSize: 12, color: '#999' }}>
@@ -195,16 +212,12 @@ const SearchPage = () => {
     }
   }
   return (
-    <div style={{ height: '100vh' }}>
-      <NavigationBar />
-      <div className='d-flex' style={{ height: '100%' }}>
-        <UserInfoSidebar />
-        <Container>
-          <SearchBar onSubmit={onSearch} searchValue={searchString} />
-          {searchData && <SearchDataList searchData={searchData} />}
-        </Container>
-      </div>
-    </div>
+    <UserPageContainer>
+      <Container style={{ paddingTop: 30 }}>
+        <SearchBar onSubmit={onSearch} searchValue={searchString} />
+        {searchData && <SearchDataList searchData={searchData} />}
+      </Container>
+    </UserPageContainer>
   )
 }
 

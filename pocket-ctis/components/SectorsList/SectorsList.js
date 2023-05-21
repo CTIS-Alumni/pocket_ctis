@@ -18,48 +18,31 @@ const SectorsList = ({ sectors, isLoading, onSearch }) => {
     <section className={styles.sectors}>
       <h2 className='custom_table_title'>Sectors</h2>
       <div className={styles.sectors_search_bar}>
-        <FilterSquareFill />
         <SearchBar onSubmit={onSearch} />
-      </div>
-      <div className={styles.sectors_filters}>
-        <span className={styles.sectors_filters_title}>Filters:</span>
-        <form className={styles.sectors_filters_form}>
-          <input
-            type='checkbox'
-            className={styles.sectors_filters_form_check}
-            id='chk_turkey'
-          />
-          <label
-            className={styles.sectors_filters_form_label}
-            htmlFor='chk_turkey'
-          >
-            Turkey
-          </label>
-        </form>
       </div>
       <LoadingSpinner isLoading={isLoading} />
       <div className={common.table_wrapper}>
-      <table>
-        <thead>
-          <tr>
-            <th>Sector</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sectors.map((sector, i) => (
-            <tr className={common.hoverable} key={i}>
-              <td>
-                <a
-                  //className={`${styles.sector_link} link`}
-                  href={`/user/sectors/${sector.id}`}
-                >
-                  {sector.sector_name}
-                </a>
-              </td>
+        <table>
+          <thead>
+            <tr>
+              <th>Sector</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sectors.map((sector, i) => (
+              <tr className={common.hoverable} key={i}>
+                <td>
+                  <a
+                    //className={`${styles.sector_link} link`}
+                    href={`/user/sectors/${sector.id}`}
+                  >
+                    {sector.sector_name}
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </section>
   )

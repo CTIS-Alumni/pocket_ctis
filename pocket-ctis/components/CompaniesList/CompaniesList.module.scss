@@ -1,7 +1,7 @@
 @import '../../styles/variables.scss';
 
 .companies {
-    padding: 3em 3.5em;
+    padding: 3em 3em;
 
     &_title {
         text-align: center;
@@ -98,57 +98,57 @@
     }
 }
 
-.pagination {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    font-size: 12px;
+// .pagination {
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: center;
+//     margin-top: 10px;
+//     font-size: 12px;
 
-    div{
-        display: flex;
-        align-items: center;
-    }
+//     div{
+//         display: flex;
+//         align-items: center;
+//     }
 
-    span {
-        color: black;
-        float: left;
-        padding: 6px 10px;
-        text-decoration: none;
-        // width: 30px;
-      }
+//     span {
+//         color: black;
+//         float: left;
+//         padding: 6px 10px;
+//         text-decoration: none;
+//         // width: 30px;
+//       }
       
-    span.active {
-        background-color: #4CAF50;
-        color: white;
-        border-radius: 5px;
-      }
+//     span.active {
+//         background-color: #4CAF50;
+//         color: white;
+//         border-radius: 5px;
+//       }
       
-    span:hover:not(.active) {
-        background-color: #ddd;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    .hide{
-        visibility: hidden;
-        position: absolute;
-        left: 30%;
-        top: 30%
-    }
-    .ellipsis{
-        cursor: pointer;
-        position: relative;
-        transition: all 0.3s;
-        &:hover > .hide{
-            visibility: visible;
-        }
-        &:hover > .ellipsisIcon{
-            visibility: hidden;
-        }
-    }
+//     span:hover:not(.active) {
+//         background-color: #ddd;
+//         border-radius: 5px;
+//         cursor: pointer;
+//     }
+//     .hide{
+//         visibility: hidden;
+//         position: absolute;
+//         left: 30%;
+//         top: 30%
+//     }
+//     .ellipsis{
+//         cursor: pointer;
+//         position: relative;
+//         transition: all 0.3s;
+//         &:hover > .hide{
+//             visibility: visible;
+//         }
+//         &:hover > .ellipsisIcon{
+//             visibility: hidden;
+//         }
+//     }
 
-    select{
-        padding: 0 5px;
-    }
+//     select{
+//         padding: 0 5px;
+//     }
 
-}
+// }
