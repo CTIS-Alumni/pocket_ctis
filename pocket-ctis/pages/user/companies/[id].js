@@ -12,8 +12,6 @@ import { craftUrl } from '../../../helpers/urlHelper'
 const Company = ({ company, users }) => {
   return (
     <UserPageContainer>
-      {/* <NavigationBar />
-      <UserInfoSidebar /> */}
       <div className={styles.company}>
         <div className={styles.top_part}>
           <div className={styles.company_info}>

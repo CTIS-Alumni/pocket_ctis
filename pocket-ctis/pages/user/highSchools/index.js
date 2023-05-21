@@ -2,26 +2,27 @@ import UserPageContainer from '../../../components/UserPageContainer/UserPageCon
 import HighSchoolList from '../../../components/HighSchoolsList/HighSchoolsList'
 import { useEffect, useState } from 'react'
 import { _getFetcher } from '../../../helpers/fetchHelpers'
-import { craftUrl } from '../../../helpers/urlHelper'
+import { craftUrl, buildCondition } from '../../../helpers/urlHelper'
 
 const HighSchoolDashboard = ({ res }) => {
   const [highschools, setHighschools] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [total, setTotal] = useState()
+
   useEffect(() => {
     setHighschools(res.data)
+    setTotal(res.length)
     setIsLoading(false)
   }, [])
 
-  const onSearch = ({ searchValue }) => {
+  const onQuery = (queryParams) => {
+    const conditions = buildCondition(queryParams)
     setIsLoading(true)
-    _getFetcher({
-      highschools: craftUrl(
-        ['highschools'],
-        [{ name: 'name', value: searchValue }]
-      ),
-    })
-      .then(({ highschools }) => setHighschools(highschools.data))
-      .catch((err) => console.log(err))
+    _getFetcher({ highschools: craftUrl(['highschools'], conditions) })
+      .then(({ highschools }) => {
+        setTotal(highschools.length)
+        setHighschools(highschools.data)
+      })
       .finally((_) => setIsLoading(false))
   }
 
@@ -29,7 +30,8 @@ const HighSchoolDashboard = ({ res }) => {
     <UserPageContainer>
       <HighSchoolList
         highSchools={highschools}
-        onSearch={onSearch}
+        total={total}
+        onQuery={onQuery}
         isLoading={isLoading}
       />
     </UserPageContainer>

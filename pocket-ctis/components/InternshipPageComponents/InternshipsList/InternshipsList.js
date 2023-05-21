@@ -1,12 +1,14 @@
 import { Container, ListGroupItem, Row, Col } from 'react-bootstrap'
 import styles from './InternshipsList.module.scss'
-import React, {useContext} from 'react'
+import { useState, useEffect, useContext } from 'react'
 import {
   getProfilePicturePath,
-  getSemester, getTimePeriod,
+  getSemester,
+  getTimePeriod,
 } from '../../../helpers/formatHelpers'
-import ReactStars from "react-stars";
+import ReactStars from 'react-stars'
 import { User_data } from '../../../context/userContext'
+import PaginationFooter from '../../PaginationFooter/PaginationFooter'
 
 /*const Anonymous = () => {
   return (
@@ -28,12 +30,60 @@ import { User_data } from '../../../context/userContext'
   )
 }*/ //TODO: REMOVE ANONYMOUS COMPONENTS
 
-const InternshipsList = ({ internships }) => {
+const InternshipsList = ({ internships, isLoading, onQuery, total }) => {
+  const [limit, setLimit] = useState(15)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [searchString, setSearchString] = useState('')
+  const [sorting, setSorting] = useState({ name: '', direction: '' })
+
+  const handleSorting = (columnName) => {
+    if (sorting.name == columnName) {
+      if (sorting.direction == 'asc') {
+        setSorting({ name: columnName, direction: 'desc' })
+      } else {
+        setSorting({ name: '', direction: '' })
+      }
+    } else {
+      setSorting({ name: columnName, direction: 'asc' })
+    }
+    setCurrentPage(1)
+  }
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit)
+    setCurrentPage(1)
+  }
+  const handlePageChange = (newPage) => setCurrentPage(newPage)
+  const handleSearch = (search) => {
+    search.searchValue = search.searchValue.trim()
+    setSearchString(search.searchValue.trim())
+    setCurrentPage(1)
+  }
+
+  useEffect(() => {
+    let queryParams = {}
+
+    queryParams.column = sorting.name
+    queryParams.order = sorting.direction
+    queryParams.offset = (currentPage - 1) * limit
+    queryParams.limit = limit
+    queryParams.searchcol = 'sector_name,company_name'
+    queryParams.search = searchString
+
+    onQuery(queryParams)
+  }, [sorting, currentPage, limit, searchString])
+
   return (
     <div className={styles.internship_students}>
-      {internships.map((internship) => {
-        const internshipSemester = getSemester(internship.semester, internship.start_date)
-        const timePeriod = getTimePeriod(internship.start_date, internship.end_date)
+      {internships?.map((internship) => {
+        const internshipSemester = getSemester(
+          internship.semester,
+          internship.start_date
+        )
+        const timePeriod = getTimePeriod(
+          internship.start_date,
+          internship.end_date
+        )
         return (
           <div className={styles.internship_students_item} key={internship.id}>
             {/* This will become a link in the future maybe */}
@@ -61,28 +111,33 @@ const InternshipsList = ({ internships }) => {
                   <span className={styles.internship_students_item_time_period}>
                     {timePeriod}
                   </span>
-                  {internship.rating &&
-                      <ReactStars
-                          count={5}
-                          value={internship.rating}
-                          size={20}
-                          color2={'#c79d34'}
-                          edit={false}
-                      />
-                  }
+                  {internship.rating && (
+                    <ReactStars
+                      count={5}
+                      value={internship.rating}
+                      size={20}
+                      color2={'#c79d34'}
+                      edit={false}
+                    />
+                  )}
                 </div>
               </div>
               <div className={styles.internship_students_item_badge}>
-                {internship.user_types
-                      .split(',')
-                      .map((type, i) => (
-                        <span key={i}>{type.toLocaleUpperCase()}</span>
-                      ))}
+                {internship.user_types?.split(',').map((type, i) => (
+                  <span key={i}>{type.toLocaleUpperCase()}</span>
+                ))}
               </div>
             </div>
           </div>
         )
       })}
+      <PaginationFooter
+        total={total}
+        limit={limit}
+        changeLimit={handleLimitChange}
+        currentPage={currentPage}
+        pageChange={handlePageChange}
+      />
     </div>
   )
 }
