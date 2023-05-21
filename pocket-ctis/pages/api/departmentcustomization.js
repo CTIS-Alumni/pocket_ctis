@@ -4,6 +4,7 @@ import {getBufferImage, parseFormForDB, resizeAndCropImage, resizeAndFitImage} f
 import { promises as fsPromises } from 'fs';
 import fs from 'fs';
 import departmentConfig from '../../config/departmentConfig'
+import {corsMiddleware} from "./middleware/cors";
 
 export const config = {
     api: {
@@ -52,4 +53,4 @@ const handler =  async (req, res) => {
         } res.status(403).json({errors: [{error: "Forbidden request!"}]});
     } else res.redirect("/401", 401);
 }
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

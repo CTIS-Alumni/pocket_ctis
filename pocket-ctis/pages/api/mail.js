@@ -1,10 +1,41 @@
 import {doqueryNew} from "../../helpers/dbHelpers";
-import {sendActivationMail, sendPasswordResetMail, sendProfileUpdateEmail} from "../../helpers/mailHelper";
+import {
+    sendActivationMail,
+    sendChangeEmailMail,
+    sendPasswordResetMail,
+    sendProfileUpdateEmail
+} from "../../helpers/mailHelper";
 import {checkAuth} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
+import {corsMiddleware} from "./middleware/cors";
 
 const handler =  async (req, res) => {
-    if(req.query.forgotPassword){
+    if(req.query.changeEmail){
+        try{
+            const {email, currentEmail} = JSON.parse(req.body);
+
+            const query = "SELECT id, first_name, last_name FROM users WHERE contact_email = ? UNION SELECT id, first_name, last_name FROM users " +
+            " WHERE contact_email = ? ";
+
+            const {data, errors} = await doqueryNew({query: query, values: [currentEmail, email]});
+
+            if(data?.length && data.length === 1){
+                const mail_status = await sendChangeEmailMail(data[0], email);
+
+                if(mail_status === true)
+                    res.status(200).json({data: "A password reset link has been sent to your mail address."});
+
+                else res.status(500).json({errors: [{error: "An error happened while sending email. Please try again.", details: mail_status}]});
+
+            }else if(data?.length && data.length > 1)
+                throw {message: "Email address belongs to another user!"}
+            else throw {message: "An error occured!"}
+
+        }catch(error){
+            res.status(500).json({errors: [{error: error.message}]});
+        }
+    }
+    else if(req.query.forgotPassword){
         try{
             const {email, username} = JSON.parse(req.body);
             const query = "SELECT u.first_name, u.last_name, u.id, u.contact_email from users u " +
@@ -99,4 +130,4 @@ const handler =  async (req, res) => {
     else res.redirect("/401", 401);
 }
 
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

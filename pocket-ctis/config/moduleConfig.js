@@ -3,31 +3,31 @@ module.exports = {
     "user_visible": true
   },
   "sectors": {
-    "user_addable": false
+    "user_addable": true
   },
   "companies": {
-    "user_addable": false
+    "user_addable": true
   },
   "edu_insts": {
-    "user_addable": false
+    "user_addable": true
   },
   "highschool": {
-    "user_addable": false
+    "user_addable": true
   },
   "exams": {
-    "user_addable": false
+    "user_addable": true
   },
   "student_societies": {
-    "user_addable": false
+    "user_addable": true
   },
   "skills": {
-    "user_addable": false
+    "user_addable": true
   },
   "internships": {
     "user_visible": true
   },
   "erasmus": {
-    "user_visible": false
+    "user_visible": true
   },
   "user_profile_data": {
     "graudation_projects": {

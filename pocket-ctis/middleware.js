@@ -35,18 +35,14 @@ export default async function middleware(req){
             const {payload} =  await verify(access, process.env.ACCESS_SECRET);
 
             if(url.includes("login") && !url.includes("admin") && payload.mode === "user"){
-                console.log("1")
                 return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user");
             }
             else if(url.includes("login") && payload.mode === "admin"){
-                console.log("2")
                 return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin");
             }
             else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user") && payload.mode === "admin"){
-                console.log("3")
                     return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin");
             }else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin") && payload.mode === "user"){
-                console.log("4")
                 return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user");
             }
 

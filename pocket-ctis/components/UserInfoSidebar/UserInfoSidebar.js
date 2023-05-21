@@ -17,6 +17,7 @@ import common from '../../styles/common.module.scss'
 import { useContext } from 'react'
 import { User_data } from '../../context/userContext'
 import { getProfilePicturePath } from '../../helpers/formatHelpers'
+import moduleConfig from '../../config/moduleConfig';
 
 const Button = ({ text, icon, href }) => {
   return (
@@ -86,11 +87,11 @@ const UserInfoSidebar = ({ toggleSidebar, setToggleSidebar }) => {
               href='/user/companies'
             />
             <Button text='Sectors' icon={<Easel2Fill />} href='/user/sectors' />
-            <Button
+            {moduleConfig.internships.user_visible && <Button
               text='Internships'
               icon={<ClipboardFill />}
               href='/user/internships'
-            />
+            />}
           </div>
           {/* <hr className={styles.sidebar_divider} /> */}
           <div className={styles.sidebar_button_group_education}>
@@ -105,12 +106,12 @@ const UserInfoSidebar = ({ toggleSidebar, setToggleSidebar }) => {
               icon={<BuildingFill />}
               href='/user/highSchools'
             />
-            <Button text='Erasmus' icon={<StarFill />} href='/user/erasmus' />
-            <Button
+            {moduleConfig.erasmus.user_visible && <Button text='Erasmus' icon={<StarFill />} href='/user/erasmus' />}
+            {moduleConfig.graduation_projects.user_visible && <Button
               text='Senior Projects'
               icon={<PersonWorkspace />}
               href='/user/graduationProjects'
-            />
+            />}
           </div>
         </div>
       </aside>

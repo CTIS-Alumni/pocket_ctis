@@ -2,6 +2,7 @@ import {buildUpdateQueries, doquery, doqueryNew, updateTable} from "../../../../
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 import {checkApiKey} from "../../middleware/checkAPIkey";
+import {corsMiddleware} from "../../middleware/cors";
 
 const fields = {
     basic: ["first_name", "last_name", "is_retired", "is_active", "gender", "nee"],
@@ -63,4 +64,4 @@ const handler =  async (req, res) => {
         res.redirect("/401", 401);
     }
 }
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

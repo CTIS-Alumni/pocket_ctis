@@ -5,6 +5,7 @@ import {
 import { checkAuth, checkUserType } from "../../../../helpers/authHelper";
 import fs from 'fs/promises'
 import {parseFormForDB} from '../../../../helpers/imageHelper';
+import {corsMiddleware} from "../../middleware/cors";
 
 const fields = {
     basic: ["profile_picture"],
@@ -17,7 +18,7 @@ export const config = {
     },
 };
 
-export default async function handler(req, res) {
+const handler =  async (req, res) => {
     try {
         const session = await checkAuth(req.headers, res);
         const payload = await checkUserType(session, req.query);
@@ -63,3 +64,5 @@ export default async function handler(req, res) {
         res.status(500).json({ errors: [{ error: error.message }] });
     }
 }
+
+export default corsMiddleware(handler);

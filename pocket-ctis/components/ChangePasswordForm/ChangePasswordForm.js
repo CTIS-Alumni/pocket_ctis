@@ -23,18 +23,18 @@ const ChangePasswordForm = () => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      currentPass: null,
+      currentPassword: null,
       newPassword: null,
-      retypeNewPassword: null,
+      confirmPassword: null,
     },
     validationSchema: Yup.object({
-      currentPass: Yup.string()
+      currentPassword: Yup.string()
         .min(8, 'Password must be longer than 8 characters')
         .required('Required'),
       newPassword: Yup.string()
         .min(8, 'Password must be longer than 8 characters')
         .required('Required'),
-      retypeNewPassword: Yup.string()
+      confirmPassword: Yup.string()
         .min(8, 'Password must be longer than 8 characters')
         .required('Required'),
     }),
@@ -44,7 +44,6 @@ const ChangePasswordForm = () => {
   })
 
   const onSubmitHandler = async (values) => {
-    console.log("here",values)
     const is_valid = checkPassword(values.newPassword, values.confirmPassword);
     if (is_valid.errors) {
       toast.error(is_valid.errors[0].error)
@@ -52,7 +51,6 @@ const ChangePasswordForm = () => {
     }
 
     const res = await changePassword(values.currentPassword, values.newPassword, values.confirmPassword)
-    console.log(res);
     if (res.data && !res.errors) {
       toast.success('Admin password has been reset successfully.')
     }else{

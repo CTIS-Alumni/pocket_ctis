@@ -1,0 +1,4 @@
+bilkent_id,first_name,last_name,gender,contact_email,types,edu_inst_id,degree_type_id,name_of_program,start_date,end_date,is_current
+986543,Ceren,Aygün,1,ceren@gmailer.com,"1,2",1,1,CTIS,05/08/2019,,1
+34246654,Turan,Kaya,0,kaya@gmailer.com,"1,2,3",1,1,CTIS,10/02/2016,01/01/2020,0
+9764453,Hande,Sener,1,hande@gmailer.com,1,,,,,,

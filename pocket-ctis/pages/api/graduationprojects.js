@@ -7,6 +7,7 @@ import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 import modules from "../../config/moduleConfig";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
+import {corsMiddleware} from "./middleware/cors";
 
 const columns = {
     graduation_project_name: "g.graduation_project_name",
@@ -120,4 +121,4 @@ const handler =  async (req, res) => {
         res.redirect("/401", 401);
     }
 }
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

@@ -15,7 +15,7 @@ export const sendChangeEmailMail = async (user, newEmail) => {
         }, process.env.MAIL_SECRET, 60 * 10);
 
 
-        const template = compile(fs.readFileSync('public/views/changeContactEmail.hbs', 'utf-8'));
+        const template = compile(fs.readFileSync(process.env.PRIVATE_ASSETS_PATH + '/views/changeContactEmail.hbs', 'utf-8'));
 
         const html = template({
             name: user.first_name,
@@ -43,7 +43,7 @@ export const sendResolvedRequestMail = async (request) => {
     const transport = nodemailer.createTransport(mailConfig);
 
     try{
-        const template = compile(fs.readFileSync('public/views/resolvedRequest.hbs', 'utf-8'));
+        const template = compile(fs.readFileSync(process.env.PRIVATE_ASSETS_PATH + '/views/resolvedRequest.hbs', 'utf-8'));
 
         const html = template({
             name: request.first_name,
@@ -79,7 +79,7 @@ export const sendPasswordResetMail = async (user, type) => {
             user_id: user.id, type: type
         }, process.env.MAIL_SECRET, 60 * 10);
 
-        const template = compile(fs.readFileSync('public/views/forgotPassword.hbs', 'utf-8'));
+        const template = compile(fs.readFileSync(process.env.PRIVATE_ASSETS_PATH + '/views/forgotPassword.hbs', 'utf-8'));
 
         const html = template({
             name: user.first_name,
@@ -115,7 +115,7 @@ export const sendProfileUpdateEmail = async (user, type) => {
         pool: true
     });
 
-    const template = compile(fs.readFileSync('public/views/profileUpdate.hbs', 'utf-8'));
+    const template = compile(fs.readFileSync(process.env.PRIVATE_ASSETS_PATH + '/views/profileUpdate.hbs', 'utf-8'));
 
     try {
         const html = template({
@@ -149,7 +149,7 @@ export const sendReActivationMail = async (user) => {
         pool: true
     });
 
-    const template = compile(fs.readFileSync('public/views/reactivateAccount.hbs', 'utf-8'));
+    const template = compile(fs.readFileSync(process.env.PRIVATE_ASSETS_PATH + '/views/reactivateAccount.hbs', 'utf-8'));
 
     console.log(user.contact_email);
     try {
@@ -186,7 +186,7 @@ export const sendAdminActivationMail = async(user) => {
         pool: true
     });
 
-    const template = compile(fs.readFileSync('public/views/activateAdminAccount.hbs', 'utf-8'));
+    const template = compile(fs.readFileSync(process.env.PRIVATE_ASSETS_PATH + '/views/activateAdminAccount.hbs', 'utf-8'));
 
     try {
         const activation_token = await sign({user_id: user.id, type: "activateAdminAccount"},
@@ -225,7 +225,7 @@ export const sendActivationMail = async(user) => {
         pool: true
     });
 
-    const template = compile(fs.readFileSync('public/views/activateAccount.hbs', 'utf-8'));
+    const template = compile(fs.readFileSync(process.env.PRIVATE_ASSETS_PATH + '/views/activateAccount.hbs', 'utf-8'));
 
     try {
         const activation_token = await sign({user_id: user.id, type: "activateAccount"},

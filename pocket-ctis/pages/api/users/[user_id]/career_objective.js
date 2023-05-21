@@ -5,6 +5,7 @@ import {
 } from "../../../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
+import {corsMiddleware} from "../../middleware/cors";
 
 const fields = {
     basic: ["career_objective", "visibility"],
@@ -21,7 +22,7 @@ const validation = (data) => {
     return true;
 }
 
-export default async function handler(req, res){
+const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if(payload?.user === "admin" || payload?.user === "owner") {
@@ -59,3 +60,4 @@ export default async function handler(req, res){
         }
     }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
 }
+export default corsMiddleware(handler);

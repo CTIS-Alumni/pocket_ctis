@@ -2,6 +2,8 @@ import {verify} from "../../helpers/jwtHelper";
 import {compare, hash} from "bcrypt";
 import {doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
+import {corsMiddleware} from "./middleware/cors";
+import {checkApiKey} from "./middleware/checkAPIkey";
 
 const handleErrorMessages = (error) => {
     if(error?.code?.includes("ERR_JWT_EXPIRED"))
@@ -13,7 +15,7 @@ const handleErrorMessages = (error) => {
     return error;
 }
 
-export default async function handler(req, res) {
+const handler = async (req, res) => {
     if(req.query.changeEmail){
         try{
             const {username, password, token} = JSON.parse(req.body);
@@ -198,3 +200,5 @@ export default async function handler(req, res) {
     }
     else res.redirect("/401", 401);
 }
+
+export default corsMiddleware(checkApiKey(handler));

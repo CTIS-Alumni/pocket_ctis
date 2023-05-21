@@ -1,5 +1,6 @@
 import {doqueryNew} from "../../helpers/dbHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
+import {corsMiddleware} from "./middleware/cors";
 
 const handler =  async (req, res) => {
         const method = req.method;
@@ -15,4 +16,4 @@ const handler =  async (req, res) => {
                 break;
         }
 }
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

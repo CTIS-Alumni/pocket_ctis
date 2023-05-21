@@ -181,6 +181,8 @@ const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
               options={[
                 { label: 'Left Outer Join', value: 'LEFT OUTER JOIN' },
                 { label: 'Right Outer Join', value: 'RIGHT OUTER JOIN' },
+                { label: 'Join', value: 'JOIN' },
+                { label: 'Full Outer Join', value: 'FULL OUTER JOIN' },
               ]}
               onChange={(val) => formik.setFieldValue('joinType', val)}
               styles={selectStyles}
