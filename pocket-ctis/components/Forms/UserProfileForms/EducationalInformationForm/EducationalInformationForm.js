@@ -217,15 +217,12 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           className={styles.removeBtn}
                                           type='button'
                                           onClick={() => {
-                                            if(edu_record.edu_inst.includes("Bilkent") && (edu_record.name_of_program !== departmentConfig.department_name
-                                                && edu_record.name_of_program === departmentConfig.abbreviation)){
                                               arrayHelpers.remove(index)
                                               if (edu_record.hasOwnProperty('id'))
                                                 deletedData.push({
                                                   id: edu_record.id,
                                                   data: edu_record
                                                 })
-                                            }
                                           }}
                                         >
                                           <XCircleFill
@@ -244,8 +241,6 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             className={styles.inputField}
                                             id={`edu_records[${index}]edu_inst`}
                                             name={`edu_records[${index}]edu_inst`}
-                                            disabled={edu_record.edu_inst.includes("Bilkent") && (edu_record.name_of_program === departmentConfig.department_name
-                                                || edu_record.name_of_program === departmentConfig.abbreviation)}
                                           >
                                             <option disabled selected value=''>
                                               Please select Educational
@@ -278,9 +273,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               className={styles.inputField}
                                               name={`edu_records[${index}]degree_type`}
                                               id={`edu_records[${index}]degree_type`}
-                                              disabled={!edu_record.edu_inst || (edu_record.edu_inst.includes("Bilkent") &&
-                                                  (edu_record.name_of_program === departmentConfig.department_name
-                                                  || edu_record.name_of_program === departmentConfig.abbreviation))}
+                                              disabled={!edu_record.edu_inst}
                                             >
                                               <option selected disabled value=''>
                                                 Please select a Degree
@@ -305,8 +298,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               className={styles.inputField}
                                               name={`edu_records[${index}]name_of_program`}
                                               id={`edu_records[${index}]name_of_program`}
-                                              disabled={!edu_record.edu_inst || (edu_record.edu_inst.includes("Bilkent") && (edu_record.name_of_program === departmentConfig.department_name
-                                                  || edu_record.name_of_program === departmentConfig.abbreviation))}
+                                              disabled={!edu_record.edu_inst}
                                             />
                                           </div>
                                         </div>
@@ -332,10 +324,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               id={`edu_records[${index}]start_date`}
                                               disabled={
                                                 !edu_record.name_of_program ||
-                                                !edu_record.degree_type ||  (edu_record.edu_inst.includes("Bilkent") &&
-                                                      (edu_record.name_of_program === departmentConfig.department_name
-                                                      || edu_record.name_of_program === departmentConfig.abbreviation))
-                                              }
+                                                !edu_record.degree_type}
                                             />
                                           </div>
 
@@ -350,9 +339,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               disabled={
                                                 edu_record.is_current ||
                                                 !edu_record.name_of_program ||
-                                                !edu_record.degree_type ||  (edu_record.edu_inst.includes("Bilkent") &&
-                                                      (edu_record.name_of_program === departmentConfig.department_name
-                                                      || edu_record.name_of_program === departmentConfig.abbreviation))
+                                                !edu_record.degree_type
                                               }
                                               format='MMM/y'
                                               maxDetail='year'
@@ -379,11 +366,8 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             className={styles.inputField}
                                             name={`edu_records[${index}]gpa`}
                                             id={`edu_records[${index}]gpa`}
-                                            disabled={!edu_record.name_of_program || (
-                                                edu_record.edu_inst.includes("Bilkent") &&
-                                                (edu_record.name_of_program === departmentConfig.department_name
-                                                    || edu_record.name_of_program === departmentConfig.abbreviation)
-                                            )}
+                                            disabled={!edu_record.name_of_program
+                                            }
                                           />
                                         </div>
 
@@ -420,9 +404,6 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                                     )}
                                                     &nbsp; Currently Studying?
                                                     <input
-                                                      disabled={edu_record.edu_inst.includes("Bilkent") &&
-                                                          (edu_record.name_of_program === departmentConfig.department_name
-                                                          || edu_record.name_of_program === departmentConfig.abbreviation)}
                                                       type='checkbox'
                                                       {...field}
                                                       style={{
