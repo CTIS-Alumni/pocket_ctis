@@ -30,7 +30,7 @@ const SettingsDashboard = () => {
         </div>
 
         <div className={styles.formBody}>
-          {activeKey == 'password' && <ChangePasswordForm />}
+          {activeKey == 'password' && <ChangePasswordForm type={"changeAdminPassword"}/>}
           {activeKey == 'email' && <ChangeEmailForm />}
         </div>
       </div>

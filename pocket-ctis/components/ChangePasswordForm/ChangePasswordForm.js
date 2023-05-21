@@ -14,12 +14,8 @@ const checkPassword = (pass, cnfpass) => {
   return true;
 }
 
-const changePassword = async (current, newPass) => {
-  const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "changeAdminPassword", value: 1}]), {current, newPass})
-  return res;
-}
 
-const ChangePasswordForm = () => {
+const ChangePasswordForm = ({type}) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -43,6 +39,11 @@ const ChangePasswordForm = () => {
     },
   })
 
+  const changePassword = async (current, newPass) => {
+    const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: type, value: 1}]), {current, newPass})
+    return res;
+  }
+
   const onSubmitHandler = async (values) => {
     const is_valid = checkPassword(values.newPassword, values.confirmPassword);
     if (is_valid.errors) {
@@ -52,7 +53,9 @@ const ChangePasswordForm = () => {
 
     const res = await changePassword(values.currentPassword, values.newPassword, values.confirmPassword)
     if (res.data && !res.errors) {
-      toast.success('Admin password has been reset successfully.')
+      if(type === "changeAdminPassword")
+        toast.success('Admin password has been reset successfully.')
+      else toast.success('Password has been reset successfully.')
     }else{
       toast.error(res.errors[0].error)
     }

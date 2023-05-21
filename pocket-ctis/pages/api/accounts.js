@@ -42,7 +42,37 @@ const handler = async (req, res) => {
             res.status(500).json({errors: [{error: error.message}]});
         }
     }
-    if(req.query.changeAdminPassword){
+    else if(req.query.changePassword){
+        try{
+            const session = await checkAuth(req.headers, res);
+            if(session.payload.mode === "user"){
+                const {current, newPass} = JSON.parse(req.body);
+
+                if(current === newPass)
+                    throw {message: "Old password can't be the same as new password!"};
+
+                const check_credentials_query = "SELECT hashed FROM usercredential WHERE user_id = ? AND is_admin_auth = 0 ";
+                const {data, errors} = await doqueryNew({query: check_credentials_query, values: [session.payload.user_id]});
+
+                if(errors || (data && !data.length))
+                    throw {message: "An error occured while resetting your password"};
+
+
+                const compare_res = await compare(current, data[0].hashed);
+                if(!compare_res)
+                    throw {message: "Current password is wrong!"};
+
+                const new_hashed_pass = await hash(newPass, 10);
+                const insert_new_admin_pass_query = "UPDATE usercredential SET hashed = ? WHERE user_id = ? AND is_admin_auth = 0 ";
+                const {data:d, errors:err} = await doqueryNew({query: insert_new_admin_pass_query, values: [new_hashed_pass, session.payload.user_id]});
+
+                res.status(200).json({data:d, errors:err});
+            }else res.status(401).json({errors: [{error: "Unauhtorized!"}]});
+        }catch(error){
+            res.status(500).json({errors: [{error: error.message}]});
+        }
+    }
+    else if(req.query.changeAdminPassword){
         try{
             const session = await checkAuth(req.headers, res);
             const payload = await checkUserType(session, req.query);
@@ -75,7 +105,7 @@ const handler = async (req, res) => {
             res.status(500).json({errors: [{error: error.message}]});
         }
     }
-    if(req.query.activateAccount){
+    else if(req.query.activateAccount){
         try{
             const {username, password, token} = JSON.parse(req.body);
 
