@@ -12,6 +12,7 @@ import styles from './GraduationProjectsList.module.scss'
 import {getGraduationProjectPicturePath} from "../../helpers/formatHelpers";
 
 const GraduationProjectsList = ({ graduationProjects }) => {
+  console.log(getGraduationProjectPicturePath(graduationProjects[0].team_pic, "team"))
   return (
     <section className={styles.graduation_projects}>
       <h2 className='custom-table-title'>Graduation Projects</h2>
