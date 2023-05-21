@@ -61,7 +61,13 @@ const NavigationBar = ({ setToggleSidebar }) => {
             )}
           </Navbar.Brand>
         </div>
-        <Nav className='d-flex justify-content-end'>
+        <Nav className='d-flex justify-content-end align-items-center'>
+          <Nav.Item
+            style={{ marginRight: 20, cursor: 'pointer' }}
+            onClick={() => router.push('/user/add')}
+          >
+            Add Entities
+          </Nav.Item>
           <NavDropdown
             title='User'
             className='justify-content-end'

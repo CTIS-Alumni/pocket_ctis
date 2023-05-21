@@ -21,7 +21,7 @@ const selectStyles = {
   }),
 }
 
-const CompanyForm = ({ activeItem, updateData }) => {
+const CompanyForm = ({ activeItem = null, updateData = () => null }) => {
   const [sectors, setSectors] = useState([])
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
