@@ -150,7 +150,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
         )
       })
     )
-    console.log('req', requestObj, 'res', responseObj)
+
     applyNewData(final_data)
     deletedData = { phone_numbers: [], emails: [], socials: [] }
 

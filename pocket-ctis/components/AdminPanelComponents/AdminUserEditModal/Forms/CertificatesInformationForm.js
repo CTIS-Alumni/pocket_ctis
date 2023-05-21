@@ -80,7 +80,6 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
       transformDataForSubmission
     )
     applyNewData(new_data)
-    console.log('req', requestObj, 'res', responseObj)
 
     let errors = []
     for (const [key, value] of Object.entries(responseObj)) {

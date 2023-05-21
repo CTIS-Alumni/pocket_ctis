@@ -20,21 +20,24 @@ import {
   submitChanges,
 } from '../../../../helpers/fetchHelpers'
 import { craftUrl} from '../../../../helpers/urlHelper'
+import {toast} from "react-toastify";
+import {Spinner} from "react-bootstrap";
 
 const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
   const [socialMediaTypes, setSocialMediaTypes] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     _getFetcher({ socials: craftUrl(['socialmedia']) }).then(({ socials }) =>
-      setSocialMediaTypes(
-        socials.data.map((social) => {
-          return {
-            ...social,
-            social_media: `${social.id}-${social.social_media_name}`,
-          }
-        })
-      )
+        setSocialMediaTypes(
+            socials.data.map((social) => {
+              return {
+                ...social,
+                social_media: `${social.id}-${social.social_media_name}`,
+              }
+            })
+        )
     )
   }, [])
 
@@ -67,7 +70,6 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
     let newData = cloneDeep(data)
     newData = newData.map((datum) => {
       datum.visibility = datum.visibility == 1
-      datum.is_default = datum.is_default == 1
       return datum
     })
     return newData
@@ -78,7 +80,6 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
       newData.emails = newData.emails.map((val) => {
         val.visibility = val.visibility ? 1 : 0
         val.email_address = val.email_address ? val.email_address : null
-        val.is_default = val.is_default ? 1 : 0
         replaceWithNull(val)
         return val
       })
@@ -102,7 +103,15 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
     },
   }
 
+  const args = {
+    phone_numbers: [[], [], ['id', 'user_id'], []],
+    emails: [[], [], ['id', 'user_id'], []],
+    socials: [['social_media'], ['base_link'], ['id', 'user_id'], []],
+  }
+
   const onSubmit = async (values) => {
+    setIsUpdated(true)
+    setIsLoading(true)
     let newData = cloneDeep(values)
     transformFuncs.phone_numbers(newData)
     transformFuncs.emails(newData)
@@ -119,42 +128,51 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
       emails: {},
       socials: {},
     }
-    const args = {
-      phone_numbers: [[], [], ['id', 'user_id'], []],
-      emails: [[], [], ['id', 'user_id'], []],
-      socials: [['social_media'], ['base_link'], ['id', 'user_id'], []],
-    }
 
     const final_data = { phone_numbers: [], emails: [], socials: [] }
 
     await Promise.all(
-      Object.keys(dataAfterSubmit).map(async (key) => {
-        const send_to_req = {}
-        send_to_req[key] = cloneDeep(dataAfterSubmit[key])
-        transformFuncs[key](send_to_req)
-        requestObj[key] = createReqObject(
-          send_to_req[key],
-          newData[key],
-          deletedData[key]
-        )
-        const url = craftUrl(["users",user_id, key])
-        responseObj[key] = await submitChanges(url, requestObj[key])
-        final_data[key] = handleResponse(
-          send_to_req[key],
-          requestObj[key],
-          responseObj[key],
-          values,
-          key,
-          args[key],
-          transformFuncs[key]
-        )
-      })
+        Object.keys(dataAfterSubmit).map(async (key) => {
+          const send_to_req = {}
+          send_to_req[key] = cloneDeep(dataAfterSubmit[key])
+          transformFuncs[key](send_to_req)
+          requestObj[key] = createReqObject(
+              send_to_req[key],
+              newData[key],
+              deletedData[key]
+          )
+          const url = craftUrl(['users', user_id, key])
+          responseObj[key] = await submitChanges(url, requestObj[key])
+          final_data[key] = handleResponse(
+              send_to_req[key],
+              requestObj[key],
+              responseObj[key],
+              values,
+              key,
+              args[key],
+              transformFuncs[key]
+          )
+        })
     )
-    console.log('req', requestObj, 'res', responseObj)
 
-    setIsUpdated(true)
     applyNewData(final_data)
     deletedData = { phone_numbers: [], emails: [], socials: [] }
+
+    let errors = []
+    Object.keys(deletedData).forEach((obj) => {
+      for (const [key, value] of Object.entries(responseObj[obj])) {
+        if (value.errors?.length > 0) {
+          errors = [...errors, ...value.errors.map((error) => error)]
+        }
+      }
+    })
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else toast.success('Data successfully saved')
+    setIsLoading(false)
   }
 
   const { phone_numbers, emails, socials } = data
@@ -172,8 +190,25 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
       {(props) => {
         return (
           <>
-            <Form>
-              <table style={{ width: '100%' }}>
+            <Form style={{ position: 'relative' }}>
+              {isLoading && (
+                  <div
+                      style={{
+                        zIndex: 2,
+                        position: 'absolute',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                        width: '100%',
+                        background: '#ccc',
+                        opacity: '0.5',
+                      }}
+                  >
+                    <Spinner />
+                  </div>
+              )}
+              <table className={styles.formTable}>
                 <tbody>
                   <FieldArray
                     name='socials'
@@ -202,22 +237,22 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                         props.values.socials.length > 0 ? (
                           props.values.socials.map((social, index) => {
                             return (
-                              <tr key={index} style={{ width: '100%' }}>
-                                <td>
-                                  <div style={{ display: 'flex' }}>
-                                    <div className={styles.removeBtnContainer}>
-                                      <button
-                                        className={styles.removeBtn}
-                                        type='button'
-                                        onClick={() => {
-                                          arrayHelpers.remove(index)
-                                          if (social.hasOwnProperty('id'))
-                                            deletedData.socials.push({
-                                              name: social.id,
-                                              id: social.id,
-                                              data: social,
-                                            })
-                                        }}
+                                <tr key={index} style={{ width: '100%' }}>
+                                  <td>
+                                    <div style={{ display: 'flex' }}>
+                                      <div className={styles.removeBtnContainer}>
+                                        <button
+                                            className={styles.removeBtn}
+                                            type='button'
+                                            onClick={() => {
+                                              arrayHelpers.remove(index)
+                                              if (social.hasOwnProperty('id'))
+                                                deletedData.socials.push({
+                                                  name: social.id,
+                                                  id: social.id,
+                                                  data: social,
+                                                })
+                                            }}
                                       >
                                         <XCircleFill
                                           size={13}
@@ -321,8 +356,9 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                           <tr>
                             <button
                               className={styles.bigAddBtn}
-                              type='button'
-                              onClick={() => arrayHelpers.push('')}
+                              onClick={() =>
+                                  arrayHelpers.push({ social_media: '', link: '' })
+                              }
                             >
                               Add a Social Media
                             </button>
@@ -343,7 +379,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                                 className={styles.addButton}
                                 type='button'
                                 onClick={() =>
-                                  arrayHelpers.insert(0, { phone_number: '' })
+                                    arrayHelpers.insert(0, { phone_number: '' })
                                 } // insert an empty string at a position
                               >
                                 <PlusCircleFill size={20} />
@@ -430,7 +466,9 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push('')}
+                              onClick={() =>
+                                  arrayHelpers.push({ phone_number: '' })
+                              }
                             >
                               Add a Phone Number
                             </button>
@@ -451,7 +489,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                                 className={styles.addButton}
                                 type='button'
                                 onClick={() =>
-                                  arrayHelpers.insert(0, { email_address: '' })
+                                    arrayHelpers.insert(0, { email_address: '' })
                                 } // insert an empty string at a position
                               >
                                 <PlusCircleFill size={20} />
@@ -536,7 +574,9 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push('')}
+                              onClick={() =>
+                                  arrayHelpers.push({ email_address: '' })
+                              }
                             >
                               Add an Email
                             </button>

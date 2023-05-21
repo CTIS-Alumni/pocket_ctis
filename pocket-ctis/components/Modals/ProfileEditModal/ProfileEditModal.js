@@ -19,7 +19,9 @@ import ProjectsInformationForm from '../../Forms/UserProfileForms/ProjectsInform
 import ContactInformationForm from '../../Forms/UserProfileForms/ContactInformationForm/ContactInformationForm'
 import ErasmusInformationForm from '../../Forms/UserProfileForms/ErasmusInformationForm/ErasmusInformationForm'
 import InternshipInformationForm from '../../Forms/UserProfileForms/InternshipInformationForm/InternshipInformationForm'
-import { ToastContainer } from 'react-toastify'
+import {toast, ToastContainer} from 'react-toastify'
+import {_submitFetcher} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const ProfileEditModal = ({ user, refreshProfile }) => {
   const [isUpdated, setIsUpdated] = useState(false)
@@ -75,25 +77,28 @@ const ProfileEditModal = ({ user, refreshProfile }) => {
   }
   const handleShow = () => setShow(true)
 
-  const hideAllUserData = () => {
-    console.log('hide all data')
-    //hide all data API here
+  const hideAllUserData = async () => {
+    document.body.click()
+    const res = await _submitFetcher('PUT', craftUrl(['users', user_id, 'profile']), {visibility: 0});
+    if(res.data && !res.errors.length)
+      toast.success("All information hidden successfully!")
+    else toast.error("An error occured while hiding all data");
   }
 
   const hideAllDataPopover = (
-    <Popover title='Hide All Data?'>
-      <div className='p-2'>
-        Are you sure you would like to hide all your data?
-        <div className='d-flex justify-content-end'>
-          <Button
-            style={{ fontSize: 'small', padding: '2px 5px' }}
-            onClick={hideAllUserData}
-          >
-            Confirm
-          </Button>
+      <Popover title='Hide All Data?'>
+        <div className='p-2'>
+          Are you sure you would like to hide all your data?
+          <div className='d-flex justify-content-end'>
+            <Button
+                style={{ fontSize: 'small', padding: '2px 5px' }}
+                onClick={hideAllUserData}
+            >
+              Confirm
+            </Button>
+          </div>
         </div>
-      </div>
-    </Popover>
+      </Popover>
   )
 
   return (
@@ -191,7 +196,7 @@ const ProfileEditModal = ({ user, refreshProfile }) => {
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='7'>
-              <Accordion.Header>Certificates</Accordion.Header>
+              <Accordion.Header>Certificates & Awards</Accordion.Header>
               <Accordion.Body>
                 <CertificatesInformationForm
                   data={certificates}

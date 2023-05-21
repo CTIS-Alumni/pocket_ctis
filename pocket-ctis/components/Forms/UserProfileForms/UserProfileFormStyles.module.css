@@ -1,3 +1,7 @@
+.formTable{
+    width: 100%;
+}
+
 .inputContainer{
     position: relative;
     margin-bottom: 10px;
@@ -93,8 +97,8 @@
     transition: all 0.3s;
 }
 .removeIcon:hover{
-   color: rgb(245, 164, 37); 
-}  
+    color: rgb(245, 164, 37);
+}
 
 .formPartitionHeading{
     border-top: 1px solid #aaa;
