@@ -94,12 +94,9 @@ const handler =  async (req, res) => {
 
                         ({query, length_query} = await buildSearchQuery(req, query, values, length_query, length_values, columns, "e.id"));
 
-                        console.log("hers query", query, "heres length query", length_query)
 
                         const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
                             {name: "length", query: length_query, values: length_values}]);
-
-                        console.log("heres data", data);
 
                         res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
 

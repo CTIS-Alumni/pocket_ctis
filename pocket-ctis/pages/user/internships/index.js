@@ -35,6 +35,7 @@ const InternshipsDashboard = ({ internships, companies }) => {
 
   const onQueryCompanies = (queryParams) => {
     const conditions = buildCondition(queryParams)
+    conditions.push({name: "internship", value: 1})
     setIsLoading(true)
     _getFetcher({ companies: craftUrl(['companies'], conditions) })
       .then(({ companies }) => {
@@ -80,7 +81,7 @@ export async function getServerSideProps(context) {
   const { internships, companies } = await _getFetcher(
     {
       internships: craftUrl(['internships']),
-      companies: craftUrl(['companies'], [{ name: 'is_internship', value: 1 }]),
+      companies: craftUrl(['companies'], [{ name: 'internship', value: 1 }]),
     },
     cookie
   )
