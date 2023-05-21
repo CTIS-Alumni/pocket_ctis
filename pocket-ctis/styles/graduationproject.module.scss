@@ -1,0 +1,14 @@
+@import 'variables.scss';
+
+.posterImage{
+    width: 550px;
+    object-fit: cover;
+
+    @include media-query(medium) {
+        width: 500px
+    }
+
+    @include media-query(small){
+        width: 400px;
+    }
+}

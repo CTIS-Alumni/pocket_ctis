@@ -81,8 +81,9 @@ const handler =  async (req, res) => {
                         length_values.push(req.query.name);
                     }
 
-                    if(req.query.internship){
+                    if(req.query.internship && (payload.user === "admin" || (payload.user !== "admin" && modules.internships.user_visible))){
                         query += " GROUP BY c.id ";
+                        length_query += " GROUP BY c.id ";
                     }
 
 

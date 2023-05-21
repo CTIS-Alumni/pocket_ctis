@@ -11,7 +11,7 @@ import { toast } from 'react-toastify'
 import { List, ThreeDotsVertical } from 'react-bootstrap-icons'
 import Link from 'next/link'
 import { useState } from 'react'
-import {getAppLogoPath} from "../../helpers/formatHelpers";
+import { getAppLogoPath } from '../../helpers/formatHelpers'
 
 const NavigationBar = ({ setToggleSidebar }) => {
   const router = useRouter()
@@ -54,10 +54,11 @@ const NavigationBar = ({ setToggleSidebar }) => {
         <div className={styles.wrapper}>
           <Button onclick={sidebar} icon={<ThreeDotsVertical />} />
           <Navbar.Brand href='/user' className={styles.navbar_logo}>
-            {getAppLogoPath() ?
-                <img src={getAppLogoPath()} style={{paddingBottom: 10}}/>
-                : departmentConfig.app_name
-            }
+            {getAppLogoPath() ? (
+              <img src={getAppLogoPath()} style={{ paddingBottom: 10 }} />
+            ) : (
+              departmentConfig.app_name
+            )}
           </Navbar.Brand>
         </div>
         <Nav className='d-flex justify-content-end'>
@@ -66,13 +67,15 @@ const NavigationBar = ({ setToggleSidebar }) => {
             className='justify-content-end'
             drop='start'
           >
-            <NavDropdown.Item href='#action4'>Settings</NavDropdown.Item>
-            <NavDropdown.Divider />
-            {context.userData?.user_types.includes("admin") &&
-              <NavDropdown.Item onClick={adminLoginPage}>
-              Admin Panel
+            <NavDropdown.Item onClick={() => router.push('/user/settings')}>
+              Settings
             </NavDropdown.Item>
-            }
+            <NavDropdown.Divider />
+            {context.userData?.user_types.includes('admin') && (
+              <NavDropdown.Item onClick={adminLoginPage}>
+                Admin Panel
+              </NavDropdown.Item>
+            )}
             <NavDropdown.Divider />
             <NavDropdown.Item onClick={requestLogout}>Logout</NavDropdown.Item>
           </NavDropdown>

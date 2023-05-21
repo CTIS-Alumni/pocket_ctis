@@ -39,8 +39,11 @@ const InternshipsDashboard = ({ internships, companies }) => {
     setIsLoading(true)
     _getFetcher({ companies: craftUrl(['companies'], conditions) })
       .then(({ companies }) => {
-        setCompaniesTotal(companies.length)
-        setInternshipCompanies(companies.data)
+        {
+          console.log('here', companies)
+          setCompaniesTotal(companies.length)
+          setInternshipCompanies(companies.data)
+        }
       })
       .finally((_) => setIsLoading(false))
   }
@@ -61,7 +64,7 @@ const InternshipsDashboard = ({ internships, companies }) => {
             )}
           </Tab>
           <Tab eventKey='companies' title='Companies'>
-            {internshipCompanies.length > 0 && (
+            {internshipCompanies?.length > 0 && (
               <InternshipCompaniesList
                 companies={internshipCompanies}
                 total={companiesTotal}
