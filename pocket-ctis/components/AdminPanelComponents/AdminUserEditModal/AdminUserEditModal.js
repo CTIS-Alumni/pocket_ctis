@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
 import { PencilSquare } from 'react-bootstrap-icons'
-import { Modal, Button, Accordion } from 'react-bootstrap'
+import {
+  Modal,
+  Button,
+  Accordion,
+  Popover,
+  OverlayTrigger,
+} from 'react-bootstrap'
 import styles from './AdminUserEditModal.module.css'
 import PersonalInformationForm from './Forms/PersonalInformationForm'
 import WorkInformationForm from './Forms/WorkInformationForm'
@@ -13,7 +19,9 @@ import SocietiesInformationForm from './Forms/SocietiesInformationForm'
 import ExamsInformationForm from './Forms/ExamsInformationForm'
 import ErasmusInformationForm from './Forms/ErasmusInformationForm'
 import InternshipInformationForm from './Forms/InternshipInformationForm'
-import { ToastContainer } from 'react-toastify'
+import {toast, ToastContainer} from 'react-toastify'
+import {_submitFetcher} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const AdminUserEditModal = ({ user, refreshProfile }) => {
   const [isUpdated, setIsUpdated] = useState(false)
@@ -68,6 +76,30 @@ const AdminUserEditModal = ({ user, refreshProfile }) => {
     setShow(false)
   }
   const handleShow = () => setShow(true)
+
+  const hideAllUserData = async () => {
+    document.body.click()
+    const res = await _submitFetcher('PUT', craftUrl(['users', user_id, 'profile']), {visibility: 0});
+    if(res.data && !res.errors.length)
+      toast.success("All information hidden successfully!")
+    else toast.error("An error occured while hiding all data");
+  }
+
+  const hideAllDataPopover = (
+    <Popover title='Hide All Data?'>
+      <div className='p-2'>
+        Are you sure you would like to hide all your data?
+        <div className='d-flex justify-content-end'>
+          <Button
+            style={{ fontSize: 'small', padding: '2px 5px' }}
+            onClick={hideAllUserData}
+          >
+            Confirm
+          </Button>
+        </div>
+      </div>
+    </Popover>
+  )
 
   return (
     <>
@@ -164,7 +196,7 @@ const AdminUserEditModal = ({ user, refreshProfile }) => {
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='7'>
-              <Accordion.Header>Certificates</Accordion.Header>
+              <Accordion.Header>Certificates & Awards</Accordion.Header>
               <Accordion.Body>
                 <CertificatesInformationForm
                   data={certificates}
@@ -206,6 +238,14 @@ const AdminUserEditModal = ({ user, refreshProfile }) => {
           </Accordion>
         </Modal.Body>
         <Modal.Footer>
+          <OverlayTrigger
+            trigger='click'
+            placement='top'
+            overlay={hideAllDataPopover}
+            rootClose
+          >
+            <Button>Hide All Data</Button>
+          </OverlayTrigger>
           <Button variant='secondary' onClick={handleClose}>
             Close
           </Button>

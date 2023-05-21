@@ -1,16 +1,25 @@
 .submitButton{
-    width: 20%;
-    background-color: rgba(245, 164, 37, 0.2);
-    border: none;
-    color: rgb(245, 164, 37);
-    padding: 5px;
+    /* width: 10%; */
+    padding: 5px 15px;
     height: 38px;
     border-radius: 4px;
     transition: all 0.1s ease-in-out;
-    margin-bottom: 5px;
+
+    background: #FFF9E8;
+    opacity: 0.8;
+
+    border: 1px solid #FF8412;
+    border-radius: 5px;
+
+    font-style: normal;
+    font-weight: 500;
+    line-height: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+
+    color: #FF8412;
 }
 .submitButton:hover:not(:disabled){
-    padding: 3px;
     border: 2px solid rgb(245, 164, 37);
 }
 .submitButton:disabled{
@@ -18,19 +27,29 @@
 }
 
 .closeButton{
-    width: 10%;
-    background-color: rgba(255, 37, 37, 0.26);
-    border: none;
-    color: rgb(197, 66, 54);
-    padding: 5px;
+    padding: 5px 15px;
     height: 38px;
     border-radius: 4px;
     transition: all 0.1s ease-in-out;
-    margin-bottom: 5px;
+
+    background: #FFF9E8;
+    opacity: 0.8;
+
+    border: 1px solid #FF8412;
+    border-radius: 5px;
+
+    font-style: normal;
+    font-weight: 500;
+    line-height: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+
+    background-color: rgba(255, 37, 37, 0.26);
+    color: rgb(197, 66, 54);
+    transition: all 0.1s ease-in-out;
 }
 
 .closeButton:hover:not(:disabled){
-    padding: 3px;
     border: 2px solid rgba(255, 37, 37, 0.26);
 }
 
@@ -68,18 +87,27 @@
     border: 2px solid rgba(91, 245, 35, 0.18);
 }
 
-.selectContainer{ position: relative; margin-bottom: 10px;}
+.selectContainer{ 
+    position: relative; 
+    margin: 20px 0;
+}
 .inputLabel{
     position: absolute;
-    top: -7px;
     left: 10px;
     background-color: white;
     padding: 0px 5px;
     text-transform: capitalize;
     color: #888;
+    vertical-align: top;
     font-size: 13px;
-    line-height: 13px;
+    height: 1px;
+    line-height: 0px;
     width: fit-content;
     letter-spacing: 1px;
     z-index: 1;
+    border-radius: 5px 5px 0 0;
+}
+
+.tableContainer{
+    margin-top: 20px;
 }

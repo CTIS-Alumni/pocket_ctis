@@ -6,25 +6,41 @@ import { XCircleFill, PlusCircleFill } from 'react-bootstrap-icons'
 import { Rating } from 'react-simple-star-rating'
 import DatePickerField from '../../../DatePickers/DatePicker'
 import styles from './AdminUserFormStyles.module.css'
-import {_getFetcher, _submitFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl} from '../../../../helpers/urlHelper'
-import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
-import {toast} from "react-toastify";
+import {
+  _getFetcher,
+  _submitFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../../helpers/urlHelper'
+import {
+  convertToIso,
+  handleResponse,
+  replaceWithNull,
+  splitFields,
+} from '../../../../helpers/submissionHelpers'
+import { toast } from 'react-toastify'
+import { Spinner } from 'react-bootstrap'
 
 const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [companies, setCompanies] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   const applyNewData = (data) => {
     setDataAfterSubmit(data)
   }
 
   const sendMail = async () => {
-    const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id, type: "education"})
-    return res;
+    const res = await _submitFetcher(
+      'POST',
+      craftUrl(['mail'], [{ name: 'updateProfile', value: 1 }]),
+      { user_id, type: 'education' }
+    )
+    return res
   }
 
-  let deletedData = [];
+  let deletedData = []
 
   useEffect(() => {
     _getFetcher({ companies: craftUrl(['companies'], []) })
@@ -48,26 +64,27 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
     newData.internships = newData.internships.map((val) => {
       val.visibility = val.visibility ? 1 : 0
       val.start_date =
-          val.start_date != null ? convertToIso(val.start_date) : null
+        val.start_date != null ? convertToIso(val.start_date) : null
       val.end_date = val.end_date != null ? convertToIso(val.end_date) : null
       val.rating = val.rating ? val.rating : null
       val.opinion = val.opinion ? val.opinion.trim() : null
-      splitFields(val, ["company"])
+      splitFields(val, ['company'])
       replaceWithNull(val)
       return val
     })
   }
 
   const args = [
-    ["company"],
+    ['company'],
     [],
     ['id', 'user_id', 'record_date'],
     ['start_date', 'end_date'],
   ]
 
-  const url = craftUrl(["users",user_id, 'internships'])
+  const url = craftUrl(['users', user_id, 'internships'])
 
   const onSubmit = async (values) => {
+    setIsLoading(true)
     setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
@@ -75,20 +92,20 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
     const send_to_req = { internships: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
     const requestObj = createReqObject(
-        send_to_req.internships,
-        newData.internships,
-        deletedData
+      send_to_req.internships,
+      newData.internships,
+      deletedData
     )
     const responseObj = await submitChanges(url, requestObj)
 
     const new_data = handleResponse(
-        send_to_req.internships,
-        requestObj,
-        responseObj,
-        values,
-        'internships',
-        args,
-        transformDataForSubmission
+      send_to_req.internships,
+      requestObj,
+      responseObj,
+      values,
+      'internships',
+      args,
+      transformDataForSubmission
     )
 
     applyNewData(new_data)
@@ -107,19 +124,19 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
         toast.error(errorInfo.error)
       })
     } else if (
-        responseObj.POST.data ||
-        responseObj.PUT.data ||
-        responseObj.DELETE.data
+      responseObj.POST.data ||
+      responseObj.PUT.data ||
+      responseObj.DELETE.data
     ) {
       toast.success('Data successfully saved')
     }
 
-    if(responseObj.POST.data?.length){
-      const {data, errors} = await sendMail();
-      if(data)
-        toast.success("Profile update mail sent to user")
-      else toast.error("Failed to send profile update mail to user")
+    if (responseObj.POST.data?.length) {
+      const { data, errors } = await sendMail()
+      if (data) toast.success('Profile update mail sent to user')
+      else toast.error('Failed to send profile update mail to user')
     }
+    setIsLoading(false)
   }
 
   return (
@@ -129,7 +146,24 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
       onSubmit={onSubmit}
     >
       {(props) => (
-        <Form>
+        <Form style={{ position: 'relative' }}>
+          {isLoading && (
+            <div
+              style={{
+                zIndex: 2,
+                position: 'absolute',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+                width: '100%',
+                background: '#ccc',
+                opacity: '0.5',
+              }}
+            >
+              <Spinner />
+            </div>
+          )}
           <table style={{ width: '100%' }}>
             <tbody>
               <FieldArray
@@ -165,7 +199,7 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                         </td>
                       </tr>
                       {props.values.internships &&
-                        props.values.internships.length > 0 ? (
+                      props.values.internships.length > 0 ? (
                         props.values.internships.map((internship, index) => {
                           return (
                             <>
@@ -181,7 +215,7 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           if (internship.hasOwnProperty('id'))
                                             deletedData.push({
                                               id: internship.id,
-                                              data: internship
+                                              data: internship,
                                             })
                                         }}
                                       >
@@ -346,29 +380,30 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                               )}
                             </>
                           )
-                        })) : (
-                          <tr>
-                            <td>
-                              <button
-                                  className={styles.bigAddBtn}
-                                  type='button'
-                                  onClick={() => arrayHelpers.push({
-                                    company: '',
-                                    semester: 'Spring',
-                                    department: '',
-                                    start_date: null,
-                                    end_date: null,
-                                    rating: 0,
-                                    opinion: ''
-                                  })}
-                              >
-                                Add an Internship
-                              </button>
-                            </td>
-                          </tr>
-                      )
-
-                      }
+                        })
+                      ) : (
+                        <tr>
+                          <td>
+                            <button
+                              className={styles.bigAddBtn}
+                              type='button'
+                              onClick={() =>
+                                arrayHelpers.push({
+                                  company: '',
+                                  semester: 'Spring',
+                                  department: '',
+                                  start_date: null,
+                                  end_date: null,
+                                  rating: 0,
+                                  opinion: '',
+                                })
+                              }
+                            >
+                              Add an Internship
+                            </button>
+                          </td>
+                        </tr>
+                      )}
                     </>
                   )
                 }}

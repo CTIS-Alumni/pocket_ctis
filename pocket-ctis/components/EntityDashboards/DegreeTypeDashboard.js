@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Tabs, Tab, Container } from 'react-bootstrap'
-import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
+import { Tabs, Tab, Container, Modal, Button } from 'react-bootstrap'
+import { _getFetcher, _submitFetcher } from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
 import DegreeTypeForm from '../EntityForms/DegreeTypeForm'
-import {toast} from "react-toastify";
+import { toast } from 'react-toastify'
 
 const DegreeTypeDashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
@@ -18,6 +18,16 @@ const DegreeTypeDashboard = () => {
 
   const [activeItem, setActiveItem] = useState(null)
   const [activeKey, setActiveKey] = useState('browse')
+
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
+
+  const [show, setShow] = useState(false)
+  const [selectedOption, setSelectedOption] = useState(null)
+  const onClose = () => setShow(false)
+  const onOpen = (opt) => {
+    setSelectedOption(opt)
+    setShow(true)
+  }
 
   const getData = (
     conditions = [
@@ -53,21 +63,32 @@ const DegreeTypeDashboard = () => {
   }
 
   const deleteHandler = async (data) => {
-    const res = await _submitFetcher("DELETE", craftUrl(["degreetypes"]), {degreetypes: [data]});
-    if(res?.data[data.id])
-      toast.success("Degree type deleted successfully!")
-    else toast.error(res.data[0].error)
+    const res = await _submitFetcher('DELETE', craftUrl(['degreetypes']), {
+      degreetypes: [data],
+    })
+    if (res?.data[data.id]) {
+      toast.success('Degree type deleted successfully!')
+      getData()
+    } else toast.error(res.data[0].error)
   }
 
   const deleteSelected = async () => {
-    const res = await _submitFetcher("DELETE", craftUrl(["degreetypes"]), {degreetypes: selectedArray});
-    if(res.errors.length)
-      toast.error(res.errors[0].error)
-    else toast.success("Degree type deleted successfully!")
+    const res = await _submitFetcher('DELETE', craftUrl(['degreetypes']), {
+      degreetypes: selectedArray,
+    })
+    if (res.errors.length) toast.error(res.errors[0].error)
+    else {
+      toast.success('Degree type deleted successfully!')
+      getData()
+    }
   }
 
   const selectedArrayOptions = [
-    { label: 'Delete All Selected', action: deleteSelected },
+    {
+      label: 'Delete All Selected',
+      warning: 'Are you sure you want to delete all selected degree types?',
+      action: deleteSelected,
+    },
   ]
 
   return (
@@ -77,7 +98,10 @@ const DegreeTypeDashboard = () => {
         activeKey={activeKey}
         onSelect={(key) => {
           setActiveKey(key)
-          if (key == 'browse') setActiveItem(null)
+          if (key == 'browse') {
+            setActiveItem(null)
+            setRefreshKey(Math.random().toString(36))
+          }
         }}
       >
         <Tab title='Browse' eventKey='browse'>
@@ -96,7 +120,7 @@ const DegreeTypeDashboard = () => {
               >
                 <ul className={styles.optionsList}>
                   {selectedArrayOptions.map((s) => (
-                    <li onClick={s.action}>{s.label}</li>
+                    <li onClick={() => onOpen(s)}>{s.label}</li>
                   ))}
                 </ul>
               </div>
@@ -124,10 +148,56 @@ const DegreeTypeDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <DegreeTypeForm activeItem={activeItem} />
+            <DegreeTypeForm
+              key={refreshKey}
+              activeItem={activeItem}
+              updateData={getData}
+            />
           </Container>
         </Tab>
       </Tabs>
+      <Modal show={show} onHide={onClose}>
+        <Modal.Header>{selectedOption?.label}</Modal.Header>
+        <Modal.Body>
+          {selectedOption?.warning}
+          {selectedArray.length > 0 && (
+            <div style={{ overflow: 'scroll' }}>
+              <table className={styles.modalTable}>
+                <thead>
+                  <tr>
+                    {Object.keys(selectedArray[0]).map((h, idx) => (
+                      <th key={idx}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedArray.map((datum, idx) => (
+                    <tr key={idx}>
+                      {Object.keys(selectedArray[0]).map((h, idx) => (
+                        <td key={idx}>{datum[h]}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={onClose}>
+            Close
+          </Button>
+          <Button
+            variant='primary'
+            onClick={() => {
+              onClose()
+              selectedOption?.action()
+            }}
+          >
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   )
 }

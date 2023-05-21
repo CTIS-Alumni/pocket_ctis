@@ -19,7 +19,7 @@ const selectStyles = {
   }),
 }
 
-const SkillsForm = ({ activeItem }) => {
+const SkillsForm = ({ activeItem, updateData }) => {
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
   const [skillType, setSkillType] = useState([])
 
@@ -66,21 +66,36 @@ const SkillsForm = ({ activeItem }) => {
   }, [activeItem])
 
   const onSubmitHandler = async (values) => {
-    const temp = {skill_name: values.skill_name, skill_type_id: values?.skill_type_name?.value || null};
-    if(activeItem){
-      temp.id = activeItem.id;
-      const res = await _submitFetcher('PUT', craftUrl(['skills']), {skills: [temp]})
+    const temp = {
+      skill_name: values.skill_name,
+      skill_type_id: values?.skill_type_name?.value || null,
+    }
+    if (activeItem) {
+      temp.id = activeItem.id
+      const res = await _submitFetcher('PUT', craftUrl(['skills']), {
+        skills: [temp],
+      })
       if (!res.data[activeItem.id] || res.errors.length) {
         toast.error(res.errors[0].error)
-      } else toast.success("Skill successfully saved")
-    }else{
-      const res = await _submitFetcher('POST', craftUrl(['skills']), {skills: [temp]})
-      if(!res.data?.length || res.errors.length){
-        toast.error(res.errors[0].error)
+      } else {
+        toast.success('Skill successfully saved')
+        updateData()
+        formik.resetForm()
+        setRefreshKey(Math.random().toString(36))
       }
-      else toast.success("Skill successfully added")
+    } else {
+      const res = await _submitFetcher('POST', craftUrl(['skills']), {
+        skills: [temp],
+      })
+      if (!res.data?.length || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else {
+        toast.success('Skill successfully added')
+        updateData()
+        formik.resetForm()
+        setRefreshKey(Math.random().toString(36))
+      }
     }
-
   }
 
   return (

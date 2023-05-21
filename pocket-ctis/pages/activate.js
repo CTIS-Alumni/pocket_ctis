@@ -19,7 +19,9 @@ const activateAdminAccount = async (username, password, token) => {
     return res;
 }
 
-const checkPassword = (pass, cnfpass) => {
+const checkPassword = (pass, cnfpass, usr) => {
+    if(pass.trim() === "" || cnfpass.trim() === "" || usr.trim() === "")
+        return {errors: [{error: "Please fill all fields!"}]};
     if(pass !== cnfpass)
         return {errors: [{error: "Passwords do not match"}]};
     if(pass.length < 8){
@@ -31,7 +33,7 @@ const checkPassword = (pass, cnfpass) => {
 const ActivateAccount = ({token, type}) => {
     const router = useRouter()
     const onSubmit = async (values) => {
-        const is_valid = checkPassword(values.password, values.confirmPassword);
+        const is_valid = checkPassword(values.password, values.confirmPassword, values.username);
         if (is_valid.errors) {
             toast.error(is_valid.errors[0].error)
             return false;

@@ -60,35 +60,44 @@ const handler =  async (req, res) => {
         const method = req.method;
         switch (method) {
             case "GET":
-                try {
-                    let values = [], length_values = [];
-                    let query = "SELECT i.id, i.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.first_name, u.last_name, " +
-                        "i.company_id, i.department, c.company_name, i.semester, i.start_date, i.end_date, i.rating, i.opinion " +
-                        "FROM internshiprecord i JOIN users u on (i.user_id = u.id) " +
-                        "JOIN userprofilepicture upp ON (i.user_id = upp.user_id) " +
-                        "JOIN useraccounttype uat ON (uat.user_id = i.user_id)  " +
-                        "JOIN accounttype act ON (act.id = uat.type_id) " +
-                        "JOIN company c ON (i.company_id = c.id) ";
+                if(payload.user === "admin" || (payload.user !== "admin" && modules.graduation_projects.user_visible)) {
+                    try {
+                        let values = [], length_values = [];
+                        let query = "SELECT i.id, i.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.first_name, u.last_name, " +
+                            "i.company_id, i.department, c.company_name, i.semester, i.start_date, i.end_date, i.rating, i.opinion " +
+                            "FROM internshiprecord i JOIN users u on (i.user_id = u.id) " +
+                            "JOIN userprofilepicture upp ON (i.user_id = upp.user_id) " +
+                            "JOIN useraccounttype uat ON (uat.user_id = i.user_id)  " +
+                            "JOIN accounttype act ON (act.id = uat.type_id) " +
+                            "JOIN company c ON (i.company_id = c.id) ";
 
-                    let length_query = "SELECT COUNT(*) as count FROM internshiprecord i JOIN users u ON (i.user_id = u.id) JOIN company c ON (c.id = i.company_id) ";
+                        let length_query = "SELECT COUNT(*) as count " +
+                            "FROM internshiprecord i JOIN users u on (i.user_id = u.id) " +
+                            "JOIN company c ON (i.company_id = c.id) " +
+                            "JOIN useraccounttype uat ON (uat.user_id = i.user_id)  " +
+                            "JOIN accounttype act ON (act.id = uat.type_id) ";
 
-                    if(payload.user !== "admin"){
-                        query += addAndOrWhere(query, " (i.visibility = 1 OR i.user_id = ?) ");
-                        length_query += addAndOrWhere(length_query, " (i.visibility = 1 OR i.user_id = ?) ");
-                        values.push(payload.user_id);
-                        length_values.push(payload.user_id);
+                        if (payload.user !== "admin") {
+                            query += addAndOrWhere(query, " (i.visibility = 1 OR i.user_id = ?) ");
+                            length_query += addAndOrWhere(length_query, " (i.visibility = 1 OR i.user_id = ?) ");
+                            values.push(payload.user_id);
+                            length_values.push(payload.user_id);
+                        }
+
+                        ({
+                            query,
+                            length_query
+                        } = await buildSearchQuery(req, query, values, length_query, length_values, columns, "i.id"));
+
+                        const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
+                            {name: "length", query: length_query, values: length_values}]);
+
+                        res.status(200).json({data: data.data, length: data.length[0].count, errors: errors});
+
+                    } catch (error) {
+                        res.status(500).json({errors: [{error: error.message}]});
                     }
-
-                    ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns, "i.id"));
-
-                    const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
-                        {name: "length", query: length_query, values: length_values}]);
-
-                    res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
-
-                } catch (error) {
-                    res.status(500).json({errors: [{error: error.message}]});
-                }
+                }else res.status(200).json({data: [], errors: []});
                 break;
             case "POST":
                 if (payload?.user === "admin") {

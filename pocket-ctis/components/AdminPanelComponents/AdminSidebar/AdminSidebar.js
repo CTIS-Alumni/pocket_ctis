@@ -3,8 +3,10 @@ import styles from './AdminSidebar.module.scss'
 import Link from 'next/link'
 import {
   Boxes,
+  ClipboardData,
   DatabaseFillAdd,
   PeopleFill,
+    Mailbox,
   PlusSquare,
   PlusSquareFill,
   Search,
@@ -34,6 +36,9 @@ const AdminSidebar = () => {
       <div className={styles.userTitle}>
         {userData?.first_name} {userData?.last_name}
       </div>
+        <Button href='/admin' icon={<Mailbox />}>
+            Requests & Reports
+        </Button>
       <Button href='/admin/users' icon={<PeopleFill />}>
         Users
       </Button>
@@ -47,7 +52,13 @@ const AdminSidebar = () => {
         Module Customization
       </Button>
       <Button href='/admin/addEntities' icon={<PlusSquare />}>
-        Add Entities
+        Entities
+      </Button>
+      <Button href='/admin/workRec' icon={<ClipboardData />}>
+        Work Records
+      </Button>
+      <Button href='/admin/eduRec' icon={<ClipboardData />}>
+        Education Records
       </Button>
     </div>
   )

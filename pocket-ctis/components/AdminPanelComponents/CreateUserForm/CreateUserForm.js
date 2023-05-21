@@ -1,50 +1,29 @@
 import { ChevronLeft } from 'react-bootstrap-icons'
 import styles from './CreateUserForm.module.css'
-import { Card } from 'react-bootstrap'
+import { Card, Spinner } from 'react-bootstrap'
 import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
 import { _getFetcher, _submitFetcher } from '../../../helpers/fetchHelpers'
-import { ToastContainer, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import { craftUrl } from '../../../helpers/urlHelper'
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { clone } from 'lodash'
-import {
-  replaceWithNull,
-} from '../../../helpers/submissionHelpers'
+import { replaceWithNull } from '../../../helpers/submissionHelpers'
 
 const customStyles = {
   control: (provided, state) => ({
     ...provided,
-    border: 'none',
-    minHeight: '30px',
-    height: '30px',
-    borderRadius: '3px',
-    backgroundColor: '#fff1c9',
-    boxShadow: state.isFocused ? null : null,
+    borderColor: 'rgb(245, 164, 37)',
   }),
-
-  valueContainer: (provided, state) => ({
+  menu: (provided, state) => ({
     ...provided,
-    height: '30px',
-    padding: '0 6px',
-  }),
-
-  input: (provided, state) => ({
-    ...provided,
-    margin: '0px',
-  }),
-  indicatorSeparator: (state) => ({
-    display: 'none',
-  }),
-  indicatorsContainer: (provided, state) => ({
-    ...provided,
-    height: '30px',
+    zIndex: 2,
   }),
 }
 
-const CreateUserForm = ({ goBack }) => {
+const CreateUserForm = ({ activeItem, goBack }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [accountTypes, setAccountTypes] = useState([])
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
@@ -71,35 +50,39 @@ const CreateUserForm = ({ goBack }) => {
   }, [])
 
   const onSubmitHandler = async (values) => {
+    setIsLoading(true)
     const data = clone(values)
-    data.user[0].types = data.user[0].types.map(
-      (role) => role.value.split('-')[0]
+    data.user[0].types = data.user[0].types.map((role) =>
+      Number(role.value.split('-')[0])
     )
-    data.user[0].gender = data.user[0].gender.value == 'Male' ? 1 : 0
+    data.user[0].gender = data.user[0].gender.value == 'Female' ? 1 : 0
     replaceWithNull(data)
-
-    const res = await _submitFetcher('POST', craftUrl(['users']), {users: data.user});
-    console.log(res);
-    if(res.data['0']?.data?.mail_status && !res.errors?.length){
-      toast.success("User saved successfully!")
-      formik.resetForm({
-        values: {
-          user: [
-            {
-              types: null,
-              gender: null,
-              first_name: null,
-              last_name: null,
-              bilkent_id: null,
-              contact_email: null,
-            },
-          ],
-        },
+    if (activeItem) {
+      data.user[0].id = activeItem.id
+      const res = await _submitFetcher('PUT', craftUrl(['users']), {
+        user: data.user[0],
       })
-      setRefreshKey(Math.random().toString(36))
-    }else{
-      toast.error(res.errors[0].error)
+      if (res?.errors?.length && !res.data) {
+        toast.error(res.errors[0].error)
+      } else {
+        toast.success('User saved successfully')
+        if (res.data === true)
+          toast.success(
+            'Admin account activation mail successfully sent to user!'
+          )
+      }
+    } else {
+      const res = await _submitFetcher('POST', craftUrl(['users']), {
+        users: data.user,
+      })
+      if (res.data['0']?.data?.mail_status && !res.errors?.length) {
+        toast.success('User created successfully!')
+        toast.success('Activation mail successfully sent to user!')
+      } else {
+        toast.error(res.errors[0].error)
+      }
     }
+    setIsLoading(false)
   }
 
   const formik = useFormik({
@@ -111,6 +94,7 @@ const CreateUserForm = ({ goBack }) => {
           gender: null,
           first_name: null,
           last_name: null,
+          nee: null,
           bilkent_id: null,
           contact_email: null,
         },
@@ -142,12 +126,40 @@ const CreateUserForm = ({ goBack }) => {
     },
   })
 
+  useEffect(() => {
+    if (activeItem) {
+      const acTypes = activeItem.user_types.split(',').map((t) => {
+        return accountTypes.find((a) => a.label == t)
+      })
+      formik.setValues({
+        user: [
+          {
+            types: acTypes,
+            gender:
+              activeItem.gender == 1
+                ? { value: 'Female', label: 'Female' }
+                : { value: 'Male', label: 'Male' },
+            first_name: activeItem.first_name,
+            last_name: activeItem.last_name,
+            nee: activeItem.nee,
+            bilkent_id: activeItem.bilkent_id,
+            contact_email: activeItem.contact_email,
+          },
+        ],
+      })
+    } else {
+      formik.resetForm()
+      setRefreshKey(Math.random().toString(36))
+    }
+  }, [activeItem])
+
   const goBackHandler = () => {
     formik.resetForm({
       values: {
         types: null,
         gender: null,
         first_name: null,
+        nee: null,
         last_name: null,
         bilkent_id: null,
         contact_email: null,
@@ -159,27 +171,48 @@ const CreateUserForm = ({ goBack }) => {
 
   return (
     <>
-      <LoadingSpinner isLoading={isLoading} />
       <div className={styles.headerContainer} onClick={goBackHandler}>
         <span className={styles.backButton}>
           <ChevronLeft />
         </span>
-        <h4 className='m-0'>Create User</h4>
+        <h4 className='m-0'>{activeItem ? 'Edit User': 'Create User'}</h4>
       </div>
-      <Card className={styles.defaultCard} border='light' key={refreshKey}>
+      <Card
+        className={styles.defaultCard}
+        style={{ position: 'relative' }}
+        border='light'
+        key={refreshKey}
+      >
+        {isLoading && (
+          <div
+            style={{
+              position: 'absolute',
+              background: '#ccc',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              opacity: 0.25,
+              top: '0',
+              left: '0',
+              zIndex: 3,
+            }}
+          >
+            <Spinner />
+          </div>
+        )}
         <form onSubmit={formik.handleSubmit}>
           <div className={styles.formContainer}>
             <div style={{ display: 'flex', gap: 10 }}>
-              <div style={{ width: '50%' }}>
-                <div>
+              <div style={{ width: '35%' }}>
+                <div className={styles.inputContainer}>
                   <label
                     htmlFor='user[0].first_name'
                     className={styles.inputLabel}
                   >
                     First Name
                   </label>
-                </div>
-                <div>
                   <input
                     value={formik.values.user?.[0].first_name}
                     onChange={formik.handleChange}
@@ -197,13 +230,27 @@ const CreateUserForm = ({ goBack }) => {
                 </div>
               </div>
               {/* ------ */}
-              <div style={{ width: '50%' }}>
-                <div>
+              <div style={{ width: '30%' }}>
+                <div className={styles.inputContainer}>
+                  <label htmlFor='nee' className={styles.inputLabel}>
+                    Nee
+                  </label>
+                  <input
+                    value={formik.values.user?.[0].nee}
+                    onChange={formik.handleChange}
+                    type='text'
+                    name='user[0].nee'
+                    id='nee'
+                    className={styles.inputField}
+                  />
+                </div>
+              </div>
+              {/* ------ */}
+              <div style={{ width: '35%' }}>
+                <div className={styles.inputContainer}>
                   <label htmlFor='last_name' className={styles.inputLabel}>
                     Last Name
                   </label>
-                </div>
-                <div>
                   <input
                     value={formik.values.user?.[0].last_name}
                     onChange={formik.handleChange}
@@ -224,12 +271,10 @@ const CreateUserForm = ({ goBack }) => {
             {/* ------ */}
             <div style={{ display: 'flex', gap: 10 }} className='my-2'>
               <div style={{ width: '50%' }}>
-                <div>
+                <div className={styles.inputContainer}>
                   <label htmlFor='bilkent_id' className={styles.inputLabel}>
                     BILKENT ID
                   </label>
-                </div>
-                <div>
                   <input
                     value={formik.values.user?.[0].bilkent_id}
                     onChange={formik.handleChange}
@@ -248,12 +293,10 @@ const CreateUserForm = ({ goBack }) => {
               </div>
               {/* ------ */}
               <div style={{ width: '50%' }}>
-                <div>
+                <div className={styles.inputContainer}>
                   <label htmlFor='gender' className={styles.inputLabel}>
                     Gender
                   </label>
-                </div>
-                <div>
                   <Select
                     value={formik.values.user?.[0].gender}
                     onChange={(val) =>
@@ -278,12 +321,10 @@ const CreateUserForm = ({ goBack }) => {
             </div>
             {/* ------ */}
             <div className='my-2'>
-              <div>
+              <div className={styles.inputContainer}>
                 <label htmlFor='contact_email' className={styles.inputLabel}>
                   Email Address
                 </label>
-              </div>
-              <div>
                 <input
                   value={formik.values.user?.[0].contact_email}
                   onChange={formik.handleChange}
@@ -300,7 +341,7 @@ const CreateUserForm = ({ goBack }) => {
                 ) : null}
               </div>
             </div>
-            <div>
+            <div className={styles.inputContainer}>
               <label htmlFor='types' className={styles.inputLabel}>
                 Account Types
               </label>
@@ -325,24 +366,12 @@ const CreateUserForm = ({ goBack }) => {
 
             <div style={{ textAlign: 'center' }}>
               <button type='submit' className={styles.submitButton}>
-                Create User
+                {activeItem ? 'Save User' : 'Create User'}
               </button>
             </div>
           </div>
         </form>
       </Card>
-      <ToastContainer
-        position='top-right'
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme='light'
-      />
     </>
   )
 }

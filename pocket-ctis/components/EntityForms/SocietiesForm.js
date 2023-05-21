@@ -3,11 +3,11 @@ import { Container } from 'react-bootstrap'
 import styles from './Forms.module.css'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
-import {_submitFetcher} from "../../helpers/fetchHelpers";
-import {craftUrl} from "../../helpers/urlHelper";
-import {toast} from "react-toastify";
+import { _submitFetcher } from '../../helpers/fetchHelpers'
+import { craftUrl } from '../../helpers/urlHelper'
+import { toast } from 'react-toastify'
 
-const SocietiesForm = ({ activeItem }) => {
+const SocietiesForm = ({ activeItem, updateData }) => {
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   const formik = useFormik({
@@ -36,20 +36,33 @@ const SocietiesForm = ({ activeItem }) => {
     }
   }, [activeItem])
 
-
   const onSubmitHandler = async (values) => {
-    console.log(activeItem);
-    if(activeItem){
-      values.id = activeItem.id;
-      const res = await _submitFetcher('PUT', craftUrl(['studentsocieties']), {societies: [values]})
+    console.log(activeItem)
+    if (activeItem) {
+      values.id = activeItem.id
+      const res = await _submitFetcher('PUT', craftUrl(['studentsocieties']), {
+        societies: [values],
+      })
       if (!res.data[activeItem.id] || res.errors.length) {
         toast.error(res.errors[0].error)
-      } else toast.success("Student society successfully saved")
-    }else{
-      const res = await _submitFetcher('POST', craftUrl(['studentsocieties']), {societies: [values]})
+      } else {
+        toast.success('Student society successfully saved')
+        updateData()
+        formik.resetForm()
+        setRefreshKey(Math.random().toString(36))
+      }
+    } else {
+      const res = await _submitFetcher('POST', craftUrl(['studentsocieties']), {
+        societies: [values],
+      })
       if (!res.data?.length || res.errors.length) {
         toast.error(res.errors[0].error)
-      } else toast.success("Student society successfully added")
+      } else {
+        toast.success('Student society successfully added')
+        updateData()
+        formik.resetForm()
+        setRefreshKey(Math.random().toString(36))
+      }
     }
   }
 

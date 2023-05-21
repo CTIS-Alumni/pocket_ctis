@@ -3,26 +3,42 @@ import React, { useState, useEffect } from 'react'
 import styles from './AdminUserFormStyles.module.css'
 
 import { Formik, Field, Form, FieldArray } from 'formik'
-import {PlusCircleFill, XCircleFill} from 'react-bootstrap-icons'
+import { PlusCircleFill, XCircleFill } from 'react-bootstrap-icons'
 import { Rating } from 'react-simple-star-rating'
 import { cloneDeep } from 'lodash'
 import DatePickerField from '../../../DatePickers/DatePicker'
-import {_getFetcher, _submitFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl} from '../../../../helpers/urlHelper'
-import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
-import {toast} from "react-toastify";
+import {
+  _getFetcher,
+  _submitFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../../helpers/urlHelper'
+import {
+  convertToIso,
+  handleResponse,
+  replaceWithNull,
+  splitFields,
+} from '../../../../helpers/submissionHelpers'
+import { toast } from 'react-toastify'
+import { Spinner } from 'react-bootstrap'
 
 const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [universities, setUniversities] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   const applyNewData = (data) => {
     setDataAfterSubmit(data)
   }
 
   const sendMail = async () => {
-    const res = await _submitFetcher("POST",craftUrl(["mail"], [{name: "updateProfile", value: 1}]), {user_id, type: "erasmus"})
-    return res;
+    const res = await _submitFetcher(
+      'POST',
+      craftUrl(['mail'], [{ name: 'updateProfile', value: 1 }]),
+      { user_id, type: 'erasmus' }
+    )
+    return res
   }
 
   const args = [
@@ -35,7 +51,12 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
   let deletedData = []
 
   useEffect(() => {
-    _getFetcher({ universities: craftUrl(['educationinstitutes'], [{name: "is_erasmus", value: 1}]) })
+    _getFetcher({
+      universities: craftUrl(
+        ['educationinstitutes'],
+        [{ name: 'is_erasmus', value: 1 }]
+      ),
+    })
       .then((res) => setUniversities(res.universities.data))
       .catch((err) => console.log(err))
   }, [])
@@ -55,37 +76,43 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
   const transformDataForSubmission = (newData) => {
     newData.erasmus = newData.erasmus.map((val) => {
       val.visibility = val.visibility ? 1 : 0
-      val.start_date = val.start_date != null ? convertToIso(val.start_date) : null
+      val.start_date =
+        val.start_date != null ? convertToIso(val.start_date) : null
       val.end_date = val.end_date != null ? convertToIso(val.end_date) : null
       val.rating = val.rating ? val.rating : null
       val.opinion = val.opinion ? val.opinion.trim() : null
       replaceWithNull(val)
-      splitFields(val, ["edu_inst"])
+      splitFields(val, ['edu_inst'])
       return val
     })
   }
 
-  const url = craftUrl(["users",user_id, 'erasmus'])
+  const url = craftUrl(['users', user_id, 'erasmus'])
 
   const onSubmit = async (values) => {
+    setIsLoading(true)
     setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
 
     const send_to_req = { erasmus: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
-    const requestObj = createReqObject(send_to_req.erasmus, newData.erasmus, deletedData)
+    const requestObj = createReqObject(
+      send_to_req.erasmus,
+      newData.erasmus,
+      deletedData
+    )
 
     const responseObj = await submitChanges(url, requestObj)
 
     const new_data = handleResponse(
-        send_to_req.erasmus,
-        requestObj,
-        responseObj,
-        values,
-        'erasmus',
-        args,
-        transformDataForSubmission
+      send_to_req.erasmus,
+      requestObj,
+      responseObj,
+      values,
+      'erasmus',
+      args,
+      transformDataForSubmission
     )
     applyNewData(new_data)
     console.log('req,', requestObj, 'res', responseObj)
@@ -104,19 +131,19 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
         toast.error(errorInfo.error)
       })
     } else if (
-        responseObj.POST.data ||
-        responseObj.PUT.data ||
-        responseObj.DELETE.data
+      responseObj.POST.data ||
+      responseObj.PUT.data ||
+      responseObj.DELETE.data
     ) {
       toast.success('Data successfully saved')
     }
 
-    if(responseObj.POST.data?.length){
-      const {data, errors} = await sendMail();
-      if(data)
-        toast.success("Profile update mail sent to user")
-      else toast.error("Failed to send profile update mail to user")
+    if (responseObj.POST.data?.length) {
+      const { data, errors } = await sendMail()
+      if (data) toast.success('Profile update mail sent to user')
+      else toast.error('Failed to send profile update mail to user')
     }
+    setIsLoading(false)
   }
 
   return (
@@ -126,7 +153,24 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
       onSubmit={onSubmit}
     >
       {(props) => (
-        <Form>
+        <Form style={{ position: 'relative' }}>
+          {isLoading && (
+            <div
+              style={{
+                zIndex: 2,
+                position: 'absolute',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+                width: '100%',
+                background: '#ccc',
+                opacity: '0.5',
+              }}
+            >
+              <Spinner />
+            </div>
+          )}
           <table style={{ width: '100%' }}>
             <tbody>
               <FieldArray
@@ -137,23 +181,23 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                       <tr>
                         <td colSpan={3}>
                           <div
-                              className={styles.formPartitionHeading}
-                              style={{ marginTop: 0 }}
+                            className={styles.formPartitionHeading}
+                            style={{ marginTop: 0 }}
                           >
                             <span>Erasmus Information</span>
                             <button
-                                className={styles.addButton}
-                                type='button'
-                                onClick={() =>
-                                    arrayHelpers.insert(0, {
-                                      edu_inst: '',
-                                      start_date: null,
-                                      end_date: null,
-                                      semester: 'Spring',
-                                      rating: 0,
-                                      opinion: '',
-                                    })
-                                }
+                              className={styles.addButton}
+                              type='button'
+                              onClick={() =>
+                                arrayHelpers.insert(0, {
+                                  edu_inst: '',
+                                  start_date: null,
+                                  end_date: null,
+                                  semester: 'Spring',
+                                  rating: 0,
+                                  opinion: '',
+                                })
+                              }
                             >
                               <PlusCircleFill size={20} />
                             </button>
@@ -177,7 +221,7 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           if (erasmus.hasOwnProperty('id'))
                                             deletedData.push({
                                               id: erasmus.id,
-                                              data: erasmus
+                                              data: erasmus,
                                             })
                                         }}
                                       >
@@ -356,14 +400,16 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push({
-                                edu_inst: '',
-                                semester: 'Spring',
-                                start_date: null,
-                                end_date: null,
-                                rating: 0,
-                                opinion: ''
-                              })}
+                              onClick={() =>
+                                arrayHelpers.push({
+                                  edu_inst: '',
+                                  semester: 'Spring',
+                                  start_date: null,
+                                  end_date: null,
+                                  rating: 0,
+                                  opinion: '',
+                                })
+                              }
                             >
                               Add an Erasmus
                             </button>

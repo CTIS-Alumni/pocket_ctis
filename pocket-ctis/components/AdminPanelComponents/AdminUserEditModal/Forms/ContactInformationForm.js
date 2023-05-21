@@ -5,14 +5,24 @@ import { FieldArray, Field, Formik, Form } from 'formik'
 import { PlusCircleFill, XCircleFill } from 'react-bootstrap-icons'
 
 import { cloneDeep } from 'lodash'
-import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl} from '../../../../helpers/urlHelper'
-import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
-import {toast} from "react-toastify";
+import {
+  _getFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../../helpers/urlHelper'
+import {
+  handleResponse,
+  replaceWithNull,
+  splitFields,
+} from '../../../../helpers/submissionHelpers'
+import { toast } from 'react-toastify'
+import { Spinner } from 'react-bootstrap'
 
 const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
   const [socialMediaTypes, setSocialMediaTypes] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     _getFetcher({ socials: craftUrl(['socialmedia']) }).then(({ socials }) =>
@@ -97,6 +107,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
+    setIsLoading(true)
     let newData = cloneDeep(values)
     transformFuncs.phone_numbers(newData)
     transformFuncs.emails(newData)
@@ -117,27 +128,27 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
     const final_data = { phone_numbers: [], emails: [], socials: [] }
 
     await Promise.all(
-        Object.keys(dataAfterSubmit).map(async (key) => {
-          const send_to_req = {}
-          send_to_req[key] = cloneDeep(dataAfterSubmit[key])
-          transformFuncs[key](send_to_req)
-          requestObj[key] = createReqObject(
-              send_to_req[key],
-              newData[key],
-              deletedData[key]
-          )
-          const url = craftUrl(["users", user_id, key])
-          responseObj[key] = await submitChanges(url, requestObj[key])
-          final_data[key] = handleResponse(
-              send_to_req[key],
-              requestObj[key],
-              responseObj[key],
-              values,
-              key,
-              args[key],
-              transformFuncs[key]
-          )
-        })
+      Object.keys(dataAfterSubmit).map(async (key) => {
+        const send_to_req = {}
+        send_to_req[key] = cloneDeep(dataAfterSubmit[key])
+        transformFuncs[key](send_to_req)
+        requestObj[key] = createReqObject(
+          send_to_req[key],
+          newData[key],
+          deletedData[key]
+        )
+        const url = craftUrl(['users', user_id, key])
+        responseObj[key] = await submitChanges(url, requestObj[key])
+        final_data[key] = handleResponse(
+          send_to_req[key],
+          requestObj[key],
+          responseObj[key],
+          values,
+          key,
+          args[key],
+          transformFuncs[key]
+        )
+      })
     )
     console.log('req', requestObj, 'res', responseObj)
     applyNewData(final_data)
@@ -150,31 +161,48 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
           errors = [...errors, ...value.errors.map((error) => error)]
         }
       }
-    });
+    })
 
     if (errors.length > 0) {
       errors.forEach((errorInfo) => {
         toast.error(errorInfo.error)
       })
     } else toast.success('Data successfully saved')
-
+    setIsLoading(false)
   }
 
   const { phone_numbers, emails, socials } = data
 
   return (
     <Formik
-        initialValues={{
-          phone_numbers: transformPhones(phone_numbers),
-          emails: transformEmails(emails),
-          socials: transformSocials(socials),
-        }}
-        enableReinitialize
-        onSubmit={onSubmit}
+      initialValues={{
+        phone_numbers: transformPhones(phone_numbers),
+        emails: transformEmails(emails),
+        socials: transformSocials(socials),
+      }}
+      enableReinitialize
+      onSubmit={onSubmit}
     >
       {(props) => {
         return (
-          <Form>
+          <Form style={{ position: 'relative' }}>
+            {isLoading && (
+              <div
+                style={{
+                  zIndex: 2,
+                  position: 'absolute',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '100%',
+                  width: '100%',
+                  background: '#ccc',
+                  opacity: '0.5',
+                }}
+              >
+                <Spinner />
+              </div>
+            )}
             <table className={styles.formTable}>
               <tbody>
                 <FieldArray
@@ -296,7 +324,9 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                           <button
                             className={styles.bigAddBtn}
                             type='button'
-                            onClick={() => arrayHelpers.push({social_media: '', link: ''})}
+                            onClick={() =>
+                              arrayHelpers.push({ social_media: '', link: '' })
+                            }
                           >
                             Add a Social Media
                           </button>
@@ -374,7 +404,9 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                           <button
                             className={styles.bigAddBtn}
                             type='button'
-                            onClick={() => arrayHelpers.push({phone_number: ''})}
+                            onClick={() =>
+                              arrayHelpers.push({ phone_number: '' })
+                            }
                           >
                             Add a Phone Number
                           </button>
@@ -410,7 +442,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                               <td>
                                 <div style={{ display: 'flex' }}>
                                   <div className={styles.removeBtnContainer}>
-                                    {e.id}<button
+                                    <button
                                       className={styles.removeBtn}
                                       type='button'
                                       onClick={() => {
@@ -451,7 +483,9 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                           <button
                             className={styles.bigAddBtn}
                             type='button'
-                            onClick={() => arrayHelpers.push({email_address: ''})}
+                            onClick={() =>
+                              arrayHelpers.push({ email_address: '' })
+                            }
                           >
                             Add an Email
                           </button>

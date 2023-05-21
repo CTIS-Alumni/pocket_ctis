@@ -1,0 +1,90 @@
+.tableHeader{
+    height: 34px;
+    background: #262d31;
+    
+    padding: 5px 10px;
+    color: white;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+}
+
+.table{
+    margin-top: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 100%;
+}
+.tableCell{
+    border-bottom: 1px solid #F5F5F5;
+    padding: 5px 10px;
+}
+.tableRow:nth-child(even){
+    background-color: rgba(203, 194, 177, 0.36);
+}
+.tableRow:nth-child(odd){
+    background-color: rgba(225, 204, 192, 0);
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    font-size: 12px;
+
+    div{
+        display: flex;
+        align-items: center;
+    }
+
+    span {
+        color: black;
+        float: left;
+        padding: 6px 10px;
+        text-decoration: none;
+      }
+      
+    span.active {
+        background-color: rgba(37, 45, 49, 0.75);
+        color: rgb(255, 255, 255);
+        border-radius: 5px;
+        border: solid 1px rgba(66, 66, 66, 0.93);
+      }
+      
+    span:hover:not(.active) {
+        background-color: #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .hide{
+        visibility: hidden;
+        position: absolute;
+        left: 30%;
+        top: 30%
+    }
+    .ellipsis{
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s;
+        &:hover > .hide{
+            visibility: visible;
+        }
+        &:hover > .ellipsisIcon{
+            visibility: hidden;
+        }
+    }
+
+    select{
+        padding: 0 5px;
+    }
+
+}

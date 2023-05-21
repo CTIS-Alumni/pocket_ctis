@@ -6,7 +6,7 @@ import {_submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
 import {verify} from "../helpers/jwtHelper";
 import Link from "next/link";
-import {toast} from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 
 
 const changePassword = async (password, confirm, token, type) => {
@@ -35,7 +35,7 @@ const ResetPassword = ({token, type}) => {
             toast.success('Password has been reset successfully.')
             router.push({ pathname: '/login' })
         }else{
-        toast.error(res.errors[0].error)
+            toast.error(res.errors[0].error)
         }
     }
 
@@ -108,6 +108,16 @@ const ResetPassword = ({token, type}) => {
                     </Col>
                 </Row>
             </Container>
+            <ToastContainer
+                position='top-right'
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                draggable
+                pauseOnHover
+                theme='light'
+            />
         </div>
     )
 }

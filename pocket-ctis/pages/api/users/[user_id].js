@@ -28,7 +28,6 @@ const handler =  async (req, res) => {
                 break;
             case "PUT":
                 try {
-                    const {first_name, last_name, is_retired, is_active, nee, gender, contact_email, bilkent_id} = req.body.user;
                     const query = "UPDATE users SET is_retired = ?, is_active = ?, nee = ?  WHERE id = ?";
                     const data = await doquery({
                         query: query,

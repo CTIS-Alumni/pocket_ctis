@@ -71,7 +71,10 @@ const PaginationFooter = ({
           <span
             key={i}
             className={styles.ellipsis}
-            onClick={() => setCurPage(curPage - 5)}
+            onClick={() => {
+              if (curPage - 5 < 1) setCurPage(numPages)
+              else setCurPage(curPage - 5)
+            }}
           >
             <ThreeDots className={styles.ellipsisIcon} />
             <ChevronDoubleLeft className={styles.hide} />
@@ -83,7 +86,10 @@ const PaginationFooter = ({
         <span
           key={i}
           className={styles.ellipsis}
-          onClick={() => setCurPage(curPage + 5)}
+          onClick={() => {
+            if (curPage + 5 > numPages) setCurPage(1)
+            else setCurPage(curPage + 5)
+          }}
         >
           <ThreeDots className={styles.ellipsisIcon} />
           <ChevronDoubleRight className={styles.hide} />

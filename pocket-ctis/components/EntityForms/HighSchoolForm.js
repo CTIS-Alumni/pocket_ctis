@@ -6,8 +6,8 @@ import { craftUrl } from '../../helpers/urlHelper'
 import Select from 'react-select'
 import * as Yup from 'yup'
 import { Location_data } from '../../context/locationContext'
-import {_submitFetcher} from "../../helpers/fetchHelpers";
-import {toast} from "react-toastify";
+import { _submitFetcher } from '../../helpers/fetchHelpers'
+import { toast } from 'react-toastify'
 
 const selectStyles = {
   control: (provided, state) => ({
@@ -19,7 +19,7 @@ const selectStyles = {
     zIndex: 2,
   }),
 }
-const HighSchoolForm = ({ activeItem }) => {
+const HighSchoolForm = ({ activeItem, updateData }) => {
   const [countries, setCountries] = useState([])
   const [cities, setCities] = useState([])
   const { locationData } = useContext(Location_data)
@@ -51,6 +51,15 @@ const HighSchoolForm = ({ activeItem }) => {
 
   useEffect(() => {
     if (activeItem) {
+      if (activeItem.country_id && activeItem.country_name) {
+        const temp = locationData[
+          `${activeItem.country_id}-${activeItem.country_name}`
+        ].map((l) => {
+          const [city_id, city_name] = l.split('-')
+          return { value: city_id, label: city_name }
+        })
+        setCities(temp)
+      }
       formik.setValues({
         high_school_name: activeItem.high_school_name,
         city_id: { value: activeItem.city_id, label: activeItem.city_name },
@@ -66,19 +75,38 @@ const HighSchoolForm = ({ activeItem }) => {
   }, [activeItem])
 
   const onSubmitHandler = async (values) => {
-    const temp = {city_id: values?.city_id?.value || null, high_school_name: values.high_school_name};
-    if(activeItem){
-      temp.id = activeItem.id;
-      const res = await _submitFetcher('PUT', craftUrl(['highschools']), {highschools: [temp]})
+    const temp = {
+      city_id: values?.city_id?.value || null,
+      high_school_name: values.high_school_name,
+    }
+    if (activeItem) {
+      console.log(values)
+      temp.id = activeItem.id
+      const res = await _submitFetcher('PUT', craftUrl(['highschools']), {
+        highschools: [temp],
+      })
+      console.log(res);
       if (!res.data[activeItem.id] || res.errors.length) {
         toast.error(res.errors[0].error)
-      } else toast.success("Highschool successfully saved")
-    }else{
-      const res = await _submitFetcher('POST', craftUrl(['highschools']), {highschools: [temp]})
-      if(!res.data?.length || res.errors.length){
-        toast.error(res.errors[0].error)
+      } else {
+        toast.success('Highschool successfully saved')
+        updateData()
+        formik.resetForm()
+        setRefreshKey(Math.random().toString(36))
       }
-      else toast.success("Highschool successfully added")
+    } else {
+      const res = await _submitFetcher('POST', craftUrl(['highschools']), {
+        highschools: [temp],
+      })
+      if (!res.data?.length || res.errors.length) {
+        toast.error(res.errors[0].error)
+      } else {
+        toast.success('Highschool successfully added')
+        updateData()
+        if(!activeItem)
+          formik.resetForm()
+        setRefreshKey(Math.random().toString(36))
+      }
     }
   }
 
@@ -113,6 +141,7 @@ const HighSchoolForm = ({ activeItem }) => {
               value={formik.values.country}
               onChange={(val) => {
                 formik.setFieldValue('country', val)
+                formik.setFieldValue('city_id', null)
                 const temp = locationData[val.value].map((l) => {
                   const [city_id, city_name] = l.split('-')
                   return { value: city_id, label: city_name }

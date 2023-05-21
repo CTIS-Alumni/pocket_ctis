@@ -3,15 +3,25 @@ import styles from './AdminUserFormStyles.module.css'
 import { Formik, FieldArray, Form, Field } from 'formik'
 import { XCircleFill, PlusCircleFill } from 'react-bootstrap-icons'
 import { cloneDeep } from 'lodash'
-import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {handleResponse, replaceWithNull, splitFields} from '../../../../helpers/submissionHelpers'
-import {craftUrl} from '../../../../helpers/urlHelper'
-import {toast} from "react-toastify";
+import {
+  _getFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import {
+  handleResponse,
+  replaceWithNull,
+  splitFields,
+} from '../../../../helpers/submissionHelpers'
+import { craftUrl } from '../../../../helpers/urlHelper'
+import { toast } from 'react-toastify'
+import { Spinner } from 'react-bootstrap'
 
 const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [skillType, setSkillType] = useState([])
   const [skills, setSkills] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     _getFetcher({
@@ -58,31 +68,32 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
     [],
   ]
 
-  const url = craftUrl(["users",user_id, 'skills'])
+  const url = craftUrl(['users', user_id, 'skills'])
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
+    setIsLoading(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
 
     const send_to_req = { skills: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
     const requestObj = createReqObject(
-        send_to_req.skills,
-        newData.skills,
-        deletedData
+      send_to_req.skills,
+      newData.skills,
+      deletedData
     )
 
     const responseObj = await submitChanges(url, requestObj)
 
     const new_data = handleResponse(
-        send_to_req.skills,
-        requestObj,
-        responseObj,
-        values,
-        'skills',
-        args,
-        transformDataForSubmission
+      send_to_req.skills,
+      requestObj,
+      responseObj,
+      values,
+      'skills',
+      args,
+      transformDataForSubmission
     )
     applyNewData(new_data)
     console.log('req', requestObj, 'res', responseObj)
@@ -101,22 +112,40 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
         toast.error(errorInfo.error)
       })
     } else if (
-        responseObj.POST.data ||
-        responseObj.PUT.data ||
-        responseObj.DELETE.data
+      responseObj.POST.data ||
+      responseObj.PUT.data ||
+      responseObj.DELETE.data
     ) {
       toast.success('Data successfully saved')
     }
+    setIsLoading(false)
   }
 
   return (
-      <Formik
-          enableReinitialize
-          initialValues={{ skills: transformData(data) }}
-          onSubmit={onSubmit}
+    <Formik
+      enableReinitialize
+      initialValues={{ skills: transformData(data) }}
+      onSubmit={onSubmit}
     >
       {(props) => (
-        <Form>
+        <Form style={{ position: 'relative' }}>
+          {isLoading && (
+            <div
+              style={{
+                zIndex: 2,
+                position: 'absolute',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+                width: '100%',
+                background: '#ccc',
+                opacity: '0.5',
+              }}
+            >
+              <Spinner />
+            </div>
+          )}
           <table style={{ width: '100%' }}>
             <tbody>
               <FieldArray
@@ -296,11 +325,13 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push( {
-                                    skill_type: '',
-                                    skill_level: '',
-                                    skill: '',
-                                  })}
+                              onClick={() =>
+                                arrayHelpers.push({
+                                  skill_type: '',
+                                  skill_level: '',
+                                  skill: '',
+                                })
+                              }
                             >
                               Add a Skill
                             </button>

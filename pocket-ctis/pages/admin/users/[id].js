@@ -11,6 +11,7 @@ import {
   Popover,
   Button,
   OverlayTrigger,
+  Spinner,
 } from 'react-bootstrap'
 import {
   EnvelopeFill,
@@ -22,6 +23,7 @@ import {
   Pencil,
   TelephoneFill,
   Twitter,
+  MortarboardFill,
   XLg,
   Youtube,
 } from 'react-bootstrap-icons'
@@ -34,14 +36,17 @@ import {
   getTimePeriod,
 } from '../../../helpers/formatHelpers'
 import CustomBadge from '../../../components/ProfilePageComponents/CustomBadge/CustomBadge'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import AdminUserEditModal from '../../../components/AdminPanelComponents/AdminUserEditModal/AdminUserEditModal'
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
 import styles from '../../../styles/adminUserView.module.css'
 import { useFormik } from 'formik'
+import { User_data } from '../../../context/userContext'
+import { useRouter } from 'next/router'
 
 const AdminUserView = ({ user }) => {
   const [isLoading, setIsLoading] = useState(false)
+  const [modalIsLoading, setModalIsLoading] = useState(false)
   const [userData, setUserData] = useState(user.userInfo)
 
   const [profilePictureModal, setProfilePictureModal] = useState(false)
@@ -50,6 +55,9 @@ const AdminUserView = ({ user }) => {
   const [fileInputResetKey, setfileInputResetKey] = useState(
     Math.random().toString(36)
   )
+
+  const context = useContext(User_data)
+  const router = useRouter()
 
   useEffect(() => {
     if (!profileImage) {
@@ -104,6 +112,7 @@ const AdminUserView = ({ user }) => {
     certificates,
     wanted_sectors,
     socials,
+    projects,
   } = userData.data
 
   const text_skill_level = [
@@ -131,7 +140,7 @@ const AdminUserView = ({ user }) => {
   const refreshProfile = () => {
     setIsLoading(true)
     _getFetcher({
-      res: craftUrl(["users",user.userInfo.data.basic_info[0].id, 'profile']),
+      res: craftUrl(['users', user.userInfo.data.basic_info[0].id, 'profile']),
     })
       .then(({ res }) => setUserData(res))
       .finally(() => {
@@ -149,22 +158,30 @@ const AdminUserView = ({ user }) => {
   }
 
   const uploadFile = async () => {
+    setModalIsLoading(true)
     if (!profileImage) {
       toast.error('Please select an image to upload', {
         containerId: 'modalContainer',
       })
-    }else{
-      const formData = new FormData();
-      formData.append('profile_picture', basic_info[0].id);
-      formData.append('image', profileImage);
+    } else {
+      const formData = new FormData()
+      formData.append('profile_picture', basic_info[0].id)
+      formData.append('image', profileImage)
 
-      const res = await _submitFile('PUT', craftUrl(['users', basic_info[0].id, 'profilepicture']),  formData);
-      console.log(res)
+      const res = await _submitFile(
+        'PUT',
+        craftUrl(['users', basic_info[0].id, 'profilepicture']),
+        formData
+      )
 
-      if(res.data || !res.errors){
-        //setProfilePictureModal(false)
-      }//TODO: PUT TOAST
+      if (res.errors.length > 0) {
+        toast.error(res?.errors[0].error)
+      }
+      else if (res.data || !res.errors) {
+        router.reload()
+      }
     }
+    setModalIsLoading(false)
   }
 
   const getCurrentWorksString = (works) => {
@@ -181,12 +198,17 @@ const AdminUserView = ({ user }) => {
   }
 
   const removeProfilePicture = async () => {
-
-    const res = await _submitFetcher('PUT',craftUrl(['users', basic_info[0].id, 'profilepicture'], [{name: 'removePic', value: 1}]))
-    console.log(res);
-    if(res.data || !res.errors)
+    const res = await _submitFetcher(
+      'PUT',
+      craftUrl(
+        ['users', basic_info[0].id, 'profilepicture'],
+        [{ name: 'removePic', value: 1 }]
+      )
+    )
+    if (res.data || !res.errors) {
       setProfilePictureModal(null)
-    //TODO: PUT TOAST
+      toast.success('Profile picture removed successfully')
+    }
   }
 
   const removeImagePopover = (
@@ -213,20 +235,36 @@ const AdminUserView = ({ user }) => {
           justifyContent: 'space-between',
           gap: '20px 20px',
           flexWrap: 'wrap',
+          position: 'relative',
         }}
       >
-        <LoadingSpinner isLoading={isLoading} />
+        {isLoading && (
+          <div
+            style={{
+              zIndex: 2,
+              position: 'absolute',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              width: '100%',
+              background: '#ccc',
+              opacity: '0.5',
+            }}
+          >
+            <Spinner />
+          </div>
+        )}
         <Card border='light' style={{ padding: 20, flexGrow: '3' }}>
           <div
             style={{ display: 'flex', justifyContent: 'space-between' }}
             className='mb-3'
           >
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-              <div className={styles.imageContainer}>
+              <div className={styles.imageContainer} >
                 <img
                   className={styles.profileImage}
                   src={getProfilePicturePath(
-                    profile_picture[0].visibility,
                     profile_picture[0].profile_picture
                   )}
                   width={100}
@@ -478,6 +516,17 @@ const AdminUserView = ({ user }) => {
                     })}
                   </>
                 )}
+                {projects?.length > 0 &&
+                  projects.map((p, i) => {
+                    return (
+                      <div key={i} style={{ marginTop: 10 }}>
+                        <div>{p.project_name}</div>
+                        <Container style={{ color: '#999', fontSize: '14px' }}>
+                          <div>{p.project_description || 'No description'}</div>
+                        </Container>
+                      </div>
+                    )
+                  })}
               </>
             </Tab>
           </Tabs>
@@ -537,13 +586,8 @@ const AdminUserView = ({ user }) => {
                 </>
               )}
               {high_school.length != 0 && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: 10,
-                  }}
-                >
-                  High School: {high_school[0].high_school_name}
+                <div style={{ marginTop: 10 }}>
+                  <MortarboardFill color={'rgb(245,164,37)'}/> Graduated from {high_school[0].high_school_name}
                 </div>
               )}
             </Tab>
@@ -621,7 +665,7 @@ const AdminUserView = ({ user }) => {
                 </>
               )}
             </Tab>
-            <Tab eventKey='societies' title='Societies'>
+            <Tab eventKey='societies' title='Clubs & Societies'>
               {societies.length == 0 ? (
                 <div>No data available</div>
               ) : (
@@ -655,7 +699,7 @@ const AdminUserView = ({ user }) => {
           }}
         >
           <Tabs defaultActiveKey='certificates' className='mb-3'>
-            <Tab eventKey='certificates' title='Certificates'>
+            <Tab eventKey='certificates' title='Certificates & Awards'>
               {certificates.length == 0 ? (
                 <div>No data available</div>
               ) : (
@@ -717,65 +761,71 @@ const AdminUserView = ({ user }) => {
           <Modal.Title>Edit Profile Picture</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className='d-flex justify-content-center'>
-            {!preview ? (
-              <OverlayTrigger
-                trigger='click'
-                placement='top'
-                overlay={removeImagePopover}
-                rootClose
-              >
+          <div style={{position: 'relative'}}>
+            {modalIsLoading && <div style={{position: 'absolute', width: '100%', height: '100%', background: '#ccc', zIndex: '2', opacity: '0.25',
+              display: 'flex', justifyContent: 'center', alignItems: 'center'
+              }}>
+              <Spinner />
+            </div>}
+            <div className='d-flex justify-content-center'>
+              {!preview ? (
+                <OverlayTrigger
+                  trigger='click'
+                  placement='top'
+                  overlay={removeImagePopover}
+                  rootClose
+                >
+                  <div className={styles.previewContainer}>
+                    <div className={styles.previewRemover}>
+                      {/* <Button>Hide All Data</Button> */}
+                      <XLg />
+                    </div>
+                    <img
+                      className={styles.profileImage}
+                      src={getProfilePicturePath(
+                        profile_picture[0].profile_picture
+                      )}
+                      width={250}
+                      height={250}
+                    />
+                  </div>
+                </OverlayTrigger>
+              ) : (
                 <div className={styles.previewContainer}>
-                  <div className={styles.previewRemover}>
-                    {/* <Button>Hide All Data</Button> */}
+                  <div
+                    className={styles.previewRemover}
+                    onClick={() => setProfileImage()}
+                  >
                     <XLg />
                   </div>
                   <img
                     className={styles.profileImage}
-                    src={getProfilePicturePath(
-                      profile_picture[0].visibility,
-                      profile_picture[0].profile_picture
-                    )}
+                    src={preview}
                     width={250}
                     height={250}
                   />
                 </div>
-              </OverlayTrigger>
-            ) : (
-              <div className={styles.previewContainer}>
-                <div
-                  className={styles.previewRemover}
-                  onClick={() => setProfileImage()}
-                >
-                  <XLg />
-                </div>
-                <img
-                  className={styles.profileImage}
-                  src={preview}
-                  width={250}
-                  height={250}
+              )}
+            </div>
+            <div className='mt-4'>
+              <div>
+                <input
+                  type='file'
+                  accept='image/png, image/gif, image/jpeg'
+                  key={fileInputResetKey || ''}
+                  onChange={(event) => {
+                    if (!event.target.files || event.target.files.length === 0) {
+                      setProfileImage(null)
+                    } else {
+                      setProfileImage(event.target.files[0])
+                    }
+                  }}
                 />
               </div>
-            )}
-          </div>
-          <div className='mt-4'>
-            <div>
-              <input
-                type='file'
-                accept='image/png, image/gif, image/jpeg'
-                key={fileInputResetKey || ''}
-                onChange={(event) => {
-                  if (!event.target.files || event.target.files.length === 0) {
-                    setProfileImage(null)
-                  } else {
-                    setProfileImage(event.target.files[0])
-                  }
-                }}
-              />
+              <button className={styles.button} onClick={uploadFile}>
+                Confirm
+              </button>
             </div>
-            <button className={styles.button} onClick={uploadFile}>
-              Confirm
-            </button>
           </div>
           <ToastContainer
             position='top-right'
@@ -797,10 +847,12 @@ const AdminUserView = ({ user }) => {
 export default AdminUserView
 
 export async function getServerSideProps(context) {
-  const {cookie} = context.req.headers;
+  const { cookie } = context.req.headers
 
   const userInfo = await _getFetcher(
-    { userInfo: craftUrl(["users", context.params.id, 'profile']) }, cookie)
+    { userInfo: craftUrl(['users', context.params.id, 'profile']) },
+    cookie
+  )
 
   return { props: { user: userInfo } }
 }
