@@ -387,7 +387,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                   <td>
                     <div className={`${styles.inputContainer}`}>
                       <label className={`${styles.inputLabel}`}>
-                        last Name
+                        Last Name
                       </label>
                       <Field
                         className={`${styles.inputField}`}

@@ -21,10 +21,13 @@ import {
   submitChanges,
 } from '../../../../helpers/fetchHelpers'
 import { craftUrl} from '../../../../helpers/urlHelper'
+import {toast} from "react-toastify";
+import {Spinner} from "react-bootstrap";
 
 const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [societies, setSocieties] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     _getFetcher({ societies: craftUrl(['studentsocieties']) }).then(
@@ -59,34 +62,58 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
     })
   }
 
+  const args = [['society'], [], ['user_id', 'id'], []]
+  const url = craftUrl(['users', user_id, 'societies'])
+
   const onSubmit = async (values) => {
     setIsUpdated(true)
+    setIsLoading(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
 
     const send_to_req = { societies: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
     const requestObj = createReqObject(
-      send_to_req.societies,
-      newData.societies,
-      deletedData
+        send_to_req.societies,
+        newData.societies,
+        deletedData
     )
-    const url = craftUrl(["users",user_id, 'societies'])
+
     const responseObj = await submitChanges(url, requestObj)
-    const args = [['society'], [], ['user_id', 'id'], []]
+
     const new_data = handleResponse(
-      send_to_req.societies,
-      requestObj,
-      responseObj,
-      values,
-      'societies',
-      args,
-      transformDataForSubmission
+        send_to_req.societies,
+        requestObj,
+        responseObj,
+        values,
+        'societies',
+        args,
+        transformDataForSubmission
     )
     applyNewData(new_data)
     console.log('req,', requestObj, 'res', responseObj)
 
     deletedData = []
+
+    let errors = []
+    for (const [key, value] of Object.entries(responseObj)) {
+      if (value.errors?.length > 0) {
+        errors = [...errors, ...value.errors.map((error) => error)]
+      }
+    }
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else if (
+        responseObj.POST.data ||
+        responseObj.PUT.data ||
+        responseObj.DELETE.data
+    ) {
+      toast.success('Data successfully saved')
+    }
+    setIsLoading(false)
   }
 
   return (
@@ -96,7 +123,24 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
       onSubmit={onSubmit}
     >
       {(props) => (
-        <Form>
+          <Form style={{ position: 'relative' }}>
+            {isLoading && (
+                <div
+                    style={{
+                      zIndex: 2,
+                      position: 'absolute',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100%',
+                      width: '100%',
+                      background: '#ccc',
+                      opacity: '0.5',
+                    }}
+                >
+                  <Spinner />
+                </div>
+            )}
           <table style={{ width: '100%' }}>
             <tbody>
               <FieldArray
@@ -110,7 +154,7 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
                             className={styles.formPartitionHeading}
                             style={{ marginTop: 0 }}
                           >
-                            <span>Societies</span>
+                            <span>Clubs & Societies</span>
                             <button
                               className={styles.addButton}
                               type='button'
@@ -267,7 +311,7 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push('')}
+                              onClick={() => arrayHelpers.push({ society: '' })}
                             >
                               Add a Society
                             </button>

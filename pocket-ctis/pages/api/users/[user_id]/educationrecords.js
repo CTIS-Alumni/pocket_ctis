@@ -6,6 +6,7 @@ import {
 import modules from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
+import departmentConfig from '../../../../config/departmentConfig'
 
 
 const field_conditions = {
