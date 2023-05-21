@@ -27,6 +27,7 @@ import {
   Pencil,
   TelephoneFill,
   Twitter,
+  MortarboardFill,
   XLg,
   Youtube,
 } from 'react-bootstrap-icons'
@@ -182,7 +183,7 @@ const AdminUserView = ({ user }) => {
       } 
       else if (res.data || !res.errors) {
         router.reload()
-      } //TODO: PUT TOAST
+      }
     }
     setModalIsLoading(false)
   }
@@ -208,7 +209,6 @@ const AdminUserView = ({ user }) => {
         [{ name: 'removePic', value: 1 }]
       )
     )
-    console.log(res)
     if (res.data || !res.errors) {
       setProfilePictureModal(null)
       toast.success('Profile picture removed successfully')
@@ -591,7 +591,7 @@ const AdminUserView = ({ user }) => {
               )}
               {high_school.length != 0 && (
                 <div style={{ marginTop: 10 }}>
-                  High School: {high_school[0].high_school_name}
+                  <MortarboardFill color={'rgb(245,164,37)'}/> Graduated from {high_school[0].high_school_name}
                 </div>
               )}
             </Tab>

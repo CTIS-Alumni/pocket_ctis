@@ -7,6 +7,39 @@
     transition: transform 0.26s ease;
 }
 
+.previewContainer{
+    position: relative;
+    width: fit-content;
+}
+
+.previewContainer img {
+    max-width: 100%;
+    height: auto;
+}
+
+.previewRemover{
+    position: absolute;
+    border-radius: 5px;
+    font-size: x-large;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.previewRemover:hover{
+    opacity: 1;
+    background-color: rgba(245, 164, 37, 0.5);
+}
+
+.appLogo{
+    object-fit: cover;
+    border-radius: 5px;
+}
+
 .active{
     transform: scaleY(1);
     position: relative;

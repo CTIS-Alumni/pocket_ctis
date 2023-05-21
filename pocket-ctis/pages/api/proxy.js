@@ -16,11 +16,9 @@ export default async function handler(req, res){
             credentials: 'include',
         });
 
-        const {data, errors, length} = await results.json();
+        const responseData = await results.json();
 
-        console.log("heres the data and errors from tehre", data, errors);
-
-        res.status(results.status).json({data, length, errors});
+        res.status(results.status).json(responseData);
     } catch (error) {
         console.log("error from ", req.url, error);
         res.status(500).json({ error: 'Internal Server Error' });

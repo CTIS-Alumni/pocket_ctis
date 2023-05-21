@@ -560,7 +560,7 @@ CREATE TABLE IF NOT EXISTS `pocketctisschema`.`usergraduationproject` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `user_id_UNIQUE` (`user_id` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 141
+AUTO_INCREMENT = 147
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_unicode_520_ci;
 
