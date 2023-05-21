@@ -13,17 +13,27 @@ import {
 import styles from './AdminUserFormStyles.module.css'
 
 import { cloneDeep } from 'lodash'
-import {craftUrl} from '../../../../helpers/urlHelper'
-import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {convertToIso, handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
-import {toast} from "react-toastify";
+import { craftUrl } from '../../../../helpers/urlHelper'
+import {
+  _getFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import {
+  convertToIso,
+  handleResponse,
+  replaceWithNull,
+  splitFields,
+} from '../../../../helpers/submissionHelpers'
+import { toast } from 'react-toastify'
+import { Spinner } from 'react-bootstrap'
 
 const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [companies, setCompanies] = useState([])
   const [worktypes, setWorktypes] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
   const { locationData } = useContext(Location_data)
-  const [loading, setLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const applyNewData = (data) => {
     setDataAfterSubmit(data)
@@ -86,10 +96,10 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
     ['start_date', 'end_date'],
   ]
 
-  const url = craftUrl(["users",user_id, 'workrecords'])
+  const url = craftUrl(['users', user_id, 'workrecords'])
 
   const onSubmit = async (values) => {
-    setLoading(true)
+    setIsLoading(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
     const send_to_req = { work_records: cloneDeep(dataAfterSubmit) }
@@ -137,7 +147,7 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
     deletedData = []
 
     setIsUpdated(true)
-    setLoading(false)
+    setIsLoading(false)
   }
 
   return (
@@ -148,7 +158,24 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
     >
       {(props) => {
         return (
-          <Form>
+          <Form style={{ position: 'relative' }}>
+            {isLoading && (
+              <div
+                style={{
+                  zIndex: 2,
+                  position: 'absolute',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '100%',
+                  width: '100%',
+                  background: '#ccc',
+                  opacity: '0.5',
+                }}
+              >
+                <Spinner />
+              </div>
+            )}
             <table className={styles.formTable}>
               <tbody>
                 <FieldArray
@@ -176,7 +203,7 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                                   department: '',
                                   position: '',
                                   work_description: '',
-                                  hiring_method: ''
+                                  hiring_method: '',
                                 })
                               }
                             >
@@ -549,7 +576,7 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                                 department: '',
                                 position: '',
                                 work_description: '',
-                                hiring_method: ''
+                                hiring_method: '',
                               })
                             }
                           >

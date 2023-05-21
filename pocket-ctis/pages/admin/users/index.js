@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { _getFetcher } from '../../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../../helpers/fetchHelpers'
 import { craftUrl, buildCondition } from '../../../helpers/urlHelper'
 import { Container, Tabs, Tab, Modal, Button } from 'react-bootstrap'
 import { toast, ToastContainer } from 'react-toastify'
@@ -11,6 +11,7 @@ import { useRouter } from 'next/router'
 
 const AdminUsersList = () => {
   const [activeKey, setActiveKey] = useState('display')
+  const [activeItem, setActiveItem] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [data, setData] = useState([])
   const [columns, setColumns] = useState([])
@@ -51,7 +52,7 @@ const AdminUsersList = () => {
 
   useEffect(() => {
     getData()
-    setColumns(['id', 'first_name', 'last_name', 'user_types'])
+    setColumns(['id', 'bilkent_id', 'first_name', 'last_name', 'user_types', 'is_active', 'contact_email'])
   }, [])
 
   const onQuery = (queryParams) => {
@@ -63,21 +64,81 @@ const AdminUsersList = () => {
     router.push(`/admin/users/${user.id}`)
   }
 
-  const deleteSelected = () => {
-    console.log('delete selected')
+  const deleteSelected = async () => {
+    const res = await _submitFetcher('DELETE', craftUrl(['users']), {
+      users: selectedArray,
+    })
+    if (res.errors.length) toast.error(res.errors[0].error)
+    else {
+      toast.success('Users deleted successfully!')
+      setSelectedArray([])
+      setShowOptions(false)
+      getData()
+    }
 
     setSelectedArray([])
     setShowOptions(false)
     getData()
   }
 
+  const deactivateSelected = async () => {
+    const res = await _submitFetcher('PUT', craftUrl(['users'], [{name: "deactivated", value: 1}]), {
+      users: selectedArray,
+    })
+    if (res.errors.length) toast.error(res.errors[0].error)
+    else {
+      toast.success('Users deactivated successfully!')
+      setSelectedArray([])
+      setShowOptions(false)
+      getData()
+    }
+  }
+
+  const activateSelected = async () => {
+    const res = await _submitFetcher('PUT', craftUrl(['users'], [{name: "activated", value: 1}]), {
+      users: selectedArray,
+    })
+    if (res.errors.length) toast.error(res.errors[0].error)
+    else {
+      toast.success('Users activated successfully!')
+      setSelectedArray([])
+      setShowOptions(false)
+      getData()
+    }
+  }
+
   const selectedArrayOptions = [
     {
       label: 'Delete All Selected',
-      warning: 'Are you sure you want to delete all selected sectors?',
+      warning: 'Are you sure you want to delete all selected users?',
       action: deleteSelected,
     },
+    {
+      label: 'Deactivate All Selected',
+      warning: 'Are you sure you want to deactivate all selected users? ',
+      action: deactivateSelected
+    },
+    {
+      label: 'Activate All Selected',
+      warning: 'Are you sure you want to activate all selected users? ',
+      action: activateSelected
+    }
   ]
+
+  const editHandler = (data) => {
+    setActiveItem(data)
+    setActiveKey('create')
+  }
+
+  const deleteHandler = async (data) => {
+    const res = await _submitFetcher('DELETE', craftUrl(['users']), {
+      users: [data],
+    })
+    if (res?.data[data.id]) {
+      toast.success('User deleted successfully!')
+      getData()
+    } else toast.error(res.data[0].error)
+  }
 
   return (
     <AdminPageContainer>
@@ -118,15 +179,23 @@ const AdminUsersList = () => {
               onQuery={onQuery}
               total={total}
               isLoading={isLoading}
-              searchCols=''
+              searchCols='user,bilkent_id,contact_email,type'
               clickable={true}
+              editHandler={editHandler}
+              deleteHandler={deleteHandler}
               clickHandler={handleClick}
               setSelectedArray={setSelectedArray}
               selectedArray={selectedArray}
             />
           </Tab>
           <Tab eventKey='create' title='create'>
-            <CreateUserForm goBack={() => setActiveKey('display')} />
+            <CreateUserForm
+              activeItem={activeItem}
+              goBack={() => {
+                setActiveKey('display')
+                setActiveItem(null)
+              }}
+            />
           </Tab>
         </Tabs>
       </Container>

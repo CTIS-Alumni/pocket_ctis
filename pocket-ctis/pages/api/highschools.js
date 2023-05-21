@@ -1,9 +1,9 @@
 import {
-  buildInsertQueries,
-  buildSearchQuery,
-  doMultiDeleteQueries,
-  doMultiQueries,
-  insertToTable,
+    buildInsertQueries,
+    buildSearchQuery, buildUpdateQueries,
+    doMultiDeleteQueries,
+    doMultiQueries,
+    insertToTable, updateTable,
 } from '../../helpers/dbHelpers'
 import { checkAuth, checkUserType } from '../../helpers/authHelper'
 import { replaceWithNull } from '../../helpers/submissionHelpers'

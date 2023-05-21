@@ -6,13 +6,21 @@ import { XCircleFill, PlusCircleFill } from 'react-bootstrap-icons'
 import { Formik, Field, Form, FieldArray } from 'formik'
 
 import { cloneDeep } from 'lodash'
-import {handleResponse, replaceWithNull} from '../../../../helpers/submissionHelpers'
-import {createReqObject, submitChanges} from "../../../../helpers/fetchHelpers";
-import {craftUrl} from "../../../../helpers/urlHelper";
-import {toast} from "react-toastify";
+import {
+  handleResponse,
+  replaceWithNull,
+} from '../../../../helpers/submissionHelpers'
+import {
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../../helpers/urlHelper'
+import { toast } from 'react-toastify'
+import { Spinner } from 'react-bootstrap'
 
 const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
-  const [dataAfterSubmit, setDataAfterSubmit] = useState(data);
+  const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   const applyNewData = (data) => {
     setDataAfterSubmit(data)
@@ -36,17 +44,18 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
       val.visibility = val.visibility ? 1 : 0
       val.certificate_name = val.certificate_name ? val.certificate_name : null
       val.issuing_authority = val.issuing_authority
-          ? val.issuing_authority
-          : null
+        ? val.issuing_authority
+        : null
       replaceWithNull(val)
       return val
     })
   }
 
-  const url = craftUrl(["users",user_id, 'certificates'])
+  const url = craftUrl(['users', user_id, 'certificates'])
   const args = [[], [], ['id', 'user_id'], []]
 
   const onSubmit = async (values) => {
+    setIsLoading(true)
     setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
@@ -54,21 +63,21 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
     const send_to_req = { certificates: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
     const requestObj = createReqObject(
-        send_to_req.certificates,
-        newData.certificates,
-        deletedData
+      send_to_req.certificates,
+      newData.certificates,
+      deletedData
     )
 
     const responseObj = await submitChanges(url, requestObj)
 
     const new_data = handleResponse(
-        send_to_req.certificates,
-        requestObj,
-        responseObj,
-        values,
-        'certificates',
-        args,
-        transformDataForSubmission
+      send_to_req.certificates,
+      requestObj,
+      responseObj,
+      values,
+      'certificates',
+      args,
+      transformDataForSubmission
     )
     applyNewData(new_data)
     console.log('req', requestObj, 'res', responseObj)
@@ -85,14 +94,14 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
         toast.error(errorInfo.error)
       })
     } else if (
-        responseObj.POST.data ||
-        responseObj.PUT.data ||
-        responseObj.DELETE.data
+      responseObj.POST.data ||
+      responseObj.PUT.data ||
+      responseObj.DELETE.data
     ) {
       toast.success('Data successfully saved')
     }
 
-
+    setIsLoading(false)
     deletedData = []
   }
 
@@ -103,7 +112,24 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
       onSubmit={onSubmit}
     >
       {(props) => (
-        <Form>
+        <Form style={{ position: 'relative' }}>
+          {isLoading && (
+            <div
+              style={{
+                zIndex: 2,
+                position: 'absolute',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+                width: '100%',
+                background: '#ccc',
+                opacity: '0.5',
+              }}
+            >
+              <Spinner />
+            </div>
+          )}
           <table style={{ width: '100%' }}>
             <tbody>
               <FieldArray
@@ -117,7 +143,7 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
                             className={styles.formPartitionHeading}
                             style={{ marginTop: 0 }}
                           >
-                            <span>Certificates</span>
+                            <span>Certificates & Awards</span>
                             <button
                               className={styles.addButton}
                               type='button'
@@ -163,7 +189,7 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
                                     <div style={{ flexGrow: '1' }}>
                                       <div className={styles.inputContainer}>
                                         <label className={styles.inputLabel}>
-                                          Certificate Name
+                                          Certificate/Award Name
                                         </label>
                                         <Field
                                           className={styles.inputField}
@@ -200,8 +226,12 @@ const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push({ certificate_name: '',
-                                issuing_authority: ''})}
+                              onClick={() =>
+                                arrayHelpers.push({
+                                  certificate_name: '',
+                                  issuing_authority: '',
+                                })
+                              }
                             >
                               Add a Certificate
                             </button>

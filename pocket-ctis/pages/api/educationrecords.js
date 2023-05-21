@@ -5,7 +5,7 @@ import {checkApiKey} from "./middleware/checkAPIkey";
 const columns = {
     user: "CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
     edu_inst_name: "ei.edu_inst_name",
-    edu_inst_id: "ei.edu_inst_id",
+    edu_inst_id: "e.edu_inst_id",
     degree_type_name: "d.degree_type_name",
     name_of_program: "e.name_of_program",
     city_name: "ci.city_name",
@@ -19,7 +19,8 @@ const columns = {
     user_id: "e.user_id",
     first_name: "u.first_name",
     last_name: "u.last_name",
-    bilkent_id: "u.bilkent_id"
+    bilkent_id: "u.bilkent_id",
+    type: "act.type_name"
 }
 
 const handler =  async (req, res) => {
@@ -48,6 +49,8 @@ const handler =  async (req, res) => {
                     length_query = "SELECT COUNT(*) as count FROM educationrecord e JOIN users u ON (e.user_id = u.id) " +
                     "JOIN educationinstitute ei ON (e.edu_inst_id = ei.id) " +
                     "JOIN degreetype d ON (e.degree_type_id = d.id) " +
+                        "JOIN useraccounttype uat ON (uat.user_id = u.id) " +
+                        "JOIN accounttype act ON (act.id = uat.type_id) " +
                     "LEFT OUTER JOIN city ci ON (ei.city_id = ci.id)" +
                     "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 

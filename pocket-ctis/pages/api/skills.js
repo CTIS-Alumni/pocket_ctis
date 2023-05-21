@@ -19,7 +19,7 @@ const fields = {
 const columns = {
     skill_name: "s.skill_name",
     skill_type_name: "st.skill_type_name",
-    skill_type_id: "st.skill_type_id",
+    skill_type_id: "s.skill_type_id",
     id: "s.id"
 }
 

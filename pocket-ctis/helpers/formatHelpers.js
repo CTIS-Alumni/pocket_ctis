@@ -1,3 +1,4 @@
+import departmentConfig from '../config/departmentConfig'
 export const monthNames = [
     'Jan',
     'Feb',
@@ -69,11 +70,18 @@ export const getProfilePicturePath = (fileName = null) => {
     }
 }
 
+export const getAppLogoPath = () => {
+    if(departmentConfig.app_logo !== "")
+        return process.env.NEXT_PUBLIC_IMAGES_PATH + "/departmentpictures/app_logo/" + departmentConfig.app_logo;
+    else return false;
+}
+
 export const getGraduationProjectPicturePath = (filename = null, teamOrPoster = "team") => {
         if(filename)
             return process.env.NEXT_PUBLIC_IMAGES_PATH + "/graduationprojects/" + teamOrPoster + "/" + filename + '.png';
-        else return process.env.NEXT_PUBLIC_IMAGES_PATH + "/graduationprohjcts/" + teamOrPoster + '/defaultteam.png';
+        else return process.env.NEXT_PUBLIC_IMAGES_PATH + "/graduationprojects/" + teamOrPoster + '/default' +teamOrPoster+'.png';
 }
+
 
 export const getDateString = (date) => {
     if (date) {

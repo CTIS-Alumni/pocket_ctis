@@ -108,13 +108,14 @@ const DataInsertion = () => {
   }
 
   const onSubmitHandler = async (values) => {
-    if (!file) {
+    if (!file || !rows?.length) {
       toast.error('Please select a file and preview it before submitting!')
       return
     }
     setType(values.dataType)
     setErrors(null)
     setMailResults(null)
+    setIsLoading(true)
     mail_results = {}
 
     const res = await _submitFetcher(
@@ -122,19 +123,25 @@ const DataInsertion = () => {
       craftUrl([values.dataType], [{ name: 'csv', value: 1 }]),
       { [values.dataType]: rows }
     )
+
     const success_map = {}
-    res.data.forEach((d) => {
-      success_map[d.index] = d.inserted?.user_id || d.inserted?.id
-    })
+    if(res?.data?.length){
+      res.data.forEach((d) => {
+        success_map[d.index] = d.inserted?.user_id || d.inserted?.id
+      })
+    }
 
     setSuccess(success_map)
+
     if (Object.keys(success_map).length === 0)
       toast.error('An error occured while uploading file')
 
     const errors_map = {}
-    res.errors.forEach((err) => {
-      errors_map[err.index || 0] = err.error
-    })
+    if(res?.errors?.length){
+      res.errors.forEach((err) => {
+        errors_map[err.index || 0] = err.error
+      })
+    }
 
     setErrors(errors_map)
     if (
@@ -150,7 +157,7 @@ const DataInsertion = () => {
       toast.warning('Some records failed to upload')
 
     completed_users = {}
-
+    setIsLoading(false)
     if (
       res.data?.length &&
       (values.dataType === 'internships' || values.dataType === 'erasmus')
@@ -191,8 +198,7 @@ const DataInsertion = () => {
         <Formik
           enableReinitialize
           onSubmit={(values) => {
-            setIsLoading(true)
-            onSubmitHandler(values).then(() => setIsLoading(false))
+            onSubmitHandler(values)
           }}
           initialValues={{ dataType: 'users', file: null }}
         >

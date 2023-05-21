@@ -2,22 +2,32 @@ import { useState, useContext, useEffect } from 'react'
 import { Location_data } from '../../../../context/locationContext'
 
 import { Field, Formik, Form } from 'formik'
-import {ToggleOff, ToggleOn, XCircleFill} from 'react-bootstrap-icons'
+import { ToggleOff, ToggleOn, XCircleFill } from 'react-bootstrap-icons'
 import Select from 'react-select'
 
 import styles from './AdminUserFormStyles.module.css'
 
-import {_getFetcher, createReqObject, submitChanges} from '../../../../helpers/fetchHelpers'
-import {craftUrl} from '../../../../helpers/urlHelper'
+import {
+  _getFetcher,
+  createReqObject,
+  submitChanges,
+} from '../../../../helpers/fetchHelpers'
+import { craftUrl } from '../../../../helpers/urlHelper'
 import { cloneDeep } from 'lodash'
-import {handleResponse, replaceWithNull, splitFields} from "../../../../helpers/submissionHelpers";
-import {toast} from "react-toastify";
+import {
+  handleResponse,
+  replaceWithNull,
+  splitFields,
+} from '../../../../helpers/submissionHelpers'
+import { toast } from 'react-toastify'
+import { Spinner } from 'react-bootstrap'
 
 const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
   const { locationData } = useContext(Location_data)
   const [sectors, setSectors] = useState([])
   const [highSchools, setHighSchools] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     _getFetcher({ sectors: craftUrl(['sectors']) }).then(({ sectors }) =>
@@ -44,7 +54,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
     career_objective: [],
     high_school: [],
     wanted_sectors: [],
-    basic_info: []
+    basic_info: [],
   }
 
   const transformLocation = (location) => {
@@ -60,7 +70,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
   const transformBasicInfo = (data) => {
     let newData = cloneDeep(data)
     newData[0].is_retired = newData[0].is_retired == 1
-    return newData;
+    return newData
   }
 
   const transformHighSchool = (data) => {
@@ -75,7 +85,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
 
   const transformCareer = (career) => {
     const newData = cloneDeep(career)
-    if(career.length > 0){
+    if (career.length > 0) {
       newData[0].visibility = newData[0].visibility == 1
     }
     return newData
@@ -87,11 +97,10 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       return {
         value: `${sector.sector_id}-${sector.sector_name}`,
         label: sector.sector_name,
-        id: sector.id
+        id: sector.id,
       }
     })
-    if(newData.sectors.length > 0)
-      newData.visibility = data[0].visibility
+    if (newData.sectors.length > 0) newData.visibility = data[0].visibility
     return newData
   }
 
@@ -102,9 +111,9 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
           newData.career_objective = []
         } else
           newData.career_objective[0].visibility = newData.career_objective[0]
-              .visibility
-              ? 1
-              : 0
+            .visibility
+            ? 1
+            : 0
       }
     },
     high_school: (newData) => {
@@ -112,8 +121,8 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
         if (newData.high_school[0].high_school == '') newData.high_school = []
         else {
           newData.high_school[0].visibility = newData.high_school[0].visibility
-              ? 1
-              : 0
+            ? 1
+            : 0
           splitFields(newData.high_school[0], ['high_school'])
         }
       }
@@ -123,8 +132,8 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
         if (newData.location[0].country == '') newData.location = []
         else {
           newData.location[0].visibility = newData.location[0].visibility
-              ? 1
-              : 0
+            ? 1
+            : 0
           replaceWithNull(newData.location[0])
           splitFields(newData.location[0], ['country', 'city'])
         }
@@ -133,15 +142,17 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
     wanted_sectors: (newData) => {
       if (newData.wanted_sectors.length > 0) {
         newData.wanted_sectors = newData.wanted_sectors.map((val) => {
-          splitFields(val, ["sector"]);
+          splitFields(val, ['sector'])
           val.visibility = val.visibility ? 1 : 0
-          return val;
+          return val
         })
       }
     },
     basic_info: (newData) => {
-      newData.basic_info[0].is_retired = newData.basic_info[0].is_retired ? 1 : 0;
-    }
+      newData.basic_info[0].is_retired = newData.basic_info[0].is_retired
+        ? 1
+        : 0
+    },
   }
 
   const args = {
@@ -149,11 +160,12 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
     career_objective: [[], [], ['id', 'user_id'], []],
     high_school: [['high_school'], [], ['user_id', 'id'], []],
     wanted_sectors: [['sector'], [], ['user_id', 'id'], []],
-    basic_info: [[], [], ['user_id', 'id'], []]
+    basic_info: [[], [], ['user_id', 'id'], []],
   }
 
   const onSubmit = async (values) => {
     setIsUpdated(true)
+    setIsLoading(true)
     var wanted_sectors = values.wanted_sectors.sectors.map((sector) => {
       const [id, name] = sector.value.split('-')
       let newSector = {
@@ -162,8 +174,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
         sector_name: name,
         visibility: values.wanted_sectors.visibility,
       }
-      if(sector.id)
-        newSector.id = sector.id
+      if (sector.id) newSector.id = sector.id
       return newSector
     })
     values.wanted_sectors = wanted_sectors
@@ -174,8 +185,8 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
 
     transformFuncs.location(newData)
     if (
-        dataAfterSubmit.location.length > newData.location.length &&
-        dataAfterSubmit.location[0].id != ''
+      dataAfterSubmit.location.length > newData.location.length &&
+      dataAfterSubmit.location[0].id != ''
     ) {
       deletedData.location.push({
         name: dataAfterSubmit.location[0].id,
@@ -187,8 +198,8 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
 
     transformFuncs.high_school(newData)
     if (
-        dataAfterSubmit.high_school.length > newData.high_school.length &&
-        dataAfterSubmit.high_school[0].id
+      dataAfterSubmit.high_school.length > newData.high_school.length &&
+      dataAfterSubmit.high_school[0].id
     ) {
       deletedData.high_school.push({
         name: dataAfterSubmit.high_school[0].id,
@@ -200,9 +211,9 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
 
     transformFuncs.career_objective(newData)
     if (
-        dataAfterSubmit.career_objective.length >
+      dataAfterSubmit.career_objective.length >
         newData.career_objective.length &&
-        dataAfterSubmit.career_objective[0].id
+      dataAfterSubmit.career_objective[0].id
     ) {
       deletedData.career_objective.push({
         name: dataAfterSubmit.career_objective[0].id,
@@ -212,12 +223,12 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       values.career_objective = []
     }
 
-    transformFuncs.wanted_sectors(newData);
-    dataAfterSubmit.wanted_sectors.forEach((submittedSector)=>{
-      const is_found =  newData.wanted_sectors.find(datum => {
+    transformFuncs.wanted_sectors(newData)
+    dataAfterSubmit.wanted_sectors.forEach((submittedSector) => {
+      const is_found = newData.wanted_sectors.find((datum) => {
         return datum.id === submittedSector.id
       })
-      if(is_found === undefined)
+      if (is_found === undefined)
         deletedData.wanted_sectors.push({
           name: submittedSector.sector_id,
           id: submittedSector.id,
@@ -225,45 +236,50 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
         })
     })
 
-
     let requestObj = {
       location: {},
       career_objective: {},
       high_school: {},
       wanted_sectors: {},
-      basic_info: {}
+      basic_info: {},
     }
     let responseObj = {
       location: {},
       career_objective: {},
       high_school: {},
       wanted_sectors: {},
-      basic_info: {}
+      basic_info: {},
     }
 
-    const final_data = { location: [], career_objective: [], high_school: [] , wanted_sectors: [], basic_info: []}
+    const final_data = {
+      location: [],
+      career_objective: [],
+      high_school: [],
+      wanted_sectors: [],
+      basic_info: [],
+    }
     await Promise.all(
-        Object.keys(dataAfterSubmit).map(async (key) => {
-          const send_to_req = {}
-          send_to_req[key] = cloneDeep(dataAfterSubmit[key])
-          transformFuncs[key](send_to_req)
-          requestObj[key] = createReqObject(
-              send_to_req[key],
-              newData[key],
-              deletedData[key]
-          )
-          const url = craftUrl(["users",user_id, key])
-          responseObj[key] = await submitChanges(url, requestObj[key])
-          final_data[key] = handleResponse(
-              send_to_req[key],
-              requestObj[key],
-              responseObj[key],
-              values,
-              key,
-              args[key],
-              transformFuncs[key]
-          )
-        })
+      Object.keys(dataAfterSubmit).map(async (key) => {
+        const send_to_req = {}
+        send_to_req[key] = cloneDeep(dataAfterSubmit[key])
+        transformFuncs[key](send_to_req)
+        requestObj[key] = createReqObject(
+          send_to_req[key],
+          newData[key],
+          deletedData[key]
+        )
+        const url = craftUrl(['users', user_id, key])
+        responseObj[key] = await submitChanges(url, requestObj[key])
+        final_data[key] = handleResponse(
+          send_to_req[key],
+          requestObj[key],
+          responseObj[key],
+          values,
+          key,
+          args[key],
+          transformFuncs[key]
+        )
+      })
     )
 
     applyNewData(final_data)
@@ -275,7 +291,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
       career_objective: [],
       high_school: [],
       wanted_sectors: [],
-      basic_info: []
+      basic_info: [],
     }
 
     let errors = []
@@ -285,15 +301,14 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
           errors = [...errors, ...value.errors.map((error) => error)]
         }
       }
-    });
+    })
 
     if (errors.length > 0) {
       errors.forEach((errorInfo) => {
         toast.error(errorInfo.error)
       })
     } else toast.success('Data successfully saved')
-
-
+    setIsLoading(false)
   }
 
   const {
@@ -318,7 +333,24 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
     >
       {(props) => {
         return (
-          <Form>
+          <Form style={{ position: 'relative' }}>
+            {isLoading && (
+              <div
+                style={{
+                  zIndex: 2,
+                  position: 'absolute',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '100%',
+                  width: '100%',
+                  background: '#ccc',
+                  opacity: '0.5',
+                }}
+              >
+                <Spinner />
+              </div>
+            )}
             <table className={styles.formTable}>
               <tbody>
                 <tr>
@@ -340,15 +372,13 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                 <tr>
                   <td>
                     <div className={`${styles.inputContainer}`}>
-                      <label className={`${styles.inputLabel}`}>
-                        Nee
-                      </label>
+                      <label className={`${styles.inputLabel}`}>Nee</label>
                       <Field
-                          className={`${styles.inputField}`}
-                          style={{ width: '100%' }}
-                          id='basic_info[0].nee'
-                          name='basic_info[0].nee'
-                          placeholder='Nee'
+                        className={`${styles.inputField}`}
+                        style={{ width: '100%' }}
+                        id='basic_info[0].nee'
+                        name='basic_info[0].nee'
+                        placeholder='Nee'
                       />
                     </div>
                   </td>
@@ -383,44 +413,38 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                         placeholder='Enter your career objectives...'
                       />
                     </div>
-                      <div
-                          className={styles.inputContainer}
-                          style={{ width: '49%' }}
+                    <div
+                      className={styles.inputContainer}
+                      style={{ width: '49%' }}
+                    >
+                      <Field
+                        name={`basic_info[0].is_retired`}
+                        id={`basic_info[0].is_retired`}
                       >
-                        <Field
-                            name={`basic_info[0].is_retired`}
-                            id={`basic_info[0].is_retired`}
-                        >
-                          {({ field, form, meta }) => {
-                            return (
-                                <label
-                                    className={
-                                      styles.isCurrentCheckbox
-                                    }
-                                >
-                                  {field.value ? (
-                                      <ToggleOn
-                                          size={25}
-                                          className={
-                                            styles.isCurrentTrue
-                                          }
-                                      />
-                                  ) : (
-                                      <ToggleOff size={25} />
-                                  )}
-                                  &nbsp; Are you retired?
-                                  <input
-                                      type='checkbox'
-                                      {...field}
-                                      style={{
-                                        display: 'none',
-                                      }}
-                                  />
-                                </label>
-                            )
-                          }}
-                        </Field>
-                      </div>
+                        {({ field, form, meta }) => {
+                          return (
+                            <label className={styles.isCurrentCheckbox}>
+                              {field.value ? (
+                                <ToggleOn
+                                  size={25}
+                                  className={styles.isCurrentTrue}
+                                />
+                              ) : (
+                                <ToggleOff size={25} />
+                              )}
+                              &nbsp; Are you retired?
+                              <input
+                                type='checkbox'
+                                {...field}
+                                style={{
+                                  display: 'none',
+                                }}
+                              />
+                            </label>
+                          )
+                        }}
+                      </Field>
+                    </div>
                   </td>
                 </tr>
                 <td colSpan={3}>
@@ -456,7 +480,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                               return {
                                 value: datum.value,
                                 label: datum.label,
-                                id: datum.id
+                                id: datum.id,
                               }
                             })
                           )

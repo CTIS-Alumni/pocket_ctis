@@ -73,7 +73,7 @@ const WorkRec = () => {
               onQuery={onQuery}
               total={total}
               isLoading={isLoading}
-              searchCols='user,company_name,department,position,city_name,country_name,work_type_name,bilkent_id'
+              searchCols='user,company_name,department,position,city_name,country_name,work_type_name,bilkent_id,type'
             />
           </div>
         )}

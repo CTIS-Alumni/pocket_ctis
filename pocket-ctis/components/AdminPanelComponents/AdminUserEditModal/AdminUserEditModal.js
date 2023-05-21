@@ -19,7 +19,9 @@ import SocietiesInformationForm from './Forms/SocietiesInformationForm'
 import ExamsInformationForm from './Forms/ExamsInformationForm'
 import ErasmusInformationForm from './Forms/ErasmusInformationForm'
 import InternshipInformationForm from './Forms/InternshipInformationForm'
-import { ToastContainer } from 'react-toastify'
+import {toast, ToastContainer} from 'react-toastify'
+import {_submitFetcher} from "../../../helpers/fetchHelpers";
+import {craftUrl} from "../../../helpers/urlHelper";
 
 const AdminUserEditModal = ({ user, refreshProfile }) => {
   const [isUpdated, setIsUpdated] = useState(false)
@@ -75,9 +77,12 @@ const AdminUserEditModal = ({ user, refreshProfile }) => {
   }
   const handleShow = () => setShow(true)
 
-  const hideAllUserData = () => {
-    console.log('hide all data')
+  const hideAllUserData = async () => {
     document.body.click()
+    const res = await _submitFetcher('PUT', craftUrl(['users', user_id, 'profile']), {visibility: 0});
+    if(res.data && !res.errors.length)
+      toast.success("All information hidden successfully!")
+    else toast.error("An error occured while hiding all data");
   }
 
   const hideAllDataPopover = (
@@ -191,7 +196,7 @@ const AdminUserEditModal = ({ user, refreshProfile }) => {
               </Accordion.Body>
             </Accordion.Item>
             <Accordion.Item eventKey='7'>
-              <Accordion.Header>Certificates</Accordion.Header>
+              <Accordion.Header>Certificates & Awards</Accordion.Header>
               <Accordion.Body>
                 <CertificatesInformationForm
                   data={certificates}

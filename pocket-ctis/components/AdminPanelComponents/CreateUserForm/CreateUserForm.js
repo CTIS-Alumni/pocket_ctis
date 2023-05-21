@@ -1,10 +1,10 @@
 import { ChevronLeft } from 'react-bootstrap-icons'
 import styles from './CreateUserForm.module.css'
-import { Card } from 'react-bootstrap'
+import { Card, Spinner } from 'react-bootstrap'
 import { useFormik } from 'formik'
 import { useEffect, useState } from 'react'
 import { _getFetcher, _submitFetcher } from '../../../helpers/fetchHelpers'
-import { ToastContainer, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import { craftUrl } from '../../../helpers/urlHelper'
 import LoadingSpinner from '../../../components/LoadingSpinner/LoadingSpinner'
 import Select from 'react-select'
@@ -23,7 +23,7 @@ const customStyles = {
   }),
 }
 
-const CreateUserForm = ({ goBack }) => {
+const CreateUserForm = ({ activeItem, goBack }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [accountTypes, setAccountTypes] = useState([])
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
@@ -50,37 +50,39 @@ const CreateUserForm = ({ goBack }) => {
   }, [])
 
   const onSubmitHandler = async (values) => {
+    setIsLoading(true)
     const data = clone(values)
-    data.user[0].types = data.user[0].types.map(
-      (role) => role.value.split('-')[0]
+    data.user[0].types = data.user[0].types.map((role) =>
+      Number(role.value.split('-')[0])
     )
-    data.user[0].gender = data.user[0].gender.value == 'Male' ? 1 : 0
+    data.user[0].gender = data.user[0].gender.value == 'Female' ? 1 : 0
     replaceWithNull(data)
-
-    const res = await _submitFetcher('POST', craftUrl(['users']), {
-      users: data.user,
-    })
-    console.log(res)
-    if (res.data['0']?.data?.mail_status && !res.errors?.length) {
-      toast.success('User saved successfully!')
-      formik.resetForm({
-        values: {
-          user: [
-            {
-              types: null,
-              gender: null,
-              first_name: null,
-              last_name: null,
-              bilkent_id: null,
-              contact_email: null,
-            },
-          ],
-        },
+    if (activeItem) {
+      data.user[0].id = activeItem.id
+      const res = await _submitFetcher('PUT', craftUrl(['users']), {
+        user: data.user[0],
       })
-      setRefreshKey(Math.random().toString(36))
+      if (res?.errors?.length && !res.data) {
+        toast.error(res.errors[0].error)
+      } else {
+        toast.success('User saved successfully')
+        if (res.data === true)
+          toast.success(
+            'Admin account activation mail successfully sent to user!'
+          )
+      }
     } else {
-      toast.error(res.errors[0].error)
+      const res = await _submitFetcher('POST', craftUrl(['users']), {
+        users: data.user,
+      })
+      if (res.data['0']?.data?.mail_status && !res.errors?.length) {
+        toast.success('User created successfully!')
+        toast.success('Activation mail successfully sent to user!')
+      } else {
+        toast.error(res.errors[0].error)
+      }
     }
+    setIsLoading(false)
   }
 
   const formik = useFormik({
@@ -92,6 +94,7 @@ const CreateUserForm = ({ goBack }) => {
           gender: null,
           first_name: null,
           last_name: null,
+          nee: null,
           bilkent_id: null,
           contact_email: null,
         },
@@ -123,12 +126,40 @@ const CreateUserForm = ({ goBack }) => {
     },
   })
 
+  useEffect(() => {
+    if (activeItem) {
+      const acTypes = activeItem.user_types.split(',').map((t) => {
+        return accountTypes.find((a) => a.label == t)
+      })
+      formik.setValues({
+        user: [
+          {
+            types: acTypes,
+            gender:
+              activeItem.gender == 1
+                ? { value: 'Female', label: 'Female' }
+                : { value: 'Male', label: 'Male' },
+            first_name: activeItem.first_name,
+            last_name: activeItem.last_name,
+            nee: activeItem.nee,
+            bilkent_id: activeItem.bilkent_id,
+            contact_email: activeItem.contact_email,
+          },
+        ],
+      })
+    } else {
+      formik.resetForm()
+      setRefreshKey(Math.random().toString(36))
+    }
+  }, [activeItem])
+
   const goBackHandler = () => {
     formik.resetForm({
       values: {
         types: null,
         gender: null,
         first_name: null,
+        nee: null,
         last_name: null,
         bilkent_id: null,
         contact_email: null,
@@ -140,18 +171,41 @@ const CreateUserForm = ({ goBack }) => {
 
   return (
     <>
-      <LoadingSpinner isLoading={isLoading} />
       <div className={styles.headerContainer} onClick={goBackHandler}>
         <span className={styles.backButton}>
           <ChevronLeft />
         </span>
-        <h4 className='m-0'>Create User</h4>
+        <h4 className='m-0'>{activeItem ? 'Edit User': 'Create User'}</h4>
       </div>
-      <Card className={styles.defaultCard} border='light' key={refreshKey}>
+      <Card
+        className={styles.defaultCard}
+        style={{ position: 'relative' }}
+        border='light'
+        key={refreshKey}
+      >
+        {isLoading && (
+          <div
+            style={{
+              position: 'absolute',
+              background: '#ccc',
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              opacity: 0.25,
+              top: '0',
+              left: '0',
+              zIndex: 3,
+            }}
+          >
+            <Spinner />
+          </div>
+        )}
         <form onSubmit={formik.handleSubmit}>
           <div className={styles.formContainer}>
             <div style={{ display: 'flex', gap: 10 }}>
-              <div style={{ width: '50%' }}>
+              <div style={{ width: '35%' }}>
                 <div className={styles.inputContainer}>
                   <label
                     htmlFor='user[0].first_name'
@@ -176,7 +230,23 @@ const CreateUserForm = ({ goBack }) => {
                 </div>
               </div>
               {/* ------ */}
-              <div style={{ width: '50%' }}>
+              <div style={{ width: '30%' }}>
+                <div className={styles.inputContainer}>
+                  <label htmlFor='nee' className={styles.inputLabel}>
+                    Nee
+                  </label>
+                  <input
+                    value={formik.values.user?.[0].nee}
+                    onChange={formik.handleChange}
+                    type='text'
+                    name='user[0].nee'
+                    id='nee'
+                    className={styles.inputField}
+                  />
+                </div>
+              </div>
+              {/* ------ */}
+              <div style={{ width: '35%' }}>
                 <div className={styles.inputContainer}>
                   <label htmlFor='last_name' className={styles.inputLabel}>
                     Last Name
@@ -296,24 +366,12 @@ const CreateUserForm = ({ goBack }) => {
 
             <div style={{ textAlign: 'center' }}>
               <button type='submit' className={styles.submitButton}>
-                Create User
+                {activeItem ? 'Save User' : 'Create User'}
               </button>
             </div>
           </div>
         </form>
       </Card>
-      <ToastContainer
-        position='top-right'
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme='light'
-      />
     </>
   )
 }

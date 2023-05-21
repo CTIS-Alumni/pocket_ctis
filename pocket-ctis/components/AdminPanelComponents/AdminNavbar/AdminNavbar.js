@@ -6,6 +6,7 @@ import {useRouter} from "next/router";
 import {useContext} from "react";
 import {User_data} from "../../../context/userContext";
 import {toast} from "react-toastify";
+import {getAppLogoPath} from "../../../helpers/formatHelpers";
 
 const AdminNavbar = () => {
   const router = useRouter();
@@ -42,7 +43,10 @@ const AdminNavbar = () => {
     <>
       <Navbar className={styles.navbar} fixed='top'>
         <Navbar.Brand href='/admin' className={styles.navbar_logo}>
-          {departmentConfig.app_name}
+          {getAppLogoPath() ?
+              <img src={getAppLogoPath()} style={{paddingBottom: 10}}/>
+                : departmentConfig.app_name
+              }
         </Navbar.Brand>
         <Nav className='d-flex justify-content-end'>
           <NavDropdown

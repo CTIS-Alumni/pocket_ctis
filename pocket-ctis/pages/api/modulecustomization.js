@@ -1,6 +1,6 @@
-import {doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
+import fs from 'fs/promises';
 
 const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
@@ -9,11 +9,12 @@ const handler =  async (req, res) => {
         if(payload.user === "admin"){
             const method = req.method;
             switch (method) {
-                case "GET":
+                case "POST":
                     try {
-                        const query = "SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM information_schema.columns WHERE table_schema = DATABASE() ORDER BY table_name, ordinal_position";
-                        const {data, errors} = await doqueryNew({query: query, values: []});
-                        res.status(200).json({data, errors});
+                        const {modules} = JSON.parse(req.body);
+                        const fileContents = `module.exports = ${JSON.stringify(modules, null, 2)};\n`;
+                        await fs.writeFile(process.env.MODULE_CONFIG_PATH, fileContents, 'utf8');
+                        res.status(200).json({data: modules});
 
                     } catch (error) {
                         res.status(500).json({errors: [{error: error.message}]});
