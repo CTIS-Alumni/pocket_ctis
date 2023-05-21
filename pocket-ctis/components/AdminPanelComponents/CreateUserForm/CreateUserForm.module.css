@@ -33,20 +33,38 @@
 }
 
 .formContainer{
-    width: 60%;
+    width: 70%;
     margin: 0 auto;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
 }
 
+.inputContainer{
+    position: relative;
+    margin-top: 10px;
+}
 .inputLabel{
-    padding-left: 10px;   
+    position: absolute;
+    left: 10px;
+    background-color: white;
+    padding: 0px 5px;
+    text-transform: capitalize;
+    color: #888;
+    vertical-align: top;
+    font-size: 13px;
+    height: 1px;
+    line-height: 0px;
+    width: fit-content;
+    letter-spacing: 1px;
+    z-index: 1;
+    border-radius: 5px 5px 0 0;
 }
 .inputField{
+    padding: 10px 5px 5px 5px;
     width: 100%;
-    padding: 5px 5px;
-    background-color:#fff1c9;
-    border-radius: 3px;
-    border: none;
+    border: 1px solid #f5a425;
+    border-radius: 4px;
+    resize: none;
+    color: #666;
 }
 
 .submitButton{

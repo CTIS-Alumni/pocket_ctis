@@ -2,8 +2,6 @@ import {
     buildInsertQueries,
     buildSearchQuery, buildUpdateQueries, doMultiDeleteQueries,
     doMultiQueries,
-    doquery,
-    doqueryNew,
     insertToTable, updateTable
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
@@ -46,8 +44,6 @@ const handler =  async (req, res) => {
                     const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
                         {name: "length", query: length_query, values: length_values}]);
 
-                    console.log("data for worktype", data);
-
                     res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
 
                 } catch (error) {
@@ -69,7 +65,7 @@ const handler =  async (req, res) => {
                 break;
             case "POST":
                 payload = await checkUserType(session, req.query);
-                if(payload?.user === "admin") { //TODO CHECK WITH USER ADDABLES
+                if(payload?.user === "admin") {
                     try {
                         const {worktypes} = JSON.parse(req.body);
                         const queries = buildInsertQueries(worktypes, table_name, fields);

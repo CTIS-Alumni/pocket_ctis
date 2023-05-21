@@ -1,4 +1,4 @@
-import {doquery, doqueryNew} from "../../helpers/dbHelpers";
+import {doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 

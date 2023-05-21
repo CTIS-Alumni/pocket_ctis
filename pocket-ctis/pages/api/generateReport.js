@@ -3,37 +3,66 @@ import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 
 const blacklist_words = [
-    "update",
+    " update ",
     " set ",
-    "insert",
-    "delete",
-    "hashed",
-    "username",
-    "usercredential",
-    "alter",
-    "table",
-    "drop",
-    "truncate",
-    "exec",
-    "system",
-    "shell",
-    "cmd",
-    "bash",
-    "file",
-    "read",
-    "write",
-    "append",
-    "copy",
-    "grant",
-    "execute"
+    " information_schema ",
+    " escape ",
+    " session ",
+    " tables ",
+    " column ",
+    " constraint ",
+    " indexes ",
+    " variables ",
+    " flush ",
+    " transaction ",
+    " release ",
+    " savepoint ",
+    " rollback ",
+    " show ",
+    " describe ",
+    " explain ",
+    " outfile ",
+    " infile ",
+    " replace ",
+    " grant ",
+    " revoke ",
+    " columns " ,
+    " commit ",
+    " lock ",
+    " unlock ",
+    " create ",
+    " table_schema ",
+    " database() ",
+    " insert ",
+    " delete ",
+    " hashed ",
+    " username ",
+    " usercredential ",
+    " alter ",
+    " table ",
+    " drop ",
+    " processlist ",
+    " truncate ",
+    " into ",
+    " warnings ",
+    " call ",
+    " errors ",
+    " exec ",
+    " system ",
+    " shell ",
+    " cmd ",
+    " bash ",
+    " file ",
+    " read ",
+    " write ",
+    " append ",
+    " copy ",
+    " execute "
 ]
 
 const handler =  async (req, res) => {
-    console.log("here 1")
     const session = await checkAuth(req.headers, res);
-    console.log("here 2", session)
     const payload = await checkUserType(session, req.query);
-    console.log("here 3", payload)
     if (session && payload.user === "admin") {
         const method = req.method;
         switch (method) {
@@ -41,7 +70,7 @@ const handler =  async (req, res) => {
                 try {
                     const {query} = JSON.parse(req.body);
 
-                    const lowercase_query = query.toLowerCase();
+                    const lowercase_query = " " + query.toLowerCase() + " ";
 
                     let blacklisted_word = false;
                     for (const word of blacklist_words) {

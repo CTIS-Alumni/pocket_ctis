@@ -1,7 +1,16 @@
 import {
-    addAndOrWhere, buildSearchQuery,
-    buildUpdateQueries, createUser, createUsersWithCSV, doMultiDeleteQueries, doMultiQueries, doqueryNew,
+    activateMultiUsers,
+    addAndOrWhere,
+    buildSearchQuery,
+    buildUpdateQueries,
+    createUser,
+    createUsersWithCSV,
+    deactivateMultiUsers,
+    doMultiDeleteQueries,
+    doMultiQueries,
+    doqueryNew,
     updateTable,
+    updateUsers,
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
@@ -10,15 +19,21 @@ import {checkApiKey} from "./middleware/checkAPIkey";
 const table_name = "users";
 
 const columns = {
-    user: " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
-        "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  ",
-    type: " user_types LIKE CONCAT('%', ?, '%') ",
-
+    user: "CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
+    first_name: "u.first_name",
+    last_name: "u.last_name",
+    user_types: "user_types",
+    id: "u.id",
+    is_active: "u.is_active",
+    contact_email: "u.contact_email",
+    bilkent_id: "u.bilkent_id",
+    type: "act.type_name"
 }
 
 const validation = (data) => {
     const email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    console.log("heres data", data);
     replaceWithNull(data);
     if (!data.bilkent_id)
         return "Bilkent ID can't be empty!";
@@ -92,7 +107,7 @@ const CSVvalidation = (data) => {
 }
 
 const fields = {
-    basic: ["first_name, last_name, is_retired, is_active, gender, contact_email, bilkent_id"],
+    basic: ["first_name", "nee", "last_name", "is_retired", "is_active", "gender", "contact_email", "bilkent_id"],
     date: []
 }
 
@@ -124,15 +139,13 @@ const handler =  async (req, res) => {
                 else{
                 try {
                     let values = [], length_values = [], length_query = "";
-                    let query = "SELECT GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.id, " +
-                        "upp.profile_picture, u.first_name, u.last_name ";
-
-                    const add = " FROM users u JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
+                    let query = "SELECT GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.id, u.is_active, u.bilkent_id, u.contact_email, u.gender, " +
+                        "upp.profile_picture, u.first_name, u.last_name, u.nee FROM users u JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
                         "JOIN useraccounttype uat ON (uat.user_id = u.id) " +
                         "JOIN accounttype act ON (act.id = uat.type_id) ";
 
-                    query += add;
-                    length_query = "SELECT COUNT(*) as count " + add;
+                    length_query = "SELECT COUNT(DISTINCT u.id) as count FROM users u JOIN useraccounttype uat ON " +
+                        " (uat.user_id = u.id) JOIN accounttype act ON (act.id = uat.type_id) ";
 
                     if (req.query.highschool_id) {
                         query += "LEFT OUTER JOIN userhighschool uhs ON (uhs.user_id = u.id) WHERE ";
@@ -227,26 +240,54 @@ const handler =  async (req, res) => {
                 break;
             case "PUT":
                 if (payload?.user === "admin") {
-                    try{
-                        const users = JSON.parse(req.body);
-                        const queries = buildUpdateQueries(users, table_name, fields);
-                        const {data, errors} = await updateTable(queries, validation);
-                        res.status(200).json({data, errors});
-                    }catch(error){
-                        res.status(500).json({errors: [{error: error.message}]});
+                    if(req.query.deactivated){
+                        try{
+                            const {users} = JSON.parse(req.body);
+                            const {data, errors} = await deactivateMultiUsers(users);
+                            res.status(200).json({data, errors});
+                        }catch(error){
+                            console.log(error);
+                            res.status(500).json({errors: [{error: error.message}]});
+                        }
+                    }else if (req.query.activated) {
+                        try{
+                            const {users} = JSON.parse(req.body);
+                            const {data, errors} = await activateMultiUsers(users);
+                            res.status(200).json({data, errors});
+                        }catch(error){
+                            res.status(500).json({errors: [{error: error.message}]});
+                        }
+                    } else{
+                        try{
+                            const {user} = JSON.parse(req.body);
+                            console.log(user);
+                            const types = user.types;
+
+                            const query = "UPDATE users SET first_name = :first_name, last_name = :last_name, " +
+                                "contact_email = :contact_email, nee = :nee, gender = :gender, bilkent_id = :bilkent_id " +
+                                "WHERE id = :id ";
+
+                            const {data, errors} = await updateUsers(query, user, types, validation);
+
+                            res.status(200).json({data, errors});
+
+                        }catch(error){
+                            res.status(500).json({errors: [{error: error.message}]});
+                        }
                     }
                 } else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "DELETE":
                 if(payload?.user === "admin"){
                     try{
-                        const users = JSON.parse(req.body);
-                        const {data, errors} = await doMultiDeleteQueries(users, table_name); //TODO: learn what to do after users are deleted
+                        const {users} = JSON.parse(req.body);
+                        const {data, errors} = await doMultiDeleteQueries(users, table_name);
                         res.status(200).json({data, errors});
                     }catch(error){
                         res.status(500).json({errors: [{error: error.message}]});
                     }
                 }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
+                break;
         }
     } else {
         res.redirect("/401", 401);

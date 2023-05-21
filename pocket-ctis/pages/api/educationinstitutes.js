@@ -40,7 +40,7 @@ const validation = (data) => {
 
 const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
-    let payload;
+    const payload = await checkUserType(session, req.query);
     if (session) {
         const method = req.method;
         switch (method) {
@@ -48,8 +48,8 @@ const handler =  async (req, res) => {
                 try {
                     let values = [], length_values = [];
                     let query = "SElECT ei.id, ei.edu_inst_name, ei.city_id, ci.city_name, co.id AS 'country_id', co.country_name, ei.is_erasmus "
-                    if(req.query.erasmus) {
-                        query += "AVG(er.rating) AS rating ";
+                    if(req.query.erasmus && (payload.user === "admin" || (payload.user !== "admin" && modules.erasmus.user_visible))) {
+                        query += ", AVG(er.rating) AS rating ";
                     }
                        query +=  "FROM educationinstitute ei LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) " +
                         "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
@@ -57,7 +57,7 @@ const handler =  async (req, res) => {
                         " LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 
                     //for erasmus page = showing only the universities which is for erasmus
-                    if (req.query.erasmus) { //for the erasmus page
+                    if (req.query.erasmus && (payload.user === "admin" || (payload.user !== "admin" && modules.erasmus.user_visible))) { //for the erasmus page
                         query += "LEFT OUTER JOIN erasmusrecord er ON (er.edu_inst_id = ei.id) WHERE ei.is_erasmus = ? ";
                         length_query += "LEFT OUTER JOIN erasmusrecord er ON (er.edu_inst_id = ei.id) WHERE ei.is_erasmus = ? ";
                         values.push(req.query.erasmus);
@@ -70,12 +70,10 @@ const handler =  async (req, res) => {
                         length_values.push(req.query.name);
                     }
 
-                    if(req.query.erasmus){
+                    if(req.query.erasmus && (payload.user === "admin" || (payload.user !== "admin" && modules.erasmus.user_visible))){
                         query += " GROUP BY ei.id";
                         length_query += " GROUP BY ei.id";
                     }
-
-                    console.log(query);
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
 
@@ -88,7 +86,6 @@ const handler =  async (req, res) => {
                 }
                 break;
             case "PUT":
-                payload = await checkUserType(session, req.query);
                 if(payload?.user === "admin") {
                     try{
                         const {educationinstitutes} = JSON.parse(req.body);
@@ -102,7 +99,6 @@ const handler =  async (req, res) => {
                 } else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "POST":
-                payload = await checkUserType(session)
                 if(payload.user === "admin" || modules.edu_insts.user_addable) {
                     try {
                         const {educationinstitutes} = JSON.parse(req.body);
@@ -115,7 +111,6 @@ const handler =  async (req, res) => {
                 }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
             case "DELETE":
-                payload = await checkUserType(session)
                 if(payload.user === "admin"){
                     try {
                         const {educationinstitutes} = JSON.parse(req.body);

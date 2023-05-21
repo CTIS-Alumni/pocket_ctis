@@ -172,10 +172,10 @@ const handler =  async (req, res) => {
                     try {
                         const {visibility} = JSON.parse(req.body);
                         let temp;
-                        temp = "UPDATE usergraduationproject SET visibility = :visibility WHERE user_id = :user_id ";
+                        temp = "UPDATE usergraduationproject SET visibility = ? WHERE user_id = ? ";
                         put_queries.push({name: "graduation_project", query: temp, values: [visibility, user_id]});
 
-                        temp = "UPDATE usercareerobjective SET visibility = :visibility WHERE user_id = :user_id ";
+                        temp = "UPDATE usercareerobjective SET visibility = ? WHERE user_id = ? ";
                         put_queries.push({name: "career_objective", query: temp, values: [visibility, user_id]});
 
                         temp = "UPDATE usercertificate SET visibility = ? WHERE user_id = ? ";

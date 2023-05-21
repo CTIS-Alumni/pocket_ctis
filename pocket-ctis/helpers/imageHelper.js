@@ -7,23 +7,27 @@ export const parseFormForDB = (req, file_names, file_map) => {
         const form = new formidable.IncomingForm();
         form.keepExtensions = true;
 
-        form.parse(req, (err, fields, files) => {
-            if (err) {
-                reject(err);
-            } else {
-                const obj = {};
-                for (const [field, value] of Object.entries(fields)) {
-                    obj[field] = value;
-                }
+        try{
+            form.parse(req, (err, fields, files) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const obj = {};
+                    for (const [field, value] of Object.entries(fields)) {
+                        obj[field] = value;
+                    }
 
-                const file_objects = [];
-                for (const [field, value] of Object.entries(files)){
-                    file_objects[field] = {[field]: value, name: file_map[field]['name'], location: file_map[field]['location']};
-                }
+                    const file_objects = [];
+                    for (const [field, value] of Object.entries(files)){
+                        file_objects[field] = {[field]: value, name: file_map[field]['name'], location: file_map[field]['location']};
+                    }
 
-                resolve({ obj, file_objects });
-            }
-        });
+                    resolve({ obj, file_objects });
+                }
+            });
+        }catch(err){
+            reject(err)
+        }
     });
 }
 
@@ -38,4 +42,20 @@ export const resizeAndCropImage = async (file, targetWidth, targetHeight) => { /
     const resizedImageBuffer = await img.getBufferAsync(mimeType);
     return resizedImageBuffer;
 
+}
+
+export const resizeAndFitImage = async (file ,targetWidth, targetHeight) => {
+    const fileBuffer = await fs.readFile(file.filepath);
+    const img = await read(fileBuffer);
+
+    const aspectRatio = img.getWidth() / img.getHeight();
+
+    if (aspectRatio > targetWidth / targetHeight) {
+        img.contain(targetWidth, targetHeight);
+    } else {
+        img.cover(targetWidth, targetHeight);
+    }
+    const mimeType = img.getMIME();
+    const resizedImageBuffer = await img.getBufferAsync(mimeType);
+    return resizedImageBuffer;
 }

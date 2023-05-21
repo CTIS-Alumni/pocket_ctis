@@ -2,7 +2,6 @@ import {
     buildInsertQueries, buildSearchQuery,
     buildUpdateQueries,
     doMultiDeleteQueries, doMultiQueries,
-    doqueryNew,
     insertToTable,
     updateTable
 } from "../../helpers/dbHelpers";

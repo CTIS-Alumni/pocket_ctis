@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Spinner } from 'react-bootstrap'
+import { Spinner, Popover, OverlayTrigger } from 'react-bootstrap'
 import PaginationFooter from '../PaginationFooter/PaginationFooter'
 import {
   CaretDown,
@@ -20,15 +20,20 @@ const DataTable = ({
   onQuery,
   searchCols = '',
   isLoading = false,
-  editHandler,
-  deleteHandler,
+  editHandler = null,
+  deleteHandler = null,
+  sortable = true,
   setSelectedArray,
   selectedArray,
+  clickable,
+  clickHandler,
 }) => {
   const [limit, setLimit] = useState(15)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchString, setSearchString] = useState('')
   const [sorting, setSorting] = useState({ name: '', direction: '' })
+  const [toDelete, setToDelete] = useState(null)
+  const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   const handleSorting = (columnName) => {
     if (sorting.name == columnName) {
@@ -49,7 +54,7 @@ const DataTable = ({
   }
   const handlePageChange = (newPage) => setCurrentPage(newPage)
   const handleSearch = ({ searchString }) => {
-    setSearchString(searchString.trim())
+    setSearchString(searchString?.trim())
     setCurrentPage(1)
   }
 
@@ -72,6 +77,27 @@ const DataTable = ({
     onSubmit: handleSearch,
   })
 
+  const onDelete = (d) => {
+    setToDelete(d)
+  }
+
+  const deletePopover = (
+    <Popover title='Delete?'>
+      <div className={styles.popoverBody}>
+        Are you sure you want to delete this record? All associated records will be deleted.
+      </div>
+      <button
+        className={styles.popoverDeleteBtn}
+        onClick={() => {
+          deleteHandler(toDelete)
+          document.body.click()
+        }}
+      >
+        Confirm
+      </button>
+    </Popover>
+  )
+
   return (
     <div className={styles.tableContainer}>
       {isLoading && (
@@ -82,14 +108,24 @@ const DataTable = ({
       <form onSubmit={formik.handleSubmit}>
         <div className={styles.searchField}>
           <input
-            onReset={() => console.log('reset')}
-            type='search'
             name='searchString'
             id='searchString'
             value={formik.values.searchString}
             onChange={formik.handleChange}
           />
-          <button type='submit'>
+          {!!!!formik.values.searchString && (
+            <button
+              className={styles.clearBtn}
+              type='button'
+              onClick={() => {
+                formik.setFieldValue('searchString', '')
+                handleSearch({ searchString: ' ' })
+              }}
+            >
+              &#xD7;
+            </button>
+          )}
+          <button type='submit' className={styles.searchBtn}>
             <Search />
           </button>
         </div>
@@ -98,59 +134,80 @@ const DataTable = ({
         <table className={styles.table}>
           <thead>
             <tr>
-              <th style={{ width: 50 }}>
-                <div className={styles.tableHeader}>check</div>
-              </th>
+              {setSelectedArray && (
+                <th style={{ width: 50 }}>
+                  <div className={styles.tableHeader}>check</div>
+                </th>
+              )}
               {columns.map((c) => (
                 <th onClick={() => handleSorting(c)}>
                   <div className={styles.tableHeader}>
                     {c}
-                    <div className={styles.sortContainer}>
-                      {sorting.name == c ? (
-                        sorting.direction == 'asc' ? (
-                          <CaretDownFill size={15} />
+                    {sortable && (
+                      <div className={styles.sortContainer}>
+                        {sorting.name == c ? (
+                          sorting.direction == 'asc' ? (
+                            <CaretDownFill size={15} />
+                          ) : (
+                            <CaretUpFill size={15} />
+                          )
                         ) : (
-                          <CaretUpFill size={15} />
-                        )
-                      ) : (
-                        <>
-                          <CaretUp size={15} /> <CaretDown size={15} />
-                        </>
-                      )}
-                    </div>
+                          <>
+                            <CaretUp size={15} /> <CaretDown size={15} />
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </th>
               ))}
-              <th style={{ width: 100 }}>
-                <div className={styles.tableHeader}>Actions</div>
-              </th>
+              {(editHandler || deleteHandler) && (
+                <th style={{ width: 100 }}>
+                  <div className={styles.tableHeader}>Actions</div>
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
             {data.map((d) => (
-              <tr className={styles.tableRow}>
-                <td
-                  className={styles.tableCell}
-                  style={{ textAlign: 'center' }}
-                >
-                  <input
-                    checked={
-                      selectedArray.find((s) => s.id == d.id) ? true : false
-                    }
-                    type='checkbox'
-                    onChange={(event) => {
-                      if (event.target.checked) {
-                        setSelectedArray((prev) => [...prev, d])
-                      } else {
-                        setSelectedArray((prev) => [
-                          ...prev.filter((p) => p.id != d.id),
-                        ])
+              <tr
+                className={`${styles.tableRow} ${
+                  clickable ? styles.clickable : ''
+                }`}
+              >
+                {setSelectedArray && (
+                  <td
+                    className={styles.tableCell}
+                    style={{ textAlign: 'center', zIndex: 2 }}
+                  >
+                    <input
+                      checked={
+                        selectedArray.find((s) => s.id == d.id) ? true : false
                       }
-                    }}
-                  />
-                </td>
+                      type='checkbox'
+                      onChange={(event) => {
+                        if (event.target.checked) {
+                          setSelectedArray((prev) => [...prev, d])
+                        } else {
+                          setSelectedArray((prev) => [
+                            ...prev.filter((p) => p.id != d.id),
+                          ])
+                        }
+                      }}
+                    />
+                  </td>
+                )}
                 {columns.map((c) => (
-                  <td className={styles.tableCell}>{d[c]}</td>
+                  <td
+                    className={styles.tableCell}
+                    onClick={() => {
+                      if (clickable) clickHandler(d)
+                    }}
+                  >
+                    {d[c] != null && d[c] != undefined && d[c]?.length > 75
+                      ? `${d[c].slice(0, 50)} ...`
+                      : d[c]}
+                  </td>
                 ))}
                 <td
                   style={{
@@ -160,20 +217,27 @@ const DataTable = ({
                   }}
                 >
                   {editHandler && (
-                      <button
-                          className={styles.editBtn}
-                          onClick={()=> editHandler(d)}
-                      >
-                        <Pen/>
-                      </button>
+                    <button
+                      className={styles.editBtn}
+                      onClick={() => editHandler(d)}
+                    >
+                      <Pen />
+                    </button>
                   )}
                   {deleteHandler && (
+                    <OverlayTrigger
+                      trigger='click'
+                      placement='top'
+                      rootClose
+                      overlay={deletePopover}
+                    >
                       <button
-                          className={styles.deleteBtn}
-                          onClick={() => deleteHandler(d)}
+                        className={styles.deleteBtn}
+                        onClick={() => onDelete(d)}
                       >
-                        <Trash/>
+                        <Trash />
                       </button>
+                    </OverlayTrigger>
                   )}
                 </td>
               </tr>
