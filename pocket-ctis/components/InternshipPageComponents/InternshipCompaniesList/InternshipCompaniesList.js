@@ -37,7 +37,6 @@ const InternshipCompaniesList = ({ companies, onQuery, isLoading, total }) => {
   useEffect(() => {
     let queryParams = {}
 
-    queryParams.is_internship = 1
     queryParams.column = sorting.name
     queryParams.order = sorting.direction
     queryParams.offset = (currentPage - 1) * limit
