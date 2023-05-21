@@ -80,6 +80,12 @@ const handler =  async (req, res) => {
                     const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
                         {name: "length", query: length_query, values: length_values}]);
 
+                    if(req.query.erasmus && payload.user !== "admin" && !modules.erasmus.user_visible){
+                        data.data = [];
+                        data.length[0].count = 0;
+                    }
+
+
                     res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
                 } catch (error) {
                     res.status(500).json({errors: [{error: error.message}]});

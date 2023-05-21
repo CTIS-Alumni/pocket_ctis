@@ -146,7 +146,7 @@ const handler =  async (req, res) => {
                         temp += "AND er.visibility = 1 ";
                     queries.push({name: "erasmus", query: temp, values: [user_id]});
 
-                    temp = "SELECT e.id, e.edu_inst_id, ei.edu_inst_name, e.degree_type_id, d.degree_type_name, e.education_description, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current, " +
+                    temp = "SELECT e.id, e.edu_inst_id, ei.edu_inst_name, e.degree_type_id, d.degree_type_name, e.gpa, e.education_description, e.name_of_program, e.start_date, e.end_date, e.visibility, e.is_current, " +
                         "ci.city_name, ci.id as 'city_id', co.country_name, co.id as 'country_id'  " +
                         "FROM educationrecord e " +
                         "JOIN educationinstitute ei ON (e.edu_inst_id = ei.id)  " +

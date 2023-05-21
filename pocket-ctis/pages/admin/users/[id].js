@@ -654,8 +654,7 @@ const AdminUserView = ({ user }) => {
                         <Container style={{ color: '#999' }}>
                           {classifiedSkills[classification].map((skill, i) => (
                             <div>
-                              {skill.skill_name} -{' '}
-                              {text_skill_level[skill.skill_level]}
+                              {skill.skill_name} {(skill.skill_level ? `- ${text_skill_level[skill.skill_level]}` : ``)}
                             </div>
                           ))}
                         </Container>
