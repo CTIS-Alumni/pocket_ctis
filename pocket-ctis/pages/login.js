@@ -34,6 +34,7 @@ const Login = () => {
       return false;
     }
     const res = await requestLogin(values)
+    console.log(res);
     if (res.data && !res.errors) {
       toast.success('Login successful')
       router.push('/user' )
