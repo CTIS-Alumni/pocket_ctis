@@ -49,7 +49,7 @@ const handler =  async (req, res) => {
                         "FROM highschool h LEFT OUTER JOIN city ci ON (h.city_id = ci.id) " +
                         "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 
-                    let length_query = "SELECT COUNT(*) as count FROM highschool h LEFT OUTER JOIN city ci ON (h.city_id = ci.id) " +
+                    let length_query = "SELECT COUNT(DISTINCT h.id) as count FROM highschool h LEFT OUTER JOIN city ci ON (h.city_id = ci.id) " +
                         "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 
                     if (req.query.name) {
