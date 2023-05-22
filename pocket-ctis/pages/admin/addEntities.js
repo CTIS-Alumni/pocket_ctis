@@ -47,13 +47,13 @@ const AddEntitiesDashboard = () => {
           </div>
           <div
             className={
-              activeKey == 'Educational institute'
+              activeKey == 'Educational Institute'
                 ? styles.active
                 : styles.inActive
             }
-            onClick={() => setActiveKey('Educational institute')}
+            onClick={() => setActiveKey('Educational Institute')}
           >
-            Educational institute
+            Educational Institute
           </div>
           <div
             className={
@@ -121,7 +121,7 @@ const AddEntitiesDashboard = () => {
 
         <div className={styles.formBody}>
           {activeKey == 'Company' && <CompanyDashboard />}
-          {activeKey == 'Educational institute' && (
+          {activeKey == 'Educational Institute' && (
             <EducationInstitutesDashboard />
           )}
           {activeKey == 'High Schools' && <HighSchoolDashboard />}
