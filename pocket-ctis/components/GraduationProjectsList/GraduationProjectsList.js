@@ -10,6 +10,7 @@ import PaginationFooter from '../PaginationFooter/PaginationFooter'
 import styles from './GraduationProjectsList.module.scss'
 import {getGraduationProjectPicturePath} from "../../helpers/formatHelpers";
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
+import SearchBar from '../SearchBar/SearchBar'
 
 const GraduationProjectsList = ({ graduationProjects, onQuery, isLoading, total }) => {
   const [limit, setLimit] = useState(15)
@@ -23,6 +24,11 @@ const GraduationProjectsList = ({ graduationProjects, onQuery, isLoading, total 
   }
   const handlePageChange = (newPage) => setCurrentPage(newPage)
 
+  const handleSearch = (search) => {
+    search.searchValue = search.searchValue.trim()
+    setSearchString(search.searchValue.trim())
+    setCurrentPage(1)
+  }
   useEffect(() => {
     let queryParams = {}
 
@@ -30,7 +36,7 @@ const GraduationProjectsList = ({ graduationProjects, onQuery, isLoading, total 
     queryParams.order = sorting.direction
     queryParams.offset = (currentPage - 1) * limit
     queryParams.limit = limit
-    queryParams.searchcol = 'sector_name,company_name'
+    queryParams.searchcol = 'graduation_project_name,company_name,advisor,project_year,project_type,semester'
     queryParams.search = searchString
 
     onQuery(queryParams)
@@ -39,7 +45,10 @@ const GraduationProjectsList = ({ graduationProjects, onQuery, isLoading, total 
   return (
     <section className={styles.graduation_projects}>
       <h2 className='custom-table-title'>Senior Projects</h2>
-      <div style={{position: 'relative'}}>
+      
+      <SearchBar onSubmit={handleSearch} />
+
+      <div style={{position: 'relative', marginTop: 10}}>
         {isLoading && <div style={{
           position: 'absolute',
           zIndex: 2,
