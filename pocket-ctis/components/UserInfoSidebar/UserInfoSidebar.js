@@ -76,7 +76,7 @@ const UserInfoSidebar = ({ toggleSidebar, setToggleSidebar }) => {
           <div className={styles.sidebar_button_group_personal}>
             <Button text='Profile' href='/user/1' icon={<PersonFill />} />
             {/* <hr className={styles.sidebar_divider} /> */}
-            <Button text='Users' icon={<PeopleFill />} />
+            <Button text='Users' href='/user/users' icon={<PeopleFill />} />
           </div>
           {/* <hr className={styles.sidebar_divider} /> */}
           <div className={styles.sidebar_button_group_career}>
