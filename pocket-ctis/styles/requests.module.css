@@ -1,0 +1,82 @@
+.container{
+    padding: 20px;
+}
+
+.inputContainer{
+    position: relative;
+    margin-bottom: 10px;
+    margin-top: 25px;
+    /* padding: 15px 0px; */
+}
+.inputLabel{
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    height: 1px;
+    line-height: 0;
+    background-color: white;
+    padding: 0px 5px;
+    text-transform: capitalize;
+    color: #888;
+    font-size: 13px;
+    width: fit-content;
+    letter-spacing: 1px;
+    z-index: 1;
+    /* opacity: 50%; */
+}
+.inputField:disabled{
+    background-color: #f3f3f3;
+    cursor: not-allowed;
+}
+.inputField{
+    padding: 10px 5px 5px 5px;
+    width: 100%;
+    border: 1px solid #f5a425;
+    border-radius: 4px;
+    resize: none;
+    color: #666;
+}
+
+.submitBtn{
+    padding: 8px;
+
+    width: 100px;
+    height: 30px;
+
+    background: #FFF9E8;
+    opacity: 0.8;
+
+    border: 1px solid #FF8412;
+    border-radius: 5px;
+
+    font-style: normal;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 14px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-right: 10px;
+    /* ctis yellow 700 */
+    float: right;
+    color: #FF8412;
+}
+
+
+@keyframes errorShow {
+    0%   {height: 0px;}
+    50%  {height: 5px;}
+    70%  {height: 7px;}
+    80%  {height: 8px;}
+    90%  {height: 9px;}
+    100% {height: 10px;}
+  }
+
+.error{
+    padding-left: 10px;
+    overflow: hidden;
+    color: red;
+    font-size: small;
+    animation: errorShow;
+    animation-duration: 0.1s;
+    animation-timing-function:ease-in-out;
+}

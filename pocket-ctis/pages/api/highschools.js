@@ -55,7 +55,9 @@ const handler =  async (req, res) => {
 
                     if (req.query.name) {
                         query += "WHERE h.high_school_name LIKE CONCAT('%', ?, '%') ";
+                        length_query += "WHERE h.high_school_name LIKE CONCAT('%', ?, '%') ";
                         values.push(req.query.name);
+                        length_values.push(req.query.name);
                     }
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));

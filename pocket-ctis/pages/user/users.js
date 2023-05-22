@@ -79,14 +79,9 @@ const UsersList = () => {
                       style={{ flexGrow: 1 }}
                     >
                       <div>
-                        <div>
-                          {`${user.first_name}${
-                            user.nee ? ` ${user.nee} ` : ' '
-                          }${user.last_name}`}
-                        </div>
-                        <div style={{ color: '#999' }}>
-                          {user.contact_email}
-                        </div>
+                        {`${user.first_name}${
+                          user.nee ? ` ${user.nee} ` : ' '
+                        }${user.last_name}`}
                       </div>
                       <div>
                         {user.user_types?.split(',').map((t) => (
