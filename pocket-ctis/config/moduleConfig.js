@@ -27,7 +27,7 @@ module.exports = {
     "user_visible": true
   },
   "erasmus": {
-    "user_visible": false
+    "user_visible": true
   },
   "user_profile_data": {
     "graudation_projects": {

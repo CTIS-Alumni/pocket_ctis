@@ -13,8 +13,6 @@ import { craftUrl } from '../../../helpers/urlHelper'
 const Sector = ({ sector, companies, work, users }) => {
   return (
     <UserPageContainer>
-      {/* <NavigationBar />
-      <UserInfoSidebar /> */}
       <div className={styles.main_div}>
         <div className={styles.sector_info}>
           <div className={styles.sector_icon}>

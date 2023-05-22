@@ -18,15 +18,23 @@ import {
   submitChanges,
 } from '../../../../helpers/fetchHelpers'
 import { craftUrl } from '../../../../helpers/urlHelper'
+import {toast} from "react-toastify";
+import {Spinner} from "react-bootstrap";
 
 const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   const applyNewData = (data) => {
     setDataAfterSubmit(data)
   }
 
   let deletedData = { projects: [], graduation_project: [] }
+
+  const args = {
+    graduation_project: [['graduation_project'], [], ['id', 'user_id'], []],
+    projects: [[], [], ['id', 'user_id'], []],
+  }
 
   const transformData = (data) => {
     let newData = cloneDeep(data)
@@ -43,8 +51,8 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
         val.visibility = val.visibility ? 1 : 0
         val.project_name = val.project_name ? val.project_name : null
         val.project_description = val.project_description
-          ? val.project_description
-          : null
+            ? val.project_description
+            : null
         replaceWithNull(val)
         return val
       })
@@ -62,6 +70,7 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
   }
 
   const onSubmit = async (values) => {
+    setIsLoading(true)
     setIsUpdated(true)
     let newData = cloneDeep(values)
     transformFuncs.projects(newData)
@@ -75,38 +84,51 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
       graduation_project: {},
       projects: {},
     }
-    const args = {
-      graduation_project: [[], [], ['id', 'user_id'], []],
-      projects: [[], [], ['id', 'user_id'], []],
-    }
+
     const final_data = { graduation_project: [], projects: [] }
     await Promise.all(
-      Object.keys(dataAfterSubmit).map(async (key) => {
-        const send_to_req = {}
-        send_to_req[key] = cloneDeep(dataAfterSubmit[key])
-        transformFuncs[key](send_to_req)
-        requestObj[key] = createReqObject(
-          send_to_req[key],
-          newData[key],
-          deletedData[key]
-        )
-        const url = craftUrl(["users",user_id, key])
-        responseObj[key] = await submitChanges(url, requestObj[key])
-        final_data[key] = handleResponse(
-          send_to_req[key],
-          requestObj[key],
-          responseObj[key],
-          values,
-          key,
-          args[key],
-          transformFuncs[key]
-        )
-      })
+        Object.keys(dataAfterSubmit).map(async (key) => {
+          const send_to_req = {}
+          send_to_req[key] = cloneDeep(dataAfterSubmit[key])
+          transformFuncs[key](send_to_req)
+          requestObj[key] = createReqObject(
+              send_to_req[key],
+              newData[key],
+              deletedData[key]
+          )
+          const url = craftUrl(['users', user_id, key])
+          responseObj[key] = await submitChanges(url, requestObj[key])
+          final_data[key] = handleResponse(
+              send_to_req[key],
+              requestObj[key],
+              responseObj[key],
+              values,
+              key,
+              args[key],
+              transformFuncs[key]
+          )
+        })
     )
-    console.log('req', requestObj, 'res', responseObj)
 
     applyNewData(final_data)
     deletedData = { projects: [], graduation_project: [] }
+
+    let errors = []
+    Object.keys(deletedData).forEach((obj) => {
+      for (const [key, value] of Object.entries(responseObj[obj])) {
+        if (value.errors?.length > 0) {
+          errors = [...errors, ...value.errors.map((error) => error)]
+        }
+      }
+    })
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else toast.success('Data successfully saved')
+
+    setIsLoading(false)
   }
 
   const { projects, graduation_project } = data
@@ -124,14 +146,32 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
         return (
           <>
             <Form>
+              {isLoading && (
+                  <div
+                      style={{
+                        zIndex: 2,
+                        position: 'absolute',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                        width: '100%',
+                        background: '#ccc',
+                        opacity: '0.5',
+                      }}
+                  >
+                    <Spinner />
+                  </div>
+              )}
               <table style={{ width: '100%' }}>
                 <tbody>
-                  <FieldArray
+                {props.values.graduation_project &&
+                props.values.graduation_project.length > 0 && <FieldArray
                     name='graduation_project'
                     render={(arrayHelpers) => {
                       return (
                         <>
-                          <tr>
+                        <tr>
                             <td colSpan={3}>
                               <div
                                 className={styles.formPartitionHeading}
@@ -243,23 +283,11 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                 )
                               }
                             )
-                          ) : (
-                            <tr>
-                              <td>
-                                <button
-                                  className={styles.bigAddBtn}
-                                  type='button'
-                                  onClick={() => arrayHelpers.push('')}
-                                >
-                                  Add a Project
-                                </button>
-                              </td>
-                            </tr>
-                          )}
+                          ) : ''}
                         </>
                       )
                     }}
-                  />
+                  />}
                   <FieldArray
                     name='projects'
                     render={(arrayHelpers) => {

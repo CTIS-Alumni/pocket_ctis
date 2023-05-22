@@ -48,12 +48,12 @@ const handler =  async (req, res) => {
                 try {
                     let query = "SELECT c.id, c.company_name, c.sector_id, s.sector_name, c.is_internship ";
 
-                        if(req.query.internship && (payload.user === "admin" || (payload.user !== "admin" && modules.internships.user_visible))){
+                        if(req.query.internship){
                             query += ", AVG(i.rating) AS rating ";
                     }
                         query += "FROM company c JOIN sector s ON (c.sector_id = s.id) ";
 
-                    let length_query = "SELECT COUNT(*) as count FROM company c JOIN sector s ON (c.sector_id = s.id) ";
+                    let length_query = "SELECT COUNT(DISTINCT c.id) as count FROM company c JOIN sector s ON (c.sector_id = s.id) ";
 
                     if (req.query.sector_id) { //for a specific sectors page
                         query += " WHERE s.id = ? ";
@@ -62,7 +62,7 @@ const handler =  async (req, res) => {
                         length_values.push(req.query.sector_id);
                     }
 
-                    if (req.query.internship && (payload.user === "admin" || (payload.user !== "admin" && modules.internships.user_visible))) {//for the internships page
+                    if (req.query.internship) {//for the internships page
                         query += " LEFT OUTER JOIN internshiprecord i ON (i.company_id = c.id) ";
                         query += addAndOrWhere(query," c.is_internship = ? ");
                         length_query += " LEFT OUTER JOIN internshiprecord i ON (i.company_id = c.id) ";
@@ -71,6 +71,7 @@ const handler =  async (req, res) => {
                         length_values.push(req.query.internship);
 
                     }
+                    console.log("hers the query until now", query, "hers the lenght query until now", length_query);
 
                     if (req.query.name) { //for the general search
                         query += addAndOrWhere(query, " c.company_name LIKE CONCAT('%', ?, '%') ")
@@ -80,16 +81,22 @@ const handler =  async (req, res) => {
                     }
 
                     if(req.query.internship && (payload.user === "admin" || (payload.user !== "admin" && modules.internships.user_visible))){
-                        query += " GROUP BY c.id";
-                        length_query += " GROUP BY c.id";
+                        query += " GROUP BY c.id ";
+                        length_query += " GROUP BY c.id ";
                     }
+
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
 
-                    console.log("query: ", query, "values: ", values);
+                    console.log("query: ", query, "values: ", values, "lenght", length_query, "lenght values", length_values);
 
                     const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
                         {name: "length", query: length_query, values: length_values}]);
+
+                    if(req.query.internship && payload.user !== "admin" && !modules.internships.user_visible){
+                        data.data = [];
+                        data.length[0].count = 0;
+                    }
 
                     res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
 

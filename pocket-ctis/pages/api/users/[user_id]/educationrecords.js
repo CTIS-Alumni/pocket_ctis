@@ -1,11 +1,12 @@
 import {
     buildSelectQueries, buildInsertQueries, buildUpdateQueries, doMultiDeleteQueries,
     updateTable,
-    insertToUserTable
+    insertToUserTable, doqueryNew
 } from "../../../../helpers/dbHelpers";
 import modules from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
+import departmentConfig from '../../../../config/departmentConfig'
 
 
 const field_conditions = {
@@ -68,6 +69,13 @@ export default async function handler(req, res) {
             case "POST":
                 try {
                     const edu_records = JSON.parse(req.body);
+                    if(payload.user !== "admin"){
+                        edu_records.forEach((rec)=>{
+                            if(rec.edu_inst_id == 1 && (
+                                rec.name_of_program === departmentConfig.department_name || rec.name_of_program === departmentConfig.abbreviation))
+                               throw {message: "Can't add " + departmentConfig.department_name + " record!"};
+                        })
+                    }
                     const queries = buildInsertQueries(edu_records, table_name, fields ,user_id);
                     const select_queries = buildSelectQueries(edu_records, table_name,field_conditions);
                     const {data, errors} = await insertToUserTable(queries, table_name, validation, select_queries, modules.user_profile_data.education_records.limit_per_user);
@@ -80,6 +88,39 @@ export default async function handler(req, res) {
             case "PUT":
                 try {
                     const edu_records = JSON.parse(req.body);
+                    if(payload.user !== "admin"){
+                        let check_to_edit_query = "SELECT id FROM educationrecord WHERE (name_of_program = ? OR name_of_program = ?) AND edu_inst_id = 1 AND user_id = ? ";
+                        const res = await doqueryNew({query: check_to_edit_query, values: [departmentConfig.department_name, departmentConfig.abbreviation, user_id]});
+
+                        let department_data = [], indexes = [];
+                        console.log("heres res", res)
+                        if(!res.data)
+                            throw {message: "An error occured!"}
+                        if(res.data.length){
+                            const ids = res.data.map(item => item.id);
+                            edu_records.forEach((rec, i)=>{
+                                if(ids.includes(rec.id)){
+                                    department_data.push(rec)
+                                    indexes.push(i);
+                                }
+                            })
+                        }
+
+                        if(indexes.length){
+                            indexes.sort((a, b) => b - a);
+                            indexes.forEach(index => edu_records.splice(index, 1));
+                            const temp_fields = {
+                                basic: ["gpa", "education_description"],
+                                date: []
+                            }
+                            const q = buildUpdateQueries(department_data, table_name, temp_fields);
+                            const results = await updateTable(q,validation);
+                            if(!results.data || results.errors.length){
+                                throw {message: "An error occured!"};
+                            }
+                        }
+
+                    }
                     const queries = buildUpdateQueries(edu_records, table_name, fields);
                     const select_queries = buildSelectQueries(edu_records, table_name,field_conditions);
                     const {data, errors} = await updateTable(queries, validation, select_queries);
@@ -91,6 +132,18 @@ export default async function handler(req, res) {
             case "DELETE":
                 try {
                     const edu_records = JSON.parse(req.body);
+                    if(payload.user !== "admin"){
+                        let check_to_delete_query = "SELECT id FROM educationrecord WHERE (name_of_program = ? OR name_of_program = ?) AND edu_inst_id = 1 AND user_id = ? ";
+                        const res = await doqueryNew({query: check_to_delete_query, values: [departmentConfig.department_name, departmentConfig.abbreviation, user_id]});
+                        console.log("heres res", res);
+                        console.log("edu rec", edu_records)
+                        if(!res.data)
+                            throw {message: "An error occured!"}
+                        edu_records.forEach((rec)=>{
+                            if(rec.id === res.data[0].id)
+                                throw {message: "Can't delete " + departmentConfig.department_name + " record!"}
+                        })
+                    }
                     const {data, errors} = await doMultiDeleteQueries(edu_records, table_name);
                     res.status(200).json({data, errors});
 

@@ -53,11 +53,11 @@ const handler =  async (req, res) => {
                     }
                        query +=  "FROM educationinstitute ei LEFT OUTER JOIN city ci ON (ei.city_id = ci.id) " +
                         "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
-                    let length_query = "SELECT COUNT(*) as count FROM educationinstitute ei LEFT OUTER JOIN city ci ON (ei.city_id = ci.id)" +
+                    let length_query = "SELECT COUNT(DISTINCT ei.id) as count FROM educationinstitute ei LEFT OUTER JOIN city ci ON (ei.city_id = ci.id)" +
                         " LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 
                     //for erasmus page = showing only the universities which is for erasmus
-                    if (req.query.erasmus && (payload.user === "admin" || (payload.user !== "admin" && modules.erasmus.user_visible))) { //for the erasmus page
+                    if (req.query.erasmus) { //for the erasmus page
                         query += "LEFT OUTER JOIN erasmusrecord er ON (er.edu_inst_id = ei.id) WHERE ei.is_erasmus = ? ";
                         length_query += "LEFT OUTER JOIN erasmusrecord er ON (er.edu_inst_id = ei.id) WHERE ei.is_erasmus = ? ";
                         values.push(req.query.erasmus);
@@ -70,15 +70,21 @@ const handler =  async (req, res) => {
                         length_values.push(req.query.name);
                     }
 
-                    if(req.query.erasmus && (payload.user === "admin" || (payload.user !== "admin" && modules.erasmus.user_visible))){
-                        query += " GROUP BY ei.id";
-                        length_query += " GROUP BY ei.id";
+                    if(req.query.erasmus){
+                        query += " GROUP BY ei.id ";
                     }
+
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
 
                     const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
                         {name: "length", query: length_query, values: length_values}]);
+
+                    if(req.query.erasmus && payload.user !== "admin" && !modules.erasmus.user_visible){
+                        data.data = [];
+                        data.length[0].count = 0;
+                    }
+
 
                     res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
                 } catch (error) {

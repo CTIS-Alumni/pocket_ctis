@@ -1,6 +1,6 @@
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
-import {parseFormForDB, resizeAndCropImage, resizeAndFitImage} from "../../helpers/imageHelper";
+import {getBufferImage, parseFormForDB, resizeAndCropImage, resizeAndFitImage} from "../../helpers/imageHelper";
 import { promises as fsPromises } from 'fs';
 import fs from 'fs';
 import departmentConfig from '../../config/departmentConfig'
@@ -31,14 +31,13 @@ const handler =  async (req, res) => {
 
                         if(file_objects?.appImage){
                             const destinationFilePath = process.env.SAVE_IMAGES_PATH + file_objects.appImage.location + "/" + file_objects.appImage.appImage.originalFilename;
-                            const resizedBuffer = await resizeAndFitImage(file_objects.appImage.appImage, 250, 75);
+                            const resizedBuffer = await getBufferImage(file_objects.appImage.appImage);
                             await fsPromises.writeFile(destinationFilePath, resizedBuffer);
                         }else{
                             if(departmentConfig.app_logo !== "" && fs.existsSync(process.env.SAVE_IMAGES_PATH + "/departmentPictures/app_logo/" + departmentConfig.app_logo))
                                 await fsPromises.unlink(process.env.SAVE_IMAGES_PATH + "/departmentPictures/app_logo/" + departmentConfig.app_logo);
                         }
 
-                        console.log("is it here");
                         delete obj.appImage;
                         const fileContents = `module.exports = ${JSON.stringify(obj, null, 2)};\n`;
                         await fsPromises.writeFile(process.env.DEPARTMENT_CONFIG_PATH, fileContents, 'utf8');

@@ -46,7 +46,7 @@ const handler =  async (req, res) => {
                         "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 
                     query += add;
-                    length_query = "SELECT COUNT(*) as count FROM educationrecord e JOIN users u ON (e.user_id = u.id) " +
+                    length_query = "SELECT COUNT(DISTINCT e.id) as count FROM educationrecord e JOIN users u ON (e.user_id = u.id) " +
                     "JOIN educationinstitute ei ON (e.edu_inst_id = ei.id) " +
                     "JOIN degreetype d ON (e.degree_type_id = d.id) " +
                         "JOIN useraccounttype uat ON (uat.user_id = u.id) " +

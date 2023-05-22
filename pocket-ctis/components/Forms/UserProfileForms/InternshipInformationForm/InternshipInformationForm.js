@@ -1,6 +1,6 @@
 import { Field, FieldArray, Form, Formik } from 'formik'
 import { cloneDeep } from 'lodash'
-import React, { useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import { EyeSlashFill, EyeFill, XCircleFill } from 'react-bootstrap-icons'
 import { Rating } from 'react-simple-star-rating'
 import DatePickerField from '../../../DatePickers/DatePicker'
@@ -11,13 +11,17 @@ import {
   replaceWithNull,
 } from '../../../../helpers/submissionHelpers'
 import {
+  _getFetcher,
   createReqObject,
   submitChanges,
 } from '../../../../helpers/fetchHelpers'
 import { craftUrl } from '../../../../helpers/urlHelper'
+import {toast} from "react-toastify";
+import {Spinner} from "react-bootstrap";
 
 const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   const applyNewData = (data) => {
     setDataAfterSubmit(data)
@@ -48,38 +52,62 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
     })
   }
 
+  const args = [
+    ['company'],
+    [],
+    ['id', 'user_id', 'record_date'],
+    ['start_date', 'end_date'],
+  ]
+
+  const url = craftUrl(['users', user_id, 'internships'])
+
   const onSubmit = async (values) => {
+    setIsLoading(true)
     setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
 
-    const args = [
-      [],
-      [],
-      ['id', 'user_id', 'record_date'],
-      ['start_date', 'end_date'],
-    ]
     const send_to_req = { internships: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
     const requestObj = createReqObject(
-      send_to_req.internships,
-      newData.internships,
-      []
+        send_to_req.internships,
+        newData.internships,
+        []
     )
-    const url = craftUrl(["users", user_id, 'internships'])
     const responseObj = await submitChanges(url, requestObj)
 
     const new_data = handleResponse(
-      send_to_req.internships,
-      requestObj,
-      responseObj,
-      values,
-      'internships',
-      args,
-      transformDataForSubmission
+        send_to_req.internships,
+        requestObj,
+        responseObj,
+        values,
+        'internships',
+        args,
+        transformDataForSubmission
     )
+
     applyNewData(new_data)
-    console.log('req,', requestObj, 'res', responseObj)
+
+    let errors = []
+    for (const [key, value] of Object.entries(responseObj)) {
+      if (value.errors?.length > 0) {
+        errors = [...errors, ...value.errors.map((error) => error)]
+      }
+    }
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else if (
+        responseObj.POST.data ||
+        responseObj.PUT.data ||
+        responseObj.DELETE.data
+    ) {
+      toast.success('Data successfully saved')
+    }
+
+    setIsLoading(false)
   }
 
   return (
@@ -89,7 +117,24 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
       onSubmit={onSubmit}
     >
       {(props) => (
-        <Form>
+          <Form style={{ position: 'relative' }}>
+            {isLoading && (
+                <div
+                    style={{
+                      zIndex: 2,
+                      position: 'absolute',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100%',
+                      width: '100%',
+                      background: '#ccc',
+                      opacity: '0.5',
+                    }}
+                >
+                  <Spinner />
+                </div>
+            )}
           <table style={{ width: '100%' }}>
             <tbody>
               <FieldArray
@@ -182,6 +227,7 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                     >
                                       <option value='spring'>Spring</option>
                                       <option value='fall'>Fall</option>
+                                      <option value='Summer'>Summer</option>
                                     </Field>
                                   </div>
 

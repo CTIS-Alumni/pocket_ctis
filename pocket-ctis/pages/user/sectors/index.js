@@ -1,24 +1,27 @@
 import SectorsList from '../../../components/SectorsList/SectorsList'
 import { useEffect, useState } from 'react'
 import { _getFetcher } from '../../../helpers/fetchHelpers'
-import { craftUrl } from '../../../helpers/urlHelper'
+import { craftUrl, buildCondition } from '../../../helpers/urlHelper'
 import UserPageContainer from '../../../components/UserPageContainer/UserPageContainer'
 
 const SectorsDashboard = ({ res }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [sectors, setSectors] = useState([])
+  const [total, setTotal] = useState()
 
   useEffect(() => {
     setSectors(res.data)
+    setTotal(res.length)
   }, [])
 
-  const onSearch = ({ searchValue }) => {
+  const onQuery = (queryParams) => {
+    const conditions = buildCondition(queryParams)
     setIsLoading(true)
-    _getFetcher({
-      sectors: craftUrl(['sectors'], [{ name: 'name', value: searchValue }]),
-    })
-      .then(({ sectors }) => setSectors(sectors.data))
-      .catch((err) => console.log(err))
+    _getFetcher({ sectors: craftUrl(['sectors'], conditions) })
+      .then(({ sectors }) => {
+        setTotal(sectors.length)
+        setSectors(sectors.data)
+      })
       .finally((_) => setIsLoading(false))
   }
 
@@ -26,8 +29,9 @@ const SectorsDashboard = ({ res }) => {
     <UserPageContainer>
       <SectorsList
         sectors={sectors}
-        onSearch={onSearch}
+        onQuery={onQuery}
         isLoading={isLoading}
+        total={total}
       />
     </UserPageContainer>
   )

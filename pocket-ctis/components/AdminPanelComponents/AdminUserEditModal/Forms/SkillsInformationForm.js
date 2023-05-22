@@ -96,7 +96,6 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
       transformDataForSubmission
     )
     applyNewData(new_data)
-    console.log('req', requestObj, 'res', responseObj)
 
     deletedData = []
 

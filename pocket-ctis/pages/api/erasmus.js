@@ -76,7 +76,7 @@ const handler =  async (req, res) => {
                             "LEFT OUTER JOIN city ci ON (ci.id = ei.city_id) " +
                             "LEFT OUTER JOIN country co ON (co.id = ci.country_id) ";
 
-                        let length_query = "SELECT COUNT(*) as count " +
+                        let length_query = "SELECT COUNT(DISTINCT e.id) as count " +
                             "FROM erasmusrecord e JOIN users u on (e.user_id = u.id) " +
                             "JOIN educationinstitute ei ON (e.edu_inst_id = ei.id) " +
                             "LEFT OUTER JOIN city ci ON (ci.id = ei.city_id) " +
@@ -94,12 +94,9 @@ const handler =  async (req, res) => {
 
                         ({query, length_query} = await buildSearchQuery(req, query, values, length_query, length_values, columns, "e.id"));
 
-                        console.log("hers query", query, "heres length query", length_query)
 
                         const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
                             {name: "length", query: length_query, values: length_values}]);
-
-                        console.log("heres data", data);
 
                         res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
 

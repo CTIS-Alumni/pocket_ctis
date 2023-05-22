@@ -227,7 +227,6 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                 <td>
                                   <div style={{ display: 'flex' }}>
                                     <div className={styles.removeBtnContainer}>
-                                      {edu_record.id}
                                       <button
                                         className={styles.removeBtn}
                                         type='button'

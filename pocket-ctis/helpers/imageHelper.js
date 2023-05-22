@@ -44,6 +44,14 @@ export const resizeAndCropImage = async (file, targetWidth, targetHeight) => { /
 
 }
 
+export const getBufferImage = async (file) => {
+    const fileBuffer = await fs.readFile(file.filepath);
+    const img = await read(fileBuffer);
+    const mimeType = img.getMIME();
+    const resizedImageBuffer = await img.getBufferAsync(mimeType);
+    return resizedImageBuffer;
+}
+
 export const resizeAndFitImage = async (file ,targetWidth, targetHeight) => {
     const fileBuffer = await fs.readFile(file.filepath);
     const img = await read(fileBuffer);

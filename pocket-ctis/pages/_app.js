@@ -8,12 +8,13 @@ import UserContext from '../context/userContext'
 import LocationContext from '../context/locationContext'
 import Head from 'next/head'
 import TablesContext from '../context/tablesContext'
+import departmentConfig from '../config/departmentConfig'
 
 function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>Pocket CTIS</title>
+        <title>{departmentConfig.app_name}</title>
       </Head>
       <UserContext>
         <TablesContext>

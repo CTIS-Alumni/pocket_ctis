@@ -12,7 +12,7 @@ import {
 import { useEffect, useState } from 'react'
 import DatePickerField from '../../../DatePickers/DatePicker'
 import {
-  _getFetcher,
+  _getFetcher, _submitFetcher,
   createReqObject,
   submitChanges,
 } from '../../../../helpers/fetchHelpers'
@@ -23,11 +23,15 @@ import {
   splitFields,
   handleResponse,
 } from '../../../../helpers/submissionHelpers'
+import {toast} from "react-toastify";
+import {Spinner} from "react-bootstrap";
+import departmentConfig from '../../../../config/departmentConfig'
 
 const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [eduInsts, setEduInsts] = useState([])
   const [degreeTypes, setDegreeTypes] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     _getFetcher({
@@ -66,12 +70,12 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
       val.is_current = val.is_current ? 1 : 0
       if (val.is_current && val.end_date) val.end_date = null
       val.start_date =
-        val.start_date != null ? convertToIso(val.start_date) : null
+          val.start_date != null ? convertToIso(val.start_date) : null
       val.end_date = val.end_date != null ? convertToIso(val.end_date) : null
       val.name_of_program = val.name_of_program ? val.name_of_program : null
       val.education_description = val.education_description
-        ? val.education_description
-        : null
+          ? val.education_description
+          : null
       val.gpa = val.gpa ? val.gpa : null
       replaceWithNull(val)
       splitFields(val, ['edu_inst', 'degree_type'])
@@ -79,39 +83,63 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
     })
   }
 
+  const args = [
+    ['edu_inst', 'degree_type'],
+    [],
+    ['id', 'record_date', 'user_id'],
+    ['start_date', 'end_date'],
+  ]
+
+  const url = craftUrl(['users', user_id, 'educationrecords'])
+
   const onSubmit = async (values) => {
+    setIsLoading(true)
     setIsUpdated(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
 
-    const args = [
-      ['edu_inst', 'degree_type'],
-      [],
-      ['id', 'record_date', 'user_id'],
-      ['start_date', 'end_date'],
-    ]
     const send_to_req = { edu_records: cloneDeep(dataAfterSubmit) }
     transformDataForSubmission(send_to_req)
     const requestObj = createReqObject(
-      send_to_req.edu_records,
-      newData.edu_records,
-      deletedData
+        send_to_req.edu_records,
+        newData.edu_records,
+        deletedData
     )
-    const url = craftUrl(["users",user_id, 'educationrecords'])
+
     const responseObj = await submitChanges(url, requestObj)
     const new_data = handleResponse(
-      send_to_req.edu_records,
-      requestObj,
-      responseObj,
-      values,
-      'edu_records',
-      args,
-      transformDataForSubmission
+        send_to_req.edu_records,
+        requestObj,
+        responseObj,
+        values,
+        'edu_records',
+        args,
+        transformDataForSubmission
     )
     applyNewData(new_data)
     console.log('req:', requestObj, 'res', responseObj)
-
     deletedData = []
+
+    let errors = []
+    for (const [key, value] of Object.entries(responseObj)) {
+      if (value.errors?.length > 0) {
+        errors = [...errors, ...value.errors.map((error) => error)]
+      }
+    }
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else if (
+        responseObj.POST.data ||
+        responseObj.PUT.data ||
+        responseObj.DELETE.data
+    ) {
+      toast.success('Data successfully saved')
+    }
+
+    setIsLoading(false)
   }
 
   return (
@@ -125,8 +153,25 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
       >
         {(props) => {
           return (
-            <Form>
-              <table style={{ width: '100%' }}>
+              <Form style={{ position: 'relative' }}>
+                {isLoading && (
+                    <div
+                        style={{
+                          zIndex: 2,
+                          position: 'absolute',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          height: '100%',
+                          width: '100%',
+                          background: '#ccc',
+                          opacity: '0.5',
+                        }}
+                    >
+                      <Spinner />
+                    </div>
+                )}
+                <table className={styles.formTable}>
                 <tbody>
                   <FieldArray
                     name='edu_records'
@@ -167,19 +212,17 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                 <tr key={index} style={{ width: '100%' }}>
                                   <td>
                                     <div style={{ display: 'flex' }}>
-                                      <div
-                                        className={styles.removeBtnContainer}
-                                      >
+                                      <div className={styles.removeBtnContainer}>
                                         <button
                                           className={styles.removeBtn}
                                           type='button'
                                           onClick={() => {
-                                            arrayHelpers.remove(index)
-                                            if (edu_record.hasOwnProperty('id'))
-                                              deletedData.push({
-                                                id: edu_record.id,
-                                                data: edu_record
-                                              })
+                                              arrayHelpers.remove(index)
+                                              if (edu_record.hasOwnProperty('id'))
+                                                deletedData.push({
+                                                  id: edu_record.id,
+                                                  data: edu_record
+                                                })
                                           }}
                                         >
                                           <XCircleFill
@@ -222,9 +265,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             className={styles.inputContainer}
                                             style={{ width: '49%' }}
                                           >
-                                            <label
-                                              className={styles.inputLabel}
-                                            >
+                                            <label className={styles.inputLabel}>
                                               Degree Name
                                             </label>
                                             <Field
@@ -234,11 +275,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               id={`edu_records[${index}]degree_type`}
                                               disabled={!edu_record.edu_inst}
                                             >
-                                              <option
-                                                selected
-                                                disabled
-                                                value=''
-                                              >
+                                              <option selected disabled value=''>
                                                 Please select a Degree
                                               </option>
                                               {degreeTypes.map((degree) => (
@@ -254,9 +291,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             className={styles.inputContainer}
                                             style={{ width: '49%' }}
                                           >
-                                            <label
-                                              className={styles.inputLabel}
-                                            >
+                                            <label className={styles.inputLabel}>
                                               Name of Program
                                             </label>
                                             <Field
@@ -278,9 +313,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             className={styles.inputContainer}
                                             style={{ width: '49%' }}
                                           >
-                                            <label
-                                              className={styles.inputLabel}
-                                            >
+                                            <label className={styles.inputLabel}>
                                               Start Date
                                             </label>
                                             <DatePickerField
@@ -291,8 +324,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               id={`edu_records[${index}]start_date`}
                                               disabled={
                                                 !edu_record.name_of_program ||
-                                                !edu_record.degree_type
-                                              }
+                                                !edu_record.degree_type}
                                             />
                                           </div>
 
@@ -300,9 +332,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             className={styles.inputContainer}
                                             style={{ width: '49%' }}
                                           >
-                                            <label
-                                              className={styles.inputLabel}
-                                            >
+                                            <label className={styles.inputLabel}>
                                               End Date
                                             </label>
                                             <DatePickerField
@@ -336,8 +366,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             className={styles.inputField}
                                             name={`edu_records[${index}]gpa`}
                                             id={`edu_records[${index}]gpa`}
-                                            disabled={
-                                              !edu_record.name_of_program
+                                            disabled={!edu_record.name_of_program
                                             }
                                           />
                                         </div>
@@ -454,7 +483,17 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                               <button
                                 className={styles.bigAddBtn}
                                 type='button'
-                                onClick={() => arrayHelpers.push('')}
+                                onClick={() =>
+                                    arrayHelpers.push({
+                                      edu_inst: '',
+                                      start_date: null,
+                                      end_date: null,
+                                      education_description: '',
+                                      degree_type: '',
+                                      name_of_program: '',
+                                      gpa: '',
+                                    })
+                                }
                               >
                                 Add an Education Record
                               </button>

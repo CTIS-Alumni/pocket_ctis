@@ -49,12 +49,14 @@ const handler =  async (req, res) => {
                         "FROM highschool h LEFT OUTER JOIN city ci ON (h.city_id = ci.id) " +
                         "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 
-                    let length_query = "SELECT COUNT(*) as count FROM highschool h LEFT OUTER JOIN city ci ON (h.city_id = ci.id) " +
+                    let length_query = "SELECT COUNT(DISTINCT h.id) as count FROM highschool h LEFT OUTER JOIN city ci ON (h.city_id = ci.id) " +
                         "LEFT OUTER JOIN country co ON (ci.country_id = co.id) ";
 
                     if (req.query.name) {
                         query += "WHERE h.high_school_name LIKE CONCAT('%', ?, '%') ";
+                        length_query += "WHERE h.high_school_name LIKE CONCAT('%', ?, '%') ";
                         values.push(req.query.name);
+                        length_values.push(req.query.name);
                     }
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));

@@ -398,7 +398,7 @@ export async function updateTable(queries, validation, select_queries = []) {//p
                     [get_res] = await connection.execute(select_queries[index].query, select_queries[index].values);
 
                 if(get_res.length > 0){
-                    const error_message = select_queries[index].query.includes("user_id") ? "Data is not unique for user!" : "Another user has already taken this";
+                    const error_message = select_queries[index].query.includes("user_id") ? "Data is not unique for user!" : "Taken by another user!";
                     errors.push({name: query.name, error: error_message, queries, select_queries});
                 }else{
                     const [res] = await connection.execute(query.query, query.values);
@@ -824,7 +824,7 @@ export const insertToUserTable = async (queries, table, validation, select_queri
                 if(select_queries.length > 0)
                 [equal] = await connection.execute(select_queries[index].query, select_queries[index].values); //is there data that's similar/same as this data
                 if (equal.length > 0) {           //if yes then according to whether you checked the entire db or only this particular user give error msg
-                    const error_message = select_queries[index].query.includes("user_id") ? "Data is not unique for user!" : "Another User Has Already Taken This";
+                    const error_message = select_queries[index].query.includes("user_id") ? "Data is not unique for user!" : "Taken by another user!";
                     errors.push({index: index, error: error_message});
 
                 } else {
@@ -910,7 +910,7 @@ export const insertToUserRelatedTable = async (queries, table, validation = true
                     [equal] = await connection.execute(select_queries[index].query, select_queries[index].values);
 
                 if (equal.length > 0) {        //if yes then according to whether you checked the entire db or this particular user only give error msg
-                    const error_message = select_queries[index].query.includes("user_id") ? "Data is not unique for user!" : "Another User Has Already Taken This";
+                    const error_message = select_queries[index].query.includes("user_id") ? "Data is not unique for user!" : "Taken by another user!";
                     errors.push({index: index, error: error_message});
 
                 } else {

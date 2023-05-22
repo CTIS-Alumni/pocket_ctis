@@ -25,6 +25,7 @@ const UserPageContainer = ({ children }) => {
         />
         <div
           style={{
+            background: '#f5f5f5',
             overflow: 'scroll',
             height: '100%',
             width: '100%',

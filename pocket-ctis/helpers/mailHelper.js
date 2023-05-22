@@ -229,7 +229,7 @@ export const sendActivationMail = async(user) => {
 
     try {
         const activation_token = await sign({user_id: user.id, type: "activateAccount"},
-            process.env.MAIL_SECRET, 60 * 60 * 24 * 30 * 12);
+            process.env.MAIL_SECRET, 60 * 60 * 24 * 30 * 12 * 4);
 
         const html = template({
             name: user.first_name,

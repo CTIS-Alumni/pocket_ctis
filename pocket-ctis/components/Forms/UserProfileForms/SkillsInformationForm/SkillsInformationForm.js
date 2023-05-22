@@ -19,11 +19,14 @@ import {
   handleResponse,
 } from '../../../../helpers/submissionHelpers'
 import { craftUrl} from '../../../../helpers/urlHelper'
+import {toast} from "react-toastify";
+import {Spinner} from "react-bootstrap";
 
 const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [skillType, setSkillType] = useState([])
   const [skills, setSkills] = useState([])
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     _getFetcher({
@@ -63,8 +66,18 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
     })
   }
 
+  const args = [
+    ['skill_type', 'skill'],
+    ['skill_type_id'],
+    ['id', 'user_id'],
+    [],
+  ]
+
+  const url = craftUrl(['users', user_id, 'skills'])
+
   const onSubmit = async (values) => {
     setIsUpdated(true)
+    setIsLoading(true)
     let newData = cloneDeep(values)
     transformDataForSubmission(newData)
 
@@ -75,14 +88,9 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
       newData.skills,
       deletedData
     )
-    const url = craftUrl(["users",user_id, 'skills'])
+
     const responseObj = await submitChanges(url, requestObj)
-    const args = [
-      ['skill_type', 'skill'],
-      ['skill_type_id'],
-      ['id', 'user_id'],
-      [],
-    ]
+
     const new_data = handleResponse(
       send_to_req.skills,
       requestObj,
@@ -93,9 +101,28 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
       transformDataForSubmission
     )
     applyNewData(new_data)
-    console.log('req', requestObj, 'res', responseObj)
 
     deletedData = []
+
+    let errors = []
+    for (const [key, value] of Object.entries(responseObj)) {
+      if (value.errors?.length > 0) {
+        errors = [...errors, ...value.errors.map((error) => error)]
+      }
+    }
+
+    if (errors.length > 0) {
+      errors.forEach((errorInfo) => {
+        toast.error(errorInfo.error)
+      })
+    } else if (
+        responseObj.POST.data ||
+        responseObj.PUT.data ||
+        responseObj.DELETE.data
+    ) {
+      toast.success('Data successfully saved')
+    }
+    setIsLoading(false)
   }
 
   return (
@@ -105,7 +132,24 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
       onSubmit={onSubmit}
     >
       {(props) => (
-        <Form>
+          <Form style={{ position: 'relative' }}>
+            {isLoading && (
+                <div
+                    style={{
+                      zIndex: 2,
+                      position: 'absolute',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      height: '100%',
+                      width: '100%',
+                      background: '#ccc',
+                      opacity: '0.5',
+                    }}
+                >
+                  <Spinner />
+                </div>
+            )}
           <table style={{ width: '100%' }}>
             <tbody>
               <FieldArray
@@ -150,7 +194,6 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                         onClick={() => {
                                           arrayHelpers.remove(index)
                                           if (skill.hasOwnProperty('id')) {
-                                            console.log(skill)
                                             deletedData.push({
                                               id: skill.id,
                                               data: skill,
@@ -314,7 +357,13 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
                             <button
                               className={styles.bigAddBtn}
                               type='button'
-                              onClick={() => arrayHelpers.push('')}
+                              onClick={() =>
+                                  arrayHelpers.push({
+                                    skill_type: '',
+                                    skill_level: '',
+                                    skill: '',
+                                  })
+                              }
                             >
                               Add a Skill
                             </button>

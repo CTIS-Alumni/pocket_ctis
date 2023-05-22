@@ -1,8 +1,4 @@
-import {
-  _getFetcher,
-  _submitFetcher,
-  _submitFile,
-} from '../../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher, _submitFile} from '../../../helpers/fetchHelpers'
 import { craftUrl } from '../../../helpers/urlHelper'
 import AdminPageContainer from '../../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
 import {
@@ -180,7 +176,7 @@ const AdminUserView = ({ user }) => {
 
       if (res.errors.length > 0) {
         toast.error(res?.errors[0].error)
-      } 
+      }
       else if (res.data || !res.errors) {
         router.reload()
       }
@@ -658,8 +654,7 @@ const AdminUserView = ({ user }) => {
                         <Container style={{ color: '#999' }}>
                           {classifiedSkills[classification].map((skill, i) => (
                             <div>
-                              {skill.skill_name} -{' '}
-                              {text_skill_level[skill.skill_level]}
+                              {skill.skill_name} {(skill.skill_level ? `- ${text_skill_level[skill.skill_level]}` : ``)}
                             </div>
                           ))}
                         </Container>
@@ -766,7 +761,7 @@ const AdminUserView = ({ user }) => {
         </Modal.Header>
         <Modal.Body>
           <div style={{position: 'relative'}}>
-            {modalIsLoading && <div style={{position: 'absolute', width: '100%', height: '100%', background: '#ccc', zIndex: '2', opacity: '0.25', 
+            {modalIsLoading && <div style={{position: 'absolute', width: '100%', height: '100%', background: '#ccc', zIndex: '2', opacity: '0.25',
               display: 'flex', justifyContent: 'center', alignItems: 'center'
               }}>
               <Spinner />
