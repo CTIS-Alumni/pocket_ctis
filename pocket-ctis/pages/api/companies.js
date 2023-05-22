@@ -83,7 +83,6 @@ const handler =  async (req, res) => {
 
                     if(req.query.internship){
                         query += " GROUP BY c.id ";
-                        length_query += " GROUP BY c.id ";
                     }
 
 
