@@ -58,11 +58,8 @@ const handler =  async (req, res) => {
                     if (req.query.edu_inst_id) {
                         query += " WHERE e.edu_inst_id = ? ";
                         values.push(req.query.edu_inst_id);
-
-                        if(is_admin){
                             length_query += " WHERE e.edu_inst_id = ? ";
                             length_values.push(req.query.edu_inst_id);
-                        }
                     }
 
                     if (payload.user !== "admin") {
@@ -70,7 +67,6 @@ const handler =  async (req, res) => {
                         values.push(payload.user_id);
                     }
 
-                    if(is_admin){
                         ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns, "e.id"));
 
                         const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
@@ -78,12 +74,6 @@ const handler =  async (req, res) => {
 
                         res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
 
-                    }else {
-                        query += " GROUP BY e.id ORDER BY e.record_date DESC LIMIT 15"
-                        const {data, errors} = await doqueryNew({query: query, values});
-                        res.status(200).json({data, errors});
-
-                    }
                 } catch (error) {
                     res.status(500).json({errors: [{error: error.message}]});
                 }
