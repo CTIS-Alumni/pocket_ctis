@@ -13,7 +13,7 @@ export const config = {
 };
 
 const fields = ['department_name', 'abbreviation', 'app_name', 'app_logo']
-
+//Written entirely and only by Sila Yapici and Iqbal Karim
 const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
