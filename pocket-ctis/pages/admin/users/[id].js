@@ -365,12 +365,9 @@ const AdminUserView = ({ user }) => {
                 <div key={key} style={{ display: 'flex' }} className='mb-2'>
                   {socialMediaIcons[social.social_media_name]}
                   <a
-                    href={`http://${social.base_link || ''}${
-                      social.link || ''
-                    }`}
+                    href={`${social.link || ''}`}
                     target='_blank'
                   >
-                    {social.base_link}
                     {social.link}
                   </a>
                 </div>
@@ -484,12 +481,12 @@ const AdminUserView = ({ user }) => {
             </Tab>
             <Tab
               eventKey='graduationProject'
-              title='Graduation Project'
+              title='Projects'
               style={{ height: '300px', overflowY: 'scroll' }}
             >
               <>
                 {graduation_project.length == 0 ? (
-                  <div>No Data Available</div>
+                  <div>No Senior Project Available</div>
                 ) : (
                   <>
                     {graduation_project.map((gradProject, i) => {

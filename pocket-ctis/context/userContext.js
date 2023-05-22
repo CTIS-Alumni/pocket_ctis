@@ -16,11 +16,11 @@ function UserContext({ children }) {
     if (userData == null) {
       _getFetcher({ res: craftUrl(['basic_info']) })
         .then((res) => {
-          if (res.res.error || res.errors || (res.data && !res.data.length))
+          if (res.errors)
             router.push('/login')
           else setUserData(res.res.data[0])
         })
-        .catch((err) => console.log(err))
+        .catch((err) => console.log("err in user context", err))
     }
   }, [])
 

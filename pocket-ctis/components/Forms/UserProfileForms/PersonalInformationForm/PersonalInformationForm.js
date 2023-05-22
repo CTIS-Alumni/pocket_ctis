@@ -363,13 +363,28 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                           className={`${styles.inputField}`}
                           style={{ width: '100%' }}
                           disabled
-                          id='first_name'
-                          name='first_name'
+                          id='basic_info[0].first_name'
+                          name='basic_info[0].first_name'
                           placeholder='First Name'
                         />
                       </div>
                     </td>
                   </tr>
+                  {basic_info[0].gender && <tr>
+                    <td>
+                      <div className={`${styles.inputContainer}`}>
+                        <label className={`${styles.inputLabel}`}>Nee</label>
+                        <Field
+                            className={`${styles.inputField}`}
+                            style={{ width: '100%' }}
+                            id='basic_info[0].nee'
+                            name='basic_info[0].nee'
+                            placeholder='Nee'
+                            disabled
+                        />
+                      </div>
+                    </td>
+                  </tr>}
                   <tr>
                     <td>
                       <div className={`${styles.inputContainer}`}>
@@ -379,8 +394,8 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                         <Field
                           className={`${styles.inputField}`}
                           disabled
-                          id='last_name'
-                          name='last_name'
+                          id='basic_info[0].last_name'
+                          name='basic_info[0].last_name'
                           placeholder='Last Name'
                         />
                       </div>

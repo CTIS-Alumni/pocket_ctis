@@ -17,13 +17,13 @@ const SocialsSection = ({ socials }) => {
       {socials.map((social, i) => (
         <div key={i} className='mx-1' style={{ display: 'inline-block' }}>
           <a
-              title={social.base_link + social.link}
+              title={social.link}
             target='_blank'
             rel='noopener noreferrer external'
             className={`${styles[social.social_media_name.toLowerCase()]} ${
               styles.smGlobalBtn
             }`}
-            href={'https://' +social.base_link + social.link}
+            href={social.link}
           >
             {getIcon(social.social_media_name)}
           </a>

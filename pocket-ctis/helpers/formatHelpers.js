@@ -63,6 +63,7 @@ export const getSemester = (semester, start_date) => {
 }
 
 export const getProfilePicturePath = (fileName = null) => {
+    console.log("filename", fileName);
     if (fileName) {
         return process.env.NEXT_PUBLIC_IMAGES_PATH + "/profilepictures/" + fileName + '.png'
     } else {

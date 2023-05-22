@@ -379,6 +379,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                         id='basic_info[0].nee'
                         name='basic_info[0].nee'
                         placeholder='Nee'
+                        placeholder='Nee'
                       />
                     </div>
                   </td>

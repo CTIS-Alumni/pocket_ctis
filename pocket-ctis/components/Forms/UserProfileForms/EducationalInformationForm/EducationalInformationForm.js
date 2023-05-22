@@ -127,6 +127,8 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
       }
     }
 
+    console.log(errors);
+
     if (errors.length > 0) {
       errors.forEach((errorInfo) => {
         toast.error(errorInfo.error)

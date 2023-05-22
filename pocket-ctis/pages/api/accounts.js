@@ -10,6 +10,8 @@ const handleErrorMessages = (error) => {
         return {message: "Expired link!"};
     if(error.includes("timestamp check"))
         return {message: "Expired link!"};
+    if(error.includes("username_UNIQUE"))
+        return {message: "Username taken!"}
     if(error.includes("Duplicate"))
         return {message: "Email is taken by another user!"}
     return error;
@@ -129,8 +131,8 @@ const handler = async (req, res) => {
                 res.status(200).json({data: d,errors: err})
             }
             else {
-                errors[0].error = handleErrorMessages(errors[0].error);
-                res.status(500).json({errors})
+                const msg = handleErrorMessages(errors[0].error);
+                res.status(500).json({errors: [{errors: msg.message}]})
             }
 
         }catch(error){
@@ -152,15 +154,19 @@ const handler = async (req, res) => {
                 throw {message: "Your admin account has already been activated!"};
 
             const new_hashed_pass = await hash(password, 10);
+            console.log("here success")
 
             const query = "INSERT INTO usercredential (user_id, hashed, username, is_admin_auth) values (?, ?, ?, 1) ";
             const {data, errors} = await doqueryNew({query: query, values: [payload.user_id, new_hashed_pass, username]});
+            console.log("here success 2")
+            console.log("heres data, eroors", data, errors)
             if(!data && errors){
-                errors[0].error = handleErrorMessages(errors[0].error);
-                res.status(500).json({errors})
+                const msg = handleErrorMessages(errors[0].error);
+                res.status(500).json({errors: [{error: msg.message}]});
             }else res.status(200).json({data, errors});
 
         }catch(error){
+            console.log("here fail", error)
             res.status(500).json({errors: [{error: error.message}]})
         }
     }

@@ -102,7 +102,7 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
   const args = {
     phone_numbers: [[], [], ['id', 'user_id'], []],
     emails: [[], [], ['id', 'user_id'], []],
-    socials: [['social_media'], ['base_link'], ['id', 'user_id'], []],
+    socials: [['social_media'], [], ['id', 'user_id'], []],
   }
 
   const onSubmit = async (values) => {

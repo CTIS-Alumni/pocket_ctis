@@ -601,8 +601,8 @@ export const createUser = async(user, validation) => {
     let errors = [];
 
     const type_query = "INSERT INTO useraccounttype(user_id, type_id) values (:user_id, :type_id) ";
-    const user_query = "INSERT INTO users(bilkent_id, first_name, last_name, gender, contact_email) values " +
-        " (:bilkent_id, :first_name, :last_name, :gender, :contact_email) ";
+    const user_query = "INSERT INTO users(bilkent_id, first_name, nee, last_name, gender, contact_email) values " +
+        " (:bilkent_id, :first_name, :nee, :last_name, :gender, :contact_email) ";
     const profile_picture_query = "INSERT INTO userprofilepicture(user_id, profile_picture) values (:user_id, 'defaultuser') ";
 
     try {
@@ -635,7 +635,9 @@ export const createUser = async(user, validation) => {
 
         let admin_mail_status = "Not an admin";
 
-        if(user.types.includes('4')){
+        console.log("user typs", user.types);
+
+        if(user.types.includes('4') || user.types.includes(4)){
             admin_mail_status = await sendAdminActivationMail(user);
             if(admin_mail_status !== true)
                 throw {message: "Could not admin send account activation mail to user.", details: mail_status};

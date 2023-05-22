@@ -369,7 +369,7 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             className={styles.inputField}
                                             name={`work_records[${index}]department`}
                                             id={`work_records[${index}]department`}
-                                            disabled={!work_record.company}
+                                            disabled={!work_record.company || work_record.company == "null-null"}
                                           />
                                         </div>
                                         <div
@@ -377,13 +377,12 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           style={{ width: '49%' }}
                                         >
                                           <label className={styles.inputLabel}>
-                                            Position
                                           </label>
                                           <Field
                                             className={styles.inputField}
                                             name={`work_records[${index}]position`}
                                             id={`work_records[${index}]position`}
-                                            disabled={!work_record.company}
+                                            disabled={!work_record.company && work_record.work_type !== "3-Freelance"}
                                           />
                                         </div>
                                         <div

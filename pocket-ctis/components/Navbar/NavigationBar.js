@@ -80,12 +80,12 @@ const NavigationBar = ({ setToggleSidebar }) => {
             <NavDropdown.Item onClick={() => router.push('/user/settings')}>
               Settings
             </NavDropdown.Item>
-            <NavDropdown.Divider />
-            {context.userData?.user_types.includes('admin') && (
+            {context.userData?.user_types.includes('admin') && <>
+              <NavDropdown.Divider />
               <NavDropdown.Item onClick={adminLoginPage}>
                 Admin Panel
               </NavDropdown.Item>
-            )}
+            </>}
             <NavDropdown.Divider />
             <NavDropdown.Item onClick={requestLogout}>Logout</NavDropdown.Item>
           </NavDropdown>

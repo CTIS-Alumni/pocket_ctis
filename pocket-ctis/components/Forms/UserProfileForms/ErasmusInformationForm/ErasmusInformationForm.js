@@ -11,8 +11,6 @@ import {
   replaceWithNull, splitFields,
 } from '../../../../helpers/submissionHelpers'
 import {
-  _getFetcher,
-  _submitFetcher,
   createReqObject,
   submitChanges,
 } from '../../../../helpers/fetchHelpers'
@@ -35,17 +33,6 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
     ['id', 'user_id', 'record_date'],
     ['start_date', 'end_date'],
   ]
-
-  useEffect(() => {
-    _getFetcher({
-      universities: craftUrl(
-          ['educationinstitutes'],
-          [{ name: 'is_erasmus', value: 1 }]
-      ),
-    })
-        .then((res) => setUniversities(res.universities.data))
-        .catch((err) => console.log(err))
-  }, [])
 
   const transformData = (data) => {
     let newData = cloneDeep(data)

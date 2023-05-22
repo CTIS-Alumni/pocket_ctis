@@ -44,17 +44,23 @@ const ActivateAccount = ({token, type}) => {
             res = await activateAccount(values.username, values.password, token);
             if (res.data && !res.errors) {
                 toast.success('Your account has been activated successfully.')
-                router.push('/login');
+                setTimeout(() => {
+                    router.push('/login');
+                }, 3000);
             } else {
-                toast.error(res.errors[0])
+                toast.error(res.errors[0].error)
             }
         } else if (type === "activateAdminAccount") {
             res = await activateAdminAccount(values.username, values.password, token);
+            console.log("hers res", res);
             if (res.data?.insertId && !res.errors) {
                 toast.success('Your admin account has been activated successfully.')
-                router.push('/login');
+                setTimeout(() => {
+                    router.push('/login');
+                }, 3000);
             } else {
-                toast.error(res.errors[0])
+                console.log("here");
+                toast.error(res.errors[0].error)
             }
         }
     }

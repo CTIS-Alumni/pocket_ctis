@@ -95,21 +95,16 @@ const handler =  async (req, res) => {
 
                         let count = 0;
                         edu_records.forEach((rec, i)=>{
-                            console.log("heres rec", rec);
                             if((rec.name_of_program === departmentConfig.department_name ||
                                     rec.name_of_program === departmentConfig.abbreviation) &&
                                 rec.edu_inst_id == 1)
                                 count++;
-                            console.log("dis count increase", count);
                         })
-
-                        console.log("heres res.length", res.data.length, "heres count,", count);
 
                         if(count > res.data.length)
                             throw {message: "Can't add " + departmentConfig.department_name + " information! "};
 
                         let department_data = [], indexes = [];
-                        console.log("heres res", res)
                         if(!res.data)
                             throw {message: "An error occured!"}
                         if(res.data.length){
@@ -152,13 +147,14 @@ const handler =  async (req, res) => {
                         let check_to_delete_query = "SELECT id FROM educationrecord WHERE (name_of_program = ? OR name_of_program = ?) AND edu_inst_id = 1 AND user_id = ? ";
                         const res = await doqueryNew({query: check_to_delete_query, values: [departmentConfig.department_name, departmentConfig.abbreviation, user_id]});
                         console.log("heres res", res);
-                        console.log("edu rec", edu_records)
                         if(!res.data)
                             throw {message: "An error occured!"}
-                        edu_records.forEach((rec)=>{
-                            if(rec.id === res.data[0].id)
-                                throw {message: "Can't delete " + departmentConfig.department_name + " record!"}
-                        })
+                        if(res.data.length){
+                            edu_records.forEach((rec)=>{
+                                if(rec?.id === res.data[0].id)
+                                    throw {message: "Can't delete " + departmentConfig.department_name + " record!"}
+                            })
+                        }
                     }
                     const {data, errors} = await doMultiDeleteQueries(edu_records, table_name);
                     res.status(200).json({data, errors});

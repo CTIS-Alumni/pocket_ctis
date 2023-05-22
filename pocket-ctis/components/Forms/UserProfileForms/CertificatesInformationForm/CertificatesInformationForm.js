@@ -20,7 +20,7 @@ import { Spinner } from 'react-bootstrap'
 
 const CertificatesInformationForm = ({ data, user_id, setIsUpdated }) => {
   const [dataAfterSubmit, setDataAfterSubmit] = useState(data)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   const applyNewData = (data) => {
     setDataAfterSubmit(data)

@@ -58,18 +58,17 @@ export default async function handler(req,res){
             res.setHeader("Set-Cookie", [refresh_expired, access_expired]);
 
             const user_id = payload.user_id;
-            const query = "SELECT username FROM usercredential WHERE user_id = ? AND is_admin_auth = 1 ";
+            const query = "SELECT username, is_admin_auth FROM usercredential WHERE user_id = ? "; // there should be only one account and it should be user accounr
             const {data, errors} = await doqueryNew({query: query, values: [user_id]});
 
-            if(errors || (data && data.length > 1)){
+            if(errors || (data && data.length !== 1)){
                 throw errors[0];
             }
 
-            if (data.length !== 0) { //if user already has credentials for this type of account
-                res.redirect("/404", 404);
-            } else {
+            if(data.length === 1 && data[0].is_admin_auth === 0)
                 res.redirect('/activate?token=' + token, 200);
-            }
+            else res.redirect("/404", 404);
+
         } else res.redirect("/404", 404);
 
     }catch(error){

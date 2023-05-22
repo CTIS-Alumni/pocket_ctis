@@ -88,7 +88,7 @@ const handler =  async (req, res) => {
                     temp += "ORDER BY sk.skill_type_id ASC ";
                     queries.push({name: "skills", query: temp, values: [user_id]});
 
-                    temp = "SELECT usm.id, sm.social_media_name, usm.social_media_id, sm.base_link, usm.link, usm.visibility " +
+                    temp = "SELECT usm.id, sm.social_media_name, usm.social_media_id, usm.link, usm.visibility " +
                         "FROM usersocialmedia usm JOIN socialmedia sm ON (usm.social_media_id = sm.id) " +
                         "WHERE usm.user_id = ? ";
                     if (payload.user !== "admin" && payload.user !== "owner")
@@ -161,6 +161,7 @@ const handler =  async (req, res) => {
                     queries.push({name: "edu_records", query: temp, values: [user_id]});
 
                     const {data, errors} = await doMultiQueries(queries);
+                    console.log(data, errors);
                     res.status(200).json({data: data, errors: errors, session: payload.user});
 
                 } catch (error) {

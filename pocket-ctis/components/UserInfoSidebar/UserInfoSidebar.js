@@ -69,12 +69,12 @@ const UserInfoSidebar = ({ toggleSidebar, setToggleSidebar }) => {
           </div>
         )}
         <div className={styles.sidebar_user_wrapper}>
-          <UserImage img={context.userData?.profile_picture[0]} />
+          <UserImage img={context.userData?.profile_picture} />
           <UserInfo info={context.userData} />
         </div>
         <div className={styles.sidebar_buttons}>
           <div className={styles.sidebar_button_group_personal}>
-            <Button text='Profile' href='/user/1' icon={<PersonFill />} />
+            <Button text='Profile' href={'/user/' + context.userData?.id} icon={<PersonFill />} />
             {/* <hr className={styles.sidebar_divider} /> */}
             <Button text='Users' href='/user/users' icon={<PeopleFill />} />
           </div>
