@@ -81,14 +81,14 @@ const handler =  async (req, res) => {
                         length_values.push(req.query.name);
                     }
 
-                    if(req.query.internship && (payload.user === "admin" || (payload.user !== "admin" && modules.internships.user_visible))){
+                    if(req.query.internship){
                         query += " GROUP BY c.id ";
-                        length_query += " GROUP BY c.id ";
                     }
 
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
 
+                    console.log("heres query", query, "heres length query", length_query);
 
                     const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
                         {name: "length", query: length_query, values: length_values}]);

@@ -95,7 +95,7 @@ const ActivateAccount = ({token, type}) => {
                                         name='username'
                                         placeholder='username'
                                     />
-                                    <label className={styles.input_label} htmlFor='password'>
+                                    <label className={styles.input_label} htmlFor='username'>
                                         Enter Username
                                     </label>
                                 </p>
@@ -104,6 +104,7 @@ const ActivateAccount = ({token, type}) => {
                                         className={styles.input_field}
                                         id='password'
                                         name='password'
+                                        type='password'
                                         placeholder='password'
                                     />
                                     <label className={styles.input_label} htmlFor='password'>
@@ -115,6 +116,7 @@ const ActivateAccount = ({token, type}) => {
                                         className={styles.input_field}
                                         id='confirmPassword'
                                         name='confirmPassword'
+                                        type='password'
                                         placeholder='confirmPassword'
                                     />
                                     <label className={styles.input_label} htmlFor='confirmPassword'>

@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react'
+import {
+  CaretDownFill,
+  CaretUpFill,
+} from 'react-bootstrap-icons'
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
 import SearchBar from '../SearchBar/SearchBar'
 import styles from './SectorsList.module.scss'
@@ -59,7 +63,24 @@ const SectorsList = ({ sectors, isLoading, onSearch, onQuery, total }) => {
         <table>
           <thead>
             <tr>
-              <th>Sector</th>
+              <th onClick={() => handleSorting('sector_name')}
+                style={{ cursor: 'pointer' }}>
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <span>
+                    Sector
+                  </span>
+                  <span style={{ width: 20 }}>
+                  {sorting.name == 'sector_name' ?
+                      (sorting.direction == 'asc' ? (
+                        <CaretDownFill />
+                      ) : (
+                        <CaretUpFill />
+                      )): <div className='d-flex flex-column' ><CaretUpFill/><CaretDownFill/></div>}
+                  </span>
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>

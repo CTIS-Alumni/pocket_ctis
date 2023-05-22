@@ -74,13 +74,8 @@ const handler =  async (req, res) => {
     } else {
         try {
             const {username, password} = JSON.parse(req.body);
-
-            const query = "SELECT u.id, u.first_name, u.last_name, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.contact_email, u.gender, uc.hashed " +
-            " FROM users u LEFT OUTER JOIN usercredential uc ON (u.id = uc.user_id) " +
-            " LEFT OUTER JOIN useraccounttype uat ON (u.id = uat.user_id) " +
-            " LEFT OUTER JOIN accounttype act ON (act.id = uat.type_id) " +
-            " WHERE username = ? AND is_admin_auth = 0 AND u.is_active = 1 "
-
+            const query = "SELECT uc.user_id, uc.hashed FROM usercredential uc LEFT OUTER JOIN users u ON (u.id = uc.user_id) " +
+                " WHERE username = ? AND is_admin_auth = 0 AND u.is_active = 1 ";
             const {data, errors} = await doqueryNew({query: query, values: [username]});
             const user = data;
 
@@ -95,12 +90,12 @@ const handler =  async (req, res) => {
                     res.status(401).json({errors: [{error: "Wrong username or password!"}]});
 
                 const access_token = await sign({
-                    user_id: user[0].id,
+                    user_id: user[0].user_id,
                     mode: "user"
                 }, process.env.ACCESS_SECRET, 60 * 10);
 
                 const refresh_token = await sign({
-                    user_id: user[0].id,
+                    user_id: user[0].user_id,
                     mode: "user"
                 }, process.env.REFRESH_SECRET, 60 * 60 * 24 * 3);
 
@@ -120,9 +115,8 @@ const handler =  async (req, res) => {
                     path: "/"
                 });
 
-                delete user[0].hashed;
                 res.setHeader("Set-Cookie", [serialCookie, refreshCookie]);
-                res.status(200).json({data: user, errors: errors});
+                res.status(200).json({data: {message: "Login successful"}, errors: errors});
             });
         } catch (error) {
             res.status(500).json({errors: [{error: error.message}]});

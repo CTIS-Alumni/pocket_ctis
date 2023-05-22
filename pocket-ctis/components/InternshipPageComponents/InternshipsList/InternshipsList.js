@@ -1,4 +1,4 @@
-import { Container, ListGroupItem, Row, Col } from 'react-bootstrap'
+import { Container, ListGroupItem, Row, Col, Badge } from 'react-bootstrap'
 import styles from './InternshipsList.module.scss'
 import { useState, useEffect, useContext } from 'react'
 import {
@@ -9,6 +9,7 @@ import {
 import ReactStars from 'react-stars'
 import { User_data } from '../../../context/userContext'
 import PaginationFooter from '../../PaginationFooter/PaginationFooter'
+import Link from 'next/link'
 
 /*const Anonymous = () => {
   return (
@@ -85,23 +86,16 @@ const InternshipsList = ({ internships, isLoading, onQuery, total }) => {
           internship.end_date
         )
         return (
-          <div className={styles.internship_students_item} key={internship.id}>
-            {/* This will become a link in the future maybe */}
+          <Link href={`/user/${internship.user_id}`} className={styles.internship_students_item} key={internship.id}>
             <div className={styles.student_link} href={`/#`}>
               <div className={styles.internship_students_item_info}>
-                <div
-                  className='user_avatar_48'
-                  style={{
-                    backgroundImage:
-                      'url(' +
-                      getProfilePicturePath(internship.profile_picture) +
-                      ')',
-                  }}
-                />
+                <div className='d-flex align-items-center'>
+                  <img src={getProfilePicturePath(internship.profile_picture)} style={{width: 75, height: 75, borderRadius: '50%'}} className='me-2'/>
+                </div>
                 <div>
                   <span
                     className={`${styles.internship_students_item_name}`}
-                  >{`${internship.first_name} ${internship.last_name}`}</span>
+                  >{`${internship.first_name}${internship.nee ? ` ${internship.nee} `: ' '}${internship.last_name}`}</span>
                   <span className={styles.internship_students_item_company}>
                     {internship.company_name}
                   </span>
@@ -124,11 +118,11 @@ const InternshipsList = ({ internships, isLoading, onQuery, total }) => {
               </div>
               <div className={styles.internship_students_item_badge}>
                 {internship.user_types?.split(',').map((type, i) => (
-                  <span key={i}>{type.toLocaleUpperCase()}</span>
+                  <Badge className='me-2' key={i}>{type.toLocaleUpperCase()}</Badge>
                 ))}
               </div>
             </div>
-          </div>
+          </Link>
         )
       })}
       <PaginationFooter

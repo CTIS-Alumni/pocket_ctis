@@ -1,5 +1,4 @@
 import {
-  FilterSquareFill,
   Check,
   CaretDownFill,
   CaretUpFill,
@@ -70,16 +69,16 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
                 style={{ cursor: 'pointer' }}
               >
                 <div
-                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
                   <span>Company Name</span>
                   <span style={{ width: 20 }}>
-                    {sorting.name == 'company_name' &&
+                    {sorting.name == 'company_name' ?
                       (sorting.direction == 'asc' ? (
                         <CaretDownFill />
                       ) : (
                         <CaretUpFill />
-                      ))}
+                      )): <div className='d-flex flex-column' ><CaretUpFill/><CaretDownFill/></div>}
                   </span>
                 </div>
               </th>
@@ -88,16 +87,16 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
                 style={{ cursor: 'pointer' }}
               >
                 <div
-                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center' }}
                 >
                   <span>Sector</span>
                   <span style={{ width: 20 }}>
-                    {sorting.name == 'sector_name' &&
+                    {sorting.name == 'sector_name' ?
                       (sorting.direction == 'asc' ? (
                         <CaretDownFill />
                       ) : (
                         <CaretUpFill />
-                      ))}
+                      )):<div className='d-flex flex-column' ><CaretUpFill/><CaretDownFill/></div>}
                   </span>
                 </div>
               </th>

@@ -1,25 +1,31 @@
+import { useState} from 'react'
 import GraduationProjectsList from '../../../components/GraduationProjectsList/GraduationProjectsList'
 import { _getFetcher } from '../../../helpers/fetchHelpers'
+import { buildCondition } from '../../../helpers/urlHelper'
 import { craftUrl } from '../../../helpers/urlHelper'
 import UserPageContainer from '../../../components/UserPageContainer/UserPageContainer'
 
-const GraduationProjectsDashboard = ({ gradprojects }) => {
+const GraduationProjectsDashboard = () => {
+  const [gradProjects, setGradProjects] = useState([])
+  const [total, setTotal] = useState()
+  const [isLoading, setIsLoading] = useState(false)
+
+  const onQuery = (queryParams) => {
+    const conditions = buildCondition(queryParams)
+    setIsLoading(true)
+    _getFetcher({ gradProjects: craftUrl(['graduationprojects'], conditions) })
+      .then(({ gradProjects }) => {
+        setTotal(gradProjects.length)
+        setGradProjects(gradProjects.data)
+      })
+      .finally((_) => setIsLoading(false))
+  }
+
   return (
     <UserPageContainer>
-      <GraduationProjectsList graduationProjects={gradprojects.data} />
+      <GraduationProjectsList graduationProjects={gradProjects} total={total} onQuery={onQuery} isLoading={isLoading} />
     </UserPageContainer>
   )
-}
-
-export async function getServerSideProps(context) {
-  const { cookie } = context.req.headers
-  const { gradprojects } = await _getFetcher(
-    {
-      gradprojects: craftUrl(['graduationprojects']),
-    },
-    cookie
-  )
-  return { props: { gradprojects } }
 }
 
 export default GraduationProjectsDashboard

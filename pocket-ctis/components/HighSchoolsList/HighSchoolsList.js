@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { CaretDownFill, CaretUpFill } from 'react-bootstrap-icons'
 import Link from 'next/link'
 import SearchBar from '../SearchBar/SearchBar'
 import styles from './HighSchoolsList.module.scss'
@@ -59,8 +60,55 @@ const HighSchoolList = ({ highSchools, isLoading, onQuery, total }) => {
         <table>
           <thead>
             <tr>
-              <th>High School Name</th>
-              <th>Location</th>
+              <th 
+                onClick={() => handleSorting('high_school_name')}
+                style={{ cursor: 'pointer' }}>
+                  <div
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                  >
+                  <span>High School Name</span>
+                  <span style={{ width: 20 }}>
+                  {sorting.name == 'high_school_name' ?
+                      (sorting.direction == 'asc' ? (
+                        <CaretDownFill />
+                      ) : (
+                        <CaretUpFill />
+                      )): <div className='d-flex flex-column' ><CaretUpFill/><CaretDownFill/></div>}
+                  </span>
+                </div>
+              </th>
+              <th
+                onClick={() => handleSorting('city_name')}
+                style={{ cursor: 'pointer' }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>City</span>
+                  <span style={{ width: 20 }}>
+                    {sorting.name == 'city_name' ?
+                      (sorting.direction == 'asc' ? (
+                        <CaretDownFill />
+                      ) : (
+                        <CaretUpFill />
+                      )): <div className='d-flex flex-column' ><CaretUpFill/><CaretDownFill/></div>}
+                  </span>
+                </div>
+              </th>
+              <th
+                onClick={() => handleSorting('country_name')}
+                style={{ cursor: 'pointer' }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Country</span>
+                  <span style={{ width: 20 }}>
+                  {sorting.name == 'country_name' ?
+                      (sorting.direction == 'asc' ? (
+                        <CaretDownFill />
+                      ) : (
+                        <CaretUpFill />
+                      )): <div className='d-flex flex-column' ><CaretUpFill/><CaretDownFill/></div>}
+                  </span>
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -68,16 +116,16 @@ const HighSchoolList = ({ highSchools, isLoading, onQuery, total }) => {
               <tr className={common.hoverable} key={i}>
                 <td>
                   <Link
-                    //className={`${styles.highSchool_link} link`}
                     href={`/user/highSchools/${highSchool.id}`}
                   >
                     {highSchool.high_school_name}
                   </Link>
                 </td>
                 <td>
-                  {highSchool.city_name
-                    ? `${highSchool.city_name} - ${highSchool.country_name}`
-                    : ``}
+                  {highSchool.country_name}
+                </td>
+                <td>
+                  {highSchool.city_name}
                 </td>
               </tr>
             ))}

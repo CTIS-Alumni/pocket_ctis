@@ -53,7 +53,13 @@ const ReportGeneration = () => {
   const [columns, setColumns] = useState([])
   const [activeKey, setActiveKey] = useState('generate')
 
-  const { tableColumns } = useContext(Tables_Data)
+  const { tableColumns, runFetcher } = useContext(Tables_Data)
+
+  useEffect(() => {
+    runFetcher()
+  }, [])
+  
+
   useEffect(() => {
     setTableOptions(transformTableData(tableColumns))
   }, [tableColumns])

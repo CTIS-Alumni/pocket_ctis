@@ -4,10 +4,11 @@
     padding: 4em 3em;
 
     &_info {
-        span {display: block;}
-        margin-bottom: 3em;
+        span {
+            display: block;
+        }
 
-        > div:first-of-type {
+        >div:first-of-type {
             display: flex;
             align-items: center;
             margin-bottom: 3em;
@@ -39,7 +40,7 @@
     &_erasmus_badge span {
         font-size: 0.8em;
         color: $white;
-        background-color: $medium-grey;
+        background-color: rgb(74, 159, 194);
         padding: 0.4em 0.6em;
         border-radius: 500px;
     }
@@ -53,16 +54,18 @@
         align-items: center;
         justify-content: space-between;
 
-        > div:first-of-type { display: flex;}
-
-        > div > div:first-of-type {margin-right: 1em;}
-
-        &_info {
-            span {display: block;}
+        >div:first-of-type {
+            display: flex;
         }
 
-        &_name {
+        >div>div:first-of-type {
+            margin-right: 1em;
+        }
 
+        &_info {
+            span {
+                display: block;
+            }
         }
 
         &_program {
@@ -82,7 +85,10 @@
         }
 
         &_location {
-            span{display: inline;}
+            span {
+                display: inline;
+            }
+
             color: $medium-grey;
             font-size: 0.8em;
         }
@@ -95,4 +101,12 @@
             border-radius: 500px;
         }
     }
+}
+
+.top_part {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 3em;
 }

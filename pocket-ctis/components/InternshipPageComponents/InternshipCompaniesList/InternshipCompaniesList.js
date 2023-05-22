@@ -3,6 +3,7 @@ import { BuildingFill } from 'react-bootstrap-icons'
 import styles from './InternshipCompaniesList.module.scss'
 import PaginationFooter from '../../PaginationFooter/PaginationFooter'
 import { useEffect, useState } from 'react'
+import { Spinner } from 'react-bootstrap'
 
 const InternshipCompaniesList = ({ companies, onQuery, isLoading, total }) => {
   const [limit, setLimit] = useState(15)
@@ -48,7 +49,23 @@ const InternshipCompaniesList = ({ companies, onQuery, isLoading, total }) => {
   }, [sorting, currentPage, limit, searchString])
 
   return (
-    <div className={styles.internship_companies}>
+    <>
+    <div className={styles.internship_companies} style={{position: 'relative'}}>
+      {isLoading && 
+        <div 
+          style={{
+            display: 'flex',
+            backgroundColor: 'rgba(255,255,255,0.5)',
+            justifyContent: 'center',
+            zIndex: 9,
+            height: '100%',
+            width: '100%',
+            position: 'absolute',
+          }}
+        >
+          <Spinner />
+        </div>
+      } 
       {companies.map((company) => (
         <div className={styles.internship_companies_item} key={company.id}>
           <Link
@@ -74,6 +91,7 @@ const InternshipCompaniesList = ({ companies, onQuery, isLoading, total }) => {
           </Link>
         </div>
       ))}
+        </div>
       <PaginationFooter
         total={total}
         limit={limit}
@@ -81,7 +99,7 @@ const InternshipCompaniesList = ({ companies, onQuery, isLoading, total }) => {
         currentPage={currentPage}
         pageChange={handlePageChange}
       />
-    </div>
+    </>
   )
 }
 

@@ -33,7 +33,7 @@ const handler =  async (req, res) => {
         switch (method) {
             case "GET":
                 try {
-                    const is_admin = payload.user === "admin";
+                  console.log("bro is it here")
                     let values = [], length_values = [], length_query = "";
                     let query = "SELECT w.id, w.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.bilkent_id, u.first_name, u.last_name, w.company_id, " +
                         "c.company_name, wt.work_type_name, w.department, w.position, w.work_description, w.city_id, ci.city_name," +
@@ -60,28 +60,26 @@ const handler =  async (req, res) => {
                     if (req.query.company_id) {
                         query += "WHERE w.company_id = ? ";
                         values.push(req.query.company_id);
-
-                        if(is_admin){
-                            length_query += "WHERE w.company_id = ? ";
-                            length_values.push(req.query.company_id);
-                        }
+                        length_query += "WHERE w.company_id = ? ";
+                        length_values.push(req.query.company_id);
                     }
 
                     if (req.query.sector_id) {
                         query += addAndOrWhere(query, " c.sector_id = ? ");
                         values.push(req.query.sector_id);
-                        if(is_admin){
-                            length_query += addAndOrWhere(query, " c.sector_id = ? ");
-                            length_query.push(req.query.sector_id);
-                        }
+                        length_query += addAndOrWhere(length_query, " c.sector_id = ? ");
+                        length_values.push(req.query.sector_id);
+
                     }
                     if(payload.user !== "admin"){
                         query += addAndOrWhere(query, " (w.visibility = 1 OR w.user_id = ?) ");
                         values.push(payload.user_id);
                    }
 
-                    if(is_admin){
+
                         ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns, "w.id"));
+
+                    console.log("hello?");
 
                         console.log("heres query", query, "heres values", values, "hers length query", length_query, "lenght values", length_values);
 
@@ -89,16 +87,9 @@ const handler =  async (req, res) => {
                             {name: "length", query: length_query, values: length_values}]);
 
                         console.log("hers teh data", data);
-
-
                         res.status(200).json({data:data.data, length: data?.length[0].count, errors: errors});
 
-                    }else {
-                        query += " GROUP BY w.id ORDER BY w.record_date DESC LIMIT 15"
-                        const {data, errors} = await doqueryNew({query: query, values});
-                        res.status(200).json({data, errors});
 
-                    }
                 } catch (error) {
                     res.status(500).json({errors: { error: error.message}});
                 }

@@ -5,13 +5,15 @@ import {craftUrl} from "../helpers/urlHelper";
 export const Tables_Data = createContext({
   tablesColumnTypeData: [],
   tableColumns: [],
+  runFetcher: () => null
 })
 
 function TablesContext({ children }) {
   const [tablesColumnTypeData, setTablesColumnTypeData] = useState([])
   const [tableColumns, setTableColumns] = useState([])
 
-  useEffect(() => {
+  const runFetcher = () => {
+    if (tableColumns.length == 0){
     _getFetcher({ data: craftUrl(['tablecolumns']) })
       .then(({ data }) => {
         const tablesColumnTypeData = {}
@@ -30,11 +32,13 @@ function TablesContext({ children }) {
         setTableColumns(tableColumns)
       })
       .catch((err) => console.log(err))
-  }, [])
+    }
+  }
 
   const value = {
     tablesColumnTypeData: tablesColumnTypeData,
     tableColumns: tableColumns,
+    runFetcher: runFetcher
   }
 
   return <Tables_Data.Provider value={value}>{children}</Tables_Data.Provider>
