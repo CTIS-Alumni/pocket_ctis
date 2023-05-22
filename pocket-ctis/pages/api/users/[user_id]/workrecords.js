@@ -4,6 +4,8 @@ import {
 } from "../../../../helpers/dbHelpers";
 import modules from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
+import {corsMiddleware} from "../../middleware/cors";
+import {checkApiKey} from "../../middleware/checkAPIkey";
 
 const field_conditions = {
     must_be_different: ["company_id", "work_type_id", "department", "position", "city_id", "country_id","is_current"],
@@ -52,7 +54,7 @@ const validation = (data) => {
     return true;
 }
 
-export default async function handler(req, res){
+const handler = async (req, res) => {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
 
@@ -98,3 +100,5 @@ export default async function handler(req, res){
         res.status(403).json({errors: [{error: "Forbidden request!"}]});
     }
 }
+
+export default corsMiddleware(handler);

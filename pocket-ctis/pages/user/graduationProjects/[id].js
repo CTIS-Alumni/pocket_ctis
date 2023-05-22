@@ -54,11 +54,18 @@ const GraduationProject = ({ graduationproject }) => {
               </div>
             </div>
             <div style={{ display: 'flex', marginBottom: 20 }}>
+              <div style={{ color: '#aaa' }}>Project Type</div>
+              <div style={{ textAlign: 'right', flexGrow: '1' }}>
+                {graduationproject.data[0].project_type}
+              </div>
+            </div>
+            {graduationproject.data[0].project_type === "company" &&
+                <div style={{ display: 'flex', marginBottom: 20 }}>
               <div style={{ color: '#aaa' }}>Sponsor</div>
               <div style={{ textAlign: 'right', flexGrow: '1' }}>
                 {graduationproject.data[0].company_name}
               </div>
-            </div>
+            </div>}
             <div style={{ display: 'flex', marginBottom: 20 }}>
               <div style={{ color: '#aaa' }}>Advisor</div>
               <div style={{ textAlign: 'right', flexGrow: '1' }}>
@@ -98,7 +105,7 @@ const GraduationProject = ({ graduationproject }) => {
               />
             </div>
             <div>
-              {graduationproject.data[0].team_members.split(',').map((stu) => {
+              {graduationproject.data[0]?.team_members?.split(',').map((stu) => {
                 const [num, name, bilkentID] = stu.split('-')
                 return (
                   <div

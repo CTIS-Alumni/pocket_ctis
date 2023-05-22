@@ -4,7 +4,7 @@ import { _getFetcher, _submitFetcher } from '../../helpers/fetchHelpers'
 import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import styles from './Dashboard.module.css'
 import DataTable from '../DataTable/DataTable'
-import EducationalInstitureForm from '../EntityForms/EducationalInstitureForm'
+import EducationalInstituteForm from '../EntityForms/EducationalInstituteForm'
 import { toast } from 'react-toastify'
 
 const EducationInstitutesDashboard = () => {
@@ -175,7 +175,7 @@ const EducationInstitutesDashboard = () => {
         </Tab>
         <Tab title='Insert' eventKey='insert'>
           <Container style={{ marginTop: 10 }}>
-            <EducationalInstitureForm
+            <EducationalInstituteForm
               key={refreshKey}
               activeItem={activeItem}
               updateData={getData}

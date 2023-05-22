@@ -9,6 +9,7 @@ import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
 import modules from "../../config/moduleConfig";
+import {corsMiddleware} from "./middleware/cors";
 
 const columns = {
     sector_name: "sector_name",
@@ -102,4 +103,4 @@ const handler =  async (req, res) => {
         res.redirect("/401", 401);
     }
 }
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

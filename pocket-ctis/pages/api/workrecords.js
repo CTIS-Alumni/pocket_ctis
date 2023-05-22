@@ -1,6 +1,7 @@
 import {addAndOrWhere, buildSearchQuery, doMultiQueries, doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
+import {corsMiddleware} from "./middleware/cors";
 
 const columns = {
     user: "CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
@@ -108,4 +109,4 @@ const handler =  async (req, res) => {
     }
 }
 
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

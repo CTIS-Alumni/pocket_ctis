@@ -8,11 +8,11 @@ import { _submitFetcher } from '../../helpers/fetchHelpers'
 import { craftUrl } from '../../helpers/urlHelper'
 import { User_data } from '../../context/userContext'
 
-const changeEmail = async (email) => {
+const changeEmail = async (email, currentEmail) => {
   const res = await _submitFetcher(
     'POST',
     craftUrl(['mail'], [{ name: 'changeEmail', value: 1 }]),
-    { email }
+    { email, currentEmail }
   )
   return res
 }
@@ -38,12 +38,18 @@ const ChangeEmailForm = () => {
 
   const onSubmitHandler = async (values) => {
     setIsLoading(true)
+    if(context?.userData.contact_email === values.email){
+      toast.error("New email address can't be the same as old email address!");
+      setIsLoading(false)
+      return
+    }
     if (values.email !== values.confirmEmail) {
       toast.error('New email address and confirm email do not match!')
+      setIsLoading(false)
       return
     }
 
-    const res = await changeEmail(values.email)
+    const res = await changeEmail(values.email, context.userData?.contact_email)
     if (res.data && !res.errors) {
       toast.success('A verification link has been sent to ' + values.email)
     } else toast.error(res.errors[0].error)
@@ -63,7 +69,7 @@ const ChangeEmailForm = () => {
         <div className={styles.inputContainer}>
           <label className={styles.inputLabel}>Current Email Address</label>
           <input
-            id='currentEmailemail'
+            id='currentEmail'
             name='currentEmail'
             type='email'
             disabled

@@ -9,6 +9,7 @@ import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
 import modules from "../../config/moduleConfig";
+import {corsMiddleware} from "./middleware/cors";
 
 const columns = {
     company_name: "c.company_name",
@@ -88,7 +89,6 @@ const handler =  async (req, res) => {
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns));
 
-                    console.log("query: ", query, "values: ", values, "lenght", length_query, "lenght values", length_values);
 
                     const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
                         {name: "length", query: length_query, values: length_values}]);
@@ -144,4 +144,4 @@ const handler =  async (req, res) => {
         res.redirect("/401", 401);
     }
 }
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

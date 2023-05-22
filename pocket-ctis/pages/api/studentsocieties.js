@@ -8,6 +8,7 @@ import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import modules from "../../config/moduleConfig";
+import {corsMiddleware} from "./middleware/cors";
 
 const table_name = "studentsociety";
 
@@ -97,4 +98,4 @@ const handler =  async (req, res) => {
     }
 
 }
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

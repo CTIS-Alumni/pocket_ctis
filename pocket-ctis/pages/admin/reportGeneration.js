@@ -108,7 +108,8 @@ const ReportGeneration = () => {
       toast.success('Query executed successfully')
       setActiveKey('preview')
       setData(res.data)
-      setColumns(Object.keys(res.data[0]))
+      if(res.data?.length)
+        setColumns(Object.keys(res.data[0]))
       console.log(res)
     }
   }

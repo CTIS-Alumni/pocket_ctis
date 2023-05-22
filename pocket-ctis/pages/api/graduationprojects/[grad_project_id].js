@@ -1,6 +1,7 @@
 import {doquery, doqueryNew} from "../../../helpers/dbHelpers";
 import {checkAuth} from "../../../helpers/authHelper";
 import {checkApiKey} from "../middleware/checkAPIkey";
+import {corsMiddleware} from "../middleware/cors";
 
 const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
@@ -21,39 +22,11 @@ const handler =  async (req, res) => {
                 res.status(500).json({errors: [{error: error.message}]});
             }
             break;
-        case "PUT":
-            try{
-                const {project_name, team_number, product_name, project_year, semester, project_description, advisor, project_type, team_pic,
-                poster_pic, company_id} = req.body.graduationproject;
-                const query = "UPDATE graduationproject SET project_name = ?, team_number = ?, product_name = ?, " +
-                    "project_year = ?, semester = ?, project_description = ?, advisor = ?, project_type = ?, team_pic = ?, " +
-                    "poster_pic= ? , company_id = ? WHERE id = ?";
-
-                const data = await doquery({query: query,values: [project_name, team_number, product_name,
-                        project_year, semester, project_description, advisor, project_type, team_pic, poster_pic, company_id, grad_project_id]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
-            }catch(error){
-                res.status(500).json({errors: [{error: error.message}]});
-            }
-            break;
-        case "DELETE":
-            try{
-                const query = "DELETE FROM graduationproject WHERE id = ?";
-                const data = await doquery({query:query,values: [grad_project_id]});
-                if(data.hasOwnProperty("error"))
-                    res.status(500).json({error: data.error.message});
-                else
-                    res.status(200).json({data});
-            }catch(error){
-                res.status(500).json({errors: [{error: error.message}]});
-            }
-            break;
+        default:
+            res.status(404).json({ errors: [{ error: "Invalid method" }] });
     }
     }else{
         res.redirect("/401", 401);
     }
 }
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

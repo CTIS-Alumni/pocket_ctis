@@ -6,6 +6,7 @@ import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
 import {sendResolvedRequestMail} from "../../helpers/mailHelper";
+import {corsMiddleware} from "./middleware/cors";
 
 const columns = {
     user: "CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name)",
@@ -111,4 +112,4 @@ const handler =  async (req, res) => {
         res.redirect("/401", 401);
     }
 }
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

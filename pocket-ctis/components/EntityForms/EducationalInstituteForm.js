@@ -21,7 +21,7 @@ const selectStyles = {
   }),
 }
 
-const EducationalInstitureForm = ({ activeItem, updateData }) => {
+const EducationalInstituteForm = ({ activeItem, updateData }) => {
   const [countries, setCountries] = useState([])
   const [cities, setCities] = useState([])
   const { locationData } = useContext(Location_data)
@@ -122,7 +122,7 @@ const EducationalInstitureForm = ({ activeItem, updateData }) => {
 
   return (
     <div>
-      <h5>Educational Institure Form</h5>
+      <h5>Educational Institute Form</h5>
       <Container>
         <form onSubmit={formik.handleSubmit} key={refreshKey}>
           <div className={styles.inputContainer}>
@@ -205,4 +205,4 @@ const EducationalInstitureForm = ({ activeItem, updateData }) => {
   )
 }
 
-export default EducationalInstitureForm
+export default EducationalInstituteForm

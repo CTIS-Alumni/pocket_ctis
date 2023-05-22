@@ -1,6 +1,7 @@
 import {doqueryNew} from "../../helpers/dbHelpers";
 import {checkAuth} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
+import {corsMiddleware} from "./middleware/cors";
 
 const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
@@ -22,4 +23,4 @@ const handler =  async (req, res) => {
         res.redirect("/401", 401);
     }
 }
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

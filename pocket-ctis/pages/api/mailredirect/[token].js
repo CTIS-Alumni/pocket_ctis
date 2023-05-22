@@ -1,6 +1,5 @@
 import {deleteCookie, verify} from "../../../helpers/jwtHelper";
 import {doqueryNew} from "../../../helpers/dbHelpers";
-import {checkApiKey} from "../middleware/checkAPIkey";
 
 export default async function handler(req,res){
     const {token} = req.query;
@@ -13,6 +12,17 @@ export default async function handler(req,res){
             res.setHeader("Set-Cookie", [refresh_expired, access_expired]);
 
             res.redirect('/resetPassword?token='+token, 200);
+        }
+
+        else if(payload.type === "changeEmail"){
+            const {email_address, user_id} = payload;
+            const set_new_email_query = "UPDATE users SET contact_email = ? WHERE id = ? ";
+            const {data, errors} = await doqueryNew({query: set_new_email_query, values: [email_address, user_id]});
+
+            if(errors || !data)
+                throw errors[0];
+
+            res.redirect('/success?type=mailSuccess', 200);
         }
 
         if(payload.type === "forgotAdminPassword"){
@@ -63,6 +73,7 @@ export default async function handler(req,res){
         } else res.redirect("/404", 404);
 
     }catch(error){
+        console.log("hers the error", error);
         res.redirect("/401", 401);
     }
 }

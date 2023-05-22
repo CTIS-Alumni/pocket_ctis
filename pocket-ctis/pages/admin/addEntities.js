@@ -3,7 +3,7 @@ import AdminPageContainer from '../../components/AdminPanelComponents/AdminPageC
 import { useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import CompanyForm from '../../components/EntityForms/CompanyForm'
-import EducationalInstitureForm from '../../components/EntityForms/EducationalInstitureForm'
+import EducationalInstituteForm from '../../components/EntityForms/EducationalInstituteForm'
 import HighSchoolForm from '../../components/EntityForms/HighSchoolForm'
 import SkillTypeForm from '../../components/EntityForms/SkillTypeForm'
 import DegreeTypeForm from '../../components/EntityForms/DegreeTypeForm'

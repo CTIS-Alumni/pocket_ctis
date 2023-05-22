@@ -8,6 +8,7 @@ import {
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
+import {corsMiddleware} from "./middleware/cors";
 
 const table_name = "skilltype"
 
@@ -95,4 +96,4 @@ const handler =  async (req, res) => {
         res.redirect("/401", 401);
     }
 }
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

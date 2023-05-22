@@ -5,6 +5,7 @@ import {
 import modules from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
+import {corsMiddleware} from "../../middleware/cors";
 
 const fields = {
     basic: ["phone_number", "visibility"],
@@ -23,7 +24,7 @@ const validation = (data) => {
     return true;
 }
 
-export default async function handler(req, res){
+const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if(payload?.user === "admin" || payload?.user === "owner") {
@@ -64,3 +65,5 @@ export default async function handler(req, res){
         res.redirect("/401", 401);
     }
 }
+
+export default corsMiddleware(handler);

@@ -17,6 +17,7 @@
     line-height: 19px;
     margin: 10px 0;
     padding: 10px 5px;
+    padding-left: 10px;
     border-radius: 5px 0 0 5px;
     cursor: pointer;
     transition: all 0.2s;
@@ -24,7 +25,7 @@
 
 .sidebar div:hover{
     color: white;
-    background-color: rgb(245, 164, 37);
+    background-color: rgb(246, 210, 155);
 }
 
 .formBody{

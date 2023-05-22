@@ -1,6 +1,7 @@
 import {createDBConnection} from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {checkApiKey} from "./middleware/checkAPIkey";
+import {corsMiddleware} from "./middleware/cors";
 
 const blacklist_words = [
     " update ",
@@ -99,4 +100,4 @@ const handler =  async (req, res) => {
 }
 
 
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

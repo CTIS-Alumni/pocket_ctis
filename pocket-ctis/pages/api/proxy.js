@@ -20,7 +20,6 @@ export default async function handler(req, res){
 
         res.status(results.status).json(responseData);
     } catch (error) {
-        console.log("error from ", req.url, error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 }

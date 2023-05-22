@@ -3,9 +3,11 @@ import {serialize} from "cookie";
 import {doqueryNew} from "../../helpers/dbHelpers";
 import {compare} from "bcrypt"
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
+import {corsMiddleware} from "./middleware/cors";
+import {checkApiKey} from "./middleware/checkAPIkey";
 
 
-export default async function (req, res) {
+const handler =  async (req, res) => {
     if (req.query.admin) {
         const session = await checkAuth(req.headers, res);
         const payload = await checkUserType(session, req.query);
@@ -122,3 +124,5 @@ export default async function (req, res) {
     }
 
 }
+
+export default corsMiddleware(checkApiKey(handler));

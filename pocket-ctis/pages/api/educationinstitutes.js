@@ -9,6 +9,7 @@ import {checkAuth, checkUserType} from "../../helpers/authHelper";
 import {replaceWithNull} from "../../helpers/submissionHelpers";
 import {checkApiKey} from "./middleware/checkAPIkey";
 import modules from "../../config/moduleConfig";
+import {corsMiddleware} from "./middleware/cors";
 
 const columns = {
     edu_inst_name: "ei.edu_inst_name",
@@ -132,4 +133,4 @@ const handler =  async (req, res) => {
         res.redirect("/401", 401);
     }
 }
-export default checkApiKey(handler);
+export default corsMiddleware(checkApiKey(handler));

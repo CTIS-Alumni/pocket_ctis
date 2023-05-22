@@ -7,6 +7,7 @@ import modules from '../../../../config/moduleConfig.js';
 import {checkAuth, checkUserType} from "../../../../helpers/authHelper";
 import {replaceWithNull} from "../../../../helpers/submissionHelpers";
 import departmentConfig from '../../../../config/departmentConfig'
+import {corsMiddleware} from "../../middleware/cors";
 
 
 const field_conditions = {
@@ -58,7 +59,7 @@ const validation = (data) => {
     return true;
 }
 
-export default async function handler(req, res) {
+const handler =  async (req, res) => {
     const session = await checkAuth(req.headers, res);
     const payload = await checkUserType(session, req.query);
     if(payload?.user === "admin" || payload?.user === "owner") {
@@ -91,6 +92,21 @@ export default async function handler(req, res) {
                     if(payload.user !== "admin"){
                         let check_to_edit_query = "SELECT id FROM educationrecord WHERE (name_of_program = ? OR name_of_program = ?) AND edu_inst_id = 1 AND user_id = ? ";
                         const res = await doqueryNew({query: check_to_edit_query, values: [departmentConfig.department_name, departmentConfig.abbreviation, user_id]});
+
+                        let count = 0;
+                        edu_records.forEach((rec, i)=>{
+                            console.log("heres rec", rec);
+                            if((rec.name_of_program === departmentConfig.department_name ||
+                                    rec.name_of_program === departmentConfig.abbreviation) &&
+                                rec.edu_inst_id == 1)
+                                count++;
+                            console.log("dis count increase", count);
+                        })
+
+                        console.log("heres res.length", res.data.length, "heres count,", count);
+
+                        if(count > res.data.length)
+                            throw {message: "Can't add " + departmentConfig.department_name + " information! "};
 
                         let department_data = [], indexes = [];
                         console.log("heres res", res)
@@ -154,3 +170,4 @@ export default async function handler(req, res) {
         }
     }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
 }
+export default corsMiddleware(handler);

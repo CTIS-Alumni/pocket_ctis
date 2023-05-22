@@ -14,27 +14,23 @@ const checkPassword = (pass, cnfpass) => {
   return true;
 }
 
-const changePassword = async (current, newPass) => {
-  const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: "changeAdminPassword", value: 1}]), {current, newPass})
-  return res;
-}
 
-const ChangePasswordForm = () => {
+const ChangePasswordForm = ({type}) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      currentPass: null,
+      currentPassword: null,
       newPassword: null,
-      retypeNewPassword: null,
+      confirmPassword: null,
     },
     validationSchema: Yup.object({
-      currentPass: Yup.string()
+      currentPassword: Yup.string()
         .min(8, 'Password must be longer than 8 characters')
         .required('Required'),
       newPassword: Yup.string()
         .min(8, 'Password must be longer than 8 characters')
         .required('Required'),
-      retypeNewPassword: Yup.string()
+      confirmPassword: Yup.string()
         .min(8, 'Password must be longer than 8 characters')
         .required('Required'),
     }),
@@ -43,8 +39,12 @@ const ChangePasswordForm = () => {
     },
   })
 
+  const changePassword = async (current, newPass) => {
+    const res = await _submitFetcher("POST", craftUrl(["accounts"], [{name: type, value: 1}]), {current, newPass})
+    return res;
+  }
+
   const onSubmitHandler = async (values) => {
-    console.log("here",values)
     const is_valid = checkPassword(values.newPassword, values.confirmPassword);
     if (is_valid.errors) {
       toast.error(is_valid.errors[0].error)
@@ -52,9 +52,10 @@ const ChangePasswordForm = () => {
     }
 
     const res = await changePassword(values.currentPassword, values.newPassword, values.confirmPassword)
-    console.log(res);
     if (res.data && !res.errors) {
-      toast.success('Admin password has been reset successfully.')
+      if(type === "changeAdminPassword")
+        toast.success('Admin password has been reset successfully.')
+      else toast.success('Password has been reset successfully.')
     }else{
       toast.error(res.errors[0].error)
     }
