@@ -15,7 +15,7 @@ const GraduationProjectsList = ({ graduationProjects }) => {
   console.log(getGraduationProjectPicturePath(graduationProjects[0].team_pic, "team"))
   return (
     <section className={styles.graduation_projects}>
-      <h2 className='custom-table-title'>Graduation Projects</h2>
+      <h2 className='custom-table-title'>Senior Projects</h2>
       <div>
         {graduationProjects.map((graduationProject, i) => (
           <a key={i} className={styles.graduation_project_link} href={`/user/graduationProjects/${graduationProject.id}`}>

@@ -62,12 +62,13 @@ const handler =  async (req, res) => {
                 if(session.payload.mode === "user") {
                     try {
                         const {request} = JSON.parse(req.body);
+                        request.user_id = payload.user_id;
                         const is_valid = validation(request);
                         if(is_valid !== true)
                             throw {message: is_valid};
 
-                        const query = "INSERT INTO request (user_id, type, description) values (?,?,?) ";
-                        const {data, errors} = await doqueryNew({query: query, values: [payload.user_id, request.type, request.description]});
+                        const query = "INSERT INTO request (user_id, subject, type, description) values (?,?,?,?) ";
+                        const {data, errors} = await doqueryNew({query: query, values: [payload.user_id, request.subject, request.type, request.description]});
                         res.status(200).json({data, errors});
 
                     } catch (error) {

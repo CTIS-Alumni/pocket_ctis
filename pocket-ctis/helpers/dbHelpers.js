@@ -27,7 +27,7 @@ export const addAndOrWhere = (query, condition) => {
     full_condition += condition + " ";
     return full_condition;
 }
-//Written only by Sila Yapici and Iqbal Karim
+
 export const buildSearchQuery = async (req, query, values, length_query, length_values, columns, group_by = null) => {
     if(req.query.searchcol && req.query.search){
         const cols = req.query.searchcol.split(",");

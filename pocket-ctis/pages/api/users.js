@@ -207,6 +207,10 @@ const handler =  async (req, res) => {
                             "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  " );
                         values.push(req.query.name);
                         values.push(req.query.name);
+                        length_query += addAndOrWhere(query, " (CONCAT(u.first_name, ' ', u.last_name) LIKE CONCAT('%', ?, '%') OR  " +
+                            "CONCAT(u.first_name, ' ', u.nee ,' ', u.last_name) LIKE CONCAT('%', ?, '%'))  " );
+                        length_values.push(req.query.name);
+                        length_values.push(req.query.name);
                     }
 
                     ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns, "uat.user_id"));
@@ -215,9 +219,7 @@ const handler =  async (req, res) => {
                         {name: "length", query: length_query, values: length_values}]);
 
                     res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
-                    //const {data, errors} = await doqueryNew({query: query, values: values});
-                    console.log(data);
-                    res.status(200).json({data, errors});
+
                 } catch (error) {
                     res.status(500).json({errors: [{error: error.message}]});
                 }}

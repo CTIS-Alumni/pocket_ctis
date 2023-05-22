@@ -30,16 +30,28 @@ const handler =  async (req, res) => {
                             }}
                         const { obj, file_objects } = await parseFormForDB(req, fields.basic, file_map);
 
-                        if(file_objects?.appImage){
+                        if(obj.show_current === "undefined")
+                            obj.show_current = false;
+
+                        if(file_objects?.appImage) {
+                            const files = await fsPromises.readdir(process.env.SAVE_IMAGES_PATH + "/departmentPictures/app_logo");
+                            for (const file of files) {
+                                if (departmentConfig.app_logo !== file_objects.appImage.appImage.originalFilename) {
+                                    await fsPromises.unlink(process.env.SAVE_IMAGES_PATH + "/departmentPictures/app_logo/" + file);
+                                }
+                            }
                             const destinationFilePath = process.env.SAVE_IMAGES_PATH + file_objects.appImage.location + "/" + file_objects.appImage.appImage.originalFilename;
-                            const resizedBuffer = await getBufferImage(file_objects.appImage.appImage);
+                            const resizedBuffer = await resizeAndFitImage(file_objects.appImage.appImage, 250, 75);
                             await fsPromises.writeFile(destinationFilePath, resizedBuffer);
-                        }else{
-                            if(departmentConfig.app_logo !== "" && fs.existsSync(process.env.SAVE_IMAGES_PATH + "/departmentPictures/app_logo/" + departmentConfig.app_logo))
-                                await fsPromises.unlink(process.env.SAVE_IMAGES_PATH + "/departmentPictures/app_logo/" + departmentConfig.app_logo);
+                        }else if(!obj.show_current && departmentConfig.app_logo !== ""){
+                            const files = await fsPromises.readdir(process.env.SAVE_IMAGES_PATH + "/departmentPictures/app_logo");
+                            for (const file of files) {
+                                    await fsPromises.unlink(process.env.SAVE_IMAGES_PATH + "/departmentPictures/app_logo/" + file);
+                                }
                         }
 
                         delete obj.appImage;
+                        delete obj.show_current;
                         const fileContents = `module.exports = ${JSON.stringify(obj, null, 2)};\n`;
                         await fsPromises.writeFile(process.env.DEPARTMENT_CONFIG_PATH, fileContents, 'utf8');
 

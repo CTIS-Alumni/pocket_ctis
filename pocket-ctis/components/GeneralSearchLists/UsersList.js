@@ -21,9 +21,10 @@ const SearchPageUsersList = ({ search }) => {
     setIsLoading(true)
     _getFetcher({ users: craftUrl(['users'], conditions) })
       .then((res) => {
-        if (res.users.data.length == 0 && res.users.errors?.length > 0) {
+        if (res.users.data?.length == 0 && res.users.errors?.length > 0) {
           toast.error(res.users.errors[0].error)
         } else {
+          console.log(res);
           setData(res.users.data)
           setTotal(res.users.length)
         }

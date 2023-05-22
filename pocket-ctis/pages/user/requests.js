@@ -2,6 +2,9 @@ import UserPageContainer from '../../components/UserPageContainer/UserPageContai
 import { useFormik } from 'formik'
 import styles from '../../styles/requests.module.css'
 import * as Yup from 'yup'
+import {_submitFetcher} from "../../helpers/fetchHelpers";
+import {craftUrl} from "../../helpers/urlHelper";
+import {toast, ToastContainer} from "react-toastify";
 
 const Requests = () => {
   const formik = useFormik({
@@ -15,13 +18,16 @@ const Requests = () => {
       subject: Yup.string().required(),
       description: Yup.string().required(),
     }),
-    onSubmit: (vals) => {
-      onSubmitHandler(vals)
+    onSubmit: async (vals) => {
+      await onSubmitHandler(vals)
     },
   })
 
-  const onSubmitHandler = (vals) => {
-    console.log(vals)
+  const onSubmitHandler = async (vals) => {
+    const {data, errors} = await  _submitFetcher('POST', craftUrl(['requests']), {request: vals})
+    if(errors || !data){
+      toast.error(errors[0].error)
+    }else toast.success("Your request has been sent successfully!")
   }
 
   return (
@@ -89,6 +95,16 @@ const Requests = () => {
           </form>
         </div>
       </div>
+      <ToastContainer
+          position='top-right'
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          draggable
+          pauseOnHover
+          theme='light'
+      />
     </UserPageContainer>
   )
 }

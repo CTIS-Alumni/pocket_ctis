@@ -75,6 +75,7 @@ const DepartmentInformationForm = ({}) => {
     formData.append('department_name', val.department_name)
     formData.append('abbreviation', val.abbreviation)
     formData.append('app_name', val.app_name)
+    formData.append('show_current', showCurrentImage)
     formData.append('app_logo', val.app_logo)
     formData.append('appImage', appLogo)
 
@@ -83,9 +84,12 @@ const DepartmentInformationForm = ({}) => {
         craftUrl(['departmentcustomization']),
         formData
     )
-    console.log("res", res);
-    if(res.data)
+    if(res.data){
       toast.success("Department information saved successfully!");
+      setPreview();
+      setAppLogo();
+      setShowCurrentImage(val.app_logo);
+    }
     else toast.error(res.errors[0].error);
   }
 
