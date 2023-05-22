@@ -84,8 +84,6 @@ const handler =  async (req, res) => {
             const {data, errors} = await doqueryNew({query: query, values: [username]});
             const user = data;
 
-            console.log("heres data", data);
-
             if (errors || (data && !data.length || (data[0].hashed === null || data[0].user_types === null))) {
                 throw { message: "Wrong username or password!"};
             }
