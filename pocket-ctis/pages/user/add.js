@@ -8,7 +8,7 @@ import SkillsForm from '../../components/EntityForms/SkillsForm'
 import SocietiesForm from '../../components/EntityForms/SocietiesForm'
 import HighSchoolForm from '../../components/EntityForms/HighSchoolForm'
 import ExamForm from '../../components/EntityForms/ExamForm'
-import EducationalInstitureForm from '../../components/EntityForms/EducationalInstitureForm'
+import EducationalInstituteForm from '../../components/EntityForms/EducationalInstituteForm'
 import SectorForm from '../../components/EntityForms/SectorForm'
 
 const SideBarButton = ({ title, activeKey, setActiveKey }) => (
@@ -81,7 +81,7 @@ const AddEntities = () => {
 
         <div className={styles.formBody}>
           {activeKey == 'Companies' && <CompanyForm />}
-          {activeKey == 'Education Institutes' && <EducationalInstitureForm />}
+          {activeKey == 'Education Institutes' && <EducationalInstituteForm />}
           {activeKey == 'Sectors' && <SectorForm />}
           {activeKey == 'Exams' && <ExamForm />}
           {activeKey == 'High School' && <HighSchoolForm />}

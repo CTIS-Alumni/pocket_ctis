@@ -6,7 +6,7 @@ module.exports = {
     "user_addable": true
   },
   "companies": {
-    "user_addable": true
+    "user_addable": false
   },
   "edu_insts": {
     "user_addable": true
@@ -15,7 +15,7 @@ module.exports = {
     "user_addable": true
   },
   "exams": {
-    "user_addable": true
+    "user_addable": false
   },
   "student_societies": {
     "user_addable": true
