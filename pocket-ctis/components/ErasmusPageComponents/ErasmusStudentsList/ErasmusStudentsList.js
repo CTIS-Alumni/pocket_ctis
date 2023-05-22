@@ -6,7 +6,7 @@ import {
 } from '../../../helpers/formatHelpers'
 import styles from './ErasmusStudentsList.module.scss'
 import ReactStars from 'react-stars'
-import { Spinner } from 'react-bootstrap'
+import { Badge, Spinner } from 'react-bootstrap'
 import { useState, useEffect } from 'react'
 import PaginationFooter from '../../PaginationFooter/PaginationFooter'
 
@@ -70,18 +70,10 @@ const ErasmusStudentsList = ({ erasmus, onQuery, isLoading, total }) => {
           <div className={styles.erasmus_students_item} key={record.id}>
             <Link
               className={styles.student_link}
-              href={'/erasmus/' + record.id}
+              href={'/user/' + record.id}
             >
               <div className={styles.erasmus_students_item_info}>
-                <div
-                  className='user_avatar_48'
-                  style={{
-                    backgroundImage:
-                      'url(' +
-                      getProfilePicturePath(record.profile_picture) +
-                      ')',
-                  }}
-                />
+                <img src={getProfilePicturePath(record.profile_picture)} style={{width: 75, height: 75, borderRadius: '50%'}} className='me-2'/>
                 <div>
                   <span className={styles.erasmus_students_item_name}>
                     {`${record.first_name} ${record.last_name}`}
@@ -108,7 +100,7 @@ const ErasmusStudentsList = ({ erasmus, onQuery, isLoading, total }) => {
               </div>
               <div className={styles.erasmus_students_item_badge}>
                 {record.user_types.split(',').map((type, i) => (
-                  <span key={i}>{type.toLocaleUpperCase()}</span>
+                  <Badge className='me-2' key={i}>{type.toLocaleUpperCase()}</Badge>
                 ))}
               </div>
             </Link>

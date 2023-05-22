@@ -68,6 +68,7 @@ const ResetPassword = ({token, type}) => {
                                         id='password'
                                         name='password'
                                         placeholder='password'
+                                        type='password'
                                     />
                                     <label className={styles.input_label} htmlFor='password'>
                                         Enter New Password
@@ -79,6 +80,7 @@ const ResetPassword = ({token, type}) => {
                                         id='confirmPassword'
                                         name='confirmPassword'
                                         placeholder='confirmPassword'
+                                        type='password'
                                     />
                                     <label className={styles.input_label} htmlFor='confirmPassword'>
                                         Confirm Password

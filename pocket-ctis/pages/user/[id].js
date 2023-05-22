@@ -65,7 +65,7 @@ import { useRouter } from 'next/router'
 import CustomBadge from '../../components/ProfilePageComponents/CustomBadge/CustomBadge'
 import { Rating } from 'react-simple-star-rating'
 
-const Profile = ({ user, session }) => {
+const Profile = ({ user }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [modalIsLoading, setModalIsLoading] = useState(false)
   const [userData, setUserData] = useState(user.userInfo)
@@ -79,6 +79,17 @@ const Profile = ({ user, session }) => {
 
   const context = useContext(User_data)
   const router = useRouter()
+
+  useEffect(() => {
+    console.log('refresh', router.query.id)
+    router.replace(router.asPath)
+  }, [router.query.id])
+
+  useEffect(() => {
+    setUserData(user.userInfo)
+  }, [user])
+  
+  
 
   useEffect(() => {
     if (!profileImage) {

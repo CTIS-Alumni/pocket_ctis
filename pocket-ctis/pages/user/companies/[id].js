@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import UserPageContainer from '../../../components/UserPageContainer/UserPageContainer'
 import {
   getProfilePicturePath,
@@ -7,9 +8,46 @@ import styles from '../../../styles/companies.module.scss'
 import React from 'react'
 import { BuildingFill } from 'react-bootstrap-icons'
 import { _getFetcher } from '../../../helpers/fetchHelpers'
-import { craftUrl } from '../../../helpers/urlHelper'
+import { craftUrl, buildCondition } from '../../../helpers/urlHelper'
+import { Badge, Spinner } from 'react-bootstrap'
+import PaginationFooter from '../../../components/PaginationFooter/PaginationFooter'
+import Link from 'next/link'
 
-const Company = ({ company, users }) => {
+const Company = ({ company }) => {
+  const [users, setUsers] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [total, setTotal] = useState()
+
+  const onQuery = (queryParams) => {
+    const conditions = buildCondition(queryParams)
+    conditions.push({name: 'company_id', value: company.data.id})
+    setIsLoading(true)
+    _getFetcher({ users: craftUrl(['workrecords'], conditions) })
+      .then(({ users }) => {
+        setTotal(users.length)
+        setUsers(users.data)
+      })
+      .finally((_) => setIsLoading(false))
+  }
+
+  const [limit, setLimit] = useState(15)
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit)
+    setCurrentPage(1)
+  }
+  const handlePageChange = (newPage) => setCurrentPage(newPage)
+
+  useEffect(() => {
+    let queryParams = {}
+
+    queryParams.offset = (currentPage - 1) * limit
+    queryParams.limit = limit
+
+    onQuery(queryParams)
+  }, [currentPage, limit])
+
   return (
     <UserPageContainer>
       <div className={styles.company}>
@@ -43,7 +81,17 @@ const Company = ({ company, users }) => {
           )}
         </div>
 
-        {users.data?.map((user) => {
+        <div style={{position: 'relative'}}>
+        {isLoading && <div style={{display: 'flex',
+            backgroundColor: 'rgba(255,255,255,0.5)',
+            justifyContent: 'center',
+            zIndex: 9,
+            height: '100%',
+            width: '100%',
+            position: 'absolute',
+            }}>
+            <Spinner /></div>}
+        {users?.map((user) => {
           const workPeriod = getTimePeriod(
             user.start_date,
             user.end_date,
@@ -51,16 +99,11 @@ const Company = ({ company, users }) => {
           )
 
           return (
-            <div className={styles.company_people_item} key={user.id}>
+            <Link href={`/user/${user.user_id}`} className={styles.company_people_item} key={user.id}>
               <div>
-                <div
-                  className='user_avatar_48'
-                  style={{
-                    backgroundImage:
-                      'url(' + getProfilePicturePath(user.profile_pcture) + ')',
-                  }}
-                />
-
+                <div className='d-flex align-items-center'>
+                  <img src={getProfilePicturePath(user.profile_picture)} style={{width: 75, height: 75, borderRadius: '50%'}} className='me-2'/>
+                </div>
                 <div className={styles.company_people_item_info}>
                   <span className={styles.company_people_item_name}>
                     {user.first_name} {user.last_name}
@@ -71,12 +114,9 @@ const Company = ({ company, users }) => {
                   <span className={styles.company_people_item_department}>
                     {user.work_type_name}
                   </span>
-                  <span className={styles.company_people_item_department}>
-                    {user.department && `${user.department}`}
-                  </span>
-                  <span className={styles.company_people_item_type}>
-                    {user.type_name}
-                  </span>
+                  {user.department && <span className={styles.company_people_item_department}>
+                    {user.department}
+                  </span>}
                   <span className={styles.company_people_item_work_period}>
                     {workPeriod}
                   </span>
@@ -93,12 +133,20 @@ const Company = ({ company, users }) => {
 
               <div className={styles.company_people_item_badge}>
                 {user.user_types.split(',').map((type, i) => (
-                  <span key={i}>{type.toLocaleUpperCase()}</span>
+                  <Badge className='me-2' key={i}>{type.toLocaleUpperCase()}</Badge>
                 ))}
               </div>
-            </div>
+            </Link>
           )
         })}
+        </div>
+        {users?.length > 0 && <PaginationFooter
+          total={total}
+          limit={limit}
+          changeLimit={handleLimitChange}
+          currentPage={currentPage}
+          pageChange={handlePageChange}
+        />}   
       </div>
     </UserPageContainer>
   )
@@ -108,16 +156,12 @@ export async function getServerSideProps(context) {
   const { cookie } = context.req.headers
   const { company, users } = await _getFetcher(
     {
-      company: craftUrl(['companies', context.params.id]),
-      users: craftUrl(
-        ['workrecords'],
-        [{ name: 'company_id', value: context.params.id }]
-      ),
+      company: craftUrl(['companies', context.params.id])
     },
     cookie
   )
 
-  return { props: { company, users } }
+  return { props: { company } }
 }
 
 export default Company

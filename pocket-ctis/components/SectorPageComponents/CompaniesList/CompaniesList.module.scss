@@ -12,12 +12,10 @@
         color: inherit;
     }
 
-    &_item {}
-
     &_badge span {
         font-size: 0.8em;
         color: $white;
-        background-color: $medium-grey;
+        background-color: #FFBD59;
         padding: 0.4em 0.6em;
         border-radius: 500px;
     }

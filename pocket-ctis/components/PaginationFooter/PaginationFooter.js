@@ -131,7 +131,7 @@ const PaginationFooter = ({
           }}
           placeholder='Jump to'
           defaultValue=''
-          initialValue=''
+          initialvalue=''
         >
           <option value='' selected disabled>
             Jump to

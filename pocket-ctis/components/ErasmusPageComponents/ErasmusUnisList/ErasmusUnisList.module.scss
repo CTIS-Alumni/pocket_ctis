@@ -5,7 +5,7 @@
 
     &_item {
         width: 100%;
-    
+
         .university_link {
             display: flex;
             flex-direction: row;
@@ -14,16 +14,19 @@
             padding: 0.8em 1.2em;
             transition: background-color 0.3s linear;
             min-height: 4em;
-    
+
             &:hover {
                 background-color: darken($color: $white, $amount: 2);
                 transition: background-color 0.3s linear;
                 color: inherit;
             }
         }
-    
+
         &_info {
-            span { display: block; }
+            span {
+                display: block;
+            }
+
             display: flex;
             align-items: center;
 
@@ -43,20 +46,20 @@
                 border-radius: 50%;
             }
         }
-    
+
         &_name {
             font-size: 1.1em;
         }
-    
+
         &_location {
             font-size: 0.9em;
             color: $medium-grey;
         }
-    
+
         &_badge span {
             font-size: 0.8em;
             color: $white;
-            background-color: $medium-grey;
+            background-color: rgb(74, 159, 194);
             padding: 0.4em 0.6em;
             border-radius: 500px;
         }

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import SearchBar from '../SearchBar/SearchBar'
-import { FilterSquareFill, Check } from 'react-bootstrap-icons'
+import { CaretDownFill, CaretUpFill, Check } from 'react-bootstrap-icons'
 import styles from './UniversitiesList.module.scss'
 import common from '../../styles/common.module.scss'
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
@@ -14,6 +14,7 @@ const UniversitiesList = ({ universities, isLoading, total, onQuery }) => {
   const [sorting, setSorting] = useState({ name: '', direction: '' })
 
   const handleSorting = (columnName) => {
+    console.log(columnName)
     if (sorting.name == columnName) {
       if (sorting.direction == 'asc') {
         setSorting({ name: columnName, direction: 'desc' })
@@ -39,6 +40,7 @@ const UniversitiesList = ({ universities, isLoading, total, onQuery }) => {
 
   useEffect(() => {
     let queryParams = {}
+    console.log('idahr', sorting)
 
     queryParams.column = sorting.name
     queryParams.order = sorting.direction
@@ -48,7 +50,6 @@ const UniversitiesList = ({ universities, isLoading, total, onQuery }) => {
 
     onQuery(queryParams)
   }, [sorting, currentPage, limit, searchString])
-
   return (
     <section className={styles.universities}>
       <h2 className='custom_table_title'>Universities</h2>
@@ -60,7 +61,24 @@ const UniversitiesList = ({ universities, isLoading, total, onQuery }) => {
         <table>
           <thead>
             <tr>
-              <th>University Name</th>
+              <th  
+                onClick={() => handleSorting('edu_inst_name')}
+                style={{ cursor: 'pointer' }}
+              >
+                <div
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <span>University Name</span>
+                  <span style={{ width: 20 }}>
+                  {sorting.name == 'edu_inst_name' ?
+                      (sorting.direction == 'asc' ? (
+                        <CaretDownFill />
+                      ) : (
+                        <CaretUpFill />
+                      )): <div className='d-flex flex-column' ><CaretUpFill/><CaretDownFill/></div>}
+                  </span>
+                </div>
+              </th>
               <th>Offers Erasmus</th>
             </tr>
           </thead>

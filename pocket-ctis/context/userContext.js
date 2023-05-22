@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 export const User_data = createContext({
   userData: null,
   setUserData: () => null,
-  refreshProfile: () => null
+  refreshProfile: () => null,
 })
 
 function UserContext({ children }) {
@@ -16,27 +16,29 @@ function UserContext({ children }) {
     if (userData == null) {
       _getFetcher({ res: craftUrl(['basic_info']) })
         .then((res) => {
-          if (res.errors)
-            router.push('/login')
+          if (res.errors) router.push('/login')
           else setUserData(res.res.data[0])
         })
-        .catch((err) => console.log("err in user context", err))
+        .catch((err) => console.log('err in user context', err))
     }
   }, [])
 
   const refreshProfile = () => {
     _getFetcher({ res: craftUrl(['basic_info']) })
-    .then((res) => {
-      if (res.res.error || res.errors || (res.data && !res.data.length))
-        router.push('/login')
-      else setUserData(res.res.data[0])
-    })
-    .catch((err) => console.log(err)) 
+      .then((res) => {
+        if (res.errors) router.push('/login')
+        else setUserData(res.res.data[0])
+      })
+      .catch((err) => console.log(err))
   }
 
   return (
     <User_data.Provider
-      value={{ userData: userData, setUserData: setUserData, refreshProfile: refreshProfile }}
+      value={{
+        userData: userData,
+        setUserData: setUserData,
+        refreshProfile: refreshProfile,
+      }}
     >
       {children}
     </User_data.Provider>
