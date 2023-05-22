@@ -60,20 +60,16 @@ const handler =  async (req, res) => {
                     if (req.query.company_id) {
                         query += "WHERE w.company_id = ? ";
                         values.push(req.query.company_id);
-
-                        if(is_admin){
-                            length_query += "WHERE w.company_id = ? ";
-                            length_values.push(req.query.company_id);
-                        }
+                        length_query += "WHERE w.company_id = ? ";
+                        length_values.push(req.query.company_id);
                     }
 
                     if (req.query.sector_id) {
                         query += addAndOrWhere(query, " c.sector_id = ? ");
                         values.push(req.query.sector_id);
-                        if(is_admin){
-                            length_query += addAndOrWhere(query, " c.sector_id = ? ");
-                            length_query.push(req.query.sector_id);
-                        }
+                        length_query += addAndOrWhere(query, " c.sector_id = ? ");
+                        length_query.push(req.query.sector_id);
+
                     }
                     if(payload.user !== "admin"){
                         query += addAndOrWhere(query, " (w.visibility = 1 OR w.user_id = ?) ");
