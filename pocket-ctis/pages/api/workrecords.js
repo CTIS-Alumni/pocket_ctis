@@ -67,8 +67,8 @@ const handler =  async (req, res) => {
                     if (req.query.sector_id) {
                         query += addAndOrWhere(query, " c.sector_id = ? ");
                         values.push(req.query.sector_id);
-                        length_query += addAndOrWhere(query, " c.sector_id = ? ");
-                        length_query.push(req.query.sector_id);
+                        length_query += addAndOrWhere(length_query, " c.sector_id = ? ");
+                        length_values.push(req.query.sector_id);
 
                     }
                     if(payload.user !== "admin"){

@@ -58,8 +58,8 @@ const handler =  async (req, res) => {
                     if (req.query.edu_inst_id) {
                         query += " WHERE e.edu_inst_id = ? ";
                         values.push(req.query.edu_inst_id);
-                            length_query += " WHERE e.edu_inst_id = ? ";
-                            length_values.push(req.query.edu_inst_id);
+                        length_query += " WHERE e.edu_inst_id = ? ";
+                        length_values.push(req.query.edu_inst_id);
                     }
 
                     if (payload.user !== "admin") {
