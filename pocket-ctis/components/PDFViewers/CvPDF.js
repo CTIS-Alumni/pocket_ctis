@@ -166,7 +166,7 @@ const CvPDF = ({data}) => {
   }
 
   const classifiedSkill = classifySkills(data?.skills || [])
-  console.log(classifiedSkill)
+  console.log(data)
 
   const turkishToEnglish = (value) => {
     return value?.replace('Ğ','g')
@@ -321,7 +321,7 @@ const CvPDF = ({data}) => {
             }
 
             return(
-              <View style={[styles.midSection]}>
+              <View style={[styles.midSection, {marginBottom: 7}]}>
                 <View style={[styles.flex, styles.gapBetween]}>
                   <View style={[styles.flex, styles.alignCenter]}>
                     {/* // name of school */}
@@ -349,6 +349,12 @@ const CvPDF = ({data}) => {
               </View>
             )
           })}
+
+          {data?.high_school && (
+            <View>
+              <Text>High School: {data?.high_school[0].high_school_name}</Text>
+            </View>
+          )}
         </View>}
         {/* // CAREER SECTION */}
         <View style={styles.section} wrap={false}>
@@ -416,6 +422,59 @@ const CvPDF = ({data}) => {
             </>
           }
         </View>
+        {/* // Internship SECTION */}
+        { data?.internships?.length > 0 && 
+          <View style={styles.section} wrap={false}>
+            <View>
+              <Text style={[styles.boldTitle]}>Internships</Text>
+              {/* // divider */}
+              <Svg height='2' style={styles.hr}>
+                <Line
+                  x1='0'
+                  y1='0'
+                  x2={`${length}`}
+                  y2='0'
+                  strokeWidth={`${strokeWidth}`}
+                  stroke={`${lighterColour}`}
+                />
+              </Svg>
+            </View>
+            <View>
+              {data?.internships?.map((i, idx) => {
+                var dates = ''
+                            
+                const sDate = new Date(i.start_date)
+                const eDate = new Date(i.end_date)
+                if (i.start_date && i.is_current == 1){
+                  dates = '' + i.start_date + ' - present'
+                }else if (i.start_date && i.end_date){
+                  dates = '' + monthNames[sDate.getUTCMonth()] + ' ' + sDate.getFullYear() + ' - ' + monthNames[eDate.getUTCMonth()] + ' ' + eDate.getFullYear()
+                }else if (i.start_date){
+                  dates = 'Started in ' + monthNames[sDate.getUTCMonth()] + ' ' + sDate.getFullYear()
+                }else if (i.end_date){
+                  dates = 'Ended in ' + monthNames[eDate.getUTCMonth()] + ' ' + eDate.getFullYear()
+                }
+
+                return (
+                  <View key={idx} style={[{marginBottom: 7}]}>
+                    <View style={[styles.flex, styles.gapBetween]}>
+                      <View style={[styles.flex]}>
+                        <Text style={[]}>{turkishToEnglish(i.company_name)}</Text>
+                        <Text>{i?.department ? `, ${i?.department}` : ''}</Text>
+                      </View>
+                      <Text>{dates}</Text>
+                    </View>
+                    <View style={[styles.location]}>
+                      <Text>
+                        {i?.opinion}
+                      </Text>
+                    </View>
+                  </View>
+                )
+              })}
+            </View>
+          </View>
+        }
         {/* // PROJECTS SECTION */}
         <View style={styles.section} wrap={false}>
           <View>
@@ -466,9 +525,78 @@ const CvPDF = ({data}) => {
           </View>
         </View>
         {/* // SKILLS SECTION */}
-        <View style={styles.section} wrap={false}>
+        {data?.skills.length > 0 && 
+          <View style={styles.section} wrap={false}>
+            <View>
+              <Text style={[styles.boldTitle]}>Skills</Text>
+              {/* // divider */}
+              <Svg height='2' style={styles.hr}>
+                <Line
+                  x1='0'
+                  y1='0'
+                  x2={`${length}`}
+                  y2='0'
+                  strokeWidth={`${strokeWidth}`}
+                  stroke={`${lighterColour}`}
+                />
+              </Svg>
+            </View>
+
+            <View
+              style={[styles.flex, styles.gapBetween, { paddingHorizontal: 40 }]}
+            >
+              <View>
+                {/* // -------------- */}
+                {Object.keys(classifiedSkill).map((t, idx) => {
+                  return (<Text key={idx}>
+                    {t}: 
+                    {classifiedSkill[t].map((s, idx)=> `${s.skill_name} (${skillValues[s.skill_level-1]})`
+                    ).join(', ')}
+                  </Text>)
+                })}
+              </View>
+            </View>
+          </View>
+        }
+        {/* EXAMS */}
+        {data?.exams.length > 0 && (
+          <View style={styles.section}>
+            <View>
+              <Text style={[styles.boldTitle]}>Exams</Text>
+              {/* // divider */}
+              <Svg height='2' style={styles.hr}>
+                <Line
+                  x1='0'
+                  y1='0'
+                  x2={`${length}`}
+                  y2='0'
+                  strokeWidth={`${strokeWidth}`}
+                  stroke={`${lighterColour}`}
+                />
+              </Svg>
+            </View>
+            <View>
+              {data?.exams.map((e, idx) => {
+                const date = new Date(e.exam_date)
+                return (
+                  <View style={{marginBottom: 7}} key={idx}>
+                    <Text>
+                      {e.exam_name} {e.exam_data && `- ${date.getUTCDate()}`}
+                    </Text>
+                    <Text style={{marginLeft: 10}}>
+                      Score: {e.grade}
+                    </Text>
+                  </View>
+                )
+              })}  
+            </View>
+          </View>
+        )}
+        {/* Certificates */}
+        {data?.certificates?.length > 0 && (
+          <View style={styles.section}>
           <View>
-            <Text style={[styles.boldTitle]}>Skills</Text>
+            <Text style={[styles.boldTitle]}>Certificates</Text>
             {/* // divider */}
             <Svg height='2' style={styles.hr}>
               <Line
@@ -481,22 +609,20 @@ const CvPDF = ({data}) => {
               />
             </Svg>
           </View>
-
-          <View
-            style={[styles.flex, styles.gapBetween, { paddingHorizontal: 40 }]}
-          >
-            <View>
-              {/* // -------------- */}
-              {Object.keys(classifiedSkill).map((t, idx) => {
-                return (<Text key={idx}>
-                  {t}: 
-                  {classifiedSkill[t].map((s, idx)=> `${s.skill_name} (${skillValues[s.skill_level-1]})`
-                  ).join(', ')}
-                </Text>)
-              })}
-            </View>
+          <View>
+            {data?.certificates?.map((c, idx) => {
+              return (
+                <View style={{marginBottom: 7}} key={idx}>
+                  <Text>
+                    {c.certificate_name} {c.issuing_authority && `- ${c.issuing_authority}`}
+                  </Text>
+                </View>
+              )
+            })}  
           </View>
         </View>
+        )
+        }
         {/* // PAGE NUMBER */}
         <Text
           style={styles.pageNumber}
