@@ -74,12 +74,7 @@ const handler =  async (req, res) => {
     } else {
         try {
             const {username, password} = JSON.parse(req.body);
-            const query = "SELECT u.id, u.first_name, u.last_name, upp.profile_picture, GROUP_CONCAT(act.type_name) as 'user_types', u.gender, u.contact_email, uc.hashed " +
-                "FROM users u LEFT OUTER JOIN usercredential uc ON (uc.user_id = u.id) " +
-                "LEFT OUTER JOIN useraccounttype uat ON (uat.user_id = u.id) " +
-                "LEFT OUTER JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
-                "LEFT OUTER JOIN accounttype act ON (act.id = uat.type_id) " +
-                "WHERE uc.username = ? AND uc.is_admin_auth = 0 "
+            const query = "SELECT hashed FROM usercredential WHERE username = ? AND is_admin_auth = 0 ";
             const {data, errors} = await doqueryNew({query: query, values: [username]});
 
             if (errors || (data && !data.length || (data[0].hashed === null || data[0].user_types === null))) {
