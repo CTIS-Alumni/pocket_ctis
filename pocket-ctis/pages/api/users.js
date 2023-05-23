@@ -211,12 +211,15 @@ const handler =  async (req, res) => {
                         length_values.push(req.query.name);
                     }
 
-                    ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns, "uat.user_id"));
+                    ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns, "u.id"));
 
                     const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
                         {name: "length", query: length_query, values: length_values}]);
 
+
                     res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
+
+                    console.log("query", query, "data",data, "values", values);
 
                 } catch (error) {
                     res.status(500).json({errors: [{error: error.message}]});

@@ -39,6 +39,9 @@ const validation = (data) => {
     const startDate = data.start_date ? new Date(data.start_date) : null;
     const endDate = data.end_date ? new Date(data.end_date) : null;
 
+
+    if(!data.work_type_id)
+        return "Please select a work type!";
     if(data.work_type_id !== 3 && !data.company_id)
         return "Please select a company!";
     if (startDate && endDate && startDate > endDate)
