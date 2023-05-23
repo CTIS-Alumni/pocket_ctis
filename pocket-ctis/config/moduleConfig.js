@@ -21,13 +21,13 @@ module.exports = {
     "user_addable": true
   },
   "skills": {
-    "user_addable": false
+    "user_addable": true
   },
   "internships": {
     "user_visible": true
   },
   "erasmus": {
-    "user_visible": true
+    "user_visible": false
   },
   "user_profile_data": {
     "graduation_projects": {

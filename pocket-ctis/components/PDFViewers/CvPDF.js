@@ -118,15 +118,6 @@ const styles = StyleSheet.create({
     color: lighterColour,
   },
 
-  pageNumber: {
-    position: 'absolute',
-    bottom: 20,
-    left: 0,
-    right: 0,
-    textAlign: 'center',
-    fontSize: fontSize - 5,
-    color: lighterColour,
-  },
 
   header: {
     display: 'flex',
@@ -350,9 +341,9 @@ const CvPDF = ({data}) => {
             )
           })}
 
-          {data?.high_school && (
+          {data?.high_school.length > 0 && (
             <View>
-              <Text>High School: {data?.high_school[0].high_school_name}</Text>
+              <Text>High School: {data?.high_school[0]?.high_school_name}</Text>
             </View>
           )}
         </View>}

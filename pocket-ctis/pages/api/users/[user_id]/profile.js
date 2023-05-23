@@ -124,7 +124,7 @@ const handler =  async (req, res) => {
                     queries.push({name: "work_records", query: temp, values: [user_id]});
 
                     temp = "SELECT w.company_id, c.company_name FROM workrecord w LEFT OUTER JOIN company c ON (w.company_id = c.id) " +
-                        "WHERE w.user_id = ? AND w.work_type_id != 3 "
+                        "WHERE w.user_id = ? AND w.work_type_id != 3 AND w.is_current = 1 "
                     if(payload.user !== "admin" && payload.user !== "owner")
                         temp += "AND w.visibility = 1 ";
                     temp += "LIMIT 2"
