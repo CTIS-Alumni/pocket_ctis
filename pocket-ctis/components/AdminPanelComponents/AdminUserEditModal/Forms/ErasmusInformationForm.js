@@ -54,7 +54,7 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
     _getFetcher({
       universities: craftUrl(
         ['educationinstitutes'],
-        [{ name: 'is_erasmus', value: 1 }]
+        [{ name: 'erasmus', value: 1 }]
       ),
     })
       .then((res) => setUniversities(res.universities.data))
