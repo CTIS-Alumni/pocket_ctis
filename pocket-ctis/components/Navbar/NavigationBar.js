@@ -106,7 +106,6 @@ const NavigationBar = ({ setToggleSidebar }) => {
                 title='User'
                 className='justify-content-end'
                 drop='start'
-                style={{color: 'black'}}
               >
                 <NavDropdown.Item onClick={() => router.push('/user/requests')}>
                   Requests

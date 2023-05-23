@@ -126,7 +126,7 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
                   <span>
                     {company.is_internship == 1 && (
                       <div className={styles.internship_badge}>
-                        <Check size={25} fill='#f5a425' />
+                        <Check />
                       </div>
                     )}
                   </span>
