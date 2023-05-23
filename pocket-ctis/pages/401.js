@@ -15,7 +15,7 @@ const Unauthorized = () => {
                 alignItems: 'center'
             }} className='d-flex justify-content-center align-items-center'>
                 <h1 style={{color: '#ffffff'}}>401</h1>
-                <h2 style={{color: '#f5a425'}}>Oops! It seems you can't access this page! Make sure the links in your
+                <h2 style={{color: '#f5a425'}}>Oops! It seems you can not access this page! Make sure the links in your
                 email are not expired.</h2>
                 <div>
                     <Link

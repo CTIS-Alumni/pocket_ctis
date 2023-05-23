@@ -96,9 +96,10 @@ const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
   useEffect(() => {
     const str = (
       <>
-        {selectedJoins.map((join) => {
+        {selectedJoins.map((join, idx) => {
           return (
             <div
+              key={idx}
               className={`${styles.clauseHolder} ${styles.removeable}`}
               onClick={() => {
                 removeJoin(join)

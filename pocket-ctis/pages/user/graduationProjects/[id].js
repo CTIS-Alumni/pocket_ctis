@@ -105,10 +105,11 @@ const GraduationProject = ({ graduationproject }) => {
               />
             </div>
             <div>
-              {graduationproject.data[0]?.team_members?.split(',').map((stu) => {
+              {graduationproject.data[0]?.team_members?.split(',').map((stu, idx) => {
                 const [num, name, bilkentID] = stu.split('-')
                 return (
                   <div
+                    key={idx}
                     style={{ marginBottom: 10, borderBottom: '1px solid #bbb' }}
                   >
                     {name}

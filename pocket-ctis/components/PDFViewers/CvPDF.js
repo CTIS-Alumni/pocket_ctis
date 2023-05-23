@@ -271,7 +271,7 @@ const CvPDF = ({data}) => {
             }
 
             return(
-              <View style={[styles.midSection, {marginBottom: 7}]}>
+              <View key={idx} style={[styles.midSection, {marginBottom: 7}]}>
                 <View style={[styles.flex, styles.gapBetween]}>
                   <View style={[styles.flex, styles.alignCenter]}>
                     {/* // name of school */}

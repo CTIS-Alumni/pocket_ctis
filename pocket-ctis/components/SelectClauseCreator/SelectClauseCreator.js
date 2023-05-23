@@ -50,7 +50,7 @@ const SelectClauseCreator = ({ setSelectSchema, tableOptions }) => {
           <span className={styles.clause}>
             SELECT{' '}
             {columns.map((col, idx) => (
-              <span>
+              <span key={idx}>
                 <span
                   className={styles.removeable}
                   onClick={() => removeColumn(col)}

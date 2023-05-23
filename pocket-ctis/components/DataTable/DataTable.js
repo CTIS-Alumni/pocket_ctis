@@ -139,8 +139,8 @@ const DataTable = ({
                   <div className={styles.tableHeader}>check</div>
                 </th>
               )}
-              {columns.map((c) => (
-                <th onClick={() => handleSorting(c)}>
+              {columns.map((c, idx) => (
+                <th key={idx} onClick={() => handleSorting(c)}>
                   <div className={styles.tableHeader}>
                     {c}
                     {sortable && (
@@ -169,8 +169,9 @@ const DataTable = ({
             </tr>
           </thead>
           <tbody>
-            {data.map((d) => (
+            {data.map((d, idx) => (
               <tr
+                key={idx}
                 className={`${styles.tableRow} ${
                   clickable ? styles.clickable : ''
                 }`}
@@ -197,8 +198,9 @@ const DataTable = ({
                     />
                   </td>
                 )}
-                {columns.map((c) => (
+                {columns.map((c, idx) => (
                   <td
+                    key={idx}
                     className={styles.tableCell}
                     onClick={() => {
                       if (clickable) clickHandler(d)

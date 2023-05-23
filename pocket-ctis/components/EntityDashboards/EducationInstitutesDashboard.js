@@ -146,8 +146,8 @@ const EducationInstitutesDashboard = () => {
                 }`}
               >
                 <ul className={styles.optionsList}>
-                  {selectedArrayOptions.map((s) => (
-                    <li onClick={() => onOpen(s)}>{s.label}</li>
+                  {selectedArrayOptions.map((s, idx) => (
+                    <li key={idx} onClick={() => onOpen(s)}>{s.label}</li>
                   ))}
                 </ul>
               </div>

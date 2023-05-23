@@ -308,8 +308,8 @@ const AdminUserView = ({ user }) => {
                 </div>
               )}
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                {basic_info[0].user_types.split(',').map((type) => (
-                  <Badge className='ms-2'>{type.toUpperCase()}</Badge>
+                {basic_info[0].user_types.split(',').map((type, idx) => (
+                  <Badge className='ms-2' key={idx}>{type.toUpperCase()}</Badge>
                 ))}
               </div>
             </div>
@@ -366,6 +366,7 @@ const AdminUserView = ({ user }) => {
                   {socialMediaIcons[social.social_media_name]}
                   <a
                     href={`${social.link || ''}`}
+                    rel='noreferrer'
                     target='_blank'
                   >
                     {social.link}
@@ -651,7 +652,7 @@ const AdminUserView = ({ user }) => {
                         {classification}
                         <Container style={{ color: '#999' }}>
                           {classifiedSkills[classification].map((skill, i) => (
-                            <div>
+                            <div key={i}>
                               {skill.skill_name} {(skill.skill_level ? `- ${text_skill_level[skill.skill_level]}` : ``)}
                             </div>
                           ))}

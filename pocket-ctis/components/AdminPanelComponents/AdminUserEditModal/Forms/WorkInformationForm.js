@@ -257,8 +257,9 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           <option value='' selected>
                                             Select Company
                                           </option>
-                                          {companies.map((company) => (
+                                          {companies.map((company, idx) => (
                                             <option
+                                              key={idx}
                                               value={`${company.id}-${company.company_name}`}
                                             >
                                               {company.company_name}
@@ -300,11 +301,11 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               Please select a country
                                             </option>
                                             {Object.keys(locationData).map(
-                                              (country) => {
+                                              (country, idx) => {
                                                 let countryName =
                                                   country.split('-')[1]
                                                 return (
-                                                  <option value={country}>
+                                                  <option key={idx} value={country}>
                                                     {countryName}
                                                   </option>
                                                 )
@@ -340,10 +341,10 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             </option>
                                             {locationData[
                                               work_record.country
-                                            ]?.map((city) => {
+                                            ]?.map((city, idx) => {
                                               let cityName = city.split('-')[1]
                                               return (
-                                                <option value={city}>
+                                                <option key={idx} value={city}>
                                                   {cityName}
                                                 </option>
                                               )
@@ -401,8 +402,9 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             <option value='' disabled selected>
                                               Select Work Type
                                             </option>
-                                            {worktypes.map((workType) => (
+                                            {worktypes.map((workType, idx) => (
                                               <option
+                                                key={idx}
                                                 value={`${workType.id}-${workType.work_type_name}`}
                                               >
                                                 {workType.work_type_name}

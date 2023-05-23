@@ -226,8 +226,9 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           <option disabled selected value=''>
                                             Please Select skill type
                                           </option>
-                                          {skillType.map((type) => (
+                                          {skillType.map((type, idx) => (
                                             <option
+                                              key={idx}
                                               value={`${type.id}-${type.skill_type_name}`}
                                             >
                                               {type.skill_type_name}
@@ -265,8 +266,9 @@ const SkillsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                                     '-'
                                                   )[0] == s.skill_type_id
                                               )
-                                              .map((s) => (
+                                              .map((s, idx) => (
                                                 <option
+                                                  key={idx}
                                                   value={`${s.id}-${s.skill_name}`}
                                                 >
                                                   {s.skill_name}

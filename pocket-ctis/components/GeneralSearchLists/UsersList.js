@@ -94,8 +94,8 @@ const SearchPageUsersList = ({ search }) => {
                       }`}
                     </div>
                     <div>
-                      {user.user_types?.split(',').map((t) => (
-                        <Badge className='me-2'>{t.toUpperCase()}</Badge>
+                      {user.user_types?.split(',').map((t, idx) => (
+                        <Badge key={idx} className='me-2'>{t.toUpperCase()}</Badge>
                       ))}
                     </div>
                   </div>

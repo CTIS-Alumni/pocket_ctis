@@ -249,8 +249,9 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               Please select Educational
                                               Institute
                                             </option>
-                                            {eduInsts.map((inst) => (
+                                            {eduInsts.map((inst, idx) => (
                                               <option
+                                                key={idx}
                                                 value={`${inst.id}-${inst.edu_inst_name}`}
                                               >
                                                 {inst.edu_inst_name}
@@ -281,8 +282,9 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
                                               <option selected disabled value=''>
                                                 Please select a Degree
                                               </option>
-                                              {degreeTypes.map((degree) => (
+                                              {degreeTypes.map((degree, idx) => (
                                                 <option
+                                                  key={idx}
                                                   value={`${degree.id}-${degree.degree_type_name}`}
                                                 >
                                                   {degree.degree_type_name}

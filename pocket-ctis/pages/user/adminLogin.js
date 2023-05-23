@@ -184,7 +184,7 @@ const Login = () => {
             className='d-flex align-items-center'
           >
             <div>
-              Have an admin account but haven't activated yet?
+              Have an admin account but have not activated yet?
               <br />
               Check your mail for your activation link!
             </div>

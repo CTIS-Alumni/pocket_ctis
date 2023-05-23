@@ -320,8 +320,8 @@ const Profile = ({ user }) => {
                 </div>
               )}
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                {basic_info[0].user_types.split(',').map((type) => (
-                  <Badge className='ms-2'>{type.toUpperCase()}</Badge>
+                {basic_info[0].user_types.split(',').map((type, idx) => (
+                  <Badge key={idx} className='ms-2'>{type.toUpperCase()}</Badge>
                 ))}
               </div>
             </div>
@@ -381,6 +381,7 @@ const Profile = ({ user }) => {
                       social.link || ''
                     }`}
                     target='_blank'
+                    rel='noreferrer'
                   >
                     {social.link}
                   </a>
@@ -666,7 +667,7 @@ const Profile = ({ user }) => {
                         {classification}
                         <Container style={{ color: '#999' }}>
                           {classifiedSkills[classification].map((skill, i) => (
-                            <div>
+                            <div key={i}>
                               {skill.skill_name} {(skill.skill_level ? `- ${text_skill_level[skill.skill_level]}` : ``)}
                             </div>
                           ))}

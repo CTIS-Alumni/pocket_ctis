@@ -182,7 +182,6 @@ const EducationalInstituteForm = ({ activeItem, updateData }) => {
               name='is_erasmus'
               id='is_erasmus'
               onClick={() => {
-                console.log('click')
                 formik.setFieldValue('is_erasmus', !formik.values.is_erasmus)
               }}
             >

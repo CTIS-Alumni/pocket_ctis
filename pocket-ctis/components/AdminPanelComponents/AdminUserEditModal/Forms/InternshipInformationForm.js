@@ -239,8 +239,9 @@ const InternshipInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           <option selected disabled value=''>
                                             Please select a Company
                                           </option>
-                                          {companies.map((company) => (
+                                          {companies.map((company, idx) => (
                                             <option
+                                              key={idx}
                                               value={`${company.id}-${company.company_name}`}
                                             >
                                               {company.company_name}

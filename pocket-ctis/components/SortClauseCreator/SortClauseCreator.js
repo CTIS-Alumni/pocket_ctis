@@ -40,6 +40,7 @@ const SortClauseCreator = ({ activeTables, setSortSchema }) => {
             ORDER BY&nbsp;
             {sortClauses.map((column, idx) => (
               <span
+                key={idx}
                 className={styles.removeable}
                 onClick={() => removeSort(column)}
               >

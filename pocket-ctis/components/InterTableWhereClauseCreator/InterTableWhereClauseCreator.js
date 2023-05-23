@@ -43,9 +43,10 @@ const InterTableWhereClauseCreator = ({
           <div>
             WHERE
             <div style={{ paddingLeft: 10 }}>
-              {whereClauses.map((w) => {
+              {whereClauses.map((w, idx) => {
                 return (
                   <div
+                    key={idx}
                     className={`${styles.clauseContainer} ${styles.removeable}`}
                     onClick={() => removeWhere(w)}
                   >

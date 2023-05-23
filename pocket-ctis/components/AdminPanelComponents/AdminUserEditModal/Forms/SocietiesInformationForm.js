@@ -207,8 +207,9 @@ const SocietiesInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           <option disabled selected value=''>
                                             Please select a student society
                                           </option>
-                                          {societies.map((society) => (
+                                          {societies.map((society, idx) => (
                                             <option
+                                              key={idx}
                                               value={`${society.id}-${society.society_name}`}
                                             >
                                               {society.society_name}

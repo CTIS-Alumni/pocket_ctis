@@ -273,8 +273,9 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                                   Project
                                                 </option>
                                                 {graduationProjects.map(
-                                                  (project) => (
+                                                  (project, idx) => (
                                                     <option
+                                                      key={idx}
                                                       value={`${project.id}-${project.graduation_project_name}`}
                                                     >
                                                       {

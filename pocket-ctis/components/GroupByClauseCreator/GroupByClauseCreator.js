@@ -40,6 +40,7 @@ const GroupByClauseCreator = ({ activeTables, setGroupSchema }) => {
             GROUP BY&nbsp;
             {groupsClauses.map((column, idx) => (
               <span
+                key={idx}
                 className={styles.removeable}
                 onClick={() => removeGroup(column)}
               >

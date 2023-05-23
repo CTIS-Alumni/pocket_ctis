@@ -219,8 +219,9 @@ const ExamsInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             <option disabled selected value=''>
                                               Please Select Exam type
                                             </option>
-                                            {examTypes.map((type) => (
+                                            {examTypes.map((type, idx) => (
                                               <option
+                                                key={idx}
                                                 value={`${type.id}-${type.exam_name}`}
                                               >
                                                 {type.exam_name}

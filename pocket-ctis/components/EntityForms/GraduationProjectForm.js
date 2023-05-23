@@ -213,7 +213,6 @@ const GraduationProjectForm = ({ activeItem, updateData }) => {
       if (!res.errors.length) {
         toast.success('Graduation project saved successfully!')
         updateData()
-        console.log(res)
         //TODO: SET THE RETURNING PICTURES ACCORDINLY; IF THERE'S NO posterImage in res.data, set it to "defaultuser"
       } else toast.error(res.errors[0].error)
     } else {

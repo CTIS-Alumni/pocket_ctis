@@ -62,9 +62,9 @@ const UsersList = () => {
         <SearchBar onSubmit={handleSearch} />
         {data.length > 0 ? (
           <ListGroup style={{ margin: '20px 0' }} variant='flush'>
-            {data.map((user) => {
+            {data.map((user, idx) => {
               return (
-                <ListGroupItem>
+                <ListGroupItem key={idx}>
                   <Link
                     href={`/user/${user.id}`}
                     className='d-flex align-items-center'
@@ -85,8 +85,8 @@ const UsersList = () => {
                         }${user.last_name}`}
                       </div>
                       <div>
-                        {user.user_types?.split(',').map((t) => (
-                          <Badge className='me-2'>{t.toUpperCase()}</Badge>
+                        {user.user_types?.split(',').map((t, idx) => (
+                          <Badge className='me-2' key={idx}>{t.toUpperCase()}</Badge>
                         ))}
                       </div>
                     </div>

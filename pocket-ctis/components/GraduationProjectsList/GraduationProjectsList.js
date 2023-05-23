@@ -60,7 +60,7 @@ const GraduationProjectsList = ({ graduationProjects, onQuery, isLoading, total 
           background: 'rgba(255, 255, 255, 0.5)'
         }} ><Spinner /></div>}
         {
-          graduationProjects.length > 0 &&
+          graduationProjects?.length > 0 &&
           <>
             <ListGroup variant='flush' style={{width: '100%', rowGap: 20}}>
             {graduationProjects.map((graduationProject, i) => (

@@ -293,8 +293,8 @@ const ContactInformationForm = ({ data, user_id, setIsUpdated }) => {
                                         <option value='' disabled selected>
                                           Please select a Social Media Website
                                         </option>
-                                        {socialMediaTypes.map((social) => (
-                                          <option value={social.social_media}>
+                                        {socialMediaTypes.map((social, idx) => (
+                                          <option value={social.social_media} key={idx}>
                                             {social.social_media_name}
                                           </option>
                                         ))}

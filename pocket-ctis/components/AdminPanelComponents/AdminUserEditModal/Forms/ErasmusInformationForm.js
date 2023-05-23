@@ -246,8 +246,9 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                                             Please select a Educational
                                             institiute
                                           </option>
-                                          {universities.map((uni) => (
+                                          {universities.map((uni, idx) => (
                                             <option
+                                              key={idx}
                                               value={`${uni.id}-${uni.edu_inst_name}`}
                                             >
                                               {uni.edu_inst_name}

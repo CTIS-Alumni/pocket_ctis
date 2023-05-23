@@ -682,10 +682,10 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                               <option selected disabled value=''>
                                 Please select a Country
                               </option>
-                              {Object.keys(locationData).map((country) => {
+                              {Object.keys(locationData).map((country, idx) => {
                                 let countryName = country.split('-')[1]
                                 return (
-                                  <option value={country}>{countryName}</option>
+                                  <option key={idx} value={country}>{countryName}</option>
                                 )
                               })}
                             </Field>
@@ -718,9 +718,9 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                               </option>
                               {locationData[
                                 props.values.location[0]?.country
-                              ]?.map((city) => {
+                              ]?.map((city, idx) => {
                                 let cityName = city.split('-')[1]
-                                return <option value={city}>{cityName}</option>
+                                return <option key={idx} value={city}>{cityName}</option>
                               })}
                             </Field>
                           </div>
