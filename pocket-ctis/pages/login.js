@@ -3,7 +3,7 @@ import { Col, Container, Row } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import styles from '../styles/login.module.css'
 import { useContext, useState } from 'react'
-import {_submitFetcher} from "../helpers/fetchHelpers";
+import {_getFetcher, _submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
 import departmentConfig from "../config/departmentConfig";
 import {toast, ToastContainer} from "react-toastify";
@@ -36,10 +36,11 @@ const Login = () => {
       return false;
     }
     const res = await requestLogin(values)
+    console.log(res)
     if (res.data && !res.errors) {
       toast.success('Login successful')
-      console.log(res.data[0])
-      setUserData(res.data[0])
+      const userData = await _getFetcher({res: craftUrl(['basic_info'])})
+      setUserData(userData.res.data[0])
       router.push('/user' )
     }else{
       toast.error(res.errors[0].error)
