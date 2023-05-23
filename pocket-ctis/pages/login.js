@@ -2,11 +2,12 @@ import { Formik, Field, Form } from 'formik'
 import { Col, Container, Row } from 'react-bootstrap'
 import { useRouter } from 'next/router'
 import styles from '../styles/login.module.css'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import {_submitFetcher} from "../helpers/fetchHelpers";
 import {craftUrl} from "../helpers/urlHelper";
 import departmentConfig from "../config/departmentConfig";
 import {toast, ToastContainer} from "react-toastify";
+import { User_data } from '../context/userContext'
 
 const requestLogin = async (authCredentials) => {
   const res = await _submitFetcher("POST", craftUrl(["login"]), authCredentials);
@@ -26,6 +27,7 @@ function checkValues(username, password) {
 }
 
 const Login = () => {
+  const { setUserData } = useContext(User_data)
   const router = useRouter()
   const onSubmit = async (values) => {
     const is_valid = checkValues(values.username, values.password);
@@ -34,8 +36,10 @@ const Login = () => {
       return false;
     }
     const res = await requestLogin(values)
-    if (res.data.length && !res.errors) {
+    if (res.data && !res.errors) {
       toast.success('Login successful')
+      console.log(res.data[0])
+      setUserData(res.data[0])
       router.push('/user' )
     }else{
       toast.error(res.errors[0].error)

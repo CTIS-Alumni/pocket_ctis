@@ -74,12 +74,8 @@ const handler =  async (req, res) => {
     } else {
         try {
             const {username, password} = JSON.parse(req.body);
-            const query = "SELECT u.id, u.first_name, u.last_name, upp.profile_picture, GROUP_CONCAT(act.type_name) as 'user_types', u.gender, u.contact_email, uc.hashed " +
-                "FROM users u LEFT OUTER JOIN usercredential uc ON (uc.user_id = u.id) " +
-                "LEFT OUTER JOIN useraccounttype uat ON (uat.user_id = u.id) " +
-                "LEFT OUTER JOIN userprofilepicture upp ON (upp.user_id = u.id) " +
-                "LEFT OUTER JOIN accounttype act ON (act.id = uat.type_id) " +
-                "WHERE uc.username = ? AND uc.is_admin_auth = 0 "
+            const query = "SELECT uc.user_id, uc.hashed FROM usercredential uc LEFT OUTER JOIN users u ON (u.id = uc.user_id) " +
+                " WHERE username = ? AND is_admin_auth = 0 AND u.is_active = 1 ";
             const {data, errors} = await doqueryNew({query: query, values: [username]});
 
             if (errors || (data && !data.length || (data[0].hashed === null || data[0].user_types === null))) {
@@ -92,7 +88,6 @@ const handler =  async (req, res) => {
                 if (!result)
                     res.status(401).json({errors: [{error: "Wrong username or password!"}]});
 
-                delete data[0].hashed;
 
                 const access_token = await sign({
                     user_id: data[0].user_id,
@@ -121,9 +116,10 @@ const handler =  async (req, res) => {
                 });
 
                 res.setHeader("Set-Cookie", [serialCookie, refreshCookie]);
-                res.status(200).json({data: data, errors: errors});
+                res.status(200).json({data: {message: "Login successful"}, errors: errors});
             });
         } catch (error) {
+            console.log("does it come here", error);
             res.status(500).json({errors: [{error: error.message}]});
         }
     }
