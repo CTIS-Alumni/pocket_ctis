@@ -86,6 +86,11 @@ const handler =  async (req, res) => {
                         const {data, errors} = await doMultiQueries([{name: "data", query: query, values: values},
                             {name: "length", query: length_query, values: length_values}]);
 
+                        if(payload.user !== "admin" && !modules.internships.user_visible){
+                            data.data = [];
+                            data.length[0].count = 0;
+                        }
+
                         res.status(200).json({data:data.data, length: data.length[0].count, errors: errors});
 
                     } catch (error) {
@@ -116,6 +121,8 @@ const handler =  async (req, res) => {
                     }
                 }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
+            default:
+                res.status(404).json({ errors: [{ error: "Invalid method" }] });
         }
     } else {
         res.redirect("/401", 401);

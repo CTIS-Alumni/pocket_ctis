@@ -1,6 +1,6 @@
 module.exports = {
   "graduation_projects": {
-    "user_visible": true
+    "user_visible": false
   },
   "sectors": {
     "user_addable": true
@@ -24,10 +24,10 @@ module.exports = {
     "user_addable": true
   },
   "internships": {
-    "user_visible": true
+    "user_visible": false
   },
   "erasmus": {
-    "user_visible": true
+    "user_visible": false
   },
   "user_profile_data": {
     "graudation_projects": {

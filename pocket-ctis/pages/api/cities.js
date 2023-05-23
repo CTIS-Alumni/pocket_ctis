@@ -14,6 +14,8 @@ const handler =  async (req, res) => {
                     res.status(500).json({errors: [{error: error.message}]});
                 }
                 break;
+            default:
+                res.status(404).json({ errors: [{ error: "Invalid method" }] });
         }
 }
 export default corsMiddleware(checkApiKey(handler));

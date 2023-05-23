@@ -2,6 +2,7 @@ import { NextResponse} from "next/server";
 import {verify} from "./helpers/jwtHelper";
 import {refreshToken} from "./helpers/jwtHelper";
 import {parse} from "cookie";
+import modules from "./config/moduleConfig"
 
 export default async function middleware(req){
     //WORKS WITH SERVER SIDE RENDERING
@@ -43,9 +44,20 @@ export default async function middleware(req){
             }
             else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user") && payload.mode === "admin"){
                     return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin");
-            }else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin") && payload.mode === "user"){
+            }
+            else if(url.includes(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/admin") && payload.mode === "user"){
                 return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/user");
             }
+            else if(url.includes("user/internships") && !modules.internships.user_visible) {
+                return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/404");
+            }
+            else if(url.includes("user/erasmus") && !modules.erasmus.user_visible) {
+                return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/404");
+            }
+            else if(url.includes("user/graduationProjects") && !modules.graduation_projects.user_visible) {
+                return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/404");
+            }
+
 
         }catch(error){
             return NextResponse.redirect(process.env.NEXT_PUBLIC_ORIGIN_PATH + "/login");

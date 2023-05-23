@@ -12,6 +12,7 @@ import { List, ThreeDotsVertical } from 'react-bootstrap-icons'
 import Link from 'next/link'
 import { useState } from 'react'
 import { getAppLogoPath } from '../../helpers/formatHelpers'
+import SearchBar from "../SearchBar/SearchBar";
 
 const NavigationBar = ({ setToggleSidebar }) => {
   const router = useRouter()

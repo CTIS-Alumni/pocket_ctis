@@ -154,26 +154,22 @@ const handler = async (req, res) => {
                 throw {message: "Your admin account has already been activated!"};
 
             const new_hashed_pass = await hash(password, 10);
-            console.log("here success")
 
             const query = "INSERT INTO usercredential (user_id, hashed, username, is_admin_auth) values (?, ?, ?, 1) ";
             const {data, errors} = await doqueryNew({query: query, values: [payload.user_id, new_hashed_pass, username]});
-            console.log("here success 2")
-            console.log("heres data, eroors", data, errors)
+
             if(!data && errors){
                 const msg = handleErrorMessages(errors[0].error);
                 res.status(500).json({errors: [{error: msg.message}]});
             }else res.status(200).json({data, errors});
 
         }catch(error){
-            console.log("here fail", error)
             res.status(500).json({errors: [{error: error.message}]})
         }
     }
     else if(req.query.forgotPassword){
         try{
             const {password, confirm, token} = JSON.parse(req.body);
-            console.log(password, confirm, token);
             if(password !== confirm)
                 throw {message: "Passwords don't match!"};
 
@@ -230,7 +226,6 @@ const handler = async (req, res) => {
         }catch(error){
             if(!error.message)
                 error = handleErrorMessages(error);
-            console.log(error);
             res.status(500).json({errors: [{error: error.message}]});
         }
     }

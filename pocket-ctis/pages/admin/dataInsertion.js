@@ -46,16 +46,16 @@ const DataInsertion = () => {
   }
 
   useEffect(() => {
-    console.log("heres success", success)
+    console.log(success)
   }, [success])
 
 
   useEffect(() => {
-    console.log("heres errırs", errors)
+    console.log(errors)
   }, [errors]);
 
   useEffect(() => {
-    console.log("heres mail results", mailResults)
+    console.log(mailResults)
   }, [mailResults]);
 
 
@@ -142,14 +142,12 @@ const DataInsertion = () => {
     )
 
     const success_map = {}
-    console.log(res);
     if(res?.data?.length){
       res.data.forEach((d) => {
         success_map[d.index] = d.inserted?.user_id ||  d.data?.id
       })
     }
 
-    console.log("heres success map", success_map);
 
     setSuccess(success_map)
 
@@ -162,8 +160,6 @@ const DataInsertion = () => {
         errors_map[err.index || 0] = err.error
       })
     }
-
-    console.log("hers errors map", errors_map);
 
     setErrors(errors_map)
     if (
@@ -199,7 +195,6 @@ const DataInsertion = () => {
         }
       }
     }
-    console.log("heres res.data", res.data);
     if (res.data?.length && values.dataType === 'users') {
       setMailResults(true)
       for (const [i, user] of res.data.entries()) {
@@ -209,14 +204,47 @@ const DataInsertion = () => {
         toast.success('All emails were sent successfully')
     }
 
-    console.log('success:', success)
-    console.log('errors:', errors)
-    console.log('mail_results:', mail_results)
   }
 
-  const downloadTemplate = () => {
-    //the template to be given saved in templateType 
-    console.log(templateType)
+  const downloadTemplate = async () => {
+    try{
+      const res = await _submitFetcher('POST', craftUrl(['downloadCSVTemplate']), {template_type: templateType })
+
+      if(!res.errors){
+        const { fileData } = res
+
+        const byteCharacters = atob(fileData);
+        const byteArrays = [];
+
+        for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+          const slice = byteCharacters.slice(offset, offset + 1024);
+
+          const byteNumbers = new Array(slice.length);
+          for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+          }
+
+          const byteArray = new Uint8Array(byteNumbers);
+          byteArrays.push(byteArray);
+        }
+
+        const blob = new Blob(byteArrays, { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'template.csv';
+        link.click();
+
+        // Clean up the temporary URL and <a> element
+        URL.revokeObjectURL(url);
+        link.remove();
+      }
+      toast.success("Template downloaded successfully!");
+    }catch(error){
+      console.log(error);
+      toast.error("An error occured!");
+    }
   }
 
   return (
@@ -225,8 +253,8 @@ const DataInsertion = () => {
         <h5>Data Insertion via CSV</h5>
         <Formik
           enableReinitialize
-          onSubmit={(values) => {
-            onSubmitHandler(values)
+          onSubmit={ async (values) => {
+            await onSubmitHandler(values)
           }}
           initialValues={{ dataType: 'users', file: null }}
         >

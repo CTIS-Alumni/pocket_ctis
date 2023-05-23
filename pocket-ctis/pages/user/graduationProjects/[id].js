@@ -22,8 +22,8 @@ const GraduationProject = ({ graduationproject }) => {
             }}
           >
             <img
-              src={getGraduationProjectPicturePath(null, 'poster')}
-              style={{ maxWidth: 600, background: '#ccc' }}
+              src={getGraduationProjectPicturePath(graduationproject.data[0].poster_pic, 'poster')}
+              style={{  background: '#ccc' , width: 800}}
               className={styles.posterImage}
             />
           </div>

@@ -45,7 +45,7 @@ const UserInfo = ({ info }) => {
     <div className={styles.sidebar_user_info}>
       <span
         className={styles.user_name_surname}
-      >{`${info?.first_name} ${info?.last_name}`}</span>
+      >{info?.first_name && `${info?.first_name} ${info?.last_name}`}</span>
       <span className={styles.user_role}>
         {info?.user_types.split(',').join(', ')}
       </span>

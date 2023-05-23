@@ -289,6 +289,8 @@ const handler =  async (req, res) => {
                     }
                 }else res.status(403).json({errors: [{error: "Forbidden request!"}]});
                 break;
+            default:
+                res.status(404).json({ errors: [{ error: "Invalid method" }] });
         }
     } else {
         res.redirect("/401", 401);

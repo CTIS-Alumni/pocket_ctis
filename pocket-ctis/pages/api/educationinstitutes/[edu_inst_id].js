@@ -57,6 +57,8 @@ const handler =  async (req, res) => {
                     res.redirect("/401", 401);
                 }
                 break;
+            default:
+                res.status(404).json({ errors: [{ error: "Invalid method" }] });
         }
     } else {
         res.redirect("/401", 401);
