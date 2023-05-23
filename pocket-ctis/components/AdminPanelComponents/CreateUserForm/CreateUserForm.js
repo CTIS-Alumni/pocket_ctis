@@ -23,7 +23,7 @@ const customStyles = {
   }),
 }
 
-const CreateUserForm = ({ activeItem, goBack }) => {
+const CreateUserForm = ({ activeItem, goBack, updateData }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [accountTypes, setAccountTypes] = useState([])
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
@@ -66,6 +66,7 @@ const CreateUserForm = ({ activeItem, goBack }) => {
         toast.error(res.errors[0].error)
       } else {
         toast.success('User saved successfully')
+        updateData()
         if (res.data === true)
           toast.success(
             'Admin account activation mail successfully sent to user!'
@@ -77,6 +78,7 @@ const CreateUserForm = ({ activeItem, goBack }) => {
       })
       if (res.data['0']?.data?.mail_status && !res.errors?.length) {
         toast.success('User created successfully!')
+        updateData()
         toast.success('Activation mail successfully sent to user!')
       } else {
         toast.error(res.errors[0].error)

@@ -19,12 +19,12 @@ const PDFView = () => {
     _getFetcher(
       { userInfo: craftUrl(['users', router.query.id, 'profile']) }
     ).then(({userInfo}) => {
-      console.log(userInfo)
+      console.log('veryFirst', userInfo, router.query.id)
       if (userInfo.errors.length == 0)
         setData(userInfo.data)
       }
     )
-  }, [])
+  }, [router.query.id])
 
   return <CvPDFView data={data} />
 }

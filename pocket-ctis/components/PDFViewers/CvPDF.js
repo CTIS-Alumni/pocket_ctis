@@ -10,9 +10,8 @@ import ReactPDF, {
   Font
 } from '@react-pdf/renderer'
 import { useState, useEffect } from 'react'
-import { _getFetcher } from '../../helpers/fetchHelpers';
-import { craftUrl } from '../../helpers/urlHelper';
-import { useRouter } from 'next/router';
+import { getTimePeriod } from '../../helpers/formatHelpers';
+import { monthNames } from '../../helpers/formatHelpers';
 
 Font.register({family: 'Open Sans', fonts: [
   { src: 'https://fonts.gstatic.com/s/opensans/v35/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSGmu1aB.woff2' }, // regular 400
@@ -130,14 +129,29 @@ const styles = StyleSheet.create({
 })
 
 const CvPDF = ({data}) => {
-  console.log('here', data)
+  const skillValues=['Beginner', 'Advanced', 'Competent', 'Proficient', 'Expert']
+
+  const turkishToEnglish = (value) => {
+    return value?.replace('Ğ','g')
+        .replace('Ü','u')
+        .replace('Ş','s')
+        .replace('I','i')
+        .replace('İ','i')
+        .replace('Ö','o')
+        .replace('Ç','c')
+        .replace('ğ','g')
+ 		    .replace('ü','u')
+        .replace('ş','s')
+        .replace('ı','i')
+        .replace('ö','o')
+        .replace('ç','c');
+  }
 
   return (
     <Document
       title="@Person's CV"
       author='@Person'
       creator='PocketCTIS'
-      // language='Turkish'
     >
       <Page size='A4' style={styles.body}>
         {/* // TOP SECTION */}
@@ -145,7 +159,7 @@ const CvPDF = ({data}) => {
           {/* // name surname profession */}
           <View style={[styles.midSection]}>
             <Text style={styles.nameSurname}>
-              {data?.basic_info[0]?.last_name} {data?.basic_info[0]?.first_name}
+            {turkishToEnglish(data?.basic_info[0]?.first_name)} {turkishToEnglish(data?.basic_info[0]?.last_name)}
             </Text>
             {/* <Text style={styles.profession}>Profession</Text> */}
           </View>
@@ -158,35 +172,36 @@ const CvPDF = ({data}) => {
                 <Text style={[styles.email]}>{data?.emails[0]?.email_address}</Text>
               </View>
               {/* // phone */}
-              <View style={[styles.flex, styles.gapBetween]}>
-                <Text style={[styles.midTitle]}>Phone Number: </Text>
-                <Text style={[styles.phone]}>+000 XX XX XX XXX</Text>
-              </View>
+              {
+                data?.phone_numbers?.length > 0 && (
+                  <>
+                    {data?.phone_numbers?.map((n, idx) => (
+                      <View style={[styles.flex, styles.gapBetween]}>
+                        <Text style={[styles.midTitle]}>{idx == 0 ? 'Phone Number: ' : ''}</Text>
+                        <Text style={[styles.phone]}>{n?.phone_number}</Text>
+                      </View>
+                    ))}
+                  </>    
+                )
+              }
               {/* // address */}
               <View style={[styles.flex, styles.gapBetween]}>
                 <Text style={[styles.midTitle]}>Address: </Text>
                 <Text style={[styles.address]}>
-                  abc road abc neighbourhood abc street city countruy
+                  {data?.location[0]?.city_name && `${data?.location[0]?.city_name} - ` }{data?.location[0]?.country_name}
                 </Text>
               </View>
             </View>
             {/* // social media */}
             <View style={[styles.socialMedia]}>
-              {/* // socmed 1 */}
-              <View style={[styles.flex, styles.gapBetween]}>
-                <Text style={[styles.midTitle]}>Social Media: </Text>
-                <Text style={[styles.socmed]}>www.socialmedia.com/person</Text>
-              </View>
-              {/* // socmed 2 */}
-              <View style={[styles.flex, styles.gapBetween]}>
-                <Text style={[styles.midTitle]}>Social Media: </Text>
-                <Text style={[styles.socmed]}>www.socialmedia.com/person</Text>
-              </View>
-              {/* // socmed 3 */}
-              <View style={[styles.flex, styles.gapBetween]}>
-                <Text style={[styles.midTitle]}>Social Media: </Text>
-                <Text style={[styles.socmed]}>www.socialmedia.com/person</Text>
-              </View>
+              {
+                data?.socials?.map((s,idx) => (
+                  <View style={[styles.flex, styles.gapBetween]}>
+                    <Text style={[styles.midTitle]}>{idx == 0 ? 'Social Media:':'' }</Text>
+                    <Text style={[styles.socmed]}>{s.link}</Text>
+                  </View>
+                ))
+              }
             </View>
           </View>
         </View>
@@ -208,19 +223,13 @@ const CvPDF = ({data}) => {
             <View style={[styles.midSection]}>
               {/* // para */}
               <Text>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum.
+                {data?.career_objective[0]?.career_objective}
               </Text>
             </View>
           </View>
         </View>
         {/* // EDUCATION SECTION */}
-        <View style={styles.section} wrap={false}>
+        { data?.edu_records?.length > 0 && <View style={styles.section} wrap={false}>
           <View>
             <Text style={[styles.boldTitle]}>Education</Text>
             {/* // divider */}
@@ -235,28 +244,52 @@ const CvPDF = ({data}) => {
               />
             </Svg>
           </View>
-          {/* // edu */}
-          <View style={[styles.midSection]}>
-            <View style={[styles.flex, styles.gapBetween]}>
-              <View style={[styles.flex, styles.alignCenter]}>
-                {/* // name of school */}
-                <Text style={[styles.midTitle]}>ABC University</Text>
-                {/* // cgpa */}
-                <View style={[styles.flex, styles.alignCenter]}>
-                  <Text>, CGPA: </Text>
-                  <Text>3.45</Text>
+
+          {data?.edu_records?.map((edu, idx) => {
+            var dates = ''
+            
+            const sDate = new Date(edu.start_date)
+            const eDate = new Date(edu.end_date)
+            if (edu.start_date && edu.is_current == 1){
+              dates = '' + edu.start_date + ' - ' + present
+            }else if (edu.start_date && edu.end_date){
+              dates = '' + monthNames[sDate.getUTCMonth()] + ' ' + sDate.getFullYear() + ' - ' + monthNames[eDate.getUTCMonth()] + ' ' + eDate.getFullYear()
+            }else if (edu.start_date){
+              dates = 'Started in ' + monthNames[sDate.getUTCMonth()] + ' ' + sDate.getFullYear()
+            }else if (edu.end_date){
+              dates = 'Ended in ' + monthNames[eDate.getUTCMonth()] + ' ' + eDate.getFullYear()
+            }
+
+            return(
+              <View style={[styles.midSection]}>
+                <View style={[styles.flex, styles.gapBetween]}>
+                  <View style={[styles.flex, styles.alignCenter]}>
+                    {/* // name of school */}
+                    <Text style={[styles.midTitle]}>{edu.edu_inst_name}</Text>
+                    {/* // cgpa */}
+                    {edu.gpa && <View style={[styles.flex, styles.alignCenter]}>
+                      <Text>, CGPA: </Text>
+                      <Text>{Math.round(edu.gpa*100)/100}</Text>
+                    </View>}
+                  </View>
+                  <Text>{dates}</Text>
+                </View>
+
+                {edu.country_name && <View>
+                  <Text>{edu?.city_name && `${edu?.city_name} - `}{edu?.country_name}</Text>
+                </View>}
+
+                <View>
+                  <Text>{edu?.degree_type_name} {edu?.name_of_program}</Text>
+                </View>
+    
+                <View style={[styles.flex, styles.gapBetween]}>
+                  {edu?.education_description && <Text style={[styles.subtitle]}>{edu?.education_description}</Text>}
                 </View>
               </View>
-              {/* // date */}
-              <Text>Month 20XX - Month 20XX</Text>
-            </View>
-
-            <View style={[styles.flex, styles.gapBetween]}>
-              {/* // department */}
-              <Text style={[styles.subtitle]}>Lorem Ipsum Department</Text>
-            </View>
-          </View>
-        </View>
+            )
+          })}
+        </View>}
         {/* // CAREER SECTION */}
         <View style={styles.section} wrap={false}>
           <View>
@@ -273,43 +306,60 @@ const CvPDF = ({data}) => {
               />
             </Svg>
           </View>
-          <View style={[styles.flex, styles.gapBetween]}>
-            <View style={[styles.flex]}>
-              {/* // name of company */}
-              <Text style={[styles.midTitle]}>ABC Company</Text>
-              {/* // position */}
-              <Text>, Very Good Position</Text>
-            </View>
-            {/* // date */}
-            <Text>Month 20XX - Month 20XX</Text>
-          </View>
-          {/* // department */}
-          <Text style={[styles.subtitle, { marginBottom: marginMedium }]}>
-            IT Department
-          </Text>
-          {/* // job description */}
-          <View>
-            {/* // -------------- */}
-            <View style={[styles.flex]}>
-              <Text style={[styles.bullet]}>•</Text>
-              <Text>Lorem ipsum dolor sit amet.</Text>
-            </View>
-            {/* // -------------- */}
-            <View style={[styles.flex]}>
-              <Text style={[styles.bullet]}>•</Text>
-              <Text>Lorem ipsum dolor sit amet.</Text>
-            </View>
-            {/* // -------------- */}
-            <View style={[styles.flex]}>
-              <Text style={[styles.bullet]}>•</Text>
-              <Text>Lorem ipsum dolor sit amet.</Text>
-            </View>
-            {/* // -------------- */}
-            <View style={[styles.flex]}>
-              <Text style={[styles.bullet]}>•</Text>
-              <Text>Lorem ipsum dolor sit amet.</Text>
-            </View>
-          </View>
+          { data?.work_records && 
+            <>
+              {data?.work_records.map((w, idx) => {
+                var dates = ''
+                            
+                const sDate = new Date(w.start_date)
+                const eDate = new Date(w.end_date)
+                if (w.start_date && w.is_current == 1){
+                  dates = '' + w.start_date + ' - ' + present
+                }else if (w.start_date && w.end_date){
+                  dates = '' + monthNames[sDate.getUTCMonth()] + ' ' + sDate.getFullYear() + ' - ' + monthNames[eDate.getUTCMonth()] + ' ' + eDate.getFullYear()
+                }else if (w.start_date){
+                  dates = 'Started in ' + monthNames[sDate.getUTCMonth()] + ' ' + sDate.getFullYear()
+                }else if (w.end_date){
+                  dates = 'Ended in ' + monthNames[eDate.getUTCMonth()] + ' ' + eDate.getFullYear()
+                }
+
+                return (
+                  <View key={idx}>
+                    <View style={[styles.flex, styles.gapBetween]}>
+                      <View style={[styles.flex]}>
+                        {/* // name of company */}
+                        <Text style={[styles.midTitle]}>{w.company_name}</Text>
+                        {/* // position */}
+                        <Text>{w.position ? `, ${w.position}` : ''}</Text>
+                      </View>
+                      {/* // date */}
+                      <Text>{dates}</Text>
+                    </View>
+                    {/* // department */}
+                    {w.department && <Text style={[styles.subtitle, { marginBottom: marginMedium }]}>
+                      {w.department} Department
+                    </Text>}
+                    {w.country_name && <View>
+                      <Text>{w?.city_name && `${w?.city_name} - `}{w?.country_name}</Text>
+                    </View>}
+                    {/* // job description */}
+                    <View>
+                      {/* // -------------- */}
+                      <View>
+                        <Text>
+                          {w?.work_description}
+                        </Text>
+                      </View>
+                      <View style={[styles.flex]}>
+                        <Text style={[styles.bullet]}>•</Text>
+                        <Text>Lorem ipsum dolor sit amet.</Text>
+                      </View>
+                    </View>
+                  </View>
+                )
+              })}
+            </>
+          }
         </View>
         {/* // PROJECTS SECTION */}
         <View style={styles.section} wrap={false}>
@@ -334,21 +384,37 @@ const CvPDF = ({data}) => {
           {/* // project description */}
           <View>
             {/* // -------------- */}
-            <View style={[styles.flex]}>
-              <Text style={[styles.bullet]}>•</Text>
-              <Text>Lorem ipsum dolor sit amet.</Text>
-            </View>
-            {/* // -------------- */}
-            <View style={[styles.flex]}>
-              <Text style={[styles.bullet]}>•</Text>
-              <Text>Lorem ipsum dolor sit amet.</Text>
-            </View>
-            {/* // -------------- */}
-            <View style={[styles.flex]}>
-              <Text style={[styles.bullet]}>•</Text>
-              <Text>Lorem ipsum dolor sit amet.</Text>
-            </View>
-            {/* // -------------- */}
+            { data?.graduation_project.length > 0 && (
+              <>
+              <View>
+                <Text>
+                  {data?.graduation_project[0].product_name}
+                </Text>
+              </View>
+              <View>
+                <Text>
+                  {data?.graduation_project[0].project_description}
+                </Text>
+              </View>
+              </>
+            ) }
+
+             {data?.projects.length > 0 && (
+              <View>
+                {data?.projects.map((p, idx) => {
+                  return (
+                    <>
+                      <View>
+                        <Text>{p?.project_name}</Text>
+                        { p?.project_description && <Text>{turkishToEnglish(p?.project_description)}</Text>}
+                      </View>
+                      {/* {p?.project_name && <View><Text>{p?.project_name}</Text></View>}
+                      {p?.project_description && <View><Text>{p?.project_description}</Text></View>} */}
+                    </>
+                  )
+                })}
+              </View>
+            )} 
             <View style={[styles.flex]}>
               <Text style={[styles.bullet]}>•</Text>
               <Text>Lorem ipsum dolor sit amet.</Text>
@@ -377,56 +443,15 @@ const CvPDF = ({data}) => {
           >
             <View>
               {/* // -------------- */}
-              <View style={[styles.flex]}>
-                <Text style={[styles.bullet]}>•</Text>
-                <Text>Lorem ipsum: </Text>
-                <Text>4 / 5</Text>
-              </View>
-              {/* // -------------- */}
-              <View style={[styles.flex]}>
-                <Text style={[styles.bullet]}>•</Text>
-                <Text>Lorem ipsum: </Text>
-                <Text>4 / 5</Text>
-              </View>
-              {/* // -------------- */}
-              <View style={[styles.flex]}>
-                <Text style={[styles.bullet]}>•</Text>
-                <Text>Lorem ipsum: </Text>
-                <Text>4 / 5</Text>
-              </View>
-              {/* // -------------- */}
-              <View style={[styles.flex]}>
-                <Text style={[styles.bullet]}>•</Text>
-                <Text>Lorem ipsum: </Text>
-                <Text>4 / 5</Text>
-              </View>
-            </View>
-
-            <View>
-              {/* // -------------- */}
-              <View style={[styles.flex]}>
-                <Text style={[styles.bullet]}>•</Text>
-                <Text>Lorem ipsum: </Text>
-                <Text>4 / 5</Text>
-              </View>
-              {/* // -------------- */}
-              <View style={[styles.flex]}>
-                <Text style={[styles.bullet]}>•</Text>
-                <Text>Lorem ipsum: </Text>
-                <Text>4 / 5</Text>
-              </View>
-              {/* // -------------- */}
-              <View style={[styles.flex]}>
-                <Text style={[styles.bullet]}>•</Text>
-                <Text>Lorem ipsum: </Text>
-                <Text>4 / 5</Text>
-              </View>
-              {/* // -------------- */}
-              <View style={[styles.flex]}>
-                <Text style={[styles.bullet]}>•</Text>
-                <Text>Lorem ipsum: </Text>
-                <Text>4 / 5</Text>
-              </View>
+              {data?.skills?.map(s => {
+                return (
+                  <View style={[styles.flex]}>
+                    <Text style={[styles.bullet]}>•</Text>
+                    <Text>{s.skill_name}: </Text>
+                    <Text>{skillValues[s.skill_level-1]}</Text>
+                  </View>
+                )
+              })}
             </View>
           </View>
         </View>
@@ -443,24 +468,15 @@ const CvPDF = ({data}) => {
 
 const CvPDFView = ({ data }) => {
   const [client, setClient] = useState(false)
-  const [user, setUser] = useState()
-
-  // const router = useRouter()
-  // console.log(data)
   useEffect(() => {
     setClient(true)
   }, [])
 
-  useEffect(() => {
-    setUser(data)
-  }, [data])
-  
-
   return (
     <PDFViewer style={{ height: '100vh', width: '100%' }}>
-      <CvPDF data={user} />
+      <CvPDF data={data} />
     </PDFViewer>
-  )
+  ) 
 }
 
 export default CvPDFView
