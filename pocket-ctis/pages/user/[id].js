@@ -1,7 +1,5 @@
 import {
   Container,
-  Row,
-  Col,
   Tab,
   Tabs,
   Modal,
@@ -33,29 +31,14 @@ import {
   getTimePeriod,
 } from '../../helpers/formatHelpers'
 
-import UserInfoSidebar from '../../components/UserInfoSidebar/UserInfoSidebar'
-import NavigationBar from '../../components/Navbar/NavigationBar'
-
 import ProfileEditModal from '../../components/Modals/ProfileEditModal/ProfileEditModal'
-import ProfileWorkSection from '../../components/ProfilePageComponents/ProfileWorkSection/ProfileWorkSection'
-import ProfileInternshipSection from '../../components/ProfilePageComponents/ProfileInternshipSection/ProfileInternshipSection'
-import SkillsSection from '../../components/ProfilePageComponents/ProfileSkillsSection/SkillsSection'
-import SocialsSection from '../../components/ProfilePageComponents/ProfileSocialsSection/SocialsSection'
-import CertificatesSection from '../../components/ProfilePageComponents/ProfileCertificatesSection/CertificatesSection'
-import ProfileErasmusSection from '../../components/ProfilePageComponents/ProfileErasmusSection/ProfileErasmusSection'
-import ProfileEduSection from '../../components/ProfilePageComponents/ProfileEduSection/ProfileEduSection'
-import ProfileHighSchoolSection from '../../components/ProfilePageComponents/ProfileHighSchoolSection/ProfileHighSchoolSection'
-import ProfileStudentSocieties from '../../components/ProfilePageComponents/ProfileStudentSocieties/ProfileStudentSocieties'
 
 import { useContext, useEffect, useState } from 'react'
-import ProfileExamsSection from '../../components/ProfilePageComponents/ProfileExamsSection/ProfileExamsSection'
-import GraduationProjectSection from '../../components/ProfilePageComponents/GraduationProjectSection/GraduationProjectSection'
 import {
   _getFetcher,
   _submitFetcher,
   _submitFile,
 } from '../../helpers/fetchHelpers'
-import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner'
 import { craftUrl } from '../../helpers/urlHelper'
 import styles from '../../styles/adminUserView.module.css'
 import { toast, ToastContainer } from 'react-toastify'
@@ -81,15 +64,12 @@ const Profile = ({ user }) => {
   const router = useRouter()
 
   useEffect(() => {
-    console.log('refresh', router.query.id)
     router.replace(router.asPath)
   }, [router.query.id])
 
   useEffect(() => {
     setUserData(user.userInfo)
   }, [user])
-  
-  
 
   useEffect(() => {
     if (!profileImage) {
@@ -774,10 +754,17 @@ const Profile = ({ user }) => {
       </div>
 
       {userData.session === 'owner' && (
-        <ProfileEditModal
-          user={userData.data}
-          refreshProfile={refreshProfile}
-        />
+        <>
+          <ProfileEditModal
+            user={userData.data}
+            refreshProfile={refreshProfile}
+          />
+          <button type='button' className={styles.cvBtn} onClick={() => router.push(`/user/cvView/${basic_info[0].id}`)} >
+            {/* <div> */}
+              CV
+            {/* </div> */}
+          </button>
+        </>
       )}
 
       {/* profile picture modal */}
@@ -900,8 +887,7 @@ export async function getServerSideProps(context) {
     { userInfo: craftUrl(['users', context.params.id, 'profile']) },
     cookie
   )
-  console.log('heres userInfo,', userInfo)
-
+  
   return {
     props: { user: userInfo },
   }

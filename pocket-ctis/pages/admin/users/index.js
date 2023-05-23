@@ -219,6 +219,7 @@ const AdminUsersList = () => {
                 setActiveKey('display')
                 setActiveItem(null)
               }}
+              updateData={getData}
             />
           </Tab>
         </Tabs>

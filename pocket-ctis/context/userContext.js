@@ -16,7 +16,6 @@ function UserContext({ children }) {
     if (userData == null) {
       _getFetcher({ res: craftUrl(['basic_info']) })
         .then((res) => {
-          console.log('here', res)
           if ((res.res.error || res.errors))
             console.log(res.errors);
             //router.push('/login')

@@ -106,6 +106,7 @@ const Login = () => {
                     className={styles.input_field}
                     id='password'
                     name='password'
+                    type='password'
                     placeholder='password'
                   />
                   <label className={styles.input_label} htmlFor='password'>
