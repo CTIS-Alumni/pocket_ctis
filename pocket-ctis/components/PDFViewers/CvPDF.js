@@ -7,19 +7,23 @@ import ReactPDF, {
   StyleSheet,
   Svg,
   Line,
+  Font
 } from '@react-pdf/renderer'
 import { useState, useEffect } from 'react'
+import { _getFetcher } from '../../helpers/fetchHelpers';
+import { craftUrl } from '../../helpers/urlHelper';
+import { useRouter } from 'next/router';
 
-// Font.register({family: 'Open Sans', fonts: [
-//   { src: 'https://fonts.gstatic.com/s/opensans/v35/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSGmu1aB.woff2' }, // regular 400
-//   { src: 'https://fonts.gstatic.com/s/opensans/v35/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWt06F15M.woff2', fontStyle: 'italic' }, // italic 400
-//   { src: 'https://fonts.gstatic.com/s/opensans/v35/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSGmu1aB.woff2', fontWeight: 500 }, // regular 500
-//   { src: 'https://fonts.gstatic.com/s/opensans/v35/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWt06F15M.woff2', fontStyle: 'italic', fontWeight: 500 }, // italic 500
-//   { src: 'https://fonts.gstatic.com/s/opensans/v35/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSGmu1aB.woff2', fontWeight: 700 }, // regular 700
-//   { src: 'https://fonts.gstatic.com/s/opensans/v35/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWt06F15M.woff2', fontStyle: 'italic', fontWeight: 700 }, // italic 700
-//   { src: 'https://fonts.gstatic.com/s/opensans/v35/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSGmu1aB.woff2', fontWeight: 900 }, // regular 900
-//   { src: 'https://fonts.gstatic.com/s/opensans/v35/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWt06F15M.woff2', fontStyle: 'italic', fontWeight: 900 }, // italic 900
-// ]});
+Font.register({family: 'Open Sans', fonts: [
+  { src: 'https://fonts.gstatic.com/s/opensans/v35/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSGmu1aB.woff2' }, // regular 400
+  { src: 'https://fonts.gstatic.com/s/opensans/v35/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWt06F15M.woff2', fontStyle: 'italic' }, // italic 400
+  { src: 'https://fonts.gstatic.com/s/opensans/v35/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSGmu1aB.woff2', fontWeight: 500 }, // regular 500
+  { src: 'https://fonts.gstatic.com/s/opensans/v35/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWt06F15M.woff2', fontStyle: 'italic', fontWeight: 500 }, // italic 500
+  { src: 'https://fonts.gstatic.com/s/opensans/v35/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSGmu1aB.woff2', fontWeight: 700 }, // regular 700
+  { src: 'https://fonts.gstatic.com/s/opensans/v35/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWt06F15M.woff2', fontStyle: 'italic', fontWeight: 700 }, // italic 700
+  { src: 'https://fonts.gstatic.com/s/opensans/v35/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTSGmu1aB.woff2', fontWeight: 900 }, // regular 900
+  { src: 'https://fonts.gstatic.com/s/opensans/v35/memtYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWqWt06F15M.woff2', fontStyle: 'italic', fontWeight: 900 }, // italic 900
+]});
 
 // VARIABLES
 let fontSize = 14
@@ -39,7 +43,7 @@ let lighterColour = 'grey'
 
 const styles = StyleSheet.create({
   body: {
-    // fontFamily: 'Open Sans',
+    fontFamily: 'Open Sans',
     fontSize: fontSize,
     paddingHorizontal: 32,
     paddingVertical: 32,
@@ -125,21 +129,25 @@ const styles = StyleSheet.create({
   },
 })
 
-const ReportPDF = ({ data }) => {
+const CvPDF = ({data}) => {
+  console.log('here', data)
+
   return (
     <Document
       title="@Person's CV"
       author='@Person'
       creator='PocketCTIS'
-      language='English'
+      // language='Turkish'
     >
       <Page size='A4' style={styles.body}>
         {/* // TOP SECTION */}
         <View style={styles.section} wrap={false}>
           {/* // name surname profession */}
           <View style={[styles.midSection]}>
-            <Text style={styles.nameSurname}>Name Surname</Text>
-            <Text style={styles.profession}>Profession</Text>
+            <Text style={styles.nameSurname}>
+              {data?.basic_info[0]?.last_name} {data?.basic_info[0]?.first_name}
+            </Text>
+            {/* <Text style={styles.profession}>Profession</Text> */}
           </View>
           <View style={[styles.flex, styles.gapBetween]}>
             {/* // email phone address */}
@@ -147,7 +155,7 @@ const ReportPDF = ({ data }) => {
               {/* // email */}
               <View style={[styles.flex, styles.gapBetween]}>
                 <Text style={[styles.midTitle]}>Email: </Text>
-                <Text style={[styles.email]}>emailaddress@addresshere.com</Text>
+                <Text style={[styles.email]}>{data?.emails[0]?.email_address}</Text>
               </View>
               {/* // phone */}
               <View style={[styles.flex, styles.gapBetween]}>
@@ -433,18 +441,26 @@ const ReportPDF = ({ data }) => {
   )
 }
 
-const ReportPDFView = ({ data }) => {
+const CvPDFView = ({ data }) => {
   const [client, setClient] = useState(false)
+  const [user, setUser] = useState()
 
+  // const router = useRouter()
+  // console.log(data)
   useEffect(() => {
     setClient(true)
   }, [])
 
+  useEffect(() => {
+    setUser(data)
+  }, [data])
+  
+
   return (
     <PDFViewer style={{ height: '100vh', width: '100%' }}>
-      <ReportPDF data={data} />
+      <CvPDF data={user} />
     </PDFViewer>
   )
 }
 
-export default ReportPDFView
+export default CvPDFView

@@ -773,10 +773,15 @@ const Profile = ({ user }) => {
       </div>
 
       {userData.session === 'owner' && (
+        <>
         <ProfileEditModal
           user={userData.data}
           refreshProfile={refreshProfile}
         />
+        <div style={{position: 'absolute', background: '#ccc', bottom: 50, right: 120}}>
+          CV
+        </div>
+        </>
       )}
 
       {/* profile picture modal */}
@@ -899,8 +904,7 @@ export async function getServerSideProps(context) {
     { userInfo: craftUrl(['users', context.params.id, 'profile']) },
     cookie
   )
-  console.log('heres userInfo,', userInfo)
-
+  
   return {
     props: { user: userInfo },
   }
