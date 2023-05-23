@@ -34,12 +34,13 @@ const Login = () => {
       return false;
     }
     const res = await requestLogin(values)
-    if (res.data && !res.errors) {
+    console.log(res);
+    /*if (res.data && !res.errors) {
       toast.success('Login successful')
       router.push('/user' )
     }else{
       toast.error(res.errors[0].error)
-    }
+    }*/
   }
 
   const sendMail = async (values) => {
