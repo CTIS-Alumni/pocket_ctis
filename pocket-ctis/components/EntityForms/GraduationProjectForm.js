@@ -22,7 +22,7 @@ const selectStyles = {
   }),
 }
 
-const GraduationProjectForm = ({ activeItem }) => {
+const GraduationProjectForm = ({ activeItem, updateData }) => {
   const [refreshKey, setRefreshKey] = useState(Math.random().toString(36))
 
   const [supervisors, setSupervisors] = useState([])
@@ -212,6 +212,7 @@ const GraduationProjectForm = ({ activeItem }) => {
       )
       if (!res.errors.length) {
         toast.success('Graduation project saved successfully!')
+        updateData()
         console.log(res)
         //TODO: SET THE RETURNING PICTURES ACCORDINLY; IF THERE'S NO posterImage in res.data, set it to "defaultuser"
       } else toast.error(res.errors[0].error)
@@ -223,6 +224,7 @@ const GraduationProjectForm = ({ activeItem }) => {
       )
       if (!res.errors.length) {
         toast.success('Graduation project added successfully!')
+        updateData()
       } else toast.error(res.errors[0].error)
     }
   }
