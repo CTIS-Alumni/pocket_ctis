@@ -160,13 +160,13 @@ const CvPDF = ({data}) => {
   console.log(data)
 
   const turkishToEnglish = (value) => {
-    return value?.replace('Ğ','g')
-        .replace('Ü','u')
-        .replace('Ş','s')
-        .replace('I','i')
-        .replace('İ','i')
-        .replace('Ö','o')
-        .replace('Ç','c')
+    return value?.replace('Ğ','G')
+        .replace('Ü','U')
+        .replace('Ş','S')
+        .replace('I','I')
+        .replace('İ','I')
+        .replace('Ö','O')
+        .replace('Ç','C')
         .replace('ğ','g')
  		    .replace('ü','u')
         .replace('ş','s')
@@ -214,47 +214,6 @@ const CvPDF = ({data}) => {
               </Text>
             </View>
           </View>
-          <View style={[styles.flex, styles.gapBetween]}>
-            {/* // email phone address */}
-            {/* <View style={[styles.emailPhoneAddress]}> */}
-              {/* // email */}
-              {/* <View style={[styles.flex, styles.gapBetween]}>
-                <Text style={[styles.midTitle]}>Email: </Text>
-                <Text style={[styles.email]}>{data?.emails[0]?.email_address}</Text>
-              </View> */}
-              {/* // phone */}
-              {/* {
-                data?.phone_numbers?.length > 0 && (
-                  <>
-                    {data?.phone_numbers?.map((n, idx) => (
-                      <View style={[styles.flex, styles.gapBetween]}>
-                        <Text style={[styles.midTitle]}>{idx == 0 ? 'Phone Number: ' : ''}</Text>
-                        <Text style={[styles.phone]}>{n?.phone_number}</Text>
-                      </View>
-                    ))}
-                  </>    
-                )
-              } */}
-              {/* // address */}
-              {/* <View style={[styles.flex, styles.gapBetween]}>
-                <Text style={[styles.midTitle]}>Address: </Text>
-                <Text style={[styles.address]}>
-                  {data?.location[0]?.city_name && `${data?.location[0]?.city_name} - ` }{data?.location[0]?.country_name}
-                </Text>
-              </View>
-            </View> */}
-            {/* // social media */}
-            {/* <View style={[styles.socialMedia]}>
-              {
-                data?.socials?.map((s,idx) => (
-                  <View style={[styles.flex, styles.gapBetween]}>
-                    <Text style={[styles.midTitle]}>{idx == 0 ? 'Social Media:':'' }</Text>
-                    <Text style={[styles.socmed]}>{s.link}</Text>
-                  </View>
-                ))
-              }
-            </View> */}
-          </View>
         </View>
         {/* // CAREER OBJ SECTION */}
         <View style={styles.section} wrap={false}>
@@ -274,7 +233,7 @@ const CvPDF = ({data}) => {
             <View style={[styles.midSection]}>
               {/* // para */}
               <Text>
-                {data?.career_objective[0]?.career_objective}
+                {turkishToEnglish(data?.career_objective[0]?.career_objective)}
               </Text>
             </View>
           </View>
@@ -316,7 +275,7 @@ const CvPDF = ({data}) => {
                 <View style={[styles.flex, styles.gapBetween]}>
                   <View style={[styles.flex, styles.alignCenter]}>
                     {/* // name of school */}
-                    <Text style={[styles.midTitle]}>{edu.edu_inst_name}</Text>
+                    <Text style={[styles.midTitle]}>{turkishToEnglish(edu.edu_inst_name)}</Text>
                     {/* // cgpa */}
                     {edu.gpa && <View style={[styles.flex, styles.alignCenter]}>
                       <Text>, CGPA: </Text>
@@ -331,11 +290,11 @@ const CvPDF = ({data}) => {
                 </View>}
 
                 <View style={[styles.location]}>
-                  <Text>{edu?.degree_type_name} {edu?.name_of_program}</Text>
+                  <Text>{edu?.degree_type_name} {turkishToEnglish(edu?.name_of_program)}</Text>
                 </View>
     
                 <View style={[styles.location]}>
-                  {edu?.education_description && <Text style={[styles.subtitle]}>{edu?.education_description}</Text>}
+                  {edu?.education_description && <Text style={[styles.subtitle]}>{turkishToEnglish(edu?.education_description)}</Text>}
                 </View>
               </View>
             )
@@ -363,7 +322,7 @@ const CvPDF = ({data}) => {
               />
             </Svg>
           </View>
-          { data?.work_records && 
+          { data?.work_records?.length > 0 && 
             <>
               {data?.work_records.map((w, idx) => {
                 var dates = ''
@@ -385,9 +344,9 @@ const CvPDF = ({data}) => {
                     <View style={[styles.flex, styles.gapBetween]}>
                       <View style={[styles.flex]}>
                         {/* // name of company */}
-                        <Text style={[]}>{w.company_name}</Text>
+                        <Text style={[]}>{turkishToEnglish(w.company_name)}</Text>
                         {/* // position */}
-                        <Text>{w.position ? `, ${w.position}` : ''}</Text>
+                        <Text>{w.position ? `, ${turkishToEnglish(w.position)}` : ''}</Text>
                       </View>
                       {/* // date */}
                       <Text>{dates}</Text>
@@ -395,7 +354,7 @@ const CvPDF = ({data}) => {
 
                     {/* // department */}
                     {w.department && <Text style={[styles.subtitle]}>
-                      {w.department} Department
+                      {turkishToEnglish(w.department)} Department
                     </Text>}
                     {w.country_name && <View style={[styles.location]}>
                       <Text>{w?.city_name && `${w?.city_name} - `}{w?.country_name}</Text>
@@ -404,7 +363,7 @@ const CvPDF = ({data}) => {
                     {/* // -------------- */}
                     <View style={[styles.location]}>
                       <Text>
-                        {w?.work_description}
+                        {turkishToEnglish(w?.work_description)}
                       </Text>
                     </View>
                   </View>
@@ -451,13 +410,13 @@ const CvPDF = ({data}) => {
                     <View style={[styles.flex, styles.gapBetween]}>
                       <View style={[styles.flex]}>
                         <Text style={[]}>{turkishToEnglish(i.company_name)}</Text>
-                        <Text>{i?.department ? `, ${i?.department}` : ''}</Text>
+                        <Text>{i?.department ? `, ${turkishToEnglish(i?.department)}` : ''}</Text>
                       </View>
                       <Text>{dates}</Text>
                     </View>
                     <View style={[styles.location]}>
                       <Text>
-                        {i?.opinion}
+                        {turkishToEnglish(i?.opinion)}
                       </Text>
                     </View>
                   </View>
@@ -488,12 +447,12 @@ const CvPDF = ({data}) => {
               <View style={[{marginBottom: 7}]}>
                 <View>
                   <Text>
-                    {data?.graduation_project[0].product_name}
+                    {turkishToEnglish(data?.graduation_project[0].product_name)}
                   </Text>
                 </View>
                 <View style={[styles.location]}>
                   <Text>
-                    {data?.graduation_project[0].project_description}
+                    {turkishToEnglish(data?.graduation_project[0].project_description)}
                   </Text>
                 </View> 
               </View>
@@ -505,7 +464,7 @@ const CvPDF = ({data}) => {
                   return (
                     <>
                       <View style={[{marginBottom: 7}]} >
-                        <Text>{p?.project_name}</Text>
+                        <Text>{turkishToEnglish(p?.project_name)}</Text>
                         { p?.project_description && <Text style={[styles.location]}>{turkishToEnglish(p?.project_description)}</Text>}
                       </View>
                     </>
@@ -572,7 +531,7 @@ const CvPDF = ({data}) => {
                 return (
                   <View style={{marginBottom: 7}} key={idx}>
                     <Text>
-                      {e.exam_name} {e.exam_data && `- ${date.getUTCDate()}`}
+                      {turkishToEnglish(e.exam_name)} {e.exam_date && `- ${date.getUTCDate()}`}
                     </Text>
                     <Text style={{marginLeft: 10}}>
                       Score: {e.grade}
@@ -605,7 +564,7 @@ const CvPDF = ({data}) => {
               return (
                 <View style={{marginBottom: 7}} key={idx}>
                   <Text>
-                    {c.certificate_name} {c.issuing_authority && `- ${c.issuing_authority}`}
+                    {turkishToEnglish(c.certificate_name)} {c.issuing_authority && `- ${turkishToEnglish(c.issuing_authority)}`}
                   </Text>
                 </View>
               )
