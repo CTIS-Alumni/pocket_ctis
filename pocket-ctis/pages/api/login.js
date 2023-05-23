@@ -90,7 +90,7 @@ const handler =  async (req, res) => {
 
             if(!comp)
                 throw{message: "Wrong username or password!"};
->>>>>>> 5a5f214e41001c70886c832b15b9118568b506a1
+                
 
                 const access_token = await sign({
                     user_id: user[0].user_id,
