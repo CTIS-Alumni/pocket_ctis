@@ -100,7 +100,24 @@ const CompaniesList = ({ companies, onQuery, isLoading, total }) => {
                   </span>
                 </div>
               </th>
-              <th>Accepts Internships</th>
+              <th
+                  onClick={() => handleSorting('is_internship')}
+                  style={{ cursor: 'pointer' }}
+              >
+                <div
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <span>Accepts Internships</span>
+                  <span style={{ width: 20 }}>
+                    {sorting.name == 'is_internship' ?
+                        (sorting.direction == 'asc' ? (
+                            <CaretDownFill />
+                        ) : (
+                            <CaretUpFill />
+                        )): <div className='d-flex flex-column' ><CaretUpFill/><CaretDownFill/></div>}
+                  </span>
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
