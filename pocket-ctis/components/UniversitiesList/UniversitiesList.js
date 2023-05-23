@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import SearchBar from '../SearchBar/SearchBar'
-import { CaretDownFill, CaretUpFill, Check } from 'react-bootstrap-icons'
+import { CaretDownFill, CaretUpFill, Check, Check2, Check2All, CheckLg, Facebook } from 'react-bootstrap-icons'
 import styles from './UniversitiesList.module.scss'
 import common from '../../styles/common.module.scss'
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner'
@@ -97,7 +97,7 @@ const UniversitiesList = ({ universities, isLoading, total, onQuery }) => {
                   <span>
                     {university.is_erasmus == 1 && (
                       <div className={styles.internship_badge}>
-                        <Check />
+                        <Check size={25} fill='#f5a425'/>
                       </div>
                     )}
                   </span>
