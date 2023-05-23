@@ -4,13 +4,14 @@ import DataTable from '../DataTable/DataTable'
 import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { craftUrl } from '../../helpers/urlHelper'
 import { toast, ToastContainer } from 'react-toastify'
-import { Modal, Button, Popover, OverlayTrigger } from 'react-bootstrap'
+import { Modal, Button, Popover, OverlayTrigger, Spinner } from 'react-bootstrap'
 import {getDateString} from "../../helpers/formatHelpers";
 
 const RequestsDashboard = () => {
   const [data, setData] = useState([])
   const [total, setTotal] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [modalLoading, setModalLoading] = useState(false)
   const [columns, setColumns] = useState([])
   const [activeItem, setActiveItem] = useState(null)
 
@@ -67,17 +68,19 @@ const RequestsDashboard = () => {
   }, [])
 
   const closeRequest = async () => {
-    console.log("active Item", activeItem)
+    setModalLoading(true)
+    document.body.click()
     const temp = {...activeItem, is_closed: 1}
     const res = await _submitFetcher('PUT',craftUrl(["requests"], [{name: "close", value: 1}]), {request: temp});
-    console.log(res)
     if(res.errors || !res.data){
       toast.error("An error happened while resolving request!");
     }else {
     //TODO: CLOSE THEM AUTOMATICALLY AFTER SUCCESS
       setShow(false);
       toast.success("Request resolved successfully");
+      getData()
     }
+    setModalLoading(false)
 
   }
 
@@ -123,7 +126,21 @@ const RequestsDashboard = () => {
         </Modal.Header>
 
         <Modal.Body>
-          <div>
+          <div style={{position: 'relative'}}>
+            {modalLoading && 
+              <div
+                style={{          
+                  display: 'flex',
+                  backgroundColor: 'rgba(255,255,255,0.5)',
+                  justifyContent: 'center',
+                  zIndex: 9,
+                  height: '100%',
+                  width: '100%',
+                  position: 'absolute'
+                }}>
+                <Spinner />
+              </div>
+            }
             <div className={styles.inputContainer}>
               <label className={styles.inputLabel}>Bilkent ID</label>
               <input

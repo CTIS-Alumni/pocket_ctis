@@ -1,7 +1,7 @@
 import React from 'react'
 import UsersInfoPanel from '../../components/UsersInfoPanel/UsersInfoPanel'
 import { _getFetcher } from '../../helpers/fetchHelpers'
-import { craftUrl } from '../../helpers/urlHelper'
+import { buildCondition, craftUrl } from '../../helpers/urlHelper'
 import UserPageContainer from '../../components/UserPageContainer/UserPageContainer'
 
 const UsersRoute = ({ work, edu }) => {
@@ -18,8 +18,8 @@ export async function getServerSideProps(context) {
   const { cookie } = context.req.headers
   const { work, edu } = await _getFetcher(
     {
-      work: craftUrl(['workrecords']),
-      edu: craftUrl(['educationrecords']),
+      work: craftUrl(['workrecords'], buildCondition({limit: 15})),
+      edu: craftUrl(['educationrecords'], buildCondition({limit: 15})),
     },
     cookie
   )

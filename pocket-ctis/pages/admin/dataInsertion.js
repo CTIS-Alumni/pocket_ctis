@@ -35,6 +35,7 @@ const DataInsertion = () => {
   const [mailResults, setMailResults] = useState(null)
   const [columns, setColumns] = useState(null)
   const [type, setType] = useState(null)
+  const [templateType, setTemplateType] = useState('users')
   const [isLoading, setIsLoading] = useState(false)
 
   const updateMailResults = () => {
@@ -191,6 +192,11 @@ const DataInsertion = () => {
     console.log('mail_results:', mail_results)
   }
 
+  const downloadTemplate = () => {
+    //the template to be given saved in templateType 
+    console.log(templateType)
+  }
+
   return (
     <AdminPageContainer>
       <Card border='light' style={{ padding: 20, marginBottom: 20 }}>
@@ -216,6 +222,10 @@ const DataInsertion = () => {
                     name='dataType'
                     id='dataType'
                     defaultValue='users'
+                    onChange={e => {
+                      props.handleChange(e)
+                      setTemplateType(e.target.value)
+                    }}
                   >
                     {csvDataTypes.map((type, index) => (
                       <option
@@ -252,10 +262,13 @@ const DataInsertion = () => {
                     )}
                   </Field>
                 </div>
+                <button type='button' className={styles.templateButton} onClick={downloadTemplate}>
+                  Download Template
+                </button>
                 <button type='submit' className={styles.submitButton}>
                   Submit
                 </button>
-                <button onClick={previewFile} className={styles.previewButton}>
+                <button type='button' onClick={previewFile} className={styles.previewButton}>
                   Preview
                 </button>
               </Form>
