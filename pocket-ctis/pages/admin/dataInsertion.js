@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import Papa from 'papaparse'
 import AdminPageContainer from '../../components/AdminPanelComponents/AdminPageContainer/AdminPageContainer'
 import LoadingSpinner from '../../components/LoadingSpinner/LoadingSpinner'
@@ -10,7 +10,7 @@ import {
   Exclamation,
 } from 'react-bootstrap-icons'
 import { Formik, Field, Form } from 'formik'
-import { _submitFetcher } from '../../helpers/fetchHelpers'
+import {_getFetcher, _submitFetcher} from '../../helpers/fetchHelpers'
 import { craftUrl } from '../../helpers/urlHelper'
 import { toast, ToastContainer } from 'react-toastify'
 import styles from '../../styles/dataInsertion.module.css'
@@ -44,6 +44,20 @@ const DataInsertion = () => {
     })
   }
 
+  useEffect(() => {
+    console.log("heres success", success)
+  }, [success])
+
+
+  useEffect(() => {
+    console.log("heres errırs", errors)
+  }, [errors]);
+
+  useEffect(() => {
+    console.log("heres mail results", mailResults)
+  }, [mailResults]);
+
+
   let mail_results = {}
   let completed_users = {}
 
@@ -54,7 +68,7 @@ const DataInsertion = () => {
       { user_id: user?.inserted?.user_id || success[index], type: type }
     )
     console.log(res)
-    mail_results[user?.index || index] = {
+    mail_results[index || user?.index] = {
       id: user?.inserted?.id || success[index],
       index: user?.index || index,
       data: res.data,
@@ -73,12 +87,14 @@ const DataInsertion = () => {
       craftUrl(['mail'], [{ name: 'activateAccount', value: 1 }]),
       { user_id: user?.data?.id || success[index] }
     )
-    mail_results[user.index || index] = {
+    //console.log("heres the index to send mail", "heres the uer.index", index, user);
+    mail_results[index || user.index] = {
       id: user?.data?.id || success[index],
       index: user?.index || index,
       data: res.data,
       errors: res.errors,
     }
+    console.log("heres mail results in send email", mail_results);
     updateMailResults()
   }
 
@@ -125,11 +141,14 @@ const DataInsertion = () => {
     )
 
     const success_map = {}
+    console.log(res);
     if(res?.data?.length){
       res.data.forEach((d) => {
-        success_map[d.index] = d.inserted?.user_id || d.inserted?.id
+        success_map[d.index] = d.inserted?.user_id ||  d.data?.id
       })
     }
+
+    console.log("heres success map", success_map);
 
     setSuccess(success_map)
 
@@ -142,6 +161,8 @@ const DataInsertion = () => {
         errors_map[err.index || 0] = err.error
       })
     }
+
+    console.log("hers errors map", errors_map);
 
     setErrors(errors_map)
     if (
@@ -177,10 +198,11 @@ const DataInsertion = () => {
         }
       }
     }
+    console.log("heres res.data", res.data);
     if (res.data?.length && values.dataType === 'users') {
       setMailResults(true)
       for (const [i, user] of res.data.entries()) {
-        await sendUserMail(user, i)
+        await sendUserMail(user, user.index)
       }
       if (Object.keys(mail_results).length === rows.length)
         toast.success('All emails were sent successfully')
@@ -310,7 +332,7 @@ const DataInsertion = () => {
                         {mailResults && (
                           <td>
                             {mailResults[index] &&
-                            mailResults[index]?.errors == undefined ? (
+                            mailResults[index]?.errors == undefined || mailResults[index]?.errors == []  || mailResults[index]?.data === true ? (
                               <Check size={30} color='lightgreen' />
                             ) : !mailResults[index] && success[index] ? (
                               <ClockFill size={20} color='lightblue' />
