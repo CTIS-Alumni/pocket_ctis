@@ -66,6 +66,7 @@ export const buildSearchQuery = async (req, query, values, length_query, length_
         }else query += "ORDER BY " + columns[req.query.column] + " " + req.query.order + " ";
     }
 
+
     if (req.query.offset && req.query.limit) {
         query += "LIMIT ? OFFSET ? ";
         values.push(req.query.limit);

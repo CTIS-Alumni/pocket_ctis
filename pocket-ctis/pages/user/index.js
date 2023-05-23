@@ -18,8 +18,8 @@ export async function getServerSideProps(context) {
   const { cookie } = context.req.headers
   const { work, edu } = await _getFetcher(
     {
-      work: craftUrl(['workrecords'], buildCondition({limit: 15})),
-      edu: craftUrl(['educationrecords'], buildCondition({limit: 15})),
+      work: craftUrl(['workrecords'], buildCondition({limit: 15, offset: 0, column: "record_date", order: "desc"})),
+      edu: craftUrl(['educationrecords'], buildCondition({limit: 15, offset: 0, column: "record_date", order: "desc"})),
     },
     cookie
   )

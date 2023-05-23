@@ -108,9 +108,20 @@ const AdminUsersList = () => {
   }
 
   const sendActivationMailSelected = async () => {
+    setIsLoading(true)
     const res = await _submitFetcher('POST', craftUrl(['mail'], [{name: "multiActivationMail", value: 1}]), {
       users: selectedArray
     })
+    res.errors.forEach((err)=>{
+      toast.error(err.error);
+    });
+    if(res.data){
+      res.data.forEach((msg) => {
+        toast.success(msg);
+      })
+    }
+    setSelectedArray([]);
+    setIsLoading(false)
   }
 
   const selectedArrayOptions = [
@@ -122,7 +133,7 @@ const AdminUsersList = () => {
     {
       label: 'Deactivate All Selected',
       warning: "Are you sure you want to deactivate all selected users? All data belonging to deactivated users will be hidden from other users" +
-          "and they won't be able to login to the system until re-activated.",
+          " and they won't be able to login to the system until re-activated.",
       action: deactivateSelected
     },
     {
@@ -133,7 +144,7 @@ const AdminUsersList = () => {
     {
       label: 'Send Activation Mail To Selected',
       warning: "Are you sure you want to send activation mail to selected users? Use this option when users don't receive their account activation" +
-          "mails upon creation.",
+          " mails upon creation.",
       action: sendActivationMailSelected
     }
   ]

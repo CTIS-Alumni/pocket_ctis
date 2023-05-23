@@ -10,7 +10,24 @@ import {checkApiKey} from "./middleware/checkAPIkey";
 import {corsMiddleware} from "./middleware/cors";
 
 const handler =  async (req, res) => {
-    if(req.query.changeEmail){
+    if(req.query.multiActivationMail){
+        try{
+            const {users} = JSON.parse(req.body);
+            console.log(users);
+            let data = [], errors = [];
+
+            for(const [i, user] of users.entries()){
+                const mail_status = await sendActivationMail(user);
+                if(mail_status === true)
+                    data.push( "Successfully sent activation mail to " + user.first_name + " " + user.last_name);
+                else errors.push({error: "Couldn't send activation mail to " + user.first_name + " " + user.last_name, mail_status: mail_status});
+            }
+            res.status(200).json({data, errors});
+        }catch(error){
+            res.status(500).json({errors: [{error: error.message}]});
+        }
+    }
+    else if(req.query.changeEmail){
         try{
             const {email, currentEmail} = JSON.parse(req.body);
 

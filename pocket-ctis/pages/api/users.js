@@ -2,14 +2,12 @@ import {
     activateMultiUsers,
     addAndOrWhere,
     buildSearchQuery,
-    buildUpdateQueries,
     createUser,
     createUsersWithCSV,
     deactivateMultiUsers,
     doMultiDeleteQueries,
     doMultiQueries,
     doqueryNew,
-    updateTable,
     updateUsers,
 } from "../../helpers/dbHelpers";
 import {checkAuth, checkUserType} from "../../helpers/authHelper";
