@@ -10,9 +10,7 @@
     height: $navbar-height;
     z-index: 2;
     padding: 0 $padding-xxlarge;
-
-    gap: 20px;
-
+    
     &_logo {
         font-size: $fs-large;
         font-weight: $fw-black;
@@ -20,13 +18,7 @@
     }
 
     img {
-        // height: 80%;
-        width: 200px;
-
-        @include media-query(small) {
-            // visibility: hidden;
-            display: none;
-        }
+        height: 80%;
     }
 }
 
@@ -49,34 +41,5 @@
         @include media-query(medium) {
             display: block;
         }
-    }
-}
-
-.searchBar {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background-color: white;
-    height: 36px;
-    border-radius: 5px;
-    padding: 10px;
-    border: 1px solid black;
-    width: 700px;
-
-    input {
-        width: 100%;
-        border: none;
-    }
-
-    svg {
-        cursor: pointer;
-    }
-
-    @include media-query(medium) {
-        width: 400px
-    }
-
-    @include media-query(small) {
-        width: 400px
     }
 }
