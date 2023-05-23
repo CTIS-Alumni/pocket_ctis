@@ -73,7 +73,7 @@ const handler =  async (req, res) => {
                     if(payload.user !== "admin"){
                         edu_records.forEach((rec)=>{
                             if(rec.edu_inst_id == 1 && (
-                                rec.name_of_program === departmentConfig.department_name || rec.name_of_program === departmentConfig.abbreviation))
+                                rec.name_of_program.toLowerCase() === departmentConfig.department_name.toLowerCase() || rec.name_of_program.toLowerCase() === departmentConfig.abbreviation.toLowerCase()))
                                throw {message: "Can't add " + departmentConfig.department_name + " record!"};
                         })
                     }
@@ -95,8 +95,8 @@ const handler =  async (req, res) => {
 
                         let count = 0;
                         edu_records.forEach((rec, i)=>{
-                            if((rec.name_of_program === departmentConfig.department_name ||
-                                    rec.name_of_program === departmentConfig.abbreviation) &&
+                            if((rec.name_of_program.toLowerCase() === departmentConfig.department_name.toLowerCase() ||
+                                    rec.name_of_program.toLowerCase() === departmentConfig.abbreviation.toLowerCase()) &&
                                 rec.edu_inst_id == 1)
                                 count++;
                         })
