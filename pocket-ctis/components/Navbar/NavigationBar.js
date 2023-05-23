@@ -8,11 +8,33 @@ import { useRouter } from 'next/router'
 import { User_data } from '../../context/userContext'
 import { toast } from 'react-toastify'
 
-import { List, ThreeDotsVertical } from 'react-bootstrap-icons'
-import Link from 'next/link'
-import { useState } from 'react'
+import { Search, ThreeDotsVertical } from 'react-bootstrap-icons'
 import { getAppLogoPath } from '../../helpers/formatHelpers'
-import SearchBar from "../SearchBar/SearchBar";
+import { useFormik } from 'formik'
+
+const NavBarSearch = ({callback}) => {
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: {search: null},
+  })
+
+  const fireCallback = () =>{
+    callback(formik.values.search)
+  }
+
+  return (
+    <div className={styles.searchBar}>
+      <input
+        placeholder='Search'
+        name='search'
+        id='search'
+        value={formik.values.search}
+        onChange={formik.handleChange}
+      />
+      <Search onClick={fireCallback} />
+    </div>
+  )
+}
 
 const NavigationBar = ({ setToggleSidebar }) => {
   const router = useRouter()
@@ -43,10 +65,18 @@ const NavigationBar = ({ setToggleSidebar }) => {
     )
   }
 
-  // const [toggleSidebar, setToggleSidebar] = useState(false);
-
   function sidebar() {
     setToggleSidebar((prev) => !prev)
+  }
+
+  const onSearch = (search) => {
+    if (search.length > 0) {
+      router.push({
+        pathname: '/user/search',
+        query: { searchValue: search },
+        as: '/user/search',
+      })
+    }
   }
 
   return (
@@ -62,34 +92,40 @@ const NavigationBar = ({ setToggleSidebar }) => {
             )}
           </Navbar.Brand>
         </div>
-        <Nav className='d-flex justify-content-end align-items-center'>
-          <Nav.Item
-            style={{ marginRight: 20, cursor: 'pointer' }}
-            onClick={() => router.push('/user/add')}
-          >
-            Add Entities
-          </Nav.Item>
-          <NavDropdown
-            title='User'
-            className='justify-content-end'
-            drop='start'
-          >
-            <NavDropdown.Item onClick={() => router.push('/user/requests')}>
-              Requests
-            </NavDropdown.Item>
-            <NavDropdown.Divider />
-            <NavDropdown.Item onClick={() => router.push('/user/settings')}>
-              Settings
-            </NavDropdown.Item>
-            {context.userData?.user_types.includes('admin') && <>
-              <NavDropdown.Divider />
-              <NavDropdown.Item onClick={adminLoginPage}>
-                Admin Panel
-              </NavDropdown.Item>
-            </>}
-            <NavDropdown.Divider />
-            <NavDropdown.Item onClick={requestLogout}>Logout</NavDropdown.Item>
-          </NavDropdown>
+        <NavBarSearch callback={onSearch} />
+        <Nav className='d-flex justify-content-end align-items-center' >
+          <div style={{display: 'flex', justifyContent: 'space-between', gap: 10}}>
+            <div className='d-flex align-items-center'>
+              <Nav.Item
+                style={{ marginRight: 20, cursor: 'pointer', width: '90px' }}
+                onClick={() => router.push('/user/add')}
+              >
+                Add Entities
+              </Nav.Item>
+              <NavDropdown
+                title='User'
+                className='justify-content-end'
+                drop='start'
+                style={{color: 'black'}}
+              >
+                <NavDropdown.Item onClick={() => router.push('/user/requests')}>
+                  Requests
+                </NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={() => router.push('/user/settings')}>
+                  Settings
+                </NavDropdown.Item>
+                {context.userData?.user_types?.includes('admin') && <>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item onClick={adminLoginPage}>
+                    Admin Panel
+                  </NavDropdown.Item>
+                </>}
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={requestLogout}>Logout</NavDropdown.Item>
+              </NavDropdown>
+            </div>
+          </div>
         </Nav>
       </Navbar>
     </>

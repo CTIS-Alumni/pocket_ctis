@@ -25,7 +25,7 @@ const UsersInfoPanel = ({work, edu}) => {
       <div className={styles.panel_welcome}>
         <h1 className={styles.welcome_logo}>{departmentConfig.app_name}</h1>
       </div>
-      <SearchBar onSubmit={onSearch} />
+      {/* <SearchBar onSubmit={onSearch} /> */}
       <div>
         <WorkUpdates work = {work}/>
         <AcademicUpdates edu = {edu}/>

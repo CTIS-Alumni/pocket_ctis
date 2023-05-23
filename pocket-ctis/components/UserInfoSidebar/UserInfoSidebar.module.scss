@@ -15,8 +15,8 @@
 }
 
 
-.sidebar {    
-    position:sticky;
+.sidebar {
+    position: sticky;
     top: $navbar-height;
     height: 100%;
     width: 20vw;
@@ -32,7 +32,7 @@
 
     padding: $padding-large $padding-xlarge;
 
-    &_closeBtn{
+    &_closeBtn {
         display: none;
     }
 
@@ -44,8 +44,8 @@
         max-height: none;
         box-shadow: none;
         transition: all 0.5s ease-in;
-        
-        &_closeBtn{
+
+        &_closeBtn {
             display: block;
             font-size: 40px;
             position: absolute;
@@ -60,7 +60,7 @@
             align-items: center;
             transition: all 0.2s;
 
-            &:hover{
+            &:hover {
                 background-color: rgba(200, 200, 200, 0.4);
             }
         }
@@ -83,16 +83,20 @@
     }
 
     &_user_info {
-        span {display: block;}
+        span {
+            display: block;
+        }
 
         .user_role {
             @include secondary-text();
             font-weight: $fw-regular;
         }
+
         .user_name_surname {
             @include primary-text();
             font-weight: $fw-medium;
         }
+
         margin: auto;
         margin-bottom: 2em;
         text-align: center;
@@ -106,7 +110,10 @@
 
         &_personal {
             margin-bottom: $margin-xlarge;
-            svg {color: $ctis-yellow-500}
+
+            svg {
+                color: $ctis-yellow-500
+            }
 
             a {
                 @include attention() {
@@ -114,9 +121,13 @@
                 }
             }
         }
+
         &_career {
             margin-bottom: $margin-xlarge;
-            svg {color: $ctis-red-300}
+
+            svg {
+                color: $ctis-red-300
+            }
 
             a {
                 @include attention() {
@@ -124,9 +135,13 @@
                 }
             }
         }
+
         &_education {
             margin-bottom: $margin-xlarge;
-            svg {color: $ctis-blue-400}
+
+            svg {
+                color: $ctis-blue-400
+            }
 
             a {
                 @include attention() {
@@ -134,6 +149,7 @@
                 }
             }
         }
+
         &_title {
             display: block;
             color: $ctis-grey-400;
@@ -164,4 +180,15 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
+}
+
+.logo {
+    position: absolute;
+    top: 10px;
+    width: 150px;
+    display: none;
+
+    @include media-query(small) {
+        display: block;
+    }
 }
