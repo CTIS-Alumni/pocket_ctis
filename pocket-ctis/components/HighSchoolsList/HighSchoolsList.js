@@ -122,10 +122,10 @@ const HighSchoolList = ({ highSchools, isLoading, onQuery, total }) => {
                   </Link>
                 </td>
                 <td>
-                  {highSchool.country_name}
+                  {highSchool.city_name}
                 </td>
                 <td>
-                  {highSchool.city_name}
+                  {highSchool.country_name}
                 </td>
               </tr>
             ))}
