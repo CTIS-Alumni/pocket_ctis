@@ -369,7 +369,7 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                     </div>
                   </td>
                 </tr>
-                <tr>
+                {basic_info[0].gender ?  <tr>
                   <td>
                     <div className={`${styles.inputContainer}`}>
                       <label className={`${styles.inputLabel}`}>Nee</label>
@@ -378,12 +378,10 @@ const PersonalInformationForm = ({ data, user_id, setIsUpdated }) => {
                         style={{ width: '100%' }}
                         id='basic_info[0].nee'
                         name='basic_info[0].nee'
-                        placeholder='Nee'
-                        placeholder='Nee'
                       />
                     </div>
                   </td>
-                </tr>
+                </tr>:''}
                 <tr>
                   <td>
                     <div className={`${styles.inputContainer}`}>

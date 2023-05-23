@@ -376,7 +376,7 @@ const WorkInformationForm = ({ data, user_id, setIsUpdated }) => {
                                           className={styles.inputContainer}
                                           style={{ width: '49%' }}
                                         >
-                                          <label className={styles.inputLabel}>
+                                          <label className={styles.inputLabel}>Position
                                           </label>
                                           <Field
                                             className={styles.inputField}

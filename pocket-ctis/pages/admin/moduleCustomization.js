@@ -62,7 +62,6 @@ const DepartmentInformationForm = ({}) => {
   }, [appLogo])
 
   const onSubmitHandler = async (val) => {
-    console.log("appLogo", appLogo, "showCurrentImage", showCurrentImage)
     if(appLogo)
       val.app_logo = appLogo["name"];
     else {
@@ -454,10 +453,10 @@ const ModuleCustomization = () => {
                       <label>Limit per user</label>
                       <input
                           type='number'
-                          name='user_profile_data.graudation_projects.limit_per_user'
-                          id='user_profile_data.graudation_projects.limit_per_user'
+                          name='user_profile_data.graduation_projects.limit_per_user'
+                          id='user_profile_data.graduation_projects.limit_per_user'
                           value={
-                            formik.values.user_profile_data.graudation_projects
+                            formik.values.user_profile_data.graduation_projects
                                 .limit_per_user
                           }
                           onChange={formik.handleChange}

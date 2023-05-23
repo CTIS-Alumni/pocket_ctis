@@ -58,6 +58,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
       datum.end_date = datum.end_date ? new Date(datum.end_date) : null
       datum.degree_type = `${datum.degree_type_id}-${datum.degree_type_name}`
       datum.is_current = datum.is_current == 1
+      datum.gpa = datum.gpa ? datum.gpa.toFixed(2) : null
 
       return datum
     })
@@ -76,7 +77,7 @@ const EducationInformationForm = ({ data, user_id, setIsUpdated }) => {
       val.education_description = val.education_description
           ? val.education_description
           : null
-      val.gpa = val.gpa ? val.gpa : null
+      val.gpa = val.gpa ? parseFloat(val.gpa).toFixed(2) : null
       replaceWithNull(val)
       splitFields(val, ['edu_inst', 'degree_type'])
       return val

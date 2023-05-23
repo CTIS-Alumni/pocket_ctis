@@ -610,6 +610,7 @@ const Profile = ({ user }) => {
                           )}
                           <div>{record.education_description}</div>
                           <div>{studyPeriod}</div>
+                          {record.gpa && <div>{parseFloat(record.gpa).toFixed(2)}</div>}
                         </Container>
                       </div>
                     )

@@ -121,8 +121,8 @@ const CreateUserForm = ({ activeItem, goBack }) => {
         })
       ),
     }),
-    onSubmit: (values) => {
-      onSubmitHandler(values)
+    onSubmit: async (values) => {
+      await onSubmitHandler(values)
     },
   })
 

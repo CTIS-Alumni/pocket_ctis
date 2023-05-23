@@ -152,7 +152,9 @@ const ProjectsInformationForm = ({ data, user_id, setIsUpdated }) => {
       })
     } else toast.success('Data successfully saved')
 
-    if (responseObj.POST.data?.length) {
+    console.log(requestObj);
+    console.log(responseObj);
+    if (responseObj.POST?.data?.length) {
       const { data, errors } = await sendMail()
       if (data) toast.success('Profile update mail sent to user')
       else toast.error('Failed to send profile update mail to user')

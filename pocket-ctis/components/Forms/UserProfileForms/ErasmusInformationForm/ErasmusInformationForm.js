@@ -149,8 +149,8 @@ const ErasmusInformationForm = ({ data, user_id, setIsUpdated }) => {
                               <label className={styles.inputLabel}>University</label>
                               <Field
                                   className={styles.inputField}
-                                  name={`erasmus[${index}].edu_inst`}
-                                  id={`erasmus[${index}].edu_inst`}
+                                  name={`erasmus[${index}].edu_inst_name`}
+                                  id={`erasmus[${index}].edu_inst_name`}
                                   disabled
                               />
                             </div>

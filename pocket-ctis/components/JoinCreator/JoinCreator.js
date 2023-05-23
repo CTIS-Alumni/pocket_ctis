@@ -75,8 +75,8 @@ const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
     enableReinitialize: true,
     initialValues: {
       joinType: {
-        label: 'Left Outer Join',
-        value: 'LEFT OUTER JOIN',
+        label: 'Join',
+        value: 'JOIN',
       },
       joinStatement: null,
     },
@@ -144,8 +144,8 @@ const JoinCreator = ({ activeTables, setJoinSchema, selectClauseTable }) => {
     setSelectedJoins(newSelected)
     formik.setFieldValue('joinStatement', null)
     formik.setFieldValue('joinType', {
-      value: 'LEFT OUTER JOIN',
-      label: 'Left Outer Join',
+      value: 'JOIN',
+      label: 'Join',
     })
   }
 

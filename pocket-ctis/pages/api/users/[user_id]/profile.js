@@ -13,6 +13,7 @@ const handler =  async (req, res) => {
             case "GET":
                 let queries = [];
                 try {
+                    console.log("queyr", user_id)
                     let temp;
                     temp = "SELECT u.id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', u.first_name, u.nee, u.last_name, u.gender," +
                         "u.is_retired, u.is_active FROM users u JOIN useraccounttype uat ON (uat.user_id = u.id) " +
