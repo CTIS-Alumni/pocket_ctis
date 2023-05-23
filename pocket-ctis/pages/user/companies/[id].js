@@ -68,7 +68,7 @@ const Company = ({ company }) => {
             </div>
 
             <span className={styles.company_info_people}>
-              {users.data?.length > 0
+              {users?.length > 0
                 ? `People who have worked at ${company.data.company_name}:`
                 : `No one from your department have worked at ${company.data.company_name}.`}
             </span>
