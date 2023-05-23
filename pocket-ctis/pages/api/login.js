@@ -81,15 +81,16 @@ const handler =  async (req, res) => {
                 "WHERE uc.username = ? AND uc.is_admin_auth = 0 "
             const {data, errors} = await doqueryNew({query: query, values: [username]});
 
+            console.log("data", data);
+
             if (errors || (data && !data.length || (data[0].hashed === null || data[0].user_types === null))) {
                 throw { message: "Wrong username or password!"};
             }
 
-            compare(password, data[0].hashed, async function (err, result) {
-                if (err)
-                    res.status(500).json({errors: [{error: err.message}]});
-                if (!result)
-                    res.status(401).json({errors: [{error: "Wrong username or password!"}]});
+            const comp = await compare(password, data[0].hashed);
+
+            if(!comp)
+                throw{message: "Wrong username or password!"};
 
                 delete data[0].hashed;
 
@@ -121,8 +122,9 @@ const handler =  async (req, res) => {
 
                 res.setHeader("Set-Cookie", [serialCookie, refreshCookie]);
                 res.status(200).json({data: data, errors: errors});
-            });
+
         } catch (error) {
+            console.log("does it come here", error);
             res.status(500).json({errors: [{error: error.message}]});
         }
     }
