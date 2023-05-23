@@ -16,8 +16,9 @@ import styles from './UserInfoSidebar.module.scss'
 import common from '../../styles/common.module.scss'
 import { useContext } from 'react'
 import { User_data } from '../../context/userContext'
-import { getProfilePicturePath } from '../../helpers/formatHelpers'
+import { getProfilePicturePath, getAppLogoPath } from '../../helpers/formatHelpers'
 import moduleConfig from '../../config/moduleConfig';
+import departmentConfig from '../../config/departmentConfig'
 
 const Button = ({ text, icon, href }) => {
   return (
@@ -68,6 +69,13 @@ const UserInfoSidebar = ({ toggleSidebar, setToggleSidebar }) => {
             &#xD7;
           </div>
         )}
+        <Link href={'/user'} className={styles.logo} >
+          {getAppLogoPath() ? (
+          <img src={getAppLogoPath()} style={{ paddingBottom: 10 }} />
+          ) : (
+            departmentConfig.app_name
+          )}
+        </Link>
         <div className={styles.sidebar_user_wrapper}>
           <UserImage img={context.userData?.profile_picture} />
           <UserInfo info={context.userData} />
