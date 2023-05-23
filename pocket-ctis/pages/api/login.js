@@ -82,23 +82,20 @@ const handler =  async (req, res) => {
                 throw { message: "Wrong username or password!"};
             }
 
-            compare(password, user[0].hashed, async function (err, result) {
+            compare(password, data[0].hashed, async function (err, result) {
                 if (err)
                     res.status(500).json({errors: [{error: err.message}]});
                 if (!result)
                     res.status(401).json({errors: [{error: "Wrong username or password!"}]});
-
-            if(!comp)
-                throw{message: "Wrong username or password!"};
                 
 
                 const access_token = await sign({
-                    user_id: user[0].user_id,
+                    user_id: data[0].user_id,
                     mode: "user"
                 }, process.env.ACCESS_SECRET, 60 * 10);
 
                 const refresh_token = await sign({
-                    user_id: user[0].user_id,
+                    user_id: data[0].user_id,
                     mode: "user"
                 }, process.env.REFRESH_SECRET, 60 * 60 * 24 * 3);
 
