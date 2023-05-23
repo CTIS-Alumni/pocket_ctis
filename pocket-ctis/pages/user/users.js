@@ -45,6 +45,7 @@ const UsersList = () => {
 
     queryParams.offset = (currentPage - 1) * limit
     queryParams.limit = limit
+    queryParams.searchcol = 'user,first_name,last_name,type_name'
     queryParams.name = searchString
 
     getData(queryParams)
