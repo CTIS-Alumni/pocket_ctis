@@ -77,7 +77,6 @@ const handler =  async (req, res) => {
             const query = "SELECT uc.user_id, uc.hashed FROM usercredential uc LEFT OUTER JOIN users u ON (u.id = uc.user_id) " +
                 " WHERE username = ? AND is_admin_auth = 0 AND u.is_active = 1 ";
             const {data, errors} = await doqueryNew({query: query, values: [username]});
-            const user = data;
 
             if (errors || (data && !data.length || (data[0].hashed === null || data[0].user_types === null))) {
                 throw { message: "Wrong username or password!"};
@@ -88,6 +87,10 @@ const handler =  async (req, res) => {
                     res.status(500).json({errors: [{error: err.message}]});
                 if (!result)
                     res.status(401).json({errors: [{error: "Wrong username or password!"}]});
+
+            if(!comp)
+                throw{message: "Wrong username or password!"};
+>>>>>>> 5a5f214e41001c70886c832b15b9118568b506a1
 
                 const access_token = await sign({
                     user_id: user[0].user_id,
@@ -119,6 +122,7 @@ const handler =  async (req, res) => {
                 res.status(200).json({data: {message: "Login successful"}, errors: errors});
             });
         } catch (error) {
+            console.log("does it come here", error);
             res.status(500).json({errors: [{error: error.message}]});
         }
     }
