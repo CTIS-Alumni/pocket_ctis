@@ -36,7 +36,7 @@ const Login = () => {
       return false;
     }
     const res = await requestLogin(values)
-    if (res.data.length && !res.errors) {
+    if (res.data && !res.errors) {
       toast.success('Login successful')
       console.log(res.data[0])
       setUserData(res.data[0])
