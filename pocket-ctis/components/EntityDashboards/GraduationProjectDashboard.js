@@ -80,8 +80,10 @@ const GraduationProjectDashboard = () => {
       craftUrl(['graduationprojects']),
       { graduationprojects: [data] }
     )
-    if (!res.errors.length)
-      toast.success('Graduation project deleted successfully!')
+    if (!res.errors.length) {
+        toast.success('Graduation project deleted successfully!')
+        getData()
+      }
     else toast.error(res.errors[0].error)
   }
 
@@ -92,7 +94,10 @@ const GraduationProjectDashboard = () => {
       { graduationprojects: selectedArray }
     )
     if (res.errors.length) toast.error(res.errors[0].error)
-    else toast.success('Graduation projects deleted successfully!')
+    else {
+      toast.success('Graduation projects deleted successfully!')
+      getData()
+    }
   }
 
   const selectedArrayOptions = [
