@@ -10,8 +10,6 @@ export default async function middleware(req){
     if(req.headers.get('cookie'))
         cookies = parse(req.headers.get('cookie'));
 
-    console.log("-1")
-
     const access = cookies?.AccessJWT || null;
     const refresh = cookies?.RefreshJWT || null;
 
@@ -35,7 +33,6 @@ export default async function middleware(req){
     if(access && refresh){
         try{
             const {payload} =  await verify(access, process.env.ACCESS_SECRET);
-
 
 
             if(url.includes("login") && !url.includes("admin") && payload.mode === "user"){

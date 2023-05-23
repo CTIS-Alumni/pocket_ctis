@@ -12,8 +12,13 @@ export default async function handler(req,res){
             res.setHeader("Set-Cookie", [refresh_expired, access_expired]);
 
             res.redirect('/resetPassword?token='+token, 200);
+            return;
         }
 
+        else if(payload.type === "updateProfile"){
+            const {user_id} = payload;
+            res.redirect('/user/'+user_id, 200);
+        }
         else if(payload.type === "changeEmail"){
             const {email_address, user_id} = payload;
             const set_new_email_query = "UPDATE users SET contact_email = ? WHERE id = ? ";
@@ -25,7 +30,7 @@ export default async function handler(req,res){
             res.redirect('/success?type=mailSuccess', 200);
         }
 
-        if(payload.type === "forgotAdminPassword"){
+        else if(payload.type === "forgotAdminPassword"){
             const refresh_expired = deleteCookie("RefreshJWT");           //logout the user just in case
             const access_expired = deleteCookie("AccessJWT");
             res.setHeader("Set-Cookie", [refresh_expired, access_expired]);

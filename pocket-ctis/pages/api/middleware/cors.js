@@ -1,7 +1,6 @@
 export const corsMiddleware = (handler) => async (req, res) => {
 
     const domain = process.env.NODE_ENV === "development" ? req.headers.host : process.env.DOMAIN_NAME;
-    console.log("heres the domain", domain);
 
     res.setHeader('Access-Control-Allow-Origin', domain);
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');

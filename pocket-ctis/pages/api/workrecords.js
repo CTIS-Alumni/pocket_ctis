@@ -33,7 +33,6 @@ const handler =  async (req, res) => {
         switch (method) {
             case "GET":
                 try {
-                  console.log("bro is it here")
                     let values = [], length_values = [], length_query = "";
                     let query = "SELECT w.id, w.user_id, GROUP_CONCAT(DISTINCT act.type_name) as 'user_types', upp.profile_picture, u.bilkent_id, u.first_name, u.last_name, w.company_id, " +
                         "c.company_name, wt.work_type_name, w.department, w.position, w.work_description, w.city_id, ci.city_name," +
@@ -62,12 +61,13 @@ const handler =  async (req, res) => {
                         values.push(req.query.company_id);
                         length_query += "WHERE w.company_id = ? ";
                         length_values.push(req.query.company_id);
+
                     }
 
                     if (req.query.sector_id) {
                         query += addAndOrWhere(query, " c.sector_id = ? ");
                         values.push(req.query.sector_id);
-                        length_query += addAndOrWhere(length_query, " c.sector_id = ? ");
+                        length_query += addAndOrWhere(query, " c.sector_id = ? ");
                         length_values.push(req.query.sector_id);
 
                     }
@@ -79,14 +79,12 @@ const handler =  async (req, res) => {
 
                         ({query, length_query} = await buildSearchQuery(req, query, values,  length_query, length_values, columns, "w.id"));
 
-                    console.log("hello?");
-
-                        console.log("heres query", query, "heres values", values, "hers length query", length_query, "lenght values", length_values);
 
                         const {data, errors} =  await doMultiQueries([{name: "data", query: query, values: values},
                             {name: "length", query: length_query, values: length_values}]);
 
-                        console.log("hers teh data", data);
+
+
                         res.status(200).json({data:data.data, length: data?.length[0].count, errors: errors});
 
 

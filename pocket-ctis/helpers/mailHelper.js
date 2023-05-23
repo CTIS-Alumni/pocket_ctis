@@ -118,11 +118,16 @@ export const sendProfileUpdateEmail = async (user, type) => {
     const template = compile(fs.readFileSync(process.env.PRIVATE_ASSETS_PATH + '/views/profileUpdate.hbs', 'utf-8'));
 
     try {
+        const update_token = await sign({user_id: user.id, type: "updateProfile"},
+            process.env.MAIL_SECRET, 60 * 60 * 24 * 7 );
+
+        console.log("user-id", user.id)
+
         const html = template({
             name: user.first_name,
             surname: user.last_name,
             type: type,
-            link: process.env.NEXT_PUBLIC_ORIGIN_PATH + '/login'
+            link: process.env.NEXT_PUBLIC_BACKEND_PATH + '/mailredirect/' +  update_token
         })
 
 

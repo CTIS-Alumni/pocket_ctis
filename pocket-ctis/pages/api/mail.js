@@ -100,7 +100,7 @@ const handler =  async (req, res) => {
             } catch (error) {
                 res.status(500).json({errors: [{error: error.message}]});
             }
-        } res.status(403).json({errors: [{error: "Forbidden request!"}]});
+        } else res.status(403).json({errors: [{error: "Forbidden request!"}]});
     }
 
    else if(req.query.activateAccount) {
@@ -125,7 +125,7 @@ const handler =  async (req, res) => {
             } catch (error) {
                 res.status(500).json({errors: [{error: error.message}]});
             }
-        } res.status(403).json({errors: [{error: "Forbidden request!"}]});
+        } else res.status(403).json({errors: [{error: "Forbidden request!"}]});
     }
     else res.redirect("/401", 401);
 }
